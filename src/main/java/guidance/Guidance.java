@@ -125,8 +125,6 @@ public class Guidance {
         }
         listOfStages.createNewFile();
 
-        BufferedWriter writer = new BufferedWriter(new FileWriter(listOfStages));
-
         DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
         Date date = new Date();
         String datestring = dateFormat.format(date);
@@ -162,15 +160,16 @@ public class Guidance {
         }
 
         // Finally, we print the commands in the output file defined for this.
-        for (String str : listOfCommands) {
-            writer.write(str);
-            writer.newLine();
-            writer.newLine();
-        }
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(listOfStages))) {
+            for (String str : listOfCommands) {
+                writer.write(str);
+                writer.newLine();
+                writer.newLine();
+            }
 
-        // Close the file with the list of commands...
-        writer.flush();
-        writer.close();
+            // Close the file with the list of commands...
+            writer.flush();
+        }
         System.out.println("[Guidance] Everything is working with Guidance, just wait...");
 
     }
@@ -524,8 +523,6 @@ public class Guidance {
          * System.err.println("[Guidance] Exception deleting imputationFilesInfo."); }
          */
     }
-
-    
 
     /**
      * Method that generates all the tasks for imputation and association.
@@ -1581,19 +1578,13 @@ public class Guidance {
         String cmdToStore = null;
         if (parsingArgs.getStageStatus("imputeWithMinimac") == 1) {
             // Submitting the impute task per chunk
-            if (chrS.equals("23")) {
-                cmdToStore = JAVA_HOME + "/java imputationWithMinimac --vcfReference --refHaps " + knownHapFile + " --shape_haps "
-                        + filteredHapsFile + " --sample " + filteredSampleFile + " --snps " + filteredListOfSnpsFile + " --vcfstart "
-                        + lim1S + " --vcfend " + lim2S + " --chr " + chrS + " --vcfwindow --rounds 5 --states 200 --outInfo "
-                        + imputedMMInfoFile + " --outErate " + imputedMMErateFile + " --outRec " + imputedMMRecFile + " --outDose "
-                        + imputedMMDoseFile + " --outLog " + imputedMMLogFile;
-            } else {
-                cmdToStore = JAVA_HOME + "/java imputationWithMinimac --vcfReference --refHaps " + knownHapFile + " --shape_haps "
-                        + filteredHapsFile + " --sample " + filteredSampleFile + " --snps " + filteredListOfSnpsFile + " --vcfstart "
-                        + lim1S + " --vcfend " + lim2S + " --chr " + chrS + " --vcfwindow --rounds 5 --states 200 --outInfo "
-                        + imputedMMInfoFile + " --outErate " + imputedMMErateFile + " --outRec " + imputedMMRecFile + " --outDose "
-                        + imputedMMDoseFile + " --outLog " + imputedMMLogFile;
-            }
+            // We don't distinguish chrS 23 since the cmdToStore is the same
+            cmdToStore = JAVA_HOME + "/java imputationWithMinimac --vcfReference --refHaps " + knownHapFile + " --shape_haps "
+                    + filteredHapsFile + " --sample " + filteredSampleFile + " --snps " + filteredListOfSnpsFile + " --vcfstart " + lim1S
+                    + " --vcfend " + lim2S + " --chr " + chrS + " --vcfwindow --rounds 5 --states 200 --outInfo " + imputedMMInfoFile
+                    + " --outErate " + imputedMMErateFile + " --outRec " + imputedMMRecFile + " --outDose " + imputedMMDoseFile
+                    + " --outLog " + imputedMMLogFile;
+
             listOfCommands.add(cmdToStore);
 
             try {

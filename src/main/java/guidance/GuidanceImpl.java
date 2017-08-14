@@ -1627,17 +1627,10 @@ public class GuidanceImpl {
             filteredHapsFileGz = filteredHapsFile + ".gz";
         }
 
-        String cmd = null;
-
-        if (theChromo.equals("23")) {
-            cmd = minimacBinary + " --vcfReference --refHaps " + knownHapFile + " --snps " + filteredListOfSnpsFile + " --shape_haps "
-                    + filteredHapsFileGz + " --sample " + filteredSampleFile + " --vcfstart " + lim1S + " --vcfend " + lim2S + " --chr "
-                    + theChromo + " --vcfwindow 250000 --rounds 5 --states 200 --prefix " + imputedMMFileName + " --gzip";
-        } else {
-            cmd = minimacBinary + " --vcfReference --refHaps " + knownHapFile + " --snps " + filteredListOfSnpsFile + " --shape_haps "
-                    + filteredHapsFileGz + " --sample " + filteredSampleFile + " --vcfstart " + lim1S + " --vcfend " + lim2S + " --chr "
-                    + theChromo + " --vcfwindow 250000 --rounds 5 --states 200 --prefix " + imputedMMFileName + " --gzip";
-        }
+        // We don't distinguish chromosome 23 since the cmd is the same
+        String cmd = minimacBinary + " --vcfReference --refHaps " + knownHapFile + " --snps " + filteredListOfSnpsFile + " --shape_haps "
+                + filteredHapsFileGz + " --sample " + filteredSampleFile + " --vcfstart " + lim1S + " --vcfend " + lim2S + " --chr "
+                + theChromo + " --vcfwindow 250000 --rounds 5 --states 200 --prefix " + imputedMMFileName + " --gzip";
 
         if (DEBUG) {
             System.out.println("\n[DEBUG] Command: " + cmd);
@@ -1865,6 +1858,10 @@ public class GuidanceImpl {
         }
         long startTime = System.currentTimeMillis();
 
+        // The output will be first generated in plain format, then compressed
+        String plainOutputFile = outputFile.substring(0, outputFile.length() - 3);
+        String plainOutputCondensedFile = outputCondensedFile.substring(0, outputCondensedFile.length() - 3);
+
         // Convert threshold string into thresholdDouble
         Double mafThreshold = Double.parseDouble(mafThresholdS);
         Double infoThreshold = Double.parseDouble(infoThresholdS);
@@ -1872,30 +1869,14 @@ public class GuidanceImpl {
         Double hweCasesThreshold = Double.parseDouble(hweCasesThresholdS);
         Double hweControlsThreshold = Double.parseDouble(hweControlsThresholdS);
 
-        File outFilteredFile = new File(outputFile);
-        File outCondensedFile = new File(outputCondensedFile);
-
-        // Tries to create the file
-        boolean bool = false;
-        try {
-            bool = outFilteredFile.createNewFile();
-        } catch (IOException ioe) {
-            throw new GuidanceTaskException(ioe);
-        }
-        // Print information about de existence of the file
-        System.out.println("\n[DEBUG] \t- Output file " + outputFile + " was succesfuly created? " + bool);
-
-        // Print information about de existence of the file
-        System.out.println("\n[DEBUG] \t- Output file " + outputCondensedFile + " was succesfuly created? " + bool);
-
         Hashtable<String, Integer> inputFileHashTableIndex = new Hashtable<>();
         // Hashtable<Integer, String> inputFileHashTableIndexReversed = new Hashtable<>();
 
         try (GZIPInputStream inputGz = new GZIPInputStream(new FileInputStream(inputFile));
                 Reader decoder = new InputStreamReader(inputGz);
                 BufferedReader br = new BufferedReader(decoder);
-                BufferedWriter writerFiltered = new BufferedWriter(new FileWriter(outFilteredFile));
-                BufferedWriter writerCondensed = new BufferedWriter(new FileWriter(outCondensedFile))) {
+                BufferedWriter writerFiltered = new BufferedWriter(new FileWriter(plainOutputFile));
+                BufferedWriter writerCondensed = new BufferedWriter(new FileWriter(plainOutputCondensedFile))) {
 
             // I read the header
             String line = br.readLine();
@@ -1977,16 +1958,9 @@ public class GuidanceImpl {
             throw new GuidanceTaskException(ioe);
         }
 
-        // Then, we create the gz file and rename it
-        FileUtils.gzipFile(outputFile, outputFile + ".gz");
-        File fc = new File(outputFile);
-        File fGz = new File(outputFile + ".gz");
-        FileUtils.copyFile(fGz, fc);
-
-        FileUtils.gzipFile(outputCondensedFile, outputCondensedFile + ".gz");
-        fc = new File(outputCondensedFile);
-        fGz = new File(outputCondensedFile + ".gz");
-        FileUtils.copyFile(fGz, fc);
+        // Then, we compress the output files
+        FileUtils.gzipFile(plainOutputFile, outputFile);
+        FileUtils.gzipFile(plainOutputCondensedFile, outputCondensedFile);
 
         long stopTime = System.currentTimeMillis();
         long elapsedTime = (stopTime - startTime) / 1000;
@@ -2226,7 +2200,7 @@ public class GuidanceImpl {
      */
     public static void combinePanels(String resultsPanelA, String resultsPanelB, String resultsPanelC, String cmdToStore)
             throws GuidanceTaskException {
-        
+
         if (DEBUG) {
             System.out.println("\n[DEBUG] Running combinePanels with parameters:");
             System.out.println("[DEBUG] \t- resultsPanelA             : " + resultsPanelA);
@@ -2387,7 +2361,7 @@ public class GuidanceImpl {
      */
     public static void combinePanelsComplex(String resultsPanelA, String resultsPanelB, String resultsPanelC, int lim1, int lim2,
             String cmdToStore) throws GuidanceTaskException {
-        
+
         if (DEBUG) {
             System.out.println("\n[DEBUG] Running combinePanelsComplex with parameters:");
             System.out.println("[DEBUG] \t- resultsPanelA             : " + resultsPanelA);
@@ -3673,6 +3647,7 @@ public class GuidanceImpl {
      */
     public static void mergeTwoChunks(String reduceFileA, String reduceFileB, String reduceFileC, String chrS, String type,
             String cmdToStore) throws GuidanceTaskException {
+
         if (DEBUG) {
             System.out.println("\n[DEBUG] Running mergeTwoChunks with parameters:");
             System.out.println("[DEBUG] \t- Input reduceFileA            : " + reduceFileA);
@@ -3866,16 +3841,11 @@ public class GuidanceImpl {
         }
 
         // Finally we put the fileCTreeMap into the outputFile
-        // We have to create the outputFile for this combination:
-        // We verify that a file with the same name does not exist.
-        File fCombination = new File(reduceFileC);
-        try {
-            fCombination.createNewFile();
-        } catch (IOException ioe) {
-            throw new GuidanceTaskException(ioe);
-        }
+        // We have to create the outputFile for this combination
 
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(fCombination))) {
+        // First we generate the plain output, then we compress it
+        String plainReduceFileC = reduceFileC.substring(0, reduceFileC.length() - 3);
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(plainReduceFileC))) {
             String valueReversed = null;
             int index;
             if (reduceFileAHashTableIndexReversed.size() >= reduceFileBHashTableIndexReversed.size()) {
@@ -3929,11 +3899,8 @@ public class GuidanceImpl {
             throw new GuidanceTaskException(ioe);
         }
 
-        // Then, we create the gz file and rename it
-        FileUtils.gzipFile(reduceFileC, reduceFileC + ".gz");
-        File fc = new File(reduceFileC);
-        File fGz = new File(reduceFileC + ".gz");
-        FileUtils.copyFile(fGz, fc);
+        // Then, we create the gz file from the plain one
+        FileUtils.gzipFile(plainReduceFileC, reduceFileC);
 
         long stopTime = System.currentTimeMillis();
         long elapsedTime = (stopTime - startTime) / 1000;
@@ -4147,16 +4114,11 @@ public class GuidanceImpl {
 
         // ---------------
         // Finally we put the summaryTotal into the outputFile
-        // We have to create the outputFile for this combination:
-        // We verify that a file with the same name does not exist.
-        File fCombination = new File(reduceFile);
-        try {
-            fCombination.createNewFile();
-        } catch (IOException ioe) {
-            throw new GuidanceTaskException(ioe);
-        }
+        // We have to create the outputFile for this combination
 
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(fCombination))) {
+        // The output of the method is a GZ file. First we create the plain file, then we compress it
+        String reducePlainFile = reduceFile.substring(0, reduceFile.length() - 3);
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(reducePlainFile))) {
             writer.write("chr\tposition\trs_id_all\tinfo_all\tcertainty_all\t");
             // We do not store the first 4 field because they are not necessary or are repeated:
             // These four fields are:
@@ -4199,10 +4161,7 @@ public class GuidanceImpl {
         }
 
         // Then, we create the gz file and rename it
-        FileUtils.gzipFile(reduceFile, reduceFile + ".gz");
-        File fb = new File(reduceFile);
-        File fGz = new File(reduceFile + ".gz");
-        FileUtils.copyFile(fGz, fb);
+        FileUtils.gzipFile(reducePlainFile, reduceFile);
 
         long stopTime = System.currentTimeMillis();
         long elapsedTime = (stopTime - startTime) / 1000;
@@ -4298,7 +4257,7 @@ public class GuidanceImpl {
         try (GZIPInputStream topHitsFileGz = new GZIPInputStream(new FileInputStream(topHitsFile));
                 Reader decoder = new InputStreamReader(topHitsFileGz);
                 BufferedReader br = new BufferedReader(decoder)) {
-            
+
             String line = br.readLine();
             Hashtable<String, Integer> topHitsHashTableIndex = new Hashtable<>();
             topHitsHashTableIndex = createHashWithHeader(line, "\t");
@@ -4589,7 +4548,7 @@ public class GuidanceImpl {
      */
     public static void addToPhenoMatrixX(String phenomeAFile, String filteredByAllFile, String ttName, String rpName, String phenomeBFile,
             String cmdToStore) throws GuidanceTaskException {
-        
+
         if (DEBUG) {
             System.out.println("\n[DEBUG] Running addToPhenoMatrixX with parameters:");
             System.out.println("[DEBUG] \t- Input phenomeFileA      : " + phenomeAFile);
@@ -4628,7 +4587,7 @@ public class GuidanceImpl {
         try (GZIPInputStream phenomeAFileGz = new GZIPInputStream(new FileInputStream(phenomeAFile));
                 Reader decoder = new InputStreamReader(phenomeAFileGz);
                 BufferedReader br = new BufferedReader(decoder)) {
-            
+
             phenomeAHeader = br.readLine();
             phenomeAHashTableIndex = createHashWithHeader(phenomeAHeader, "\t");
 
@@ -4849,7 +4808,7 @@ public class GuidanceImpl {
         try (GZIPInputStream phenomeAFileGz = new GZIPInputStream(new FileInputStream(phenomeAFile));
                 Reader decoder = new InputStreamReader(phenomeAFileGz);
                 BufferedReader br = new BufferedReader(decoder)) {
-            
+
             // First of all, the header
             phenomeAHeader = br.readLine();
 

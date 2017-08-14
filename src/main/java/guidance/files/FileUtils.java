@@ -19,6 +19,21 @@ import guidance.utils.ParseCmdLine;
 
 public class FileUtils {
 
+    // Messages
+    private static final String GUIDANCE_MSG_HEADER = "[Guidance]";
+    private static final String GUIDANCE_MSG_CREATE_FILE = GUIDANCE_MSG_HEADER + " Creating ";
+
+    // File paths
+    private static final String COMMON_REL_PATH = "common";
+    private static final String MIXED_REL_PATH = "mixed";
+    private static final String CHR_REL_PATH = "Chr_";
+    private static final String ASSOCIATIONS_REL_PATH = "associations";
+
+
+    private FileUtils() {
+        // Private constructor to avoid instantiation
+    }
+
     /**
      * Method that creates all the output directory structure for the results.
      * 
@@ -34,7 +49,7 @@ public class FileUtils {
         mixedCohort = parsingArgs.getCohort();
 
         String tmpOutDir = "";
-        tmpOutDir = myOutDir + "/" + mixedCohort;
+        tmpOutDir = myOutDir + File.separator + mixedCohort;
 
         System.out.println("[Guidance] Creating " + tmpOutDir);
         FileUtils.createDir(tmpOutDir);
@@ -44,50 +59,50 @@ public class FileUtils {
         // => PANEL : for files for imputation for each panel
 
         // Now I create the directories for common and combined
-        String tmpPanelDir = tmpOutDir + "/" + "common";
+        String tmpPanelDir = tmpOutDir + File.separator + COMMON_REL_PATH;
         FileUtils.createDir(tmpPanelDir);
 
         // Next level: Create mixed directories.
-        String mixedOutDir = tmpPanelDir + "/mixed";
-        System.out.println("[Guidance] Creating " + mixedOutDir);
+        String mixedOutDir = tmpPanelDir + File.separator + MIXED_REL_PATH;
+        System.out.println(GUIDANCE_MSG_CREATE_FILE + mixedOutDir);
         FileUtils.createDir(mixedOutDir);
         for (int i = startChr; i <= endChr; i++) {
-            String tmpChrDir = mixedOutDir + "/Chr_" + i;
+            String tmpChrDir = mixedOutDir + File.separator + CHR_REL_PATH + i;
             FileUtils.createDir(tmpChrDir);
         }
 
         // Now I create the directories for imputeOutDir
         for (int j = 0; j < refPanels.size(); j++) {
             String rPanel = refPanels.get(j);
-            tmpPanelDir = tmpOutDir + "/" + rPanel;
+            tmpPanelDir = tmpOutDir + File.separator + rPanel;
             FileUtils.createDir(tmpPanelDir);
 
             // Next level: Create mixed directories.
-            mixedOutDir = tmpPanelDir + "/mixed";
-            System.out.println("[Guidance] Creating " + mixedOutDir);
+            mixedOutDir = tmpPanelDir + File.separator + MIXED_REL_PATH;
+            System.out.println(GUIDANCE_MSG_CREATE_FILE + mixedOutDir);
             FileUtils.createDir(mixedOutDir);
             for (int i = startChr; i <= endChr; i++) {
-                String tmpChrDir = mixedOutDir + "/Chr_" + i;
+                String tmpChrDir = mixedOutDir + File.separator + CHR_REL_PATH + i;
                 FileUtils.createDir(tmpChrDir);
             }
         }
 
         // Then we create the directories for the Association files
         // This directory is created by default in myOutDir/association.
-        String tmpMyOutDir1 = myOutDir + "/associations";
+        String tmpMyOutDir1 = myOutDir + File.separator + ASSOCIATIONS_REL_PATH;
         FileUtils.createDir(tmpMyOutDir1);
         String testTypeName = null;
         int numberOfTestTypes = parsingArgs.getNumberOfTestTypeName();
         for (int kk = 0; kk < numberOfTestTypes; kk++) {
             testTypeName = parsingArgs.getTestTypeName(kk);
-            String tmpMyOutDir = myOutDir + "/associations/" + testTypeName;
+            String tmpMyOutDir = myOutDir + File.separator + ASSOCIATIONS_REL_PATH + File.separator + testTypeName;
             FileUtils.createDir(tmpMyOutDir);
 
             for (int j = 0; j < refPanels.size(); j++) {
                 String rPanel = refPanels.get(j);
                 String assocDir = null;
-                assocDir = tmpMyOutDir + "/" + mixedCohort + "_for_" + rPanel;
-                System.out.println("[Guidance] Creating " + assocDir);
+                assocDir = tmpMyOutDir + File.separator + mixedCohort + "_for_" + rPanel;
+                System.out.println(GUIDANCE_MSG_CREATE_FILE + assocDir);
                 FileUtils.createDir(assocDir);
 
                 for (int i = startChr; i <= endChr; i++) {
@@ -95,8 +110,8 @@ public class FileUtils {
                     FileUtils.createDir(tmpChrDir);
                 }
 
-                String summaryDir = assocDir + "/summary";
-                System.out.println("[Guidance] Creating " + summaryDir);
+                String summaryDir = assocDir + File.separator + "summary";
+                System.out.println(GUIDANCE_MSG_CREATE_FILE + summaryDir);
                 FileUtils.createDir(summaryDir);
             }
 
@@ -104,7 +119,7 @@ public class FileUtils {
             // then we have to create the output directory for the combined ref_panel
             boolean refPanelCombine = parsingArgs.getRefPanelCombine();
 
-            if (refPanelCombine == true) {
+            if (refPanelCombine) {
                 // We take the first refPanel name
                 String rPanel = refPanels.get(0);
                 String combinedRefPanel = rPanel;
@@ -114,18 +129,19 @@ public class FileUtils {
                 }
 
                 String combinedAssocOutDir = null;
-                combinedAssocOutDir = myOutDir + "/associations/" + testTypeName + "/" + mixedCohort + "_combined_panels_"
-                        + combinedRefPanel;
+                combinedAssocOutDir = myOutDir + File.separator + ASSOCIATIONS_REL_PATH + File.separator + testTypeName + File.separator
+                        + mixedCohort + "_combined_panels_" + combinedRefPanel;
 
-                System.out.println("[Guidance] Creating " + combinedAssocOutDir);
+                System.out.println(GUIDANCE_MSG_CREATE_FILE + combinedAssocOutDir);
                 FileUtils.createDir(combinedAssocOutDir);
 
-            } // End if(refPanelCombine == true)
-        } // End for(kk=0;kk<numberOfTestTyes;kk++)
+            } // End if
+        } // End for kk < numberOfTestTyes
 
         // Now create the structure for the phenotype analysis results
-        String phenomeAnalysisOutDir = myOutDir + "/associations/pheno_analysis/";
-        System.out.println("[Guidance] Creating " + phenomeAnalysisOutDir);
+        String phenomeAnalysisOutDir = myOutDir + File.separator + ASSOCIATIONS_REL_PATH + File.separator + "pheno_analysis"
+                + File.separator;
+        System.out.println(GUIDANCE_MSG_CREATE_FILE + phenomeAnalysisOutDir);
         FileUtils.createDir(phenomeAnalysisOutDir);
 
         phenomeAnalysisOutDir = phenomeAnalysisOutDir + mixedCohort;
@@ -133,7 +149,7 @@ public class FileUtils {
         // testTypeName = parsingArgs.getTestTypeName(tt);
         // phenomeAnalysisOutDir = phenomeAnalysisOutDir + "_" + testTypeName;
         // }
-        System.out.println("[Guidance] Creating " + phenomeAnalysisOutDir);
+        System.out.println(GUIDANCE_MSG_CREATE_FILE + phenomeAnalysisOutDir);
         FileUtils.createDir(phenomeAnalysisOutDir);
     }
 
@@ -204,14 +220,18 @@ public class FileUtils {
      * 
      * @param fileName
      * @param moduleName
+     * @return true if the file was created or already existant, false otherwise
      * @throws IOException
      */
-    public static void createEmptyFile(String fileName, String moduleName) throws IOException {
+    public static boolean createEmptyFile(String fileName, String moduleName) throws IOException {
         File fa = new File(fileName);
         if (!fa.exists()) {
             System.out.println(moduleName + " The file " + fileName + " does not exist, then we create an empty file");
-            fa.createNewFile();
+            return fa.createNewFile();
         }
+
+        // The file already exists
+        return true;
     }
 
     /**
@@ -222,23 +242,16 @@ public class FileUtils {
      */
     public static void gzipFile(String sourceFilePath, String destZipFilePath) {
         byte[] buffer = new byte[1024];
-        try {
-            FileOutputStream fileOutputStream = new FileOutputStream(destZipFilePath);
-            GZIPOutputStream gzipOuputStream = new GZIPOutputStream(fileOutputStream);
+        try (FileOutputStream fileOutputStream = new FileOutputStream(destZipFilePath);
+                GZIPOutputStream gzipOuputStream = new GZIPOutputStream(fileOutputStream);
+                FileInputStream fileInput = new FileInputStream(sourceFilePath)) {
 
-            FileInputStream fileInput = new FileInputStream(sourceFilePath);
-
-            int bytes_read;
-
-            while ((bytes_read = fileInput.read(buffer)) > 0) {
-                gzipOuputStream.write(buffer, 0, bytes_read);
+            int bytesRead;
+            while ((bytesRead = fileInput.read(buffer)) > 0) {
+                gzipOuputStream.write(buffer, 0, bytesRead);
             }
 
-            fileInput.close();
-
             gzipOuputStream.finish();
-            gzipOuputStream.close();
-
             // System.out.println("The file was compressed successfully!");
         } catch (IOException ex) {
             System.err.println(ex.getMessage());
@@ -255,23 +268,16 @@ public class FileUtils {
     public static void gunzipFile(String compressedFile, String decompressedFile) {
         byte[] buffer = new byte[1024];
 
-        try {
-            FileInputStream fileIn = new FileInputStream(compressedFile);
-            GZIPInputStream gZIPInputStream = new GZIPInputStream(fileIn);
+        try (FileInputStream fileIn = new FileInputStream(compressedFile);
+                GZIPInputStream gZIPInputStream = new GZIPInputStream(fileIn);
+                FileOutputStream fileOutputStream = new FileOutputStream(decompressedFile)) {
 
-            FileOutputStream fileOutputStream = new FileOutputStream(decompressedFile);
-
-            int bytes_read;
-
-            while ((bytes_read = gZIPInputStream.read(buffer)) > 0) {
-                fileOutputStream.write(buffer, 0, bytes_read);
+            int bytesRead;
+            while ((bytesRead = gZIPInputStream.read(buffer)) > 0) {
+                fileOutputStream.write(buffer, 0, bytesRead);
             }
 
-            gZIPInputStream.close();
-            fileOutputStream.close();
-
             // System.out.println("The file was decompressed successfully!");
-
         } catch (IOException ex) {
             System.err.println(ex.getMessage());
             ex.printStackTrace();
