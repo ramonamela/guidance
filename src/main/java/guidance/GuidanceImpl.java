@@ -62,11 +62,8 @@ import java.util.Scanner;
 
 public class GuidanceImpl {
 
-    // Debug
+    // Debug flag
     private static final boolean DEBUG = true;
-
-    private static final String HEADER_MIXED = "chr	position	rs_id_all	info_all	certainty_all	alleleA	alleleB	index	average_maximum_posterior_call	info	cohort_1_AA	cohort_1_AB	cohort_1_BB	cohort_1_NULL	all_AA	all_AB	all_BB	all_NULL	all_total	cases_AA	cases_AB	cases_BB	cases_NULL	cases_total	controls_AA	controls_AB	controls_BB	controls_NULL	controls_total	all_maf	cases_maf	controls_maf	missing_data_proportion	cohort_1_hwe	cases_hwe	controls_hwe	het_OR	het_OR_lower	het_OR_upper	hom_OR	hom_OR_lower	hom_OR_upper	all_OR	all_OR_lower	all_OR_upper	frequentist_add_pvalue	frequentist_add_info	frequentist_add_beta_1	frequentist_add_se_1	frequentist_dom_pvalue	frequentist_dom_info	frequentist_dom_beta_1	frequentist_dom_se_1	frequentist_rec_pvalue	frequentist_rec_info	frequentist_rec_beta_1	frequentist_rec_se_1	frequentist_gen_pvalue	frequentist_gen_info	frequentist_gen_beta_1	frequentist_gen_se_1	frequentist_gen_beta_2	frequentist_gen_se_2	frequentist_het_pvalue	frequentist_het_info	frequentist_het_beta_1	frequentist_het_se_1	comment";
-    private static final String HEADER_MIXED_X = "chr	position	rs_id_all	info_all	certainty_all	alleleA	alleleB	all_A	all_B	all_AA	all_AB	all_BB	all_NULL	all_total	all_maf	all_info	all_impute_info	cases_A	cases_B	cases_AA	cases_AB	cases_BB	cases_NULL	cases_total	cases_maf	cases_info	cases_impute_info	controls_A	controls_B	controls_AA	controls_AB	controls_BB	controls_NULL	controls_total	controls_maf	controls_info	controls_impute_info	sex=1_A	sex=1_B	sex=1_AA	sex=1_AB	sex=1_BB	sex=1_NULL	sex=1_total	sex=1_maf	sex=1_info	sex=1_impute_info	sex=2_A	sex=2_B	sex=2_AA	sex=2_AB	sex=2_BB	sex=2_NULL	sex=2_total	sex=2_maf	sex=2_info	sex=2_impute_info	frequentist_add_null_ll	frequentist_add_alternative_ll	frequentist_add_beta_1:genotype/sex=1	frequentist_add_beta_2:genotype/sex=2	frequentist_add_se_1:genotype/sex=1	frequentist_add_se_2:genotype/sex=2	frequentist_add_degrees_of_freedom	frequentist_add_pvalue	comment";
 
 
     /**
@@ -146,12 +143,11 @@ public class GuidanceImpl {
         // File (or directory) with old name
         File file = new File(newBedFile + ".bed");
         File file2 = new File(newBedFile);
-        // if(file2.exists()) throw new java.io.IOException("file exists");
         // Rename file (or directory)
         boolean success = file.renameTo(file2);
         if (!success) {
-            throw new GuidanceTaskException("[convertFromBedToBed] Error, the file " + newBedFile + " was not succesfully renamed");
             // File was not successfully renamed
+            throw new GuidanceTaskException("[convertFromBedToBed] Error, the file " + newBedFile + " was not succesfully renamed");
         }
 
         file = new File(newBedFile + ".bim");
@@ -159,8 +155,8 @@ public class GuidanceImpl {
         // Rename file (or directory)
         success = file.renameTo(file2);
         if (!success) {
-            throw new GuidanceTaskException("[convertFromBedToBed] Error, the file " + newBimFile + " was not succesfully renamed");
             // File was not successfully renamed
+            throw new GuidanceTaskException("[convertFromBedToBed] Error, the file " + newBimFile + " was not succesfully renamed");
         }
 
         file = new File(newBedFile + ".fam");
@@ -1862,6 +1858,14 @@ public class GuidanceImpl {
         String plainOutputFile = outputFile.substring(0, outputFile.length() - 3);
         String plainOutputCondensedFile = outputCondensedFile.substring(0, outputCondensedFile.length() - 3);
 
+        // Make a touch to ensure its existance
+        try {
+            FileUtils.createEmptyFile(plainOutputFile, "[filterByAll]");
+            FileUtils.createEmptyFile(plainOutputCondensedFile, "[filterByAll]");
+        } catch (IOException ioe) {
+            throw new GuidanceTaskException(ioe);
+        }
+
         // Convert threshold string into thresholdDouble
         Double mafThreshold = Double.parseDouble(mafThresholdS);
         Double infoThreshold = Double.parseDouble(infoThresholdS);
@@ -1963,7 +1967,7 @@ public class GuidanceImpl {
         FileUtils.gzipFile(plainOutputCondensedFile, outputCondensedFile);
 
         long stopTime = System.currentTimeMillis();
-        long elapsedTime = (stopTime - startTime) / 1000;
+        long elapsedTime = (stopTime - startTime) / 1_000;
         if (DEBUG) {
             System.out.println("\n[DEBUG] filterByAll startTime: " + startTime);
             System.out.println("\n[DEBUG] filterByAll endTime: " + stopTime);
@@ -3648,6 +3652,9 @@ public class GuidanceImpl {
     public static void mergeTwoChunks(String reduceFileA, String reduceFileB, String reduceFileC, String chrS, String type,
             String cmdToStore) throws GuidanceTaskException {
 
+        final String HEADER_MIXED = "chr position    rs_id_all   info_all    certainty_all   alleleA alleleB index   average_maximum_posterior_call  info    cohort_1_AA cohort_1_AB cohort_1_BB cohort_1_NULL   all_AA  all_AB  all_BB  all_NULL    all_total   cases_AA    cases_AB    cases_BB    cases_NULL  cases_total controls_AA controls_AB controls_BB controls_NULL   controls_total  all_maf cases_maf   controls_maf    missing_data_proportion cohort_1_hwe    cases_hwe   controls_hwe    het_OR  het_OR_lower    het_OR_upper    hom_OR  hom_OR_lower    hom_OR_upper    all_OR  all_OR_lower    all_OR_upper    frequentist_add_pvalue  frequentist_add_info    frequentist_add_beta_1  frequentist_add_se_1    frequentist_dom_pvalue  frequentist_dom_info    frequentist_dom_beta_1  frequentist_dom_se_1    frequentist_rec_pvalue  frequentist_rec_info    frequentist_rec_beta_1  frequentist_rec_se_1    frequentist_gen_pvalue  frequentist_gen_info    frequentist_gen_beta_1  frequentist_gen_se_1    frequentist_gen_beta_2  frequentist_gen_se_2    frequentist_het_pvalue  frequentist_het_info    frequentist_het_beta_1  frequentist_het_se_1    comment";
+        final String HEADER_MIXED_X = "chr   position    rs_id_all   info_all    certainty_all   alleleA alleleB all_A   all_B   all_AA  all_AB  all_BB  all_NULL    all_total   all_maf all_info    all_impute_info cases_A cases_B cases_AA    cases_AB    cases_BB    cases_NULL  cases_total cases_maf   cases_info  cases_impute_info   controls_A  controls_B  controls_AA controls_AB controls_BB controls_NULL   controls_total  controls_maf    controls_info   controls_impute_info    sex=1_A sex=1_B sex=1_AA    sex=1_AB    sex=1_BB    sex=1_NULL  sex=1_total sex=1_maf   sex=1_info  sex=1_impute_info   sex=2_A sex=2_B sex=2_AA    sex=2_AB    sex=2_BB    sex=2_NULL  sex=2_total sex=2_maf   sex=2_info  sex=2_impute_info   frequentist_add_null_ll frequentist_add_alternative_ll  frequentist_add_beta_1:genotype/sex=1   frequentist_add_beta_2:genotype/sex=2   frequentist_add_se_1:genotype/sex=1 frequentist_add_se_2:genotype/sex=2 frequentist_add_degrees_of_freedom  frequentist_add_pvalue  comment";
+
         if (DEBUG) {
             System.out.println("\n[DEBUG] Running mergeTwoChunks with parameters:");
             System.out.println("[DEBUG] \t- Input reduceFileA            : " + reduceFileA);
@@ -3843,8 +3850,15 @@ public class GuidanceImpl {
         // Finally we put the fileCTreeMap into the outputFile
         // We have to create the outputFile for this combination
 
-        // First we generate the plain output, then we compress it
+        // First we generate the plain output, then we will compress it
         String plainReduceFileC = reduceFileC.substring(0, reduceFileC.length() - 3);
+        // Make a touch to ensure its existance
+        try {
+            FileUtils.createEmptyFile(plainReduceFileC, "[mergeTwoChunks]");
+        } catch (IOException ioe) {
+            throw new GuidanceTaskException(ioe);
+        }
+
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(plainReduceFileC))) {
             String valueReversed = null;
             int index;
@@ -4118,6 +4132,12 @@ public class GuidanceImpl {
 
         // The output of the method is a GZ file. First we create the plain file, then we compress it
         String reducePlainFile = reduceFile.substring(0, reduceFile.length() - 3);
+        // Make a touch to ensure its existance
+        try {
+            FileUtils.createEmptyFile(reducePlainFile, "[collectSummary]");
+        } catch (IOException ioe) {
+            throw new GuidanceTaskException(ioe);
+        }
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(reducePlainFile))) {
             writer.write("chr\tposition\trs_id_all\tinfo_all\tcertainty_all\t");
             // We do not store the first 4 field because they are not necessary or are repeated:

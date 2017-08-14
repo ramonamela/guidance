@@ -662,7 +662,6 @@ public class Guidance {
         String assocCondensed = assocFilesInfo.getSummaryCondensedFile(testTypeIndex, panelIndex, chrNumber, lim1, lim2, chunkSize);
 
         doFilterByAll(parsingArgs, listOfCommands, summaryFile, assocFilteredByAll, assocCondensed);
-
     }
 
     /**
@@ -1056,7 +1055,6 @@ public class Guidance {
                             if (j == minSize) {
                                 filteredCombineXA = filteredPanelC;
                             } else {
-
                                 filteredCombineXB = filteredPanelC;
                                 filteredCombineXC = mergeFilesInfo.getCombinedReducedFilteredXFile(ttIndex, 0, chr, indexXFC);
                                 doMergeTwoChunks(parsingArgs, listOfCommands, filteredCombineXA, filteredCombineXB, filteredCombineXC,
@@ -1803,6 +1801,7 @@ public class Guidance {
      */
     private static void doGenerateTopHits(ParseCmdLine parsingArgs, ArrayList<String> listOfCommands, String filteredFile,
             String filteredXFile, String topHitsResults, String pvaThrS) {
+        
         String cmdToStore = null;
         if (parsingArgs.getStageStatus("generateTopHits") == 1) {
             cmdToStore = JAVA_HOME + "/java generateTopHits " + filteredFile + " " + filteredXFile + " " + topHitsResults + " " + pvaThrS;
@@ -1859,6 +1858,7 @@ public class Guidance {
      */
     private static void doCombinePanelsComplex(ParseCmdLine parsingArgs, ArrayList<String> listOfCommands, String resultsPanelA,
             String resultsPanelB, String lastResultFile, int lim1, int lim2) {
+        
         String cmdToStore = null;
 
         if (parsingArgs.getStageStatus("combinePanelsComplex") == 1) {
@@ -1888,6 +1888,7 @@ public class Guidance {
      */
     private static void doMergeTwoChunks(ParseCmdLine parsingArgs, ArrayList<String> listOfCommands, String reduceA, String reduceB,
             String reduceC, String theChromo, String type) {
+        
         String cmdToStore = null;
         if (parsingArgs.getStageStatus("mergeTwoChunks") == 1) {
             // Task
