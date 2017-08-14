@@ -890,6 +890,7 @@ public class GuidanceImpl {
      */
     public static void createListOfExcludedSnps(String shapeitHapsFile, String excludedSnpsFile, String exclCgatFlag, String exclSVFlag,
             String cmdToStore) throws GuidanceTaskException {
+
         if (DEBUG) {
             System.out.println("\n[DEBUG] Running createListOfExcludedSnps method:");
             System.out.println("[DEBUG] \t- Input shapeitHapsFile   : " + shapeitHapsFile);
@@ -1371,6 +1372,7 @@ public class GuidanceImpl {
                 Reader decoder = new InputStreamReader(inputGz);
                 BufferedReader br = new BufferedReader(decoder);
                 BufferedWriter writerFiltered = new BufferedWriter(new FileWriter(outFilteredFile))) {
+
             String line = null;
             while ((line = br.readLine()) != null) {
                 String[] splittedLine = line.split(" ");
@@ -1858,14 +1860,6 @@ public class GuidanceImpl {
         String plainOutputFile = outputFile.substring(0, outputFile.length() - 3);
         String plainOutputCondensedFile = outputCondensedFile.substring(0, outputCondensedFile.length() - 3);
 
-        // Make a touch to ensure its existance
-        try {
-            FileUtils.createEmptyFile(plainOutputFile, "[filterByAll]");
-            FileUtils.createEmptyFile(plainOutputCondensedFile, "[filterByAll]");
-        } catch (IOException ioe) {
-            throw new GuidanceTaskException(ioe);
-        }
-
         // Convert threshold string into thresholdDouble
         Double mafThreshold = Double.parseDouble(mafThresholdS);
         Double infoThreshold = Double.parseDouble(infoThresholdS);
@@ -1962,6 +1956,14 @@ public class GuidanceImpl {
             throw new GuidanceTaskException(ioe);
         }
 
+        // We create the file if empty
+        try {
+            FileUtils.createEmptyFile(plainOutputFile, "[filterByAll]");
+            FileUtils.createEmptyFile(plainOutputCondensedFile, "[filterByAll]");
+        } catch (IOException ioe) {
+            throw new GuidanceTaskException(ioe);
+        }
+
         // Then, we compress the output files
         FileUtils.gzipFile(plainOutputFile, outputFile);
         FileUtils.gzipFile(plainOutputCondensedFile, outputCondensedFile);
@@ -2004,19 +2006,9 @@ public class GuidanceImpl {
         }
         long startTime = System.currentTimeMillis();
 
-        File outFilteredByAllFile = new File(filteredByAllC);
-
-        // Try to create the file
-        boolean bool = false;
-        try {
-            bool = outFilteredByAllFile.createNewFile();
-        } catch (IOException ioe) {
-            throw new GuidanceTaskException(ioe);
-        }
-        // Print information about the existence of the file
-        System.out.println("\n[DEBUG] \t- Output file " + outFilteredByAllFile + " was succesfuly created? " + bool);
-
-        try (BufferedWriter writerFiltered = new BufferedWriter(new FileWriter(outFilteredByAllFile))) {
+        // First we generate the plain file, then we will compress it
+        String plainFilteredByAll = filteredByAllC.substring(0, filteredByAllC.length() - 3);
+        try (BufferedWriter writerFiltered = new BufferedWriter(new FileWriter(plainFilteredByAll))) {
             try (GZIPInputStream filteredByAllGz = new GZIPInputStream(new FileInputStream(filteredByAllA));
                     Reader decoder = new InputStreamReader(filteredByAllGz);
                     BufferedReader br = new BufferedReader(decoder)) {
@@ -2084,14 +2076,18 @@ public class GuidanceImpl {
             throw new GuidanceTaskException(ioe);
         }
 
+        // We create the file if empty
+        try {
+            FileUtils.createEmptyFile(plainFilteredByAll, "[jointFilteredByAllFiles]");
+        } catch (IOException ioe) {
+            throw new GuidanceTaskException(ioe);
+        }
+
         // Then, we create the gz file and rename it
-        FileUtils.gzipFile(filteredByAllC, filteredByAllC + ".gz");
-        File fc = new File(filteredByAllC);
-        File fGz = new File(filteredByAllC + ".gz");
-        FileUtils.copyFile(fGz, fc);
+        FileUtils.gzipFile(plainFilteredByAll, filteredByAllC);
 
         long stopTime = System.currentTimeMillis();
-        long elapsedTime = (stopTime - startTime) / 1000;
+        long elapsedTime = (stopTime - startTime) / 1_000;
         if (DEBUG) {
             System.out.println("\n[DEBUG] jointFilteredByAllFiles startTime: " + startTime);
             System.out.println("\n[DEBUG] jointFilteredByAllFiles endTime: " + stopTime);
@@ -2126,15 +2122,10 @@ public class GuidanceImpl {
 
         long startTime = System.currentTimeMillis();
 
-        File outCondensedFile = new File(outputFile);
+        // We first write the plain text, then we will compress it
+        String plainOutCondensed = outputFile.substring(0, outputFile.length() - 3);
 
-        // Try to create the file
-        // bool = outCondensedFile.createNewFile();
-
-        // Print information about de existence of the file
-        // System.out.println("\n[DEBUG] \t- Output file " + outputFile + " was succesfuly created? " + bool);
-
-        try (BufferedWriter writerCondensed = new BufferedWriter(new FileWriter(outCondensedFile))) {
+        try (BufferedWriter writerCondensed = new BufferedWriter(new FileWriter(plainOutCondensed))) {
             try (GZIPInputStream inputGz = new GZIPInputStream(new FileInputStream(inputAFile));
                     Reader decoder = new InputStreamReader(inputGz);
                     BufferedReader br = new BufferedReader(decoder)) {
@@ -2175,11 +2166,15 @@ public class GuidanceImpl {
             throw new GuidanceTaskException(ioe);
         }
 
+        // We create the file if empty
+        try {
+            FileUtils.createEmptyFile(plainOutCondensed, "[jointCondensedFiles]");
+        } catch (IOException ioe) {
+            throw new GuidanceTaskException(ioe);
+        }
+
         // Then, we create the gz file and rename it
-        FileUtils.gzipFile(outputFile, outputFile + ".gz");
-        File fc = new File(outputFile);
-        File fGz = new File(outputFile + ".gz");
-        FileUtils.copyFile(fGz, fc);
+        FileUtils.gzipFile(plainOutCondensed, outputFile);
 
         long stopTime = System.currentTimeMillis();
         long elapsedTime = (stopTime - startTime) / 1000;
@@ -2393,15 +2388,6 @@ public class GuidanceImpl {
         // First, we uncompress the input files
         FileUtils.gunzipFile(resultsPanelA, resultsPanelA + ".temp");
         FileUtils.gunzipFile(resultsPanelB, resultsPanelB + ".temp");
-
-        // We have to create the outputFile for this combination:
-        // We verify that a file with the same name does not exist.
-        File outputFile = new File(resultsPanelC);
-        try {
-            outputFile.createNewFile();
-        } catch (IOException ioe) {
-            throw new GuidanceTaskException(ioe);
-        }
 
         // We read each line of the resultsPanelA and put them into the String
         // IMPORTANT: In that case we sort by position and not by position_rsID. So, maybe we
@@ -2622,8 +2608,9 @@ public class GuidanceImpl {
         fileTreeMapB.clear();
         // System.out.println("\n[DEBUG] We have processed the chromosome " + chromoS + ". contador " + contador);
 
-        // Finally we put the fileTreeMapC into the outputFile
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(outputFile))) {
+        // Finally we put the fileTreeMapC into the plain output file and then compress it
+        String plainResultsPanelC = resultsPanelC.substring(0, resultsPanelC.length() - 3);
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(plainResultsPanelC))) {
             // We print the header which is the same always!.
             // if(chromo == chrStart) {
             writer.write(header);
@@ -2654,10 +2641,7 @@ public class GuidanceImpl {
         // System.out.println("\n[DEBUG] We have stored snps from chromosome " + chromoS + " in the output file");
 
         // Then, we create the gz file and rename it
-        FileUtils.gzipFile(resultsPanelC, resultsPanelC + ".gz");
-        File fc = new File(resultsPanelC);
-        File fGz = new File(resultsPanelC + ".gz");
-        FileUtils.copyFile(fGz, fc);
+        FileUtils.gzipFile(plainResultsPanelC, resultsPanelC);
 
         File fA = new File(resultsPanelA + ".temp");
         fA.delete();
@@ -2721,7 +2705,8 @@ public class GuidanceImpl {
         Double hweCasesThreshold = Double.parseDouble(hweCasesThresholdS);
         Double hweControlsThreshold = Double.parseDouble(hweControlsThresholdS);
 
-        File outCondensedFile = new File(combinedCondensedFile);
+        // Plain output
+        String plainCombinedCondensedFile = combinedCondensedFile.substring(0, combinedCondensedFile.length() - 3);
 
         // Tries to create the file
         // Print information about the existence of the file
@@ -2731,8 +2716,7 @@ public class GuidanceImpl {
         Hashtable<String, Integer> inputFileHashTableIndex = new Hashtable<>();
         // Hashtable<Integer, String> inputFileHashTableIndexReversed = new Hashtable<>();
 
-        try (BufferedWriter writerCondensed = new BufferedWriter(new FileWriter(outCondensedFile))) {
-
+        try (BufferedWriter writerCondensed = new BufferedWriter(new FileWriter(plainCombinedCondensedFile))) {
             try (GZIPInputStream inputGz = new GZIPInputStream(new FileInputStream(filteredA));
                     Reader decoder = new InputStreamReader(inputGz);
                     BufferedReader br = new BufferedReader(decoder)) {
@@ -2888,232 +2872,24 @@ public class GuidanceImpl {
             throw new GuidanceTaskException(ioe);
         }
 
-        FileUtils.gzipFile(combinedCondensedFile, combinedCondensedFile + ".gz");
-        File fc = new File(combinedCondensedFile);
-        File fGz = new File(combinedCondensedFile + ".gz");
-        FileUtils.copyFile(fGz, fc);
+        // Create the file if empty
+        try {
+            FileUtils.createEmptyFile(plainCombinedCondensedFile, "[combineCondensedFiles]");
+        } catch (IOException ioe) {
+            throw new GuidanceTaskException(ioe);
+        }
+
+        // Compress the output file to the parameter value
+        FileUtils.gzipFile(plainCombinedCondensedFile, combinedCondensedFile);
 
         long stopTime = System.currentTimeMillis();
-        long elapsedTime = (stopTime - startTime) / 1000;
+        long elapsedTime = (stopTime - startTime) / 1_000;
         if (DEBUG) {
             System.out.println("\n[DEBUG] combineCondensedFiles startTime: " + startTime);
             System.out.println("\n[DEBUG] combineCondensedFiles endTime: " + stopTime);
             System.out.println("\n[DEBUG] combineCondensedFiles elapsedTime: " + elapsedTime + " seconds");
             System.out.println("\n[DEBUG] Finished execution of combinedCondensedFiles");
         }
-    }
-
-    /**
-     * Method to combine panels complex (version 2)
-     * 
-     * @param resultsPanelA
-     * @param resultsPanelB
-     * @param resultsPanelC
-     * @param cmdToStore
-     * @throws IOException
-     * @throws InterruptedException
-     * @throws Exception
-     */
-    public static void combinePanelsComplex1(String resultsPanelA, String resultsPanelB, String resultsPanelC, String cmdToStore)
-            throws GuidanceTaskException {
-
-        if (DEBUG) {
-            System.out.println("\n[DEBUG] Running combinePanelsComplex1 with parameters:");
-            System.out.println("[DEBUG] \t- resultsPanelA             : " + resultsPanelA);
-            System.out.println("[DEBUG] \t- resultsPanelB             : " + resultsPanelB);
-            System.out.println("[DEBUG] \t- resultsPanelC             : " + resultsPanelC);
-            System.out.println("\n");
-            System.out.println("[DEBUG] \t- Command: " + cmdToStore);
-        }
-        long startTime = System.currentTimeMillis();
-
-        // We read each line of the resultsPanelA and put them into the String
-        // IMPORTANT: In that case we sort by position and not by position_rsID. So, maybe we
-        // are going to lose some SNPs...
-        TreeMap<String, String> fileTreeMapA = new TreeMap<>();
-        String header = null;
-        try (FileReader frA = new FileReader(resultsPanelA); BufferedReader brA = new BufferedReader(frA)) {
-            String line = null;
-            // First: read the header and avoid it
-            header = brA.readLine();
-
-            while ((line = brA.readLine()) != null) {
-                String[] splitted = line.split("\t");
-                String positionA1A2Chr = splitted[0] + "_" + splitted[4] + "_" + splitted[5] + "_" + splitted[35];
-                // Now, we put this String into the treemap with the key positionA1A1Chr
-                fileTreeMapA.put(positionA1A2Chr, line);
-            }
-        } catch (IOException ioe) {
-            throw new GuidanceTaskException(ioe);
-        }
-
-        // We read each line of the resultsPanelB and put them into fileAList array of Strings
-        TreeMap<String, String> fileTreeMapB = new TreeMap<>();
-        try (FileReader frB = new FileReader(resultsPanelB); BufferedReader brB = new BufferedReader(frB)) {
-            // First: read the header and avoid it
-            String line = brB.readLine();
-
-            while ((line = brB.readLine()) != null) {
-                String[] splitted = line.split("\t");
-                String positionA1A2Chr = splitted[0] + "_" + splitted[4] + "_" + splitted[5] + "_" + splitted[35];
-                // Now, we put this String into the treemap with the key positionA1A2Chr
-                fileTreeMapB.put(positionA1A2Chr, line);
-            }
-        } catch (IOException ioe) {
-            throw new GuidanceTaskException(ioe);
-        }
-
-        // A place to store the results of this combining
-        TreeMap<String, String> fileTreeMapC = new TreeMap<>();
-        // We first iterate the fileTreeMapA
-        Set<Entry<String, String>> mySet = fileTreeMapA.entrySet();
-        // Move next key and value of Map by iterator
-        Iterator<Entry<String, String>> iter = mySet.iterator();
-        while (iter.hasNext()) {
-            // key=value separator this by Map.Entry to get key and value
-            Entry<String, String> m = iter.next();
-
-            String positionA1A2Chr = (String) m.getKey();
-            String lineA = (String) m.getValue();
-            String[] splittedA = lineA.split("\t");
-            Double infoA = Double.parseDouble(splittedA[2]);
-
-            // String posAllelesEqual = positionA1A2Chr;
-            String posAllelesReverse = splittedA[0] + "_" + getAllele(splittedA[4], splittedA[5], "reverse") + "_" + splittedA[35];
-            String posAllelesComplement = splittedA[0] + "_" + getAllele(splittedA[4], splittedA[5], "complement") + "_" + splittedA[35];
-            String posAllelesComplementAndReverse = splittedA[0] + "_" + getAllele(splittedA[4], splittedA[5], "complementAndReverse") + "_"
-                    + splittedA[35];
-
-            // System.out.println("[combinePanelsComplex] " + positionA1A2Chr + " " + posAllelesEqual + " " +
-            // posAllelesReverse + " " + posAllelesComplement + " " + posAllelesComplementAndReverse);
-
-            // The same: position, a1 and a2?
-            if (fileTreeMapB.containsKey(positionA1A2Chr)) {
-                // If the fileTreeMapB contains this positionA1A2Chr combination, then we have to choose
-                // the ones that has a better info (that is the ones with greater info).
-                String lineB = fileTreeMapB.get(positionA1A2Chr);
-                String[] splittedB = lineB.split("\t");
-                Double infoB = Double.parseDouble(splittedB[2]);
-                // Then we have to choose between A o B.
-                if (infoA >= infoB) {
-                    fileTreeMapC.put(positionA1A2Chr, lineA);
-                } else {
-                    fileTreeMapC.put(positionA1A2Chr, lineB);
-                }
-                // System.out.println("WOW alelos iguales: " + positionA1A2Chr);
-
-                // Now we remove this value from the fileTreeMapB
-                fileTreeMapB.remove(positionA1A2Chr);
-            } else if (fileTreeMapB.containsKey(posAllelesReverse)) {
-                // If the fileTreeMapB contains this posAllelesReverse, then we have to choose
-                // the ones that has a better info (that is the ones with greater info).
-                String lineB = fileTreeMapB.get(posAllelesReverse);
-                String[] splittedB = lineB.split("\t");
-                Double infoB = Double.parseDouble(splittedB[2]);
-                // Then we have to choose between A and B.
-                if (infoA >= infoB) {
-                    fileTreeMapC.put(positionA1A2Chr, lineA);
-                } else {
-                    fileTreeMapC.put(posAllelesReverse, lineB);
-                }
-                // Now we remove this value from the fileTreeMapB
-                fileTreeMapB.remove(posAllelesReverse);
-                // System.out.println("WOW alelos reversos: " + positionA1A2Chr + " " + posAllelesReverse);
-            } else if (fileTreeMapB.containsKey(posAllelesComplement)) {
-                // If the fileTreeMapB contains this posAllelesComplement, then we have to choose
-                // the ones that has a better info (that is the ones with greater info).
-                String lineB = fileTreeMapB.get(posAllelesComplement);
-                String[] splittedB = lineB.split("\t");
-                Double infoB = Double.parseDouble(splittedB[2]);
-                // Then we have to choose between A o B.
-                if (infoA >= infoB) {
-                    fileTreeMapC.put(positionA1A2Chr, lineA);
-                } else {
-                    fileTreeMapC.put(posAllelesComplement, lineB);
-                }
-                // Now we remove this value from the fileTreeMapB
-                fileTreeMapB.remove(posAllelesComplement);
-                // System.out.println("WOW alelos complementarios: " + positionA1A2Chr + " " + posAllelesComplement);
-            } else if (fileTreeMapB.containsKey(posAllelesComplementAndReverse)) {
-                // If the fileTreeMapB contains this posAllelesComplement, then we have to choose
-                // the ones that has a better info (that is the ones with greater info).
-                String lineB = fileTreeMapB.get(posAllelesComplementAndReverse);
-                String[] splittedB = lineB.split("\t");
-                Double infoB = Double.parseDouble(splittedB[2]);
-                // Then we have to choose between A o B.
-                if (infoA >= infoB) {
-                    fileTreeMapC.put(positionA1A2Chr, lineA);
-                } else {
-                    fileTreeMapC.put(posAllelesComplementAndReverse, lineB);
-                }
-                // Now we remove this value from the fileTreeMapB
-                fileTreeMapB.remove(posAllelesComplementAndReverse);
-                // System.out.println("WOW alelos complementariosYreversos: " + positionA1A2Chr + " " +
-                // posAllelesComplementAndReverse);
-            } else {
-                // Else means that fileTreeMapB does not contain this SNP or any of its variants.
-                // Therefore, we keep the one in fileTreeMapA
-                fileTreeMapC.put(positionA1A2Chr, lineA);
-            }
-        }
-
-        // Now we have to put in fileTreeMapC the rest of values that remain in fileTreeMapB.
-        // We iterate the fileTreeMapB (the rest of the...)
-        mySet = fileTreeMapB.entrySet();
-        // Move next key and value of Map by iterator
-        iter = mySet.iterator();
-        while (iter.hasNext()) {
-            // key=value separator this by Map.Entry to get key and value
-            Entry<String, String> m = iter.next();
-            // getKey is used to get key of Map
-            String positionA1A2Chr = (String) m.getKey();
-            String lineB = (String) m.getValue();
-            // Then we have to store the value in fileTreeMapC
-            fileTreeMapC.put(positionA1A2Chr, lineB);
-        }
-
-        // Finally we put the fileTreeMapC into the outputFile
-        // We have to create the outputFile for this combination:
-        // We verify that a file with the same name does not exist.
-        File outputFile = new File(resultsPanelC);
-        try {
-            outputFile.createNewFile();
-        } catch (IOException ioe) {
-            throw new GuidanceTaskException(ioe);
-        }
-
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(outputFile))) {
-            // We print the header which is the same always!.
-            writer.write(header);
-            writer.newLine();
-
-            mySet = fileTreeMapC.entrySet();
-            // Move next key and value of Map by iterator
-            iter = mySet.iterator();
-            while (iter.hasNext()) {
-                // key=value separator this by Map.Entry to get key and value
-                Entry<String, String> m = iter.next();
-                // getKey is used to get key of Map
-                String myLine = (String) m.getValue();
-
-                writer.write(myLine);
-                writer.newLine();
-            }
-
-            writer.flush();
-        } catch (IOException ioe) {
-            throw new GuidanceTaskException(ioe);
-        }
-
-        long stopTime = System.currentTimeMillis();
-        long elapsedTime = (stopTime - startTime) / 1000;
-        if (DEBUG) {
-            System.out.println("\n[DEBUG] combinePanelsComplex1 startTime: " + startTime);
-            System.out.println("\n[DEBUG] combinePanelsComplex1 endTime: " + stopTime);
-            System.out.println("\n[DEBUG] combinePanelsComplex1 elapsedTime: " + elapsedTime + " seconds");
-            System.out.println("\n[DEBUG] Finished execution of combinePanelsComplex1");
-        }
-
     }
 
     /**
@@ -3139,7 +2915,6 @@ public class GuidanceImpl {
         }
         long startTime = System.currentTimeMillis();
         double pvaThres = Double.parseDouble(pvaThreshold);
-
         // double pvaThres = Double.parseDouble(splitted[17]);
 
         // We read each line of the resultsFile and put them into the String
@@ -3152,6 +2927,7 @@ public class GuidanceImpl {
         try (GZIPInputStream inputGz = new GZIPInputStream(new FileInputStream(resultsFile));
                 Reader decoder = new InputStreamReader(inputGz);
                 BufferedReader br = new BufferedReader(decoder)) {
+
             header = br.readLine();
             resultsFileHashTableIndex = createHashWithHeader(header, "\t");
 
@@ -3187,16 +2963,9 @@ public class GuidanceImpl {
         }
 
         // Finally we put the fileTreeMap into the output file
-        // We have to create the outputFile for this combination:
-        // We verify that a file with the same name does not exist.
-        File outputFile = new File(outputTopHitFile);
-        try {
-            outputFile.createNewFile();
-        } catch (IOException ioe) {
-            throw new GuidanceTaskException(ioe);
-        }
-
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(outputFile))) {
+        // We will generate the output first and then compress it
+        String plainOutputTopHitFile = outputTopHitFile.substring(0, outputTopHitFile.length() - 3);
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(plainOutputTopHitFile))) {
             // We print the header which is the same always!.
             writer.write(newHeader);
             // writer.newLine();
@@ -3219,14 +2988,11 @@ public class GuidanceImpl {
             throw new GuidanceTaskException(ioe);
         }
 
-        // Then, we create the gz file and rename it
-        FileUtils.gzipFile(outputTopHitFile, outputTopHitFile + ".gz");
-        File fc = new File(outputTopHitFile);
-        File fGz = new File(outputTopHitFile + ".gz");
-        FileUtils.copyFile(fGz, fc);
+        // Compress the output file to the parameter value
+        FileUtils.gzipFile(plainOutputTopHitFile, outputTopHitFile);
 
         long stopTime = System.currentTimeMillis();
-        long elapsedTime = (stopTime - startTime) / 1000;
+        long elapsedTime = (stopTime - startTime) / 1_000;
         if (DEBUG) {
             System.out.println("\n[DEBUG] generateTopHits startTime:  " + startTime);
             System.out.println("\n[DEBUG] generateTopHits endTime:    " + stopTime);
@@ -3319,6 +3085,7 @@ public class GuidanceImpl {
             try (GZIPInputStream inputGz = new GZIPInputStream(new FileInputStream(resultsBFile));
                     Reader decoder = new InputStreamReader(inputGz);
                     BufferedReader br = new BufferedReader(decoder)) {
+
                 resultsBFileHashTableIndex = new Hashtable<>();
 
                 // First: read the header and avoid it
@@ -3357,16 +3124,9 @@ public class GuidanceImpl {
         }
 
         // Then we put the fileATreeMap into the output file
-        // We have to create the outputFile for this combination:
-        // We verify that a file with the same name does not exist.
-        File outputFile = new File(outputTopHitFile);
-        try {
-            outputFile.createNewFile();
-        } catch (IOException ioe) {
-            throw new GuidanceTaskException(ioe);
-        }
-
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(outputFile))) {
+        // We create the plain file, then we will compress it
+        String plainOutputTopHitFile = outputTopHitFile.substring(0, outputTopHitFile.length() - 3);
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(plainOutputTopHitFile))) {
             // We print the header which is the same always!.
             writer.write(newHeader);
             // writer.newLine();
@@ -3407,14 +3167,11 @@ public class GuidanceImpl {
             throw new GuidanceTaskException(ioe);
         }
 
-        // Then, we create the gz file and rename it
-        FileUtils.gzipFile(outputTopHitFile, outputTopHitFile + ".gz");
-        File fc = new File(outputTopHitFile);
-        File fGz = new File(outputTopHitFile + ".gz");
-        FileUtils.copyFile(fGz, fc);
+        // Compress the output file to the parameter value
+        FileUtils.gzipFile(plainOutputTopHitFile, outputTopHitFile);
 
         long stopTime = System.currentTimeMillis();
-        long elapsedTime = (stopTime - startTime) / 1000;
+        long elapsedTime = (stopTime - startTime) / 1_000;
         if (DEBUG) {
             System.out.println("\n[DEBUG] generateTopHits startTime:  " + startTime);
             System.out.println("\n[DEBUG] generateTopHits endTime:    " + stopTime);
@@ -3852,13 +3609,6 @@ public class GuidanceImpl {
 
         // First we generate the plain output, then we will compress it
         String plainReduceFileC = reduceFileC.substring(0, reduceFileC.length() - 3);
-        // Make a touch to ensure its existance
-        try {
-            FileUtils.createEmptyFile(plainReduceFileC, "[mergeTwoChunks]");
-        } catch (IOException ioe) {
-            throw new GuidanceTaskException(ioe);
-        }
-
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(plainReduceFileC))) {
             String valueReversed = null;
             int index;
@@ -3909,6 +3659,13 @@ public class GuidanceImpl {
             // }
 
             writer.flush();
+        } catch (IOException ioe) {
+            throw new GuidanceTaskException(ioe);
+        }
+
+        // Create the file if it is empty
+        try {
+            FileUtils.createEmptyFile(plainReduceFileC, "[mergeTwoChunks]");
         } catch (IOException ioe) {
             throw new GuidanceTaskException(ioe);
         }
@@ -4132,12 +3889,6 @@ public class GuidanceImpl {
 
         // The output of the method is a GZ file. First we create the plain file, then we compress it
         String reducePlainFile = reduceFile.substring(0, reduceFile.length() - 3);
-        // Make a touch to ensure its existance
-        try {
-            FileUtils.createEmptyFile(reducePlainFile, "[collectSummary]");
-        } catch (IOException ioe) {
-            throw new GuidanceTaskException(ioe);
-        }
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(reducePlainFile))) {
             writer.write("chr\tposition\trs_id_all\tinfo_all\tcertainty_all\t");
             // We do not store the first 4 field because they are not necessary or are repeated:
@@ -4180,11 +3931,18 @@ public class GuidanceImpl {
             throw new GuidanceTaskException(ioe);
         }
 
+        // We create the file if it does not exist
+        try {
+            FileUtils.createEmptyFile(reducePlainFile, "[collectSummary]");
+        } catch (IOException ioe) {
+            throw new GuidanceTaskException(ioe);
+        }
+
         // Then, we create the gz file and rename it
         FileUtils.gzipFile(reducePlainFile, reduceFile);
 
         long stopTime = System.currentTimeMillis();
-        long elapsedTime = (stopTime - startTime) / 1000;
+        long elapsedTime = (stopTime - startTime) / 1_000;
         if (DEBUG) {
             System.out.println("\n[DEBUG] collectSummary startTime: " + startTime);
             System.out.println("\n[DEBUG] collectSummary endTime: " + stopTime);
@@ -4207,6 +3965,7 @@ public class GuidanceImpl {
      */
     public static void initPhenoMatrix(String topHitsFile, String ttName, String rpName, String phenomeFile, String cmdToStore)
             throws GuidanceTaskException {
+
         if (DEBUG) {
             System.out.println("\n[DEBUG] Running initPhenoMatrix with parameters:");
             System.out.println("[DEBUG] \t- Input topHitsFile       : " + topHitsFile);
@@ -4307,21 +4066,12 @@ public class GuidanceImpl {
             throw new GuidanceTaskException(ioe);
         }
 
-        // Finally, we print the phenomeThreeMap into the output file.
-        // We start with the header:
-        File outPhenomeFile = new File(phenomeFile);
+        // Finally, we print the phenomeThreeMap into the output file
 
-        // Try to create the file
-        boolean bool = false;
-        try {
-            bool = outPhenomeFile.createNewFile();
-        } catch (IOException ioe) {
-            throw new GuidanceTaskException(ioe);
-        }
-        // Print information about the existence of the file
-        System.out.println("\n[DEBUG] \t- Output file " + outPhenomeFile + " was succesfuly created? " + bool);
-
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(outPhenomeFile))) {
+        // We create the plain file, then we will compress it
+        String plainPhenomeFile = phenomeFile.substring(0, phenomeFile.length() - 3);
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(plainPhenomeFile))) {
+            // Print the header
             writer.write(newHeader);
             writer.newLine();
 
@@ -4348,10 +4098,7 @@ public class GuidanceImpl {
         }
 
         // Then, we create the gz file and rename it
-        FileUtils.gzipFile(phenomeFile, phenomeFile + ".gz");
-        File fb = new File(phenomeFile);
-        File fGz = new File(phenomeFile + ".gz");
-        FileUtils.copyFile(fGz, fb);
+        FileUtils.gzipFile(plainPhenomeFile, phenomeFile);
 
         long stopTime = System.currentTimeMillis();
         long elapsedTime = (stopTime - startTime) / 1000;
@@ -4498,21 +4245,10 @@ public class GuidanceImpl {
             throw new GuidanceTaskException(ioe);
         }
 
-        // Finally, we print the phenomeThreeMap into the output file.
-        // We start with the header:
-        File outPhenomeFile = new File(phenomeBFile);
-
-        // Try to create the file
-        boolean bool = false;
-        try {
-            bool = outPhenomeFile.createNewFile();
-        } catch (IOException ioe) {
-            throw new GuidanceTaskException(ioe);
-        }
-        // Print information about the existence of the file
-        System.out.println("\n[DEBUG] \t- Output file " + outPhenomeFile + " was succesfuly created? " + bool);
-
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(outPhenomeFile))) {
+        // Finally, we print the phenomeThreeMap into the plain output file and we will compress it
+        String plainPhenomeBFile = phenomeBFile.substring(0, phenomeBFile.length() - 3);
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(plainPhenomeBFile))) {
+            // Write the header
             writer.write(phenomeAHeader);
             writer.newLine();
 
@@ -4538,13 +4274,10 @@ public class GuidanceImpl {
         }
 
         // Then, we create the gz file and rename it
-        FileUtils.gzipFile(phenomeBFile, phenomeBFile + ".gz");
-        File fb = new File(phenomeBFile);
-        File fGz = new File(phenomeBFile + ".gz");
-        FileUtils.copyFile(fGz, fb);
+        FileUtils.gzipFile(plainPhenomeBFile, phenomeBFile);
 
         long stopTime = System.currentTimeMillis();
-        long elapsedTime = (stopTime - startTime) / 1000;
+        long elapsedTime = (stopTime - startTime) / 1_000;
         if (DEBUG) {
             System.out.println("\n[DEBUG] addToPhenoMatrix startTime: " + startTime);
             System.out.println("\n[DEBUG] addToPhenoMatrix endTime: " + stopTime);
@@ -4728,21 +4461,10 @@ public class GuidanceImpl {
             filteredTreeMap.put(chrAndPosition, currentList);
         }
 
-        // Finally, we print the phenomeThreeMap into the output file.
-        // We start with the header:
-        File outPhenomeFile = new File(phenomeBFile);
-
-        // Try to create the file
-        boolean bool = false;
-        try {
-            bool = outPhenomeFile.createNewFile();
-        } catch (IOException ioe) {
-            throw new GuidanceTaskException(ioe);
-        }
-        // Print information about the existence of the file
-        System.out.println("\n[DEBUG] \t- Output file " + outPhenomeFile + " was succesfuly created? " + bool);
-
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(outPhenomeFile))) {
+        // Finally, we print the phenomeThreeMap into the output plain output file and we will compress it
+        String plainPhenomeBFile = phenomeBFile.substring(0, phenomeBFile.length() - 3);
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(plainPhenomeBFile))) {
+            // Write the header
             writer.write(phenomeAHeader);
             writer.newLine();
 
@@ -4768,13 +4490,10 @@ public class GuidanceImpl {
         }
 
         // Then, we create the gz file and rename it
-        FileUtils.gzipFile(phenomeBFile, phenomeBFile + ".gz");
-        File fb = new File(phenomeBFile);
-        File fGz = new File(phenomeBFile + ".gz");
-        FileUtils.copyFile(fGz, fb);
+        FileUtils.gzipFile(plainPhenomeBFile, phenomeBFile);
 
         long stopTime = System.currentTimeMillis();
-        long elapsedTime = (stopTime - startTime) / 1000;
+        long elapsedTime = (stopTime - startTime) / 1_000;
         if (DEBUG) {
             System.out.println("\n[DEBUG] addToPhenoMatrix startTime: " + startTime);
             System.out.println("\n[DEBUG] addToPhenoMatrix endTime: " + stopTime);
@@ -5059,21 +4778,10 @@ public class GuidanceImpl {
             phenomeATreeMap.put(chrAndPosition, currentList);
         }
 
-        // Finally, we print the phenomeAThreeMap into the output file.
-        // We start with the header:
-        File outPhenomeFile = new File(phenomeBFile);
-
-        // Try to create the file
-        boolean bool = false;
-        try {
-            bool = outPhenomeFile.createNewFile();
-        } catch (IOException ioe) {
-            throw new GuidanceTaskException(ioe);
-        }
-        // Print information about the existence of the file
-        System.out.println("\n[DEBUG] \t- Output file " + outPhenomeFile + " was succesfuly created? " + bool);
-
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(outPhenomeFile))) {
+        // Finally, we print the phenomeAThreeMap into the output plain file and we will compress it
+        String plainPhenomeBFile = phenomeBFile.substring(0, phenomeBFile.length() - 3);
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(plainPhenomeBFile))) {
+            // Write the header
             writer.write(phenomeAHeader);
             writer.newLine();
 
@@ -5100,10 +4808,7 @@ public class GuidanceImpl {
         }
 
         // Then, we create the gz file and rename it
-        FileUtils.gzipFile(phenomeBFile, phenomeBFile + ".gz");
-        File fb = new File(phenomeBFile);
-        File fGz = new File(phenomeBFile + ".gz");
-        FileUtils.copyFile(fGz, fb);
+        FileUtils.gzipFile(plainPhenomeBFile, phenomeBFile);
 
         long stopTime = System.currentTimeMillis();
         long elapsedTime = (stopTime - startTime) / 1000;
@@ -5233,21 +4938,10 @@ public class GuidanceImpl {
             finalHeader = finalHeader + "\t" + phenomeBHashTableIndexReversed.get(i);
         }
 
-        // Finally, we print the phenomeAThreeMap into the output file.
-        // We start with the header:
-        File outPhenomeFile = new File(phenomeCFile);
-
-        // Try to create the file
-        boolean bool = false;
-        try {
-            bool = outPhenomeFile.createNewFile();
-        } catch (IOException ioe) {
-            throw new GuidanceTaskException(ioe);
-        }
-        // Print information about the existence of the file
-        System.out.println("\n[DEBUG] \t- Output file " + outPhenomeFile + " was succesfuly created? " + bool);
-
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(outPhenomeFile))) {
+        // Finally, we print the phenomeAThreeMap into the output plain file and we will compress it
+        String plainPhenomeCFile = phenomeCFile.substring(0, phenomeCFile.length() - 3);
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(plainPhenomeCFile))) {
+            // Write the header
             writer.write(finalHeader);
             writer.newLine();
 
@@ -5274,14 +4968,11 @@ public class GuidanceImpl {
         }
 
         // Then, we create the gz file and rename it
-        FileUtils.gzipFile(phenomeCFile, phenomeCFile + ".gz");
-        File fb = new File(phenomeCFile);
-        File fGz = new File(phenomeCFile + ".gz");
-        FileUtils.copyFile(fGz, fb);
+        FileUtils.gzipFile(plainPhenomeCFile, phenomeCFile);
 
         // <----------
         long stopTime = System.currentTimeMillis();
-        long elapsedTime = (stopTime - startTime) / 1000;
+        long elapsedTime = (stopTime - startTime) / 1_000;
         if (DEBUG) {
             System.out.println("\n[DEBUG] finalizePhenoMatrix startTime: " + startTime);
             System.out.println("\n[DEBUG] finalizePhenoMatrix endTime: " + stopTime);
