@@ -64,7 +64,7 @@ import guidance.utils.ParseCmdLine;
 public class Guidance {
 
     // Package version
-    private final static String PACKAGE_VERSION = "guidance_0.9.6";
+    private final static String PACKAGE_VERSION = "guidance_0.9.8";
 
     // Debug mode
     private static final boolean DEBUG = false;
@@ -97,7 +97,7 @@ public class Guidance {
      * @throws Exception
      */
     public static void main(String args[]) throws Exception {
-        ArrayList<String> listOfCommands = new ArrayList<String>();
+        ArrayList<String> listOfCommands = new ArrayList<>();
 
         // Verify that all environment variables have been defined correctly
         verifyEnvVar();
@@ -181,9 +181,9 @@ public class Guidance {
      * Method to print a all the environment variables of the system. It is only used for debug
      */
     private static void printEnVariables() {
-        long freeMemory = Runtime.getRuntime().freeMemory() / 1048576;
-        long totalMemory = Runtime.getRuntime().totalMemory() / 1048576;
-        long maxMemory = Runtime.getRuntime().maxMemory() / 1048576;
+        long freeMemory = Runtime.getRuntime().freeMemory() / 1_048_576;
+        long totalMemory = Runtime.getRuntime().totalMemory() / 1_048_576;
+        long maxMemory = Runtime.getRuntime().maxMemory() / 1_048_576;
 
         System.out.println("JVM freeMemory: " + freeMemory);
         System.out.println("JVM totalMemory also equals to initial heap size of JVM : " + totalMemory);
@@ -201,9 +201,9 @@ public class Guidance {
             objects.add(("" + 10 * 2710));
         }
 
-        freeMemory = Runtime.getRuntime().freeMemory() / 1048576;
-        totalMemory = Runtime.getRuntime().totalMemory() / 1048576;
-        maxMemory = Runtime.getRuntime().maxMemory() / 1048576;
+        freeMemory = Runtime.getRuntime().freeMemory() / 1_048_576;
+        totalMemory = Runtime.getRuntime().totalMemory() / 1_048_576;
+        maxMemory = Runtime.getRuntime().maxMemory() / 1_048_576;
 
         System.out.println("Used Memory in JVM: " + (maxMemory - freeMemory));
         System.out.println("freeMemory in JVM: " + freeMemory);

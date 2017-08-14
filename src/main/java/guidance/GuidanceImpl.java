@@ -359,7 +359,6 @@ public class GuidanceImpl {
 
         file = new File(pedFile + ".log");
         file2 = new File(logFile);
-
         // Rename file (or directory)
         success = file.renameTo(file2);
         if (!success) {
