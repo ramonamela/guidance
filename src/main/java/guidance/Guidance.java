@@ -32,24 +32,22 @@
 package guidance;
 
 import java.io.BufferedWriter;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.util.zip.GZIPOutputStream;
-import java.nio.file.*;
 import java.io.File;
 import java.io.FileWriter;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Date;
+
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Date;
 
 import guidance.GuidanceImpl;
 import guidance.files.AssocFiles;
 import guidance.files.CombinedPanelsFiles;
 import guidance.files.CommonFiles;
+import guidance.files.FileUtils;
 import guidance.files.ImputationFiles;
 import guidance.files.MergeFiles;
 import guidance.files.PhenomeAnalysisFiles;
@@ -85,7 +83,7 @@ public class Guidance {
     private final static String QCTOOL_BINARY = System.getenv("QCTOOLBINARY");
     private final static String SHAPEIT_BINARY = System.getenv("SHAPEITBINARY");
     private final static String IMPUTE2_BINARY = System.getenv("IMPUTE2BINARY");
-    private final static String MINIMAC_BINARY = System.getenv("MINIMACBINARY");
+    // private final static String MINIMAC_BINARY = System.getenv("MINIMACBINARY");
     private final static String SNPTEST_BINARY = System.getenv("SNPTESTBINARY");
     private final static String JAVA_HOME = System.getenv("JAVA_HOME");
 
@@ -223,7 +221,6 @@ public class Guidance {
     private static void doMixed(ParseCmdLine parsingArgs, String outDir, List<String> rpanelTypes, ChromoInfo generalChromoInfo,
             ArrayList<String> listOfCommands) {
 
-        String cmdToStore = " ";
         // Create some general objects
         int startChr = parsingArgs.getStart();
         int endChr = parsingArgs.getEnd();
@@ -253,7 +250,7 @@ public class Guidance {
 
         // Create the whole directory structure.
         System.out.println("[Guidance] Creating the directory structures for the outputs...");
-        createDirStructure(parsingArgs, outDir, rpanelTypes, startChr, endChr);
+        FileUtils.createDirStructure(parsingArgs, outDir, rpanelTypes, startChr, endChr);
 
         // Create the names for mixed files
         ImputationFiles imputationFilesInfo = new ImputationFiles(parsingArgs, generalChromoInfo, outDir, rpanelTypes);
@@ -280,7 +277,7 @@ public class Guidance {
         setFinalStatusForAssocFiles(parsingArgs, assocFilesInfo, generalChromoInfo, rpanelTypes);
 
         boolean refPanelCombine = parsingArgs.getRefPanelCombine();
-        int numOfChromosToProcess = endChr - startChr + 1;
+        // int numOfChromosToProcess = endChr - startChr + 1;
         for (int i = startChr; i <= endChr; i++) {
             // We get the output pairs file name for mixed
             String mixedPairsFile = commonFilesInfo.getPairsFile(i);
@@ -356,7 +353,6 @@ public class Guidance {
 
                 int maxSize = generalChromoInfo.getMaxSize(i);
                 int minSize = generalChromoInfo.getMinSize(i);
-                ;
                 int lim1 = minSize;
                 int lim2 = lim1 + chunkSize - 1;
                 int j = 0;
@@ -380,8 +376,6 @@ public class Guidance {
         for (int tt = 0; tt < numberOfTestTypes; tt++) {
             for (int kk = 0; kk < rpanelTypes.size(); kk++) {
                 for (int i = startChr; i <= endChr; i++) {
-                    String theChromo = Integer.toString(i);
-                    int j;
                     int maxSize = generalChromoInfo.getMaxSize(i);
                     int minSize = generalChromoInfo.getMinSize(i);
                     int lim1 = minSize;
@@ -403,7 +397,7 @@ public class Guidance {
                      * doFilterByAll(parsingArgs, listOfCommands, theLastReducedFile, filteredByAllFile, condensedFile);
                      */
 
-                    for (j = minSize; j < maxSize; j = j + chunkSize) {
+                    for (int j = minSize; j < maxSize; j = j + chunkSize) {
 
                         makeAssociationPerChunk(parsingArgs, tt, kk, i, lim1, lim2, imputationFilesInfo, commonFilesInfo, assocFilesInfo,
                                 listOfCommands);
@@ -531,142 +525,7 @@ public class Guidance {
          */
     }
 
-    /**
-     * Method that creates all the output directory structure for the results.
-     * 
-     * @param parsingArgs
-     * @param myOutDir
-     * @param refPanels
-     * @param startChr
-     * @param endChr
-     */
-    private static void createDirStructure(ParseCmdLine parsingArgs, String myOutDir, List<String> refPanels, int startChr, int endChr) {
-        String mixedCohort = null;
-        String combinedCohort = null;
-        // We create the first directory: the cohort directory.
-        mixedCohort = parsingArgs.getCohort();
-
-        String tmpOutDir = "";
-        tmpOutDir = myOutDir + "/" + mixedCohort;
-
-        System.out.println("[Guidance] Creating " + tmpOutDir);
-        createDir(tmpOutDir);
-
-        // We create the second directory: the REFPANEL directory.
-        // It can be => common: for files from the beginning to phasing
-        // => PANEL : for files for imputation for each panel
-
-        // Now I create the directories for common and combined
-        String tmpPanelDir = tmpOutDir + "/" + "common";
-        createDir(tmpPanelDir);
-
-        // Next level: Create mixed directories.
-        String mixedOutDir = tmpPanelDir + "/mixed";
-        System.out.println("[Guidance] Creating " + mixedOutDir);
-        createDir(mixedOutDir);
-        for (int i = startChr; i <= endChr; i++) {
-            String tmpChrDir = mixedOutDir + "/Chr_" + i;
-            createDir(tmpChrDir);
-        }
-
-        // Now I create the directories for imputeOutDir
-        for (int j = 0; j < refPanels.size(); j++) {
-            String rPanel = refPanels.get(j);
-            tmpPanelDir = tmpOutDir + "/" + rPanel;
-            createDir(tmpPanelDir);
-
-            // Next level: Create mixed directories.
-            mixedOutDir = tmpPanelDir + "/mixed";
-            System.out.println("[Guidance] Creating " + mixedOutDir);
-            createDir(mixedOutDir);
-            for (int i = startChr; i <= endChr; i++) {
-                String tmpChrDir = mixedOutDir + "/Chr_" + i;
-                createDir(tmpChrDir);
-            }
-        }
-
-        // Then we create the directories for the Association files
-        // This directory is created by default in myOutDir/association.
-        String tmpMyOutDir1 = myOutDir + "/associations";
-        createDir(tmpMyOutDir1);
-        String testTypeName = null;
-        int numberOfTestTypes = parsingArgs.getNumberOfTestTypeName();
-        for (int kk = 0; kk < numberOfTestTypes; kk++) {
-            testTypeName = parsingArgs.getTestTypeName(kk);
-            String tmpMyOutDir = myOutDir + "/associations/" + testTypeName;
-            createDir(tmpMyOutDir);
-
-            for (int j = 0; j < refPanels.size(); j++) {
-                String rPanel = refPanels.get(j);
-                String assocDir = null;
-                assocDir = tmpMyOutDir + "/" + mixedCohort + "_for_" + rPanel;
-                System.out.println("[Guidance] Creating " + assocDir);
-                createDir(assocDir);
-
-                for (int i = startChr; i <= endChr; i++) {
-                    String tmpChrDir = assocDir + "/Chr_" + i;
-                    createDir(tmpChrDir);
-                }
-
-                String summaryDir = assocDir + "/summary";
-                System.out.println("[Guidance] Creating " + summaryDir);
-                createDir(summaryDir);
-            }
-
-            // Finally, if there are several panel and if combinedRefPanel = 1
-            // then we have to create the output directory for the combined ref_panel
-            boolean refPanelCombine = parsingArgs.getRefPanelCombine();
-
-            if (refPanelCombine == true) {
-                // We take the first refPanel name
-                String rPanel = refPanels.get(0);
-                String combinedRefPanel = rPanel;
-                for (int j = 1; j < refPanels.size(); j++) {
-                    rPanel = refPanels.get(j);
-                    combinedRefPanel = combinedRefPanel + "_" + rPanel;
-                }
-
-                String combinedAssocOutDir = null;
-                combinedAssocOutDir = myOutDir + "/associations/" + testTypeName + "/" + mixedCohort + "_combined_panels_"
-                        + combinedRefPanel;
-
-                System.out.println("[Guidance] Creating " + combinedAssocOutDir);
-                createDir(combinedAssocOutDir);
-
-            } // End if(refPanelCombine == true)
-        } // End for(kk=0;kk<numberOfTestTyes;kk++)
-
-        // Now create the structure for the phenotype analysis results
-        String phenomeAnalysisOutDir = myOutDir + "/associations/pheno_analysis/";
-        System.out.println("[Guidance] Creating " + phenomeAnalysisOutDir);
-        createDir(phenomeAnalysisOutDir);
-
-        phenomeAnalysisOutDir = phenomeAnalysisOutDir + mixedCohort;
-        // for(int tt=0; tt< numberOfTestTypes; tt++) {
-        // testTypeName = parsingArgs.getTestTypeName(tt);
-        // phenomeAnalysisOutDir = phenomeAnalysisOutDir + "_" + testTypeName;
-        // }
-        System.out.println("[Guidance] Creating " + phenomeAnalysisOutDir);
-        createDir(phenomeAnalysisOutDir);
-
-    }
-
-    /**
-     * Method that creates a single directory
-     * 
-     * @param outputDir
-     */
-    private static void createDir(String outputDir) {
-        File tmpOutDir = new File(outputDir);
-        boolean existOutDir = tmpOutDir.exists();
-        if (!existOutDir) {
-            boolean successExistOutDir = (new File(outputDir)).mkdir();
-            if (!successExistOutDir) {
-                System.err.println("[createDir] Error, cannot create " + tmpOutDir + " directory");
-                System.exit(1);
-            }
-        }
-    }
+    
 
     /**
      * Method that generates all the tasks for imputation and association.
@@ -792,9 +651,6 @@ public class Guidance {
         String mixedFilteredFile = imputationFilesInfo.getFilteredFile(panelIndex, chrNumber, lim1, lim2, chunkSize);
 
         String inputFormat = parsingArgs.getInputFormat();
-
-        String mixedBimFile = null;
-        String mixedGenFile = null;
         String exclCgatFlag = parsingArgs.getExclCgatSnp();
 
         doSnptest(parsingArgs, listOfCommands, chrS, mixedFilteredFile, mixedSampleFile, snptestOutFile, snptestLogFile, responseVar,
@@ -1098,8 +954,6 @@ public class Guidance {
         String endChrS = Integer.toString(endChr);
         String endChrNormalS = Integer.toString(endChrNormal);
 
-        String cmdToStore = " ";
-
         String filtered = "filtered";
         String condensed = "condensed";
 
@@ -1111,9 +965,6 @@ public class Guidance {
         String condensedPanelB = null;
         String condensedPanelC = null;
 
-        String filteredXPanelA = null;
-        String filteredXPanelB = null;
-        String filteredXPanelC = null;
         boolean refPanelCombine = parsingArgs.getRefPanelCombine();
 
         String filteredCombineA = null;
@@ -1134,7 +985,6 @@ public class Guidance {
 
         // We have to ask if we have to combine results from different panels or not.
         if (refPanelCombine == true) {
-
             boolean elemA = false;
             boolean elemB = false;
 
@@ -1146,15 +996,12 @@ public class Guidance {
                 int minSize = generalChromoInfo.getMinSize(chr);
                 int lim1 = minSize;
                 int lim2 = lim1 + chunkSize - 1;
-                int j = 0;
                 int indexFC = 0;
                 int indexCC = 0;
                 int indexXFC = 0;
 
-                for (j = minSize; j < maxSize; j = j + chunkSize) {
-
+                for (int j = minSize; j < maxSize; j = j + chunkSize) {
                     for (int kk = 1; kk < rpanelTypes.size(); kk++) {
-
                         if (kk == 1) {
                             filteredPanelA = assocFilesInfo.getSummaryFilteredFile(ttIndex, 0, chr, lim1, lim2, chunkSize);
                             condensedPanelA = assocFilesInfo.getSummaryCondensedFile(ttIndex, 0, chr, lim1, lim2, chunkSize);
@@ -1262,9 +1109,8 @@ public class Guidance {
              * new File(fileName); f.delete(); } }
              * 
              */
-            // Finally, we create topHits, QQ and Manhattan plots.
 
-            Path pathFrom = Paths.get(condensedCombineC);
+            // Finally, we create topHits, QQ and Manhattan plots.
             String topHitsCombinedResults = combinedPanelsFilesInfo.getTopHitsFile(ttIndex);
             combinedCondensedFile = combinedPanelsFilesInfo.getCombinedCondensedFile(ttIndex);
 
@@ -1278,7 +1124,6 @@ public class Guidance {
 
             doGenerateQQManhattanPlots(parsingArgs, listOfCommands, condensedCombineC, combinedQqPlotPdfFile, combinedManhattanPlotPdfFile,
                     combinedQqPlotTiffFile, combinedManhattanPlotTiffFile, combinedCorrectedPvaluesFile);
-
         }
     }
 
@@ -1299,11 +1144,11 @@ public class Guidance {
         int endChr = parsingArgs.getEnd();
         String endChrS = Integer.toString(endChr);
 
-        String cmdToStore = null;
         String topHitsFile = null;
+
         String filteredByAllFile = null;
         String filteredByAllXFile = null;
-        String condensedFile = null;
+
         String phenomeFileA = null;
         String phenomeFileB = null;
         String phenomeFileC = null;
@@ -1311,7 +1156,7 @@ public class Guidance {
         int numberOfTestTypes = parsingArgs.getNumberOfTestTypeName();
         int numberOfRpanelsTypes = rpanelTypes.size();
 
-        int maxPhenoIndex = numberOfTestTypes * numberOfRpanelsTypes - 1;
+        // int maxPhenoIndex = numberOfTestTypes * numberOfRpanelsTypes - 1;
         int phenoIndex = 0;
 
         int ttIndex = 0;
@@ -1683,7 +1528,7 @@ public class Guidance {
     private static void doImputationWithImpute(ParseCmdLine parsingArgs, ArrayList<String> listOfCommands, String chrS, String gmapFile,
             String knownHapFile, String legendFile, String shapeitHapsFile, String shapeitSampleFile, String lim1S, String lim2S,
             String pairsFile, String imputeFile, String imputeFileInfo, String imputeFileSummary, String imputeFileWarnings) {
-        
+
         String cmdToStore = null;
         if (parsingArgs.getStageStatus("imputeWithImpute") == 1) {
             // Submitting the impute task per chunk
@@ -1832,7 +1677,7 @@ public class Guidance {
      */
     private static void doSnptest(ParseCmdLine parsingArgs, ArrayList<String> listOfCommands, String chrS, String mergedGenFile,
             String mergedSampleFile, String snptestOutFile, String snptestLogFile, String responseVar, String covariables) {
-        
+
         String cmdToStore = null;
         String newStr = covariables.replace(',', ' ');
 
@@ -2040,48 +1885,6 @@ public class Guidance {
     }
 
     /**
-     * Method that wraps the doCombineCondensedFiles task and store the command in the listOfCommands
-     * 
-     * @param parsingArgs
-     * @param listOfCommands
-     * @param filteredA
-     * @param filteredX
-     * @param combinedCondensedFile
-     */
-    private static void doCombineCondensedFiles(ParseCmdLine parsingArgs, ArrayList<String> listOfCommands, String filteredA,
-            String filteredX, String combinedCondensedFile) {
-
-        String cmdToStore = null;
-
-        double mafThreshold = parsingArgs.getMafThreshold();
-        double infoThreshold = parsingArgs.getInfoThreshold();
-        double hweCohortThreshold = parsingArgs.getHweCohortThreshold();
-        double hweCasesThreshold = parsingArgs.getHweCasesThreshold();
-        double hweControlsThreshold = parsingArgs.getHweControlsThreshold();
-
-        String mafThresholdS = Double.toString(mafThreshold);
-        String infoThresholdS = Double.toString(infoThreshold);
-        String hweCohortThresholdS = Double.toString(hweCohortThreshold);
-        String hweCasesThresholdS = Double.toString(hweCasesThreshold);
-        String hweControlsThresholdS = Double.toString(hweControlsThreshold);
-
-        if (parsingArgs.getStageStatus("combineCondensedFiles") == 1) {
-            cmdToStore = JAVA_HOME + "/java combineCondensedFiles " + filteredA + " " + filteredX + " " + combinedCondensedFile + " "
-                    + mafThresholdS + " " + infoThresholdS + " " + hweCohortThresholdS + " " + hweCasesThresholdS + " "
-                    + hweControlsThresholdS;
-            listOfCommands.add(cmdToStore);
-
-            try {
-                GuidanceImpl.combineCondensedFiles(filteredA, filteredX, combinedCondensedFile, mafThresholdS, infoThresholdS,
-                        hweCohortThresholdS, hweCasesThresholdS, hweControlsThresholdS, cmdToStore);
-            } catch (Exception e) {
-                System.err.println("[Guidance] Exception trying the execution of combineCondensedFile task");
-                System.err.println(e.getMessage());
-            }
-        }
-    }
-
-    /**
      * Method that wraps the mergeTwoChunks task and store the command in the listOfCommands
      * 
      * @param parsingArgs
@@ -2268,96 +2071,6 @@ public class Guidance {
     }
 
     /**
-     * Method that performs the cleaning and compression of CommonFiles generated in the work flow
-     * 
-     * @param parsingArgs
-     * @param commonFilesInfo
-     * @throws Exception
-     */
-    private static void cleanAndCompressCommonFiles(ParseCmdLine parsingArgs, CommonFiles commonFilesInfo) throws Exception {
-
-        int i;
-        String inputFormat = parsingArgs.getInputFormat();
-
-        int startChr = parsingArgs.getStart();
-        int endChr = parsingArgs.getEnd();
-        String myFile = null;
-        String myStatus = null;
-        for (i = startChr; i <= endChr; i++) {
-            myFile = commonFilesInfo.getPairsFile(i);
-            myStatus = commonFilesInfo.getPairsFileFinalStatus(i);
-            compressFileWithGzipOrDelete(myFile, myFile + ".gz", myStatus);
-
-            myFile = commonFilesInfo.getShapeitHapsFile(i);
-            myStatus = commonFilesInfo.getShapeitHapsFileFinalStatus(i);
-            compressFileWithGzipOrDelete(myFile, myFile + ".gz", myStatus);
-        }
-    }
-
-    /**
-     * Method that performs the compression of CommonFiles generated in the work flow
-     * 
-     * @param parsingArgs
-     * @param commonFilesInfo
-     * @throws Exception
-     */
-    private static void compressCommonFiles(ParseCmdLine parsingArgs, CommonFiles commonFilesInfo) throws Exception {
-        int i;
-        String inputFormat = parsingArgs.getInputFormat();
-
-        int startChr = parsingArgs.getStart();
-        int endChr = parsingArgs.getEnd();
-        String myFile = null;
-        String myStatus = null;
-        System.out.println("[Guidance] Compressing CommonFiles...");
-        for (i = startChr; i <= endChr; i++) {
-            myFile = commonFilesInfo.getPairsFile(i);
-            myStatus = commonFilesInfo.getPairsFileFinalStatus(i);
-            compressFileWithGzip(myFile, myFile + ".gz", myStatus);
-
-            myFile = commonFilesInfo.getShapeitHapsFile(i);
-            myStatus = commonFilesInfo.getShapeitHapsFileFinalStatus(i);
-            compressFileWithGzip(myFile, myFile + ".gz", myStatus);
-
-            myFile = commonFilesInfo.getShapeitSampleFile(i);
-            myStatus = commonFilesInfo.getShapeitSampleFileFinalStatus(i);
-            compressFileWithGzip(myFile, myFile + ".gz", myStatus);
-        }
-    }
-
-    /**
-     * Method that deletes CommonFiles generated in the workflow
-     * 
-     * @param parsingArgs
-     * @param commonFilesInfo
-     * @throws Exception
-     */
-    private static void deleteCommonFiles(ParseCmdLine parsingArgs, CommonFiles commonFilesInfo) throws Exception {
-
-        int i;
-        String inputFormat = parsingArgs.getInputFormat();
-
-        int startChr = parsingArgs.getStart();
-        int endChr = parsingArgs.getEnd();
-        String myFile = null;
-        String myStatus = null;
-        System.out.println("[Guidance] Deleting CommonFiles...");
-        for (i = startChr; i <= endChr; i++) {
-            myFile = commonFilesInfo.getPairsFile(i);
-            myStatus = commonFilesInfo.getPairsFileFinalStatus(i);
-            deleteFile(myFile, myStatus);
-
-            myFile = commonFilesInfo.getShapeitHapsFile(i);
-            myStatus = commonFilesInfo.getShapeitHapsFileFinalStatus(i);
-            deleteFile(myFile, myStatus);
-
-            myFile = commonFilesInfo.getShapeitSampleFile(i);
-            myStatus = commonFilesInfo.getShapeitSampleFileFinalStatus(i);
-            deleteFile(myFile, myStatus);
-        }
-    }
-
-    /**
      * Method to set the final status of each file that has been generated in the execution So far, the three main
      * status are: uncompressed, compressed, and deleted. The default status is: uncompressed. That is the initial
      * status assigned to each file
@@ -2366,7 +2079,6 @@ public class Guidance {
      * @param commonFilesInfo
      */
     private static void setFinalStatusForCommonFiles(ParseCmdLine parsingArgs, CommonFiles commonFilesInfo) {
-        int i;
         String removeTempFiles = parsingArgs.getRemoveTemporalFiles();
         String compressFiles = parsingArgs.getCompressFiles();
 
@@ -2386,163 +2098,10 @@ public class Guidance {
 
         int startChr = parsingArgs.getStart();
         int endChr = parsingArgs.getEnd();
-        String myFile = null;
-
-        for (i = startChr; i <= endChr; i++) {
+        for (int i = startChr; i <= endChr; i++) {
             commonFilesInfo.setPairsFileFinalStatus(i, finalStatus);
             commonFilesInfo.setShapeitHapsFileFinalStatus(i, finalStatus);
             commonFilesInfo.setShapeitSampleFileFinalStatus(i, finalStatus);
-        }
-    }
-
-    /**
-     * Method that performs the cleaning and compression of CommonFiles generated in the workflow
-     * 
-     * @param parsingArgs
-     * @param generalChromoInfo
-     * @param refPanels
-     * @param imputationFilesInfo
-     * @throws Exception
-     */
-    private static void cleanAndCompressImputationFiles(ParseCmdLine parsingArgs, ChromoInfo generalChromoInfo, List<String> refPanels,
-            ImputationFiles imputationFilesInfo) throws Exception {
-
-        int i;
-        int j;
-        int startChr = parsingArgs.getStart();
-        int endChr = parsingArgs.getEnd();
-        String myFile = null;
-        String myStatus = null;
-        int chunkSize = parsingArgs.getChunkSize();
-
-        for (j = 0; j < refPanels.size(); j++) {
-            for (i = startChr; i <= endChr; i++) {
-                int chromo = i;
-                int lim1 = 1;
-                int lim2 = lim1 + chunkSize - 1;
-                int numberOfChunks = generalChromoInfo.getMaxSize(chromo) / chunkSize;
-                int module = generalChromoInfo.getMaxSize(chromo) % chunkSize;
-                if (module != 0)
-                    numberOfChunks++;
-
-                for (int k = 0; k < numberOfChunks; k++) {
-                    myStatus = imputationFilesInfo.getImputedFileFinalStatus(j, i, lim1, lim2, chunkSize);
-                    myFile = imputationFilesInfo.getImputedFile(j, i, lim1, lim2, chunkSize);
-                    compressFileWithGzipOrDelete(myFile, myFile + ".gz", myStatus);
-
-                    myStatus = imputationFilesInfo.getFilteredFileFinalStatus(j, i, lim1, lim2, chunkSize);
-                    myFile = imputationFilesInfo.getFilteredFile(j, i, lim1, lim2, chunkSize);
-                    String myFileNoGz = myFile.substring(0, myFile.length() - 3);
-                    compressFileWithGzipOrDelete(myFileNoGz, myFile, myStatus);
-
-                    lim1 = lim1 + chunkSize;
-                    lim2 = lim2 + chunkSize;
-                }
-            }
-        }
-    }
-
-    /**
-     * Method that performs the compression of CommonFiles generated in the work flow
-     * 
-     * @param parsingArgs
-     * @param generalChromoInfo
-     * @param refPanels
-     * @param imputationFilesInfo
-     * @throws Exception
-     */
-    private static void compressImputationFiles(ParseCmdLine parsingArgs, ChromoInfo generalChromoInfo, List<String> refPanels,
-            ImputationFiles imputationFilesInfo) throws Exception {
-
-        int i;
-        int j;
-        int startChr = parsingArgs.getStart();
-        int endChr = parsingArgs.getEnd();
-        int chunkSize = parsingArgs.getChunkSize();
-
-        String myFile = null;
-        String myStatus = null;
-        System.out.println("[Guidance] Compressing ImputationFiles...");
-        for (j = 0; j < refPanels.size(); j++) {
-            for (i = startChr; i <= endChr; i++) {
-                int chromo = i;
-                int lim1 = 1;
-                int lim2 = lim1 + chunkSize - 1;
-                int numberOfChunks = generalChromoInfo.getMaxSize(chromo) / chunkSize;
-                int module = generalChromoInfo.getMaxSize(chromo) % chunkSize;
-                if (module != 0)
-                    numberOfChunks++;
-
-                for (int k = 0; k < numberOfChunks; k++) {
-                    myStatus = imputationFilesInfo.getImputedFileFinalStatus(j, i, lim1, lim2, chunkSize);
-                    myFile = imputationFilesInfo.getImputedFile(j, i, lim1, lim2, chunkSize);
-                    compressFileWithGzip(myFile, myFile + ".gz", myStatus);
-
-                    myStatus = imputationFilesInfo.getFilteredFileFinalStatus(j, i, lim1, lim2, chunkSize);
-                    myFile = imputationFilesInfo.getFilteredFile(j, i, lim1, lim2, chunkSize);
-                    String myFileNoGz = myFile.substring(0, myFile.length() - 3);
-                    compressFileWithGzip(myFileNoGz, myFile, myStatus);
-
-                    myStatus = imputationFilesInfo.getImputedInfoFileFinalStatus(j, i, lim1, lim2, chunkSize);
-                    myFile = imputationFilesInfo.getImputedInfoFile(j, i, lim1, lim2, chunkSize);
-                    compressFileWithGzip(myFile, myFile + ".gz", myStatus);
-
-                    lim1 = lim1 + chunkSize;
-                    lim2 = lim2 + chunkSize;
-                }
-            }
-        }
-    }
-
-    /**
-     * Method that deletes CommonFiles generated in the work flow
-     * 
-     * @param parsingArgs
-     * @param generalChromoInfo
-     * @param refPanels
-     * @param imputationFilesInfo
-     * @throws Exception
-     */
-    private static void deleteImputationFiles(ParseCmdLine parsingArgs, ChromoInfo generalChromoInfo, List<String> refPanels,
-            ImputationFiles imputationFilesInfo) throws Exception {
-
-        int i;
-        int j;
-        int startChr = parsingArgs.getStart();
-        int endChr = parsingArgs.getEnd();
-        int chunkSize = parsingArgs.getChunkSize();
-
-        String myFile = null;
-        String myStatus = null;
-
-        System.out.println("[Guidance] Deleting ImputationFiles...");
-        for (j = 0; j < refPanels.size(); j++) {
-            for (i = startChr; i <= endChr; i++) {
-                int chromo = i;
-                int lim1 = 1;
-                int lim2 = lim1 + chunkSize - 1;
-                int numberOfChunks = generalChromoInfo.getMaxSize(chromo) / chunkSize;
-                int module = generalChromoInfo.getMaxSize(chromo) % chunkSize;
-                if (module != 0)
-                    numberOfChunks++;
-
-                for (int k = 0; k < numberOfChunks; k++) {
-                    myStatus = imputationFilesInfo.getImputedFileFinalStatus(j, i, lim1, lim2, chunkSize);
-                    myFile = imputationFilesInfo.getImputedFile(j, i, lim1, lim2, chunkSize);
-                    deleteFile(myFile, myStatus);
-
-                    myStatus = imputationFilesInfo.getFilteredFileFinalStatus(j, i, lim1, lim2, chunkSize);
-                    myFile = imputationFilesInfo.getFilteredFile(j, i, lim1, lim2, chunkSize);
-                    deleteFile(myFile, myStatus);
-
-                    myStatus = imputationFilesInfo.getImputedInfoFileFinalStatus(j, i, lim1, lim2, chunkSize);
-                    myFile = imputationFilesInfo.getImputedInfoFile(j, i, lim1, lim2, chunkSize);
-                    deleteFile(myFile, myStatus);
-
-                    lim1 = lim1 + chunkSize;
-                    lim2 = lim2 + chunkSize;
-                }
-            }
         }
     }
 
@@ -2558,8 +2117,7 @@ public class Guidance {
      */
     private static void setFinalStatusForImputationFiles(ParseCmdLine parsingArgs, ImputationFiles imputationFilesInfo,
             ChromoInfo generalChromoInfo, List<String> refPanels) {
-        int i;
-        int j;
+
         int startChr = parsingArgs.getStart();
         int endChr = parsingArgs.getEnd();
         int chunkSize = parsingArgs.getChunkSize();
@@ -2580,12 +2138,10 @@ public class Guidance {
             finalStatus = "compressed";
         }
 
-        String myFile = null;
-
         if (imputationTool.equals("impute")) {
-            for (j = 0; j < refPanels.size(); j++) {
+            for (int j = 0; j < refPanels.size(); j++) {
                 String rPanel = refPanels.get(j);
-                for (i = startChr; i <= endChr; i++) {
+                for (int i = startChr; i <= endChr; i++) {
                     int chromo = i;
                     int lim1 = 1;
                     int lim2 = lim1 + chunkSize - 1;
@@ -2605,9 +2161,9 @@ public class Guidance {
                 }
             }
         } else if (imputationTool.equals("minimac")) {
-            for (j = 0; j < refPanels.size(); j++) {
+            for (int j = 0; j < refPanels.size(); j++) {
                 String rPanel = refPanels.get(j);
-                for (i = startChr; i <= endChr; i++) {
+                for (int i = startChr; i <= endChr; i++) {
                     int chromo = i;
                     int lim1 = 1;
                     int lim2 = lim1 + chunkSize - 1;
@@ -2639,8 +2195,7 @@ public class Guidance {
      */
     private static void setFinalStatusForAssocFiles(ParseCmdLine parsingArgs, AssocFiles assocFilesInfo, ChromoInfo generalChromoInfo,
             List<String> refPanels) {
-        int i;
-        int j;
+
         int startChr = parsingArgs.getStart();
         int endChr = parsingArgs.getEnd();
         int chunkSize = parsingArgs.getChunkSize();
@@ -2663,9 +2218,9 @@ public class Guidance {
         // Now we continue with the association
         int numberOfTestTypes = parsingArgs.getNumberOfTestTypeName();
         for (int tt = 0; tt < numberOfTestTypes; tt++) {
-            for (j = 0; j < refPanels.size(); j++) {
+            for (int j = 0; j < refPanels.size(); j++) {
                 String rPanel = refPanels.get(j);
-                for (i = startChr; i <= endChr; i++) {
+                for (int i = startChr; i <= endChr; i++) {
                     int chromo = i;
 
                     int maxSize = generalChromoInfo.getMaxSize(chromo);
@@ -2687,128 +2242,6 @@ public class Guidance {
                      * assocFilesInfo.setReducedFileFinalStatus(j, chromo, k, finalStatus); }
                      */
                 }
-            }
-        }
-    }
-
-    /**
-     * Method to copy files from sourceFile to destFile
-     * 
-     * @param source
-     * @param dest
-     * @throws IOException
-     */
-    private static void copyFile(File source, File dest) throws IOException {
-        Files.copy(source.toPath(), dest.toPath(), StandardCopyOption.REPLACE_EXISTING);
-    }
-
-    /**
-     * Method to compress a file with GZip or delete it
-     * 
-     * @param inputFile
-     * @param destGzFile
-     * @param finalStatus
-     */
-    private static void compressFileWithGzipOrDelete(String inputFile, String destGzFile, String finalStatus) {
-
-        // File theInputFile = new File(inputFile);
-        if (finalStatus.equals("compressed")) {
-            byte[] buffer = new byte[1024];
-            try {
-                FileOutputStream fileOutputStream = new FileOutputStream(destGzFile);
-                GZIPOutputStream gzipOuputStream = new GZIPOutputStream(fileOutputStream);
-                FileInputStream fileInput = new FileInputStream(inputFile);
-
-                int bytes_read;
-
-                while ((bytes_read = fileInput.read(buffer)) > 0) {
-                    gzipOuputStream.write(buffer, 0, bytes_read);
-                }
-
-                fileInput.close();
-                gzipOuputStream.finish();
-                gzipOuputStream.close();
-                // System.out.println("The file " + inputFile + " was compressed successfully!");
-
-                // Now we delete the original file
-                // The right way to delete the file, however COMPSs is not allowing us this yet //
-                /*
-                 * File fSeq = new File(inputFile); if (fSeq.exists()) { fSeq.delete(); } else {
-                 * System.out.println("The file " + inputFile + " does not exist!"); }
-                 */
-
-                // An alternative (and temporal) way to "delete" the file is putting 0 byts inside it.
-                try {
-                    GuidanceImpl.deleteFile(inputFile);
-                } catch (Exception e) {
-                    System.err.println("[Guidance] Exception trying the execution of deleteFile task");
-                    System.err.println(e.getMessage());
-                }
-            } catch (IOException ex) {
-                System.err.println(ex.getMessage());
-                ex.printStackTrace();
-            }
-        }
-    }
-
-    /**
-     * Method to delete a file
-     * 
-     * @param inputFile
-     * @param finalStatus
-     */
-    private static void deleteFile(String inputFile, String finalStatus) {
-        // File theInputFile = new File(inputFile);
-        if (finalStatus.equals("compressed")) {
-            byte[] buffer = new byte[1024];
-            try {
-                FileInputStream fileInput = new FileInputStream(inputFile);
-
-                // An alternative (and temporal) way to "delete" the file is putting 0 byts inside it.
-                // System.out.println("[Guidance] Deleting: " + inputFile);
-                try {
-                    GuidanceImpl.deleteFile(inputFile);
-                } catch (Exception e) {
-                    System.err.println("[Guidance] Exception trying the execution of deleteFile task");
-                    System.err.println(e.getMessage());
-                }
-            } catch (IOException ex) {
-                System.err.println(ex.getMessage());
-                ex.printStackTrace();
-
-            }
-        }
-    }
-
-    /**
-     * Method to compress files with gzip format
-     * 
-     * @param inputFile
-     * @param destGzFile
-     * @param finalStatus
-     */
-    private static void compressFileWithGzip(String inputFile, String destGzFile, String finalStatus) {
-
-        // File theInputFile = new File(inputFile);
-        if (finalStatus.equals("compressed")) {
-            byte[] buffer = new byte[1024];
-            try {
-                FileOutputStream fileOutputStream = new FileOutputStream(destGzFile);
-                GZIPOutputStream gzipOuputStream = new GZIPOutputStream(fileOutputStream);
-                FileInputStream fileInput = new FileInputStream(inputFile);
-
-                int bytes_read;
-
-                while ((bytes_read = fileInput.read(buffer)) > 0) {
-                    gzipOuputStream.write(buffer, 0, bytes_read);
-                }
-
-                fileInput.close();
-                gzipOuputStream.finish();
-                gzipOuputStream.close();
-            } catch (IOException ex) {
-                System.err.println(ex.getMessage());
-                ex.printStackTrace();
             }
         }
     }

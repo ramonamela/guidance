@@ -31,9 +31,9 @@
 
 package guidance;
 
-import java.util.zip.GZIPOutputStream;
-
 import guidance.exceptions.GuidanceTaskException;
+import guidance.files.FileUtils;
+import guidance.processes.ProcessUtils;
 
 import java.io.File;
 import java.io.Reader;
@@ -44,27 +44,19 @@ import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.RandomAccessFile;
 
 import java.util.ArrayList;
 import java.util.TreeMap;
 import java.util.Iterator;
 import java.util.Map.Entry;
 import java.util.Hashtable;
-
 import java.util.Set;
-
-import java.nio.channels.FileChannel;
-import java.nio.ByteBuffer;
-import java.nio.file.Files;
-import static java.nio.file.StandardCopyOption.*;
-import java.io.RandomAccessFile;
 import java.util.zip.GZIPInputStream;
-
 import java.util.Scanner;
 
 
@@ -126,10 +118,10 @@ public class GuidanceImpl {
         long startTime = System.currentTimeMillis();
         String cmd = null;
 
-        String tmpBedFile = newBedFile + ".bed";
-        String tmpBimFile = newBedFile + ".bim";
-        String tmpFamFile = newBedFile + ".fam";
-        String tmpLogFile = newBedFile + ".log";
+        // String tmpBedFile = newBedFile + ".bed";
+        // String tmpBimFile = newBedFile + ".bim";
+        // String tmpFamFile = newBedFile + ".fam";
+        // String tmpLogFile = newBedFile + ".log";
 
         cmd = plinkBinary + " --noweb --bed " + bedFile + " --bim " + bimFile + " --fam " + famFile + " --chr " + chromo
                 + " --recode --out " + newBedFile + " --make-bed";
@@ -137,30 +129,16 @@ public class GuidanceImpl {
         if (DEBUG) {
             System.out.println("[convertFromBedToBed] Command: " + cmd);
         }
-        ProcessBuilder pb = new ProcessBuilder(cmd.split(" "));
-        pb.environment().remove("LD_PRELOAD");
-        Process convertFromBedToBedProc = null;
-        try {
-            pb.start();
-        } catch (IOException ioe) {
-            throw new GuidanceTaskException(ioe);
-        }
 
-        // Handling the streams so that dead lock situation never occurs
-        try {
-            readOutputAndError(convertFromBedToBedProc.getInputStream(), newBedFile + ".stdout", convertFromBedToBedProc.getErrorStream(),
-                    newBedFile + ".stderr");
-        } catch (IOException ioe) {
-            throw new GuidanceTaskException(ioe);
-        }
-
-        // Check the proper ending of the process
+        // Execute the command retrieving its exitValue, output and error
         int exitValue = -1;
         try {
-            exitValue = convertFromBedToBedProc.waitFor();
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
+            exitValue = ProcessUtils.exec(cmd, newBedFile + ".stdout", newBedFile + ".stderr");
+        } catch (IOException ioe) {
+            throw new GuidanceTaskException(ioe);
         }
+
+        // Check process exit value
         if (exitValue != 0) {
             throw new GuidanceTaskException("[convertFromBedToBed] Error executing convertFromBedToBed job, exit value is: " + exitValue);
         }
@@ -203,45 +181,14 @@ public class GuidanceImpl {
             // File was not successfully renamed
         }
 
-        // If there is not output in the convertFromBedToBed process. Then we have to create some empty outputs.
-        File fa = new File(newBedFile);
-        if (!fa.exists()) {
-            System.out.println("[convertFromBedToBed] The file " + newBedFile + " does not exist, then we create an empty file");
-            try {
-                fa.createNewFile();
-            } catch (IOException ioe) {
-                throw new GuidanceTaskException(ioe);
-            }
-        }
-
-        fa = new File(newBimFile);
-        if (!fa.exists()) {
-            System.out.println("[convertFromBedToBed] The file " + newBimFile + " does not exist, then we create an empty file");
-            try {
-                fa.createNewFile();
-            } catch (IOException ioe) {
-                throw new GuidanceTaskException(ioe);
-            }
-        }
-
-        fa = new File(newFamFile);
-        if (!fa.exists()) {
-            System.out.println("[convertFromBedToBed] The file " + newFamFile + " does not exist, then we create an empty file");
-            try {
-                fa.createNewFile();
-            } catch (IOException ioe) {
-                throw new GuidanceTaskException(ioe);
-            }
-        }
-
-        fa = new File(logFile);
-        if (!fa.exists()) {
-            System.out.println("[convertFromBedToBed] The file " + logFile + " does not exist, then we create an empty file");
-            try {
-                fa.createNewFile();
-            } catch (IOException ioe) {
-                throw new GuidanceTaskException(ioe);
-            }
+        // If there is not output in the convertFromBedToBed process. Then we have to create some empty outputs
+        try {
+            FileUtils.createEmptyFile(newBedFile, "[convertFromBedToBed]");
+            FileUtils.createEmptyFile(newBimFile, "[convertFromBedToBed]");
+            FileUtils.createEmptyFile(newFamFile, "[convertFromBedToBed]");
+            FileUtils.createEmptyFile(logFile, "[convertFromBedToBed]");
+        } catch (IOException ioe) {
+            throw new GuidanceTaskException(ioe);
         }
 
         long stopTime = System.currentTimeMillis();
@@ -307,30 +254,16 @@ public class GuidanceImpl {
         if (DEBUG) {
             System.out.println("[convertFromBedToPed] Command: " + cmd);
         }
-        ProcessBuilder pb = new ProcessBuilder(cmd.split(" "));
-        pb.environment().remove("LD_PRELOAD");
-        Process convertFromBedToPedProc;
-        try {
-            convertFromBedToPedProc = pb.start();
-        } catch (IOException ioe) {
-            throw new GuidanceTaskException(ioe);
-        }
 
-        // Handling the streams so that dead lock situation never occurs
-        try {
-            readOutputAndError(convertFromBedToPedProc.getInputStream(), pedFile + ".stdout", convertFromBedToPedProc.getErrorStream(),
-                    pedFile + ".stderr");
-        } catch (IOException ioe) {
-            throw new GuidanceTaskException(ioe);
-        }
-
-        // Check the proper ending of the process
+        // Execute the command retrieving its exitValue, output and error
         int exitValue = -1;
         try {
-            exitValue = convertFromBedToPedProc.waitFor();
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
+            exitValue = ProcessUtils.exec(cmd, pedFile + ".stdout", pedFile + ".stderr");
+        } catch (IOException ioe) {
+            throw new GuidanceTaskException(ioe);
         }
+
+        // Check process exit value
         if (exitValue != 0) {
             throw new GuidanceTaskException("[convertFromBedToPed] Error executing convertFromBedToPed job, exit value is: " + exitValue);
         }
@@ -367,34 +300,12 @@ public class GuidanceImpl {
         }
 
         // If there is not output in the convertFromBedToPed process. Then we have to create some empty outputs.
-        File fa = new File(mapFile);
-        if (!fa.exists()) {
-            System.out.println("[convertFromBedToPed] The file " + mapFile + " does not exist, then we create an empty file");
-            try {
-                fa.createNewFile();
-            } catch (IOException ioe) {
-                throw new GuidanceTaskException(ioe);
-            }
-        }
-
-        fa = new File(pedFile);
-        if (!fa.exists()) {
-            System.out.println("[convertFromBedToPed] The file " + pedFile + " does not exist, then we create an empty file");
-            try {
-                fa.createNewFile();
-            } catch (IOException ioe) {
-                throw new GuidanceTaskException(ioe);
-            }
-        }
-
-        fa = new File(logFile);
-        if (!fa.exists()) {
-            System.out.println("[convertFromBedToPed] The file " + logFile + " does not exist, then we create an empty file");
-            try {
-                fa.createNewFile();
-            } catch (IOException ioe) {
-                throw new GuidanceTaskException(ioe);
-            }
+        try {
+            FileUtils.createEmptyFile(mapFile, "[convertFromBedToPed]");
+            FileUtils.createEmptyFile(pedFile, "[convertFromBedToPed]");
+            FileUtils.createEmptyFile(logFile, "[convertFromBedToPed]");
+        } catch (IOException ioe) {
+            throw new GuidanceTaskException(ioe);
         }
 
         long stopTime = System.currentTimeMillis();
@@ -457,53 +368,26 @@ public class GuidanceImpl {
         if (DEBUG) {
             System.out.println("[convertFromPedToGen] Command: " + cmd);
         }
-        ProcessBuilder pb = new ProcessBuilder(cmd.split(" "));
-        pb.environment().remove("LD_PRELOAD");
-        Process convertFromPedToGenProc;
-        try {
-            convertFromPedToGenProc = pb.start();
-        } catch (IOException ioe) {
-            throw new GuidanceTaskException(ioe);
-        }
 
-        // Handling the streams so that dead lock situation never occurs
-        try {
-            readOutputAndError(convertFromPedToGenProc.getInputStream(), genFile + ".stdout", convertFromPedToGenProc.getErrorStream(),
-                    genFile + ".stderr");
-        } catch (IOException ioe) {
-            throw new GuidanceTaskException(ioe);
-        }
-
-        // Check the proper ending of the process
+        // Execute the command retrieving its exitValue, output and error
         int exitValue = -1;
         try {
-            exitValue = convertFromPedToGenProc.waitFor();
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
+            exitValue = ProcessUtils.exec(cmd, genFile + ".stdout", genFile + ".stderr");
+        } catch (IOException ioe) {
+            throw new GuidanceTaskException(ioe);
         }
+
+        // Check process exit value
         if (exitValue != 0) {
             throw new GuidanceTaskException("[convertFromPedToGen] Error executing convertFromPedToGed job, exit value is: " + exitValue);
         }
 
         // If there is not output in the convertFromPedToGen process. Then we have to create some empty outputs.
-        File fa = new File(genFile);
-        if (!fa.exists()) {
-            System.out.println("[convertFromPedToGen] The file " + genFile + " does not exist, then we create an empty file");
-            try {
-                fa.createNewFile();
-            } catch (IOException ioe) {
-                throw new GuidanceTaskException(ioe);
-            }
-        }
-
-        fa = new File(sampleFile);
-        if (!fa.exists()) {
-            System.out.println("[convertFromPedToGen] The file " + sampleFile + " does not exist, then we create an empty file");
-            try {
-                fa.createNewFile();
-            } catch (IOException ioe) {
-                throw new GuidanceTaskException(ioe);
-            }
+        try {
+            FileUtils.createEmptyFile(genFile, "[convertFromPedToGen]");
+            FileUtils.createEmptyFile(sampleFile, "[convertFromPedToGen]");
+        } catch (IOException ioe) {
+            throw new GuidanceTaskException(ioe);
         }
 
         // Now we have to change the missing/unaffection/affection coding in the sample file from -9/1/2 to NA/0/1
@@ -577,14 +461,10 @@ public class GuidanceImpl {
             // File was not successfully renamed
         }
 
-        fa = new File(logFile);
-        if (!fa.exists()) {
-            System.out.println("[convertFromPedToGen] The file " + logFile + " does not exist, then we create an empty file");
-            try {
-                fa.createNewFile();
-            } catch (IOException ioe) {
-                throw new GuidanceTaskException(ioe);
-            }
+        try {
+            FileUtils.createEmptyFile(logFile, "[convertFromPedToGen]");
+        } catch (IOException ioe) {
+            throw new GuidanceTaskException(ioe);
         }
 
         long stopTime = System.currentTimeMillis();
@@ -800,30 +680,16 @@ public class GuidanceImpl {
             System.out.println("\n[DEBUG] Cmd -> " + cmd);
             System.out.println(" ");
         }
-        ProcessBuilder pb = new ProcessBuilder(cmd.split(" "));
-        pb.environment().remove("LD_PRELOAD");
-        Process gtoolSProc;
-        try {
-            gtoolSProc = pb.start();
-        } catch (IOException ioe) {
-            throw new GuidanceTaskException(ioe);
-        }
 
-        // Handling the streams so that dead lock situation never occurs
-        try {
-            readOutputAndError(gtoolSProc.getInputStream(), gtoolGenFile + ".stdout", gtoolSProc.getErrorStream(),
-                    gtoolGenFile + ".stderr");
-        } catch (IOException ioe) {
-            throw new GuidanceTaskException(ioe);
-        }
-
-        // Check the proper ending of the process
+        // Execute the command retrieving its exitValue, output and error
         int exitValue = -1;
         try {
-            exitValue = gtoolSProc.waitFor();
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
+            exitValue = ProcessUtils.exec(cmd, gtoolGenFile + ".stdout", gtoolGenFile + ".stderr");
+        } catch (IOException ioe) {
+            throw new GuidanceTaskException(ioe);
         }
+
+        // Check process exit value
         if (exitValue != 0) {
             throw new GuidanceTaskException("[gtoolS] Error executing gtoolSProc job, exit value is: " + exitValue);
         }
@@ -986,37 +852,23 @@ public class GuidanceImpl {
             System.out.println("\n[DEBUG] Command: " + cmd);
             System.out.println(" ");
         }
-        ProcessBuilder pb = new ProcessBuilder(cmd.split(" "));
-        pb.environment().remove("LD_PRELOAD");
-        Process qctoolSProc;
-        try {
-            qctoolSProc = pb.start();
-        } catch (IOException ioe) {
-            throw new GuidanceTaskException(ioe);
-        }
 
-        // Handling the streams so that dead lock situation never occurs
-        try {
-            readOutputAndError(qctoolSProc.getInputStream(), filteredFile + ".stdout", qctoolSProc.getErrorStream(),
-                    filteredFile + ".stderr");
-        } catch (IOException ioe) {
-            throw new GuidanceTaskException(ioe);
-        }
-
-        // Check the proper ending of the process
+        // Execute the command retrieving its exitValue, output and error
         int exitValue = -1;
         try {
-            exitValue = qctoolSProc.waitFor();
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
+            exitValue = ProcessUtils.exec(cmd, filteredFile + ".stdout", filteredFile + ".stderr");
+        } catch (IOException ioe) {
+            throw new GuidanceTaskException(ioe);
         }
+
+        // Check process exit value
         if (exitValue != 0) {
             throw new GuidanceTaskException("[qctoolS] Error executing qctoolSProc job, exit value is: " + exitValue);
         }
 
         // This tool always creates a filteredFile output (empty or not)
         // Now we need to GZ it and move to the output parameter
-        gzipFile(filteredFile, filteredFileGz);
+        FileUtils.gzipFile(filteredFile, filteredFileGz);
 
         long stopTime = System.currentTimeMillis();
         long elapsedTime = (stopTime - startTime) / 1000;
@@ -1056,7 +908,7 @@ public class GuidanceImpl {
         // We have to check the haplotypes file and extract tha allele information. For the format file used by shapeit,
         // the
         // indices for alleles are:
-        int rsIdIndex = 1;
+        // int rsIdIndex = 1;
         int posIndex = 2;
         int a1Index = 3;
         int a2Index = 4;
@@ -1088,8 +940,8 @@ public class GuidanceImpl {
             String line = "";
             while ((line = br.readLine()) != null) {
                 String[] splitted = line.split(separator);// delimiter defined previously.
-                String allele1 = splitted[a1Index];
-                String allele2 = splitted[a2Index];
+                // String allele1 = splitted[a1Index];
+                // String allele2 = splitted[a2Index];
                 String positionS = splitted[posIndex];
                 boolean excludeSNP = false;
 
@@ -1221,32 +1073,18 @@ public class GuidanceImpl {
             System.out.println("\n[DEBUG] Command: " + cmd);
             System.out.println(" ");
         }
-        ProcessBuilder pb = new ProcessBuilder(cmd.split(" "));
-        pb.environment().remove("LD_PRELOAD");
-        Process shapeitProc;
-        try {
-            shapeitProc = pb.start();
-        } catch (IOException ioe) {
-            throw new GuidanceTaskException(ioe);
-        }
 
-        // Handling the streams so that dead lock situation never occurs
+        // Execute the command retrieving its exitValue, output and error
         // Ugly issue: If we run shapeit_v1, all the stdXXX is done stderr, and there is not stdout
         // Ugly issue: If we run shapeit_v2, all the stdXXX is done stdout, and there is not stderr
+        int exitValue = -1;
         try {
-            readOutputAndError(shapeitProc.getInputStream(), shapeitHapsFile + ".stdout", shapeitProc.getErrorStream(),
-                    shapeitHapsFile + ".stderr");
+            exitValue = ProcessUtils.exec(cmd, shapeitHapsFile + ".stdout", shapeitHapsFile + ".stderr");
         } catch (IOException ioe) {
             throw new GuidanceTaskException(ioe);
         }
 
-        // Check the proper ending of the process
-        int exitValue = -1;
-        try {
-            exitValue = shapeitProc.waitFor();
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        }
+        // Check process exit value
         if (exitValue != 0) {
             System.err.println("[phasingBed] Warning executing shapeitProc job, exit value is: " + exitValue);
             System.err.println("[phasingBed]                         (This warning is not fatal).");
@@ -1272,11 +1110,7 @@ public class GuidanceImpl {
         // Now we rename shapeitHapsFileGz to shapeitHapsFile
         File source = new File(shapeitHapsFileGz);
         File dest = new File(shapeitHapsFile);
-        try {
-            copyFile(source, dest);
-        } catch (IOException ioe) {
-            throw new GuidanceTaskException(ioe);
-        }
+        FileUtils.copyFile(source, dest);
 
         long stopTime = System.currentTimeMillis();
         long elapsedTime = (stopTime - startTime) / 1000;
@@ -1365,30 +1199,16 @@ public class GuidanceImpl {
             System.out.println("\n[DEBUG] Command: " + cmd);
             System.out.println(" ");
         }
-        ProcessBuilder pb = new ProcessBuilder(cmd.split(" "));
-        pb.environment().remove("LD_PRELOAD");
-        Process shapeitProc;
-        try {
-            shapeitProc = pb.start();
-        } catch (IOException ioe) {
-            throw new GuidanceTaskException(ioe);
-        }
 
-        // Handling the streams so that dead lock situation never occurs
-        try {
-            readOutputAndError(shapeitProc.getInputStream(), shapeitHapsFile + ".stdout", shapeitProc.getErrorStream(),
-                    shapeitHapsFile + ".stderr");
-        } catch (IOException ioe) {
-            throw new GuidanceTaskException(ioe);
-        }
-
-        // Check the proper ending of the process
+        // Execute the command retrieving its exitValue, output and error
         int exitValue = -1;
         try {
-            exitValue = shapeitProc.waitFor();
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
+            exitValue = ProcessUtils.exec(cmd, shapeitHapsFile + ".stdout", shapeitHapsFile + ".stderr");
+        } catch (IOException ioe) {
+            throw new GuidanceTaskException(ioe);
         }
+
+        // Check process exit value
         if (exitValue != 0) {
             System.err.println("[phasing] Warning executing shapeitProc job, exit value is: " + exitValue);
             System.err.println("[phasing]                         (This warning is not fatal).");
@@ -1406,11 +1226,7 @@ public class GuidanceImpl {
         // Now we rename shapeitHapsFileGz to shapeitHapsFile
         File source = new File(shapeitHapsFileGz);
         File dest = new File(shapeitHapsFile);
-        try {
-            copyFile(source, dest);
-        } catch (IOException ioe) {
-            throw new GuidanceTaskException(ioe);
-        }
+        FileUtils.copyFile(source, dest);
 
         long stopTime = System.currentTimeMillis();
         long elapsedTime = (stopTime - startTime) / 1000;
@@ -1513,32 +1329,18 @@ public class GuidanceImpl {
             System.out.println("\n[DEBUG] Command: " + cmd);
             System.out.println(" ");
         }
-        ProcessBuilder pb = new ProcessBuilder(cmd.split(" "));
-        pb.environment().remove("LD_PRELOAD");
-        Process shapeitProc;
-        try {
-            shapeitProc = pb.start();
-        } catch (IOException ioe) {
-            throw new GuidanceTaskException(ioe);
-        }
 
-        // Handling the streams so that dead lock situation never occurs
+        // Execute the command retrieving its exitValue, output and error
         // Ugly issue: If we run shapeit_v1, all the stdXXX is done stderr, and there is not stdout
         // Ugly issue: If we run shapeit_v2, all the stdXXX is done stdout, and there is not stderr
+        int exitValue = -1;
         try {
-            readOutputAndError(shapeitProc.getInputStream(), filteredHapsFile + ".stdout", shapeitProc.getErrorStream(),
-                    filteredHapsFile + ".stderr");
+            exitValue = ProcessUtils.exec(cmd, filteredHapsFile + ".stdout", filteredHapsFile + ".stderr");
         } catch (IOException ioe) {
             throw new GuidanceTaskException(ioe);
         }
 
-        // Check the proper ending of the process
-        int exitValue = -1;
-        try {
-            exitValue = shapeitProc.waitFor();
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        }
+        // Check process exit value
         if (exitValue != 0) {
             System.err.println("[filterHaplotypes] Warning executing shapeitProc job in mode -convert, exit value is: " + exitValue);
             System.err.println("[filterHaplotypes]                         (This warning is not fatal).");
@@ -1590,19 +1392,11 @@ public class GuidanceImpl {
         // Now we rename filteredHapsFileGz to filteredHapsFile
         File source = new File(filteredHapsFileGz);
         File dest = new File(filteredHapsFile);
-        try {
-            copyFile(source, dest);
-        } catch (IOException ioe) {
-            throw new GuidanceTaskException(ioe);
-        }
+        FileUtils.copyFile(source, dest);
 
         source = new File(filteredHapsVcfFileGz);
         dest = new File(filteredHapsVcfFile);
-        try {
-            copyFile(source, dest);
-        } catch (IOException ioe) {
-            throw new GuidanceTaskException(ioe);
-        }
+        FileUtils.copyFile(source, dest);
 
         long stopTime = System.currentTimeMillis();
         long elapsedTime = (stopTime - startTime) / 1000;
@@ -1705,29 +1499,16 @@ public class GuidanceImpl {
             System.out.println("\n[DEBUG] Command: " + cmd);
             System.out.println(" ");
         }
-        ProcessBuilder pb = new ProcessBuilder(cmd.split(" "));
-        pb.environment().remove("LD_PRELOAD");
-        Process imputeProc;
-        try {
-            imputeProc = pb.start();
-        } catch (IOException ioe) {
-            throw new GuidanceTaskException(ioe);
-        }
 
-        // Handling the streams so that dead lock situation never occurs
-        try {
-            readOutputAndError(imputeProc.getInputStream(), imputeFile + ".stdout", imputeProc.getErrorStream(), imputeFile + ".stderr");
-        } catch (IOException ioe) {
-            throw new GuidanceTaskException(ioe);
-        }
-
-        // Check the proper ending of the process
+        // Execute the command retrieving its exitValue, output and error
         int exitValue = -1;
         try {
-            exitValue = imputeProc.waitFor();
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
+            exitValue = ProcessUtils.exec(cmd, imputeFile + ".stdout", imputeFile + ".stderr");
+        } catch (IOException ioe) {
+            throw new GuidanceTaskException(ioe);
         }
+
+        // Check process exit value
         if (exitValue != 0) {
             System.err.println("[impute] Warning executing imputeProc job, exit value is: " + exitValue);
             System.err.println("                        (This warning is not fatal).");
@@ -1746,44 +1527,18 @@ public class GuidanceImpl {
             } catch (IOException ioe) {
                 throw new GuidanceTaskException(ioe);
             }
-            gzipFile(imputeFile, imputeFile + ".gz");
+            FileUtils.gzipFile(imputeFile, imputeFile + ".gz");
         }
         File source = new File(imputeFile + ".gz");
         File dest = new File(imputeFile);
+        FileUtils.copyFile(source, dest);
+
         try {
-            copyFile(source, dest);
+            FileUtils.createEmptyFile(imputeFileInfo, "[imputeWithImpute]");
+            FileUtils.createEmptyFile(imputeFileSummary, "[imputeWithImpute]");
+            FileUtils.createEmptyFile(imputeFileWarnings, "[imputeWithImpute]");
         } catch (IOException ioe) {
             throw new GuidanceTaskException(ioe);
-        }
-
-        File fImputeInfo = new File(imputeFileInfo);
-        if (!fImputeInfo.exists()) {
-            try {
-                fImputeInfo.createNewFile();
-            } catch (IOException ioe) {
-                throw new GuidanceTaskException(ioe);
-            }
-            /* do something */
-        }
-
-        File fImputeSummary = new File(imputeFileSummary);
-        if (!fImputeSummary.exists()) {
-            try {
-                fImputeSummary.createNewFile();
-            } catch (IOException ioe) {
-                throw new GuidanceTaskException(ioe);
-            }
-            /* do something */
-        }
-
-        File fImputeWarnings = new File(imputeFileWarnings);
-        if (!fImputeWarnings.exists()) {
-            try {
-                fImputeWarnings.createNewFile();
-            } catch (IOException ioe) {
-                throw new GuidanceTaskException(ioe);
-            }
-            /* do something */
         }
 
         long stopTime = System.currentTimeMillis();
@@ -1888,30 +1643,16 @@ public class GuidanceImpl {
             System.out.println("\n[DEBUG] Command: " + cmd);
             System.out.println(" ");
         }
-        ProcessBuilder pb = new ProcessBuilder(cmd.split(" "));
-        pb.environment().remove("LD_PRELOAD");
-        Process minimacProc;
-        try {
-            minimacProc = pb.start();
-        } catch (IOException ioe) {
-            throw new GuidanceTaskException(ioe);
-        }
 
-        // Handling the streams so that dead lock situation never occurs
-        try {
-            readOutputAndError(minimacProc.getInputStream(), imputedMMFileName + ".stdout", minimacProc.getErrorStream(),
-                    imputedMMFileName + ".stderr");
-        } catch (IOException ioe) {
-            throw new GuidanceTaskException(ioe);
-        }
-
-        // Check the proper ending of the process
+        // Execute the command retrieving its exitValue, output and error
         int exitValue = -1;
         try {
-            exitValue = minimacProc.waitFor();
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
+            exitValue = ProcessUtils.exec(cmd, imputedMMFileName + ".stdout", imputedMMFileName + ".stderr");
+        } catch (IOException ioe) {
+            throw new GuidanceTaskException(ioe);
         }
+
+        // Check process exit value
         if (exitValue != 0) {
             System.err.println("[impute] Warning executing minimacProc job, exit value is: " + exitValue);
             System.err.println("                        (This warning is not fatal).");
@@ -1930,15 +1671,11 @@ public class GuidanceImpl {
             } catch (IOException ioe) {
                 throw new GuidanceTaskException(ioe);
             }
-            gzipFile(imputedMMInfoFile, imputedMMInfoFile + ".info.gz");
+            FileUtils.gzipFile(imputedMMInfoFile, imputedMMInfoFile + ".info.gz");
         }
         File source = new File(imputedMMFileName + ".info.gz");
         File dest = new File(imputedMMInfoFile);
-        try {
-            copyFile(source, dest);
-        } catch (IOException ioe) {
-            throw new GuidanceTaskException(ioe);
-        }
+        FileUtils.copyFile(source, dest);
 
         // File draftFileGz = new File(imputedMMFileName + ".info.draft.gz");
         // File draftFile = new File(imputedMMDraftFile);
@@ -1962,15 +1699,11 @@ public class GuidanceImpl {
             } catch (IOException ioe) {
                 throw new GuidanceTaskException(ioe);
             }
-            gzipFile(imputedMMErateFile, imputedMMErateFile + ".erate.gz");
+            FileUtils.gzipFile(imputedMMErateFile, imputedMMErateFile + ".erate.gz");
         }
         source = new File(imputedMMFileName + ".erate.gz");
         dest = new File(imputedMMErateFile);
-        try {
-            copyFile(source, dest);
-        } catch (IOException ioe) {
-            throw new GuidanceTaskException(ioe);
-        }
+        FileUtils.copyFile(source, dest);
 
         File recFileGz = new File(imputedMMFileName + ".rec.gz");
         File recFile = new File(imputedMMRecFile);
@@ -1982,15 +1715,11 @@ public class GuidanceImpl {
             } catch (IOException ioe) {
                 throw new GuidanceTaskException(ioe);
             }
-            gzipFile(imputedMMRecFile, imputedMMRecFile + ".rec.gz");
+            FileUtils.gzipFile(imputedMMRecFile, imputedMMRecFile + ".rec.gz");
         }
         source = new File(imputedMMFileName + ".rec.gz");
         dest = new File(imputedMMRecFile);
-        try {
-            copyFile(source, dest);
-        } catch (IOException ioe) {
-            throw new GuidanceTaskException(ioe);
-        }
+        FileUtils.copyFile(source, dest);
 
         File doseFileGz = new File(imputedMMFileName + ".dose.gz");
         File doseFile = new File(imputedMMDoseFile);
@@ -2002,22 +1731,15 @@ public class GuidanceImpl {
             } catch (IOException ioe) {
                 throw new GuidanceTaskException(ioe);
             }
-            gzipFile(imputedMMDoseFile, imputedMMDoseFile + ".dose.gz");
+            FileUtils.gzipFile(imputedMMDoseFile, imputedMMDoseFile + ".dose.gz");
         }
         source = new File(imputedMMFileName + ".dose.gz");
         dest = new File(imputedMMDoseFile);
-        try {
-            copyFile(source, dest);
-        } catch (IOException ioe) {
-            throw new GuidanceTaskException(ioe);
-        }
+        FileUtils.copyFile(source, dest);
+
         source = new File(imputedMMFileName + ".stdout");
         dest = new File(imputedMMLogFile);
-        try {
-            copyFile(source, dest);
-        } catch (IOException ioe) {
-            throw new GuidanceTaskException(ioe);
-        }
+        FileUtils.copyFile(source, dest);
 
         long stopTime = System.currentTimeMillis();
         long elapsedTime = (stopTime - startTime) / 1000;
@@ -2153,10 +1875,10 @@ public class GuidanceImpl {
         File outFilteredFile = new File(outputFile);
         File outCondensedFile = new File(outputCondensedFile);
 
-        // Trys to create the file
+        // Tries to create the file
         boolean bool = false;
         try {
-            outFilteredFile.createNewFile();
+            bool = outFilteredFile.createNewFile();
         } catch (IOException ioe) {
             throw new GuidanceTaskException(ioe);
         }
@@ -2167,7 +1889,7 @@ public class GuidanceImpl {
         System.out.println("\n[DEBUG] \t- Output file " + outputCondensedFile + " was succesfuly created? " + bool);
 
         Hashtable<String, Integer> inputFileHashTableIndex = new Hashtable<>();
-        Hashtable<Integer, String> inputFileHashTableIndexReversed = new Hashtable<>();
+        // Hashtable<Integer, String> inputFileHashTableIndexReversed = new Hashtable<>();
 
         try (GZIPInputStream inputGz = new GZIPInputStream(new FileInputStream(inputFile));
                 Reader decoder = new InputStreamReader(inputGz);
@@ -2182,7 +1904,7 @@ public class GuidanceImpl {
             writerFiltered.newLine();
 
             inputFileHashTableIndex = createHashWithHeader(line, "\t");
-            inputFileHashTableIndexReversed = createHashWithHeaderReversed(line, "\t");
+            // inputFileHashTableIndexReversed = createHashWithHeaderReversed(line, "\t");
 
             String headerCondensed = "chr\tposition\talleleA\talleleB\tpvalue\tinfo_all";
             writerCondensed.write(headerCondensed);
@@ -2256,23 +1978,15 @@ public class GuidanceImpl {
         }
 
         // Then, we create the gz file and rename it
-        gzipFile(outputFile, outputFile + ".gz");
+        FileUtils.gzipFile(outputFile, outputFile + ".gz");
         File fc = new File(outputFile);
         File fGz = new File(outputFile + ".gz");
-        try {
-            copyFile(fGz, fc);
-        } catch (IOException ioe) {
-            throw new GuidanceTaskException(ioe);
-        }
+        FileUtils.copyFile(fGz, fc);
 
-        gzipFile(outputCondensedFile, outputCondensedFile + ".gz");
+        FileUtils.gzipFile(outputCondensedFile, outputCondensedFile + ".gz");
         fc = new File(outputCondensedFile);
         fGz = new File(outputCondensedFile + ".gz");
-        try {
-            copyFile(fGz, fc);
-        } catch (IOException ioe) {
-            throw new GuidanceTaskException(ioe);
-        }
+        FileUtils.copyFile(fGz, fc);
 
         long stopTime = System.currentTimeMillis();
         long elapsedTime = (stopTime - startTime) / 1000;
@@ -2393,14 +2107,10 @@ public class GuidanceImpl {
         }
 
         // Then, we create the gz file and rename it
-        gzipFile(filteredByAllC, filteredByAllC + ".gz");
+        FileUtils.gzipFile(filteredByAllC, filteredByAllC + ".gz");
         File fc = new File(filteredByAllC);
         File fGz = new File(filteredByAllC + ".gz");
-        try {
-            copyFile(fGz, fc);
-        } catch (IOException ioe) {
-            throw new GuidanceTaskException(ioe);
-        }
+        FileUtils.copyFile(fGz, fc);
 
         long stopTime = System.currentTimeMillis();
         long elapsedTime = (stopTime - startTime) / 1000;
@@ -2447,7 +2157,6 @@ public class GuidanceImpl {
         // System.out.println("\n[DEBUG] \t- Output file " + outputFile + " was succesfuly created? " + bool);
 
         try (BufferedWriter writerCondensed = new BufferedWriter(new FileWriter(outCondensedFile))) {
-
             try (GZIPInputStream inputGz = new GZIPInputStream(new FileInputStream(inputAFile));
                     Reader decoder = new InputStreamReader(inputGz);
                     BufferedReader br = new BufferedReader(decoder)) {
@@ -2489,14 +2198,10 @@ public class GuidanceImpl {
         }
 
         // Then, we create the gz file and rename it
-        gzipFile(outputFile, outputFile + ".gz");
+        FileUtils.gzipFile(outputFile, outputFile + ".gz");
         File fc = new File(outputFile);
         File fGz = new File(outputFile + ".gz");
-        try {
-            copyFile(fGz, fc);
-        } catch (IOException ioe) {
-            throw new GuidanceTaskException(ioe);
-        }
+        FileUtils.copyFile(fGz, fc);
 
         long stopTime = System.currentTimeMillis();
         long elapsedTime = (stopTime - startTime) / 1000;
@@ -2521,6 +2226,7 @@ public class GuidanceImpl {
      */
     public static void combinePanels(String resultsPanelA, String resultsPanelB, String resultsPanelC, String cmdToStore)
             throws GuidanceTaskException {
+        
         if (DEBUG) {
             System.out.println("\n[DEBUG] Running combinePanels with parameters:");
             System.out.println("[DEBUG] \t- resultsPanelA             : " + resultsPanelA);
@@ -2681,6 +2387,7 @@ public class GuidanceImpl {
      */
     public static void combinePanelsComplex(String resultsPanelA, String resultsPanelB, String resultsPanelC, int lim1, int lim2,
             String cmdToStore) throws GuidanceTaskException {
+        
         if (DEBUG) {
             System.out.println("\n[DEBUG] Running combinePanelsComplex with parameters:");
             System.out.println("[DEBUG] \t- resultsPanelA             : " + resultsPanelA);
@@ -2706,8 +2413,8 @@ public class GuidanceImpl {
         int infoIdx = 0;
 
         // First, we uncompress the input files
-        gunzipFile(resultsPanelA, resultsPanelA + ".temp");
-        gunzipFile(resultsPanelB, resultsPanelB + ".temp");
+        FileUtils.gunzipFile(resultsPanelA, resultsPanelA + ".temp");
+        FileUtils.gunzipFile(resultsPanelB, resultsPanelB + ".temp");
 
         // We have to create the outputFile for this combination:
         // We verify that a file with the same name does not exist.
@@ -2812,7 +2519,7 @@ public class GuidanceImpl {
         Double infoA;
         Double infoB;
 
-        String posAllelesEqual = null;
+        // String posAllelesEqual = null;
         String posAllelesReverse = null;
         String posAllelesComplement = null;
         String posAllelesComplementAndReverse = null;
@@ -2832,7 +2539,7 @@ public class GuidanceImpl {
             splittedA = lineA.split("\t");
             infoA = Double.parseDouble(splittedA[infoIdx]);
 
-            posAllelesEqual = positionA1A2Chr;
+            // posAllelesEqual = positionA1A2Chr;
             posAllelesReverse = splittedA[posIdx] + "_" + getAllele(splittedA[a1Idx], splittedA[a2Idx], "reverse") + "_"
                     + splittedA[chrIdx];
             posAllelesComplement = splittedA[posIdx] + "_" + getAllele(splittedA[a1Idx], splittedA[a2Idx], "complement") + "_"
@@ -2969,14 +2676,10 @@ public class GuidanceImpl {
         // System.out.println("\n[DEBUG] We have stored snps from chromosome " + chromoS + " in the output file");
 
         // Then, we create the gz file and rename it
-        gzipFile(resultsPanelC, resultsPanelC + ".gz");
+        FileUtils.gzipFile(resultsPanelC, resultsPanelC + ".gz");
         File fc = new File(resultsPanelC);
         File fGz = new File(resultsPanelC + ".gz");
-        try {
-            copyFile(fGz, fc);
-        } catch (IOException ioe) {
-            throw new GuidanceTaskException(ioe);
-        }
+        FileUtils.copyFile(fGz, fc);
 
         File fA = new File(resultsPanelA + ".temp");
         fA.delete();
@@ -2986,7 +2689,7 @@ public class GuidanceImpl {
         System.out.println("\n[DEBUG] Finished all chromosomes");
 
         long stopTime = System.currentTimeMillis();
-        long elapsedTime = (stopTime - startTime) / 1000;
+        long elapsedTime = (stopTime - startTime) / 1_000;
         if (DEBUG) {
             System.out.println("\n[DEBUG] combinePanelsComplex startTime: " + startTime);
             System.out.println("\n[DEBUG] combinePanelsComplex endTime: " + stopTime);
@@ -3048,7 +2751,7 @@ public class GuidanceImpl {
         // bool);
 
         Hashtable<String, Integer> inputFileHashTableIndex = new Hashtable<>();
-        Hashtable<Integer, String> inputFileHashTableIndexReversed = new Hashtable<>();
+        // Hashtable<Integer, String> inputFileHashTableIndexReversed = new Hashtable<>();
 
         try (BufferedWriter writerCondensed = new BufferedWriter(new FileWriter(outCondensedFile))) {
 
@@ -3059,7 +2762,7 @@ public class GuidanceImpl {
                 String line = br.readLine();
 
                 inputFileHashTableIndex = createHashWithHeader(line, "\t");
-                inputFileHashTableIndexReversed = createHashWithHeaderReversed(line, "\t");
+                // inputFileHashTableIndexReversed = createHashWithHeaderReversed(line, "\t");
 
                 String headerCondensed = "CHR\tBP\tP";
                 writerCondensed.write(headerCondensed);
@@ -3134,13 +2837,13 @@ public class GuidanceImpl {
                         BufferedReader br = new BufferedReader(decoder);) {
 
                     inputFileHashTableIndex = new Hashtable<>();
-                    inputFileHashTableIndexReversed = new Hashtable<>();
+                    // inputFileHashTableIndexReversed = new Hashtable<>();
 
                     // I read the header
                     String line = br.readLine();
 
                     inputFileHashTableIndex = createHashWithHeader(line, "\t");
-                    inputFileHashTableIndexReversed = createHashWithHeaderReversed(line, "\t");
+                    // inputFileHashTableIndexReversed = createHashWithHeaderReversed(line, "\t");
 
                     while ((line = br.readLine()) != null) {
                         String[] splittedLine = line.split("\t");// delimiter I assume single space.
@@ -3207,14 +2910,10 @@ public class GuidanceImpl {
             throw new GuidanceTaskException(ioe);
         }
 
-        gzipFile(combinedCondensedFile, combinedCondensedFile + ".gz");
+        FileUtils.gzipFile(combinedCondensedFile, combinedCondensedFile + ".gz");
         File fc = new File(combinedCondensedFile);
         File fGz = new File(combinedCondensedFile + ".gz");
-        try {
-            copyFile(fGz, fc);
-        } catch (IOException ioe) {
-            throw new GuidanceTaskException(ioe);
-        }
+        FileUtils.copyFile(fGz, fc);
 
         long stopTime = System.currentTimeMillis();
         long elapsedTime = (stopTime - startTime) / 1000;
@@ -3301,7 +3000,7 @@ public class GuidanceImpl {
             String[] splittedA = lineA.split("\t");
             Double infoA = Double.parseDouble(splittedA[2]);
 
-            String posAllelesEqual = positionA1A2Chr;
+            // String posAllelesEqual = positionA1A2Chr;
             String posAllelesReverse = splittedA[0] + "_" + getAllele(splittedA[4], splittedA[5], "reverse") + "_" + splittedA[35];
             String posAllelesComplement = splittedA[0] + "_" + getAllele(splittedA[4], splittedA[5], "complement") + "_" + splittedA[35];
             String posAllelesComplementAndReverse = splittedA[0] + "_" + getAllele(splittedA[4], splittedA[5], "complementAndReverse") + "_"
@@ -3543,14 +3242,10 @@ public class GuidanceImpl {
         }
 
         // Then, we create the gz file and rename it
-        gzipFile(outputTopHitFile, outputTopHitFile + ".gz");
+        FileUtils.gzipFile(outputTopHitFile, outputTopHitFile + ".gz");
         File fc = new File(outputTopHitFile);
         File fGz = new File(outputTopHitFile + ".gz");
-        try {
-            copyFile(fGz, fc);
-        } catch (IOException ioe) {
-            throw new GuidanceTaskException(ioe);
-        }
+        FileUtils.copyFile(fGz, fc);
 
         long stopTime = System.currentTimeMillis();
         long elapsedTime = (stopTime - startTime) / 1000;
@@ -3735,14 +3430,10 @@ public class GuidanceImpl {
         }
 
         // Then, we create the gz file and rename it
-        gzipFile(outputTopHitFile, outputTopHitFile + ".gz");
+        FileUtils.gzipFile(outputTopHitFile, outputTopHitFile + ".gz");
         File fc = new File(outputTopHitFile);
         File fGz = new File(outputTopHitFile + ".gz");
-        try {
-            copyFile(fGz, fc);
-        } catch (IOException ioe) {
-            throw new GuidanceTaskException(ioe);
-        }
+        FileUtils.copyFile(fGz, fc);
 
         long stopTime = System.currentTimeMillis();
         long elapsedTime = (stopTime - startTime) / 1000;
@@ -3802,7 +3493,7 @@ public class GuidanceImpl {
 
         // First, we have to decompress the input file
         String theInputFile = lastCondensedFile + ".temp1";
-        gunzipFile(lastCondensedFile, theInputFile);
+        FileUtils.gunzipFile(lastCondensedFile, theInputFile);
 
         String cmd = null;
         cmd = rScriptBinDir + "/Rscript " + rScriptDir + "/qqplot_manhattan.R " + theInputFile + " " + qqPlotFile + " " + manhattanPlotFile
@@ -3812,22 +3503,16 @@ public class GuidanceImpl {
             System.out.println("\n[DEBUG] Cmd -> " + cmd);
             System.out.println(" ");
         }
-        ProcessBuilder pb = new ProcessBuilder(cmd.split(" "));
-        pb.environment().remove("LD_PRELOAD");
-        Process generateQQManProc;
+
+        // Execute the command retrieving its exitValue, output and error
+        int exitValue = -1;
         try {
-            generateQQManProc = pb.start();
+            exitValue = ProcessUtils.exec(cmd, lastCondensedFile + ".stdout", lastCondensedFile + ".stderr");
         } catch (IOException ioe) {
             throw new GuidanceTaskException(ioe);
         }
 
-        // Check the proper ending of the process
-        int exitValue = -1;
-        try {
-            exitValue = generateQQManProc.waitFor();
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        }
+        // Check process exit value
         if (exitValue != 0) {
             throw new GuidanceTaskException(
                     "[generateQQManhattanPlots] Error executing generateQQManProc job, exit value is: " + exitValue);
@@ -3859,7 +3544,7 @@ public class GuidanceImpl {
      * @throws InterruptedException
      * @throws Exception
      */
-    public static void snptest(String mergedGenFile, String mergedSampleFile, String snptestOutFile, String snptestLogFile,
+    public static void snptest(String mergedGenFile, String mergedSampleFile, String snptestOutFileGz, String snptestLogFile,
             String responseVar, String covariables, String theChromo, String cmdToStore) throws GuidanceTaskException {
 
         String snptestBinary = System.getenv("SNPTESTBINARY");
@@ -3872,7 +3557,7 @@ public class GuidanceImpl {
             System.out.println("[DEBUG] \t- snptestBinary                    : " + snptestBinary);
             System.out.println("[DEBUG] \t- Input mergedGenFile              : " + mergedGenFile);
             System.out.println("[DEBUG] \t- Input mergedSampleFile           : " + mergedSampleFile);
-            System.out.println("[DEBUG] \t- Output snptestOutFile            : " + snptestOutFile);
+            System.out.println("[DEBUG] \t- Output snptestOutFile            : " + snptestOutFileGz);
             System.out.println("[DEBUG] \t- Output snptestLogFile            : " + snptestLogFile);
             System.out.println("[DEBUG] \t- Input responseVar               : " + responseVar);
             System.out.println("[DEBUG] \t- Input covariables                : " + covariables);
@@ -3901,8 +3586,9 @@ public class GuidanceImpl {
             mergedGenFileGz = mergedGenFile + ".gz";
         }
 
-        // Now we create the output file name: snptestOutFileGz
-        String snptestOutFileGz = snptestOutFile + ".gz";
+        // The SNPTest Out parameter is a GZ file. We retrieve its name for the binary output and we will compress it
+        // later
+        String snptestOutFile = snptestOutFileGz.substring(0, snptestOutFileGz.length() - 3);
 
         String cmd = null;
 
@@ -3934,46 +3620,16 @@ public class GuidanceImpl {
                 System.out.println("\n[DEBUG] Cmd -> " + cmd);
                 System.out.println(" ");
             }
-            ProcessBuilder pb = new ProcessBuilder(cmd.split(" "));
-            pb.environment().remove("LD_PRELOAD");
-            Process snptestProc;
-            try {
-                snptestProc = pb.start();
-            } catch (IOException ioe) {
-                throw new GuidanceTaskException(ioe);
-            }
 
-            // Handling the streams so that dead lock situation never occurs
-            try (BufferedInputStream bisInp = new BufferedInputStream(snptestProc.getInputStream());
-                    BufferedOutputStream bosInp = new BufferedOutputStream(new FileOutputStream(snptestLogFile + ".stdout"))) {
-
-                byte[] b = new byte[10240];
-                int read;
-                while ((read = bisInp.read(b)) >= 0) {
-                    bosInp.write(b, 0, read);
-                }
-            } catch (IOException ioe) {
-                throw new GuidanceTaskException(ioe);
-            }
-            try (BufferedInputStream bisErr = new BufferedInputStream(snptestProc.getErrorStream());
-                    BufferedOutputStream bosErr = new BufferedOutputStream(new FileOutputStream(snptestLogFile + ".stderr"))) {
-
-                byte[] b = new byte[10240];
-                int read;
-                while ((read = bisErr.read(b)) >= 0) {
-                    bosErr.write(b, 0, read);
-                }
-            } catch (IOException ioe) {
-                throw new GuidanceTaskException(ioe);
-            }
-
-            // Check the proper ending of the process
+            // Execute the command retrieving its exitValue, output and error
             int exitValue = -1;
             try {
-                exitValue = snptestProc.waitFor();
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
+                exitValue = ProcessUtils.exec(cmd, snptestLogFile + ".stdout", snptestLogFile + ".stderr");
+            } catch (IOException ioe) {
+                throw new GuidanceTaskException(ioe);
             }
+
+            // Check process exit value
             if (exitValue != 0) {
                 System.err.println("[snptest] Error executing snptestProc job, exit value is: " + exitValue);
                 System.err.println("                         (This error is not fatal).");
@@ -3981,34 +3637,16 @@ public class GuidanceImpl {
             }
         }
 
-        // If there is not output in the snptest process. Then we have to create some empty outputs.
-        File fa = new File(snptestOutFile);
-        if (!fa.exists()) {
-            try {
-                fa.createNewFile();
-            } catch (IOException ioe) {
-                throw new GuidanceTaskException(ioe);
-            }
-        }
-
-        // Then, we create the gz file and rename it
-        gzipFile(snptestOutFile, snptestOutFileGz);
-
-        File fGz = new File(snptestOutFileGz);
+        // The SNP Test binary does not create an empty file if there are not outputs. Check it
         try {
-            copyFile(fGz, fa);
+            FileUtils.createEmptyFile(snptestOutFile, "[snptest]");
+            FileUtils.createEmptyFile(snptestLogFile, "[snptest]");
         } catch (IOException ioe) {
             throw new GuidanceTaskException(ioe);
         }
 
-        File fb = new File(snptestLogFile);
-        if (!fb.exists()) {
-            try {
-                fb.createNewFile();
-            } catch (IOException ioe) {
-                throw new GuidanceTaskException(ioe);
-            }
-        }
+        // Then, we create the gz file and rename it to the output parameter
+        FileUtils.gzipFile(snptestOutFile, snptestOutFileGz);
 
         long stopTime = System.currentTimeMillis();
         long elapsedTime = (stopTime - startTime) / 1000;
@@ -4019,28 +3657,6 @@ public class GuidanceImpl {
             System.out.println("\n[DEBUG] Finished execution of snptest.");
         }
     }
-
-    /*
-     * public static void mergeTwoChunks(String reduceFileA, String reduceFileB, String reduceFileC) throws IOException,
-     * InterruptedException, Exception { if (debug) { System.out.println("\nRunning mergeTwoChunks with parameters:");
-     * System.out.println("\t- Input reduceFileA            : " + reduceFileA);
-     * System.out.println("\t- Input reduceFileB            : " + reduceFileB);
-     * System.out.println("\t- Output reduceFileC           : " + reduceFileC); }
-     * 
-     * String cmd = null; String workingDir = System.getenv("PWD");
-     * 
-     * // Before executing snptest, I have to verify that the input mergedGenFile is not empty. cmd = "perl " +
-     * perlScriptDir + "/merge_two_chunks.pl " + reduceFileA + " " + reduceFileB + " " + reduceFileC;
-     * 
-     * if(debug){ System.out.println("\nCmd -> "+cmd); System.out.println(" "); } ProcessBuilder pb = new
-     * ProcessBuilder(cmd); pb.environment().remove("LD_PRELOAD"); Process mergeTwoChunksProc = pb.start();
-     * 
-     * // Check the proper ending of the process int exitValue = mergeTwoChunksProc.waitFor(); if (exitValue != 0) {
-     * System.err.println("Error executing mergeTwoChunksProc job, exit value is: " + exitValue); //throw new
-     * Exception("Error executing snptestProc job, exit value is: " + exitValue); }
-     * 
-     * }
-     */
 
     /**
      * Method to merge two chunks
@@ -4089,7 +3705,7 @@ public class GuidanceImpl {
         Hashtable<String, Integer> reduceFileAHashTableIndex = new Hashtable<>();
         Hashtable<Integer, String> reduceFileAHashTableIndexReversed = new Hashtable<>();
 
-        Hashtable<String, Integer> reduceFileBHashTableIndex = new Hashtable<>();
+        // Hashtable<String, Integer> reduceFileBHashTableIndex = new Hashtable<>();
         Hashtable<Integer, String> reduceFileBHashTableIndexReversed = new Hashtable<>();
 
         try (GZIPInputStream reduceGz = new GZIPInputStream(new FileInputStream(reduceFileA));
@@ -4180,7 +3796,7 @@ public class GuidanceImpl {
             String line = null;
             String line2 = br.readLine();
             if (line != null && !line.isEmpty()) {
-                reduceFileBHashTableIndex = createHashWithHeader(line, "\t");
+                // reduceFileBHashTableIndex = createHashWithHeader(line, "\t");
                 reduceFileBHashTableIndexReversed = createHashWithHeaderReversed(line, "\t");
 
                 indexChr = reduceFileAHashTableIndex.get("chr");
@@ -4260,7 +3876,6 @@ public class GuidanceImpl {
         }
 
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(fCombination))) {
-
             String valueReversed = null;
             int index;
             if (reduceFileAHashTableIndexReversed.size() >= reduceFileBHashTableIndexReversed.size()) {
@@ -4315,14 +3930,10 @@ public class GuidanceImpl {
         }
 
         // Then, we create the gz file and rename it
-        gzipFile(reduceFileC, reduceFileC + ".gz");
+        FileUtils.gzipFile(reduceFileC, reduceFileC + ".gz");
         File fc = new File(reduceFileC);
         File fGz = new File(reduceFileC + ".gz");
-        try {
-            copyFile(fGz, fc);
-        } catch (IOException ioe) {
-            throw new GuidanceTaskException(ioe);
-        }
+        FileUtils.copyFile(fGz, fc);
 
         long stopTime = System.currentTimeMillis();
         long elapsedTime = (stopTime - startTime) / 1000;
@@ -4588,14 +4199,10 @@ public class GuidanceImpl {
         }
 
         // Then, we create the gz file and rename it
-        gzipFile(reduceFile, reduceFile + ".gz");
+        FileUtils.gzipFile(reduceFile, reduceFile + ".gz");
         File fb = new File(reduceFile);
         File fGz = new File(reduceFile + ".gz");
-        try {
-            copyFile(fGz, fb);
-        } catch (IOException ioe) {
-            throw new GuidanceTaskException(ioe);
-        }
+        FileUtils.copyFile(fGz, fb);
 
         long stopTime = System.currentTimeMillis();
         long elapsedTime = (stopTime - startTime) / 1000;
@@ -4681,15 +4288,17 @@ public class GuidanceImpl {
         // phe_[i]: name of phenotype i.
         // K : number of panels.
         // pa_[j]: name of panel j.
-        Hashtable<String, Integer> phenomeHashTableIndex = new Hashtable<>();
-        Hashtable<Integer, String> phenomeHashTableIndexReversed = new Hashtable<>();
 
-        phenomeHashTableIndex = createHashWithHeader(newHeader, "\t");
+        // Hashtable<String, Integer> phenomeHashTableIndex = new Hashtable<>();
+        // Hashtable<Integer, String> phenomeHashTableIndexReversed = new Hashtable<>();
+
+        // phenomeHashTableIndex = createHashWithHeader(newHeader, "\t");
 
         // We start reading the topHits File
         try (GZIPInputStream topHitsFileGz = new GZIPInputStream(new FileInputStream(topHitsFile));
                 Reader decoder = new InputStreamReader(topHitsFileGz);
-                BufferedReader br = new BufferedReader(decoder);) {
+                BufferedReader br = new BufferedReader(decoder)) {
+            
             String line = br.readLine();
             Hashtable<String, Integer> topHitsHashTableIndex = new Hashtable<>();
             topHitsHashTableIndex = createHashWithHeader(line, "\t");
@@ -4760,14 +4369,10 @@ public class GuidanceImpl {
         }
 
         // Then, we create the gz file and rename it
-        gzipFile(phenomeFile, phenomeFile + ".gz");
+        FileUtils.gzipFile(phenomeFile, phenomeFile + ".gz");
         File fb = new File(phenomeFile);
         File fGz = new File(phenomeFile + ".gz");
-        try {
-            copyFile(fGz, fb);
-        } catch (IOException ioe) {
-            throw new GuidanceTaskException(ioe);
-        }
+        FileUtils.copyFile(fGz, fb);
 
         long stopTime = System.currentTimeMillis();
         long elapsedTime = (stopTime - startTime) / 1000;
@@ -4954,14 +4559,10 @@ public class GuidanceImpl {
         }
 
         // Then, we create the gz file and rename it
-        gzipFile(phenomeBFile, phenomeBFile + ".gz");
+        FileUtils.gzipFile(phenomeBFile, phenomeBFile + ".gz");
         File fb = new File(phenomeBFile);
         File fGz = new File(phenomeBFile + ".gz");
-        try {
-            copyFile(fGz, fb);
-        } catch (IOException ioe) {
-            throw new GuidanceTaskException(ioe);
-        }
+        FileUtils.copyFile(fGz, fb);
 
         long stopTime = System.currentTimeMillis();
         long elapsedTime = (stopTime - startTime) / 1000;
@@ -4988,6 +4589,7 @@ public class GuidanceImpl {
      */
     public static void addToPhenoMatrixX(String phenomeAFile, String filteredByAllFile, String ttName, String rpName, String phenomeBFile,
             String cmdToStore) throws GuidanceTaskException {
+        
         if (DEBUG) {
             System.out.println("\n[DEBUG] Running addToPhenoMatrixX with parameters:");
             System.out.println("[DEBUG] \t- Input phenomeFileA      : " + phenomeAFile);
@@ -5018,14 +4620,15 @@ public class GuidanceImpl {
         // K : number of panels.
         // pa_[j]: name of panel j.
         Hashtable<String, Integer> phenomeAHashTableIndex = new Hashtable<>();
-        Hashtable<Integer, String> phenomeAHashTableIndexReversed = new Hashtable<>();
+        // Hashtable<Integer, String> phenomeAHashTableIndexReversed = new Hashtable<>();
 
         // We start reading the phenomeFileA
         // First of all, the header
         String phenomeAHeader = null;
         try (GZIPInputStream phenomeAFileGz = new GZIPInputStream(new FileInputStream(phenomeAFile));
                 Reader decoder = new InputStreamReader(phenomeAFileGz);
-                BufferedReader br = new BufferedReader(decoder);) {
+                BufferedReader br = new BufferedReader(decoder)) {
+            
             phenomeAHeader = br.readLine();
             phenomeAHashTableIndex = createHashWithHeader(phenomeAHeader, "\t");
 
@@ -5063,7 +4666,7 @@ public class GuidanceImpl {
                 BufferedReader br = new BufferedReader(decoder)) {
 
             Hashtable<String, Integer> filteredByAllHashTableIndex = new Hashtable<>();
-            Hashtable<Integer, String> filteredByAllHashTableIndexReversed = new Hashtable<>();
+            // Hashtable<Integer, String> filteredByAllHashTableIndexReversed = new Hashtable<>();
 
             // We start reading the filteredByAllFile
             // First of all, the header
@@ -5186,14 +4789,10 @@ public class GuidanceImpl {
         }
 
         // Then, we create the gz file and rename it
-        gzipFile(phenomeBFile, phenomeBFile + ".gz");
+        FileUtils.gzipFile(phenomeBFile, phenomeBFile + ".gz");
         File fb = new File(phenomeBFile);
         File fGz = new File(phenomeBFile + ".gz");
-        try {
-            copyFile(fGz, fb);
-        } catch (IOException ioe) {
-            throw new GuidanceTaskException(ioe);
-        }
+        FileUtils.copyFile(fGz, fb);
 
         long stopTime = System.currentTimeMillis();
         long elapsedTime = (stopTime - startTime) / 1000;
@@ -5243,13 +4842,14 @@ public class GuidanceImpl {
         TreeMap<String, ArrayList<String>> phenomeATreeMap = new TreeMap<>();
 
         Hashtable<String, Integer> phenomeAHashTableIndex = new Hashtable<>();
-        Hashtable<Integer, String> phenomeAHashTableIndexReversed = new Hashtable<>();
+        // Hashtable<Integer, String> phenomeAHashTableIndexReversed = new Hashtable<>();
 
         // We start reading the phenomeFileA
         String phenomeAHeader = null;
         try (GZIPInputStream phenomeAFileGz = new GZIPInputStream(new FileInputStream(phenomeAFile));
                 Reader decoder = new InputStreamReader(phenomeAFileGz);
                 BufferedReader br = new BufferedReader(decoder)) {
+            
             // First of all, the header
             phenomeAHeader = br.readLine();
 
@@ -5312,7 +4912,6 @@ public class GuidanceImpl {
         } catch (IOException ioe) {
             throw new GuidanceTaskException(ioe);
         }
-        ////
 
         // Then, we need to extract the information of each snp from the filteredByAllFile
         // Now we load the whole filteredByAllFile into a TreeMap
@@ -5322,7 +4921,7 @@ public class GuidanceImpl {
                 BufferedReader br = new BufferedReader(decoder)) {
 
             Hashtable<String, Integer> filteredByAllHashTableIndex = new Hashtable<>();
-            Hashtable<Integer, String> filteredByAllHashTableIndexReversed = new Hashtable<>();
+            // Hashtable<Integer, String> filteredByAllHashTableIndexReversed = new Hashtable<>();
 
             // We start reading the filteredByAllFile
             // First of all, the header
@@ -5376,7 +4975,7 @@ public class GuidanceImpl {
         // Here we have to do some similar with filteredByAllXFile (the results for chr23)
         TreeMap<String, ArrayList<String>> filteredXTreeMap = new TreeMap<>();
         Hashtable<String, Integer> filteredByAllXHashTableIndex = new Hashtable<>();
-        Hashtable<Integer, String> filteredByAllXHashTableIndexReversed = new Hashtable<>();
+        // Hashtable<Integer, String> filteredByAllXHashTableIndexReversed = new Hashtable<>();
 
         if (endChrS.equals("23")) {
             // Then, we need to extract the information of each snp from the filteredByAllFile
@@ -5522,14 +5121,10 @@ public class GuidanceImpl {
         }
 
         // Then, we create the gz file and rename it
-        gzipFile(phenomeBFile, phenomeBFile + ".gz");
+        FileUtils.gzipFile(phenomeBFile, phenomeBFile + ".gz");
         File fb = new File(phenomeBFile);
         File fGz = new File(phenomeBFile + ".gz");
-        try {
-            copyFile(fGz, fb);
-        } catch (IOException ioe) {
-            throw new GuidanceTaskException(ioe);
-        }
+        FileUtils.copyFile(fGz, fb);
 
         long stopTime = System.currentTimeMillis();
         long elapsedTime = (stopTime - startTime) / 1000;
@@ -5575,7 +5170,7 @@ public class GuidanceImpl {
         // A place to store the data
         TreeMap<String, ArrayList<String>> phenomeATreeMap = new TreeMap<>();
         Hashtable<String, Integer> phenomeAHashTableIndex = new Hashtable<>();
-        Hashtable<Integer, String> phenomeAHashTableIndexReversed = new Hashtable<>();
+        // Hashtable<Integer, String> phenomeAHashTableIndexReversed = new Hashtable<>();
 
         // We start reading the phenomeFileA
         String phenomeAHeader = null;
@@ -5700,14 +5295,10 @@ public class GuidanceImpl {
         }
 
         // Then, we create the gz file and rename it
-        gzipFile(phenomeCFile, phenomeCFile + ".gz");
+        FileUtils.gzipFile(phenomeCFile, phenomeCFile + ".gz");
         File fb = new File(phenomeCFile);
         File fGz = new File(phenomeCFile + ".gz");
-        try {
-            copyFile(fGz, fb);
-        } catch (IOException ioe) {
-            throw new GuidanceTaskException(ioe);
-        }
+        FileUtils.copyFile(fGz, fb);
 
         // <----------
         long stopTime = System.currentTimeMillis();
@@ -5901,111 +5492,6 @@ public class GuidanceImpl {
             myHashLine.put(i, splitted[i]);
         }
         return myHashLine;
-    }
-
-    /**
-     * Method to delete file sourceFile
-     * 
-     * @param sourceFile
-     * @throws IOException
-     * @throws InterruptedException
-     * @throws Exception
-     */
-    public static void deleteFile(String sourceFile) throws GuidanceTaskException {
-
-        // We cannot delete the file
-        // File tmpFile = new File(sourceFile);
-        // tmpFile.delete();
-
-        try (FileOutputStream fis = new FileOutputStream(new File(sourceFile))) {
-            FileChannel destination = fis.getChannel();
-            String newData = "This file has been compressed. See the .gz version";
-            ByteBuffer buf = ByteBuffer.allocate(64);
-            buf.clear();
-            buf.put(newData.getBytes());
-            buf.flip();
-
-            while (buf.hasRemaining()) {
-                destination.write(buf);
-            }
-        } catch (IOException ioe) {
-            throw new GuidanceTaskException(ioe);
-        }
-    }
-
-    /**
-     * Method to copy file source to dest
-     * 
-     * @param source
-     * @param dest
-     * @throws IOException
-     */
-    private static void copyFile(File source, File dest) throws IOException {
-        Files.copy(source.toPath(), dest.toPath(), REPLACE_EXISTING);
-    }
-
-    /**
-     * Method to zip a file
-     * 
-     * @param sourceFilePath
-     * @param destZipFilePath
-     */
-    private static void gzipFile(String sourceFilePath, String destZipFilePath) {
-        byte[] buffer = new byte[1024];
-        try {
-            FileOutputStream fileOutputStream = new FileOutputStream(destZipFilePath);
-            GZIPOutputStream gzipOuputStream = new GZIPOutputStream(fileOutputStream);
-
-            FileInputStream fileInput = new FileInputStream(sourceFilePath);
-
-            int bytes_read;
-
-            while ((bytes_read = fileInput.read(buffer)) > 0) {
-                gzipOuputStream.write(buffer, 0, bytes_read);
-            }
-
-            fileInput.close();
-
-            gzipOuputStream.finish();
-            gzipOuputStream.close();
-
-            // System.out.println("The file was compressed successfully!");
-        } catch (IOException ex) {
-            System.err.println(ex.getMessage());
-            ex.printStackTrace();
-        }
-    }
-
-    /**
-     * Method to unzip a file
-     * 
-     * @param compressedFile
-     * @param decompressedFile
-     */
-    private static void gunzipFile(String compressedFile, String decompressedFile) {
-        byte[] buffer = new byte[1024];
-
-        try {
-            FileInputStream fileIn = new FileInputStream(compressedFile);
-            GZIPInputStream gZIPInputStream = new GZIPInputStream(fileIn);
-
-            FileOutputStream fileOutputStream = new FileOutputStream(decompressedFile);
-
-            int bytes_read;
-
-            while ((bytes_read = gZIPInputStream.read(buffer)) > 0) {
-                fileOutputStream.write(buffer, 0, bytes_read);
-            }
-
-            gZIPInputStream.close();
-            fileOutputStream.close();
-
-            // System.out.println("The file was decompressed successfully!");
-
-        } catch (IOException ex) {
-            System.err.println(ex.getMessage());
-            ex.printStackTrace();
-        }
     }
 
     /**
