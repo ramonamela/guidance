@@ -1,0 +1,406 @@
+/*
+ *  Copyright 2002-2017 Barcelona Supercomputing Center (www.bsc.es)
+ *  Life Science Department, 
+ *  Computational Genomics Group (http://www.bsc.es/life-sciences/computational-genomics)
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ *
+ *
+ *
+ *  Last update: $LastChangedDate: 2017-14-08 11:36:54 +0100 (Mon, 14 Ago 2017) $
+ *  Revision Number: $Revision: 16 $
+ *  Last revision  : $LastChangedRevision: 16 $
+ *  Written by     : Friman Sanchez C.
+ *                 : friman.sanchez@gmail.com
+ *  Modified by    : COMPSs Support
+ *                 : support-compss@bsc.es
+ *                
+ *  Guidance web page: http://cg.bsc.es/guidance/
+ *
+ */
+
+package guidance.files;
+
+import java.util.List;
+
+import guidance.utils.ParseCmdLine;
+
+import java.util.ArrayList;
+
+
+public class ResultsFiles {
+
+    private ArrayList<ArrayList<String>> testTypeListOutDir = new ArrayList<>();
+
+    private ArrayList<ArrayList<GenericFile>> testTypeTopHitsFile = new ArrayList<>();
+    private ArrayList<ArrayList<GenericFile>> testTypeCorrectedPvaluesFile = new ArrayList<>();
+    private ArrayList<ArrayList<GenericFile>> testTypeQqPlotPdfFile = new ArrayList<>();
+    private ArrayList<ArrayList<GenericFile>> testTypeManhattanPdfFile = new ArrayList<>();
+    private ArrayList<ArrayList<GenericFile>> testTypeQqPlotTiffFile = new ArrayList<>();
+    private ArrayList<ArrayList<GenericFile>> testTypeManhattanTiffFile = new ArrayList<>();
+
+    private int startChr = 0;
+    private int endChr = 0;
+    // private int endChrNormal=endChr;
+
+
+    /**
+     * New ResultFiles instance
+     * 
+     * @param parsingArgs
+     * @param baseOutDir
+     * @param refPanels
+     */
+    public ResultsFiles(ParseCmdLine parsingArgs, String baseOutDir, List<String> refPanels) {
+        int numberOfTestTypesNames = parsingArgs.getNumberOfTestTypeName();
+
+        /** We create the first directory name: the cohort directory */
+        String mixedCohort = parsingArgs.getCohort();
+
+        for (int tt = 0; tt < numberOfTestTypesNames; tt++) {
+            String testTypeName = parsingArgs.getTestTypeName(tt);
+            String testTypeOutDir = baseOutDir + "/associations/" + testTypeName;
+
+            ArrayList<String> rpanelListOutDir = new ArrayList<>();
+
+            ArrayList<GenericFile> rpanelTopHitsFile = new ArrayList<>();
+            ArrayList<GenericFile> rpanelCorrectedPvaluesFile = new ArrayList<>();
+
+            ArrayList<GenericFile> rpanelQqPlotPdfFile = new ArrayList<>();
+            ArrayList<GenericFile> rpanelManhattanPdfFile = new ArrayList<>();
+
+            ArrayList<GenericFile> rpanelQqPlotTiffFile = new ArrayList<>();
+            ArrayList<GenericFile> rpanelManhattanTiffFile = new ArrayList<>();
+
+            for (int j = 0; j < refPanels.size(); j++) {
+                String rPanel = refPanels.get(j);
+                String rpanelOutDir = testTypeOutDir + "/" + mixedCohort + "_for_" + rPanel;
+                String rpanelOutDirSummary = testTypeOutDir + "/" + mixedCohort + "_for_" + rPanel + "/summary";
+
+                String tmpTopHitsFileName = "tophits_" + testTypeName + "_" + mixedCohort + "_" + rPanel + ".txt.gz";
+                String tmpTopHitsFile = rpanelOutDirSummary + "/" + tmpTopHitsFileName;
+                GenericFile myTopHitsFile = new GenericFile(rpanelOutDirSummary, tmpTopHitsFileName, "compressed", "none");
+                rpanelTopHitsFile.add(myTopHitsFile);
+
+                String tmpCorrectedPvaluesFileName = "corrected_pvalues_" + testTypeName + "_" + mixedCohort + "_" + rPanel + ".txt";
+                String tmpCorrectedPvaluesFile = rpanelOutDirSummary + "/" + tmpCorrectedPvaluesFileName;
+                GenericFile myCorrectedPvaluesFile = new GenericFile(rpanelOutDirSummary, tmpCorrectedPvaluesFileName, "uncompressed",
+                        "none");
+                rpanelCorrectedPvaluesFile.add(myCorrectedPvaluesFile);
+
+                String tmpQqPlotPdfFileName = "QQplot_" + testTypeName + "_" + mixedCohort + "_" + rPanel + ".pdf";
+                String tmpQqPlotPdfFile = rpanelOutDirSummary + "/" + tmpQqPlotPdfFileName;
+                GenericFile myQqPlotPdfFile = new GenericFile(rpanelOutDirSummary, tmpQqPlotPdfFileName, "uncompressed", "none");
+                rpanelQqPlotPdfFile.add(myQqPlotPdfFile);
+
+                String tmpManhattanPdfFileName = "manhattan_" + testTypeName + "_" + mixedCohort + "_" + rPanel + ".pdf";
+                String tmpManhattanPdfFile = rpanelOutDirSummary + "/" + tmpManhattanPdfFileName;
+                GenericFile myManhattanPdfFile = new GenericFile(rpanelOutDirSummary, tmpManhattanPdfFileName, "uncompressed", "none");
+                rpanelManhattanPdfFile.add(myManhattanPdfFile);
+
+                String tmpQqPlotTiffFileName = "QQplot_" + testTypeName + "_" + mixedCohort + "_" + rPanel + ".tiff";
+                String tmpQqPlotTiffFile = rpanelOutDirSummary + "/" + tmpQqPlotTiffFileName;
+                GenericFile myQqPlotTiffFile = new GenericFile(rpanelOutDirSummary, tmpQqPlotTiffFileName, "uncompressed", "none");
+                rpanelQqPlotTiffFile.add(myQqPlotTiffFile);
+
+                String tmpManhattanTiffFileName = "manhattan_" + testTypeName + "_" + mixedCohort + "_" + rPanel + ".tiff";
+                String tmpManhattanTiffFile = rpanelOutDirSummary + "/" + tmpManhattanTiffFileName;
+                GenericFile myManhattanTiffFile = new GenericFile(rpanelOutDirSummary, tmpManhattanTiffFileName, "uncompressed", "none");
+                rpanelManhattanTiffFile.add(myManhattanTiffFile);
+
+            } // End of for(j=0; j<refPanels.size();j++)
+              // Now we have to build the list of reduced files for the type of Test. We store this list
+
+            testTypeListOutDir.add(rpanelListOutDir);
+            testTypeTopHitsFile.add(rpanelTopHitsFile);
+            testTypeCorrectedPvaluesFile.add(rpanelCorrectedPvaluesFile);
+
+            testTypeQqPlotPdfFile.add(rpanelQqPlotPdfFile);
+            testTypeManhattanPdfFile.add(rpanelManhattanPdfFile);
+
+            testTypeQqPlotTiffFile.add(rpanelQqPlotTiffFile);
+            testTypeManhattanTiffFile.add(rpanelManhattanTiffFile);
+
+        } // end of for(int tt=0; tt< numberOfTestTypesNames; tt++)
+    }
+
+    /**
+     * Method to access correctedPvaluesFile information
+     * 
+     * @param testTypeIndex
+     * @param rPanelIndex
+     * @return
+     */
+    public String getListOutDir(int testTypeIndex, int rPanelIndex) {
+        return testTypeListOutDir.get(testTypeIndex).get(rPanelIndex);
+    }
+
+    /**
+     * Method to access topHitsFileName
+     * 
+     * @param testTypeIndex
+     * @param rPanelIndex
+     * @return
+     */
+    public String getTopHitsFileName(int testTypeIndex, int rPanelIndex) {
+        return testTypeTopHitsFile.get(testTypeIndex).get(rPanelIndex).getName();
+    }
+
+    /**
+     * Method to access topHitsFile
+     * 
+     * @param testTypeIndex
+     * @param rPanelIndex
+     * @return
+     */
+    public String getTopHitsFile(int testTypeIndex, int rPanelIndex) {
+        return testTypeTopHitsFile.get(testTypeIndex).get(rPanelIndex).getFullName();
+    }
+
+    /**
+     * Method to set the finalStatus of the topHitsFile
+     * 
+     * @param testTypeIndex
+     * @param rPanelIndex
+     * @param finalStatus
+     */
+    public void setTopHitsFileFinalStatus(int testTypeIndex, int rPanelIndex, String finalStatus) {
+        testTypeTopHitsFile.get(testTypeIndex).get(rPanelIndex).setFinalStatus(finalStatus);
+    }
+
+    /**
+     * Method to access the finalStatus of the topHitsFile
+     * 
+     * @param testTypeIndex
+     * @param rPanelIndex
+     * @return
+     */
+    public String getTopHitsFileFinalStatus(int testTypeIndex, int rPanelIndex) {
+        return testTypeTopHitsFile.get(testTypeIndex).get(rPanelIndex).getFinalStatus();
+    }
+
+    // Method to access CorrectedPvaluesFileName
+    public String getCorrectedPvaluesFileName(int testTypeIndex, int rPanelIndex) {
+        return testTypeCorrectedPvaluesFile.get(testTypeIndex).get(rPanelIndex).getName();
+    }
+
+    /**
+     * Method to access CorrectedPvaluesFile
+     * 
+     * @param testTypeIndex
+     * @param rPanelIndex
+     * @return
+     */
+    public String getCorrectedPvaluesFile(int testTypeIndex, int rPanelIndex) {
+        return testTypeCorrectedPvaluesFile.get(testTypeIndex).get(rPanelIndex).getFullName();
+    }
+
+    /**
+     * Method to set the finalStatus of the CorrectedPvaluesFile
+     * 
+     * @param testTypeIndex
+     * @param rPanelIndex
+     * @param finalStatus
+     */
+    public void setCorrectedPvaluesFinalStatus(int testTypeIndex, int rPanelIndex, String finalStatus) {
+        testTypeCorrectedPvaluesFile.get(testTypeIndex).get(rPanelIndex).setFinalStatus(finalStatus);
+    }
+
+    /**
+     * Method to access the finalStatus of the CorrectedPvaluesFile
+     * 
+     * @param testTypeIndex
+     * @param rPanelIndex
+     * @return
+     */
+    public String getCorrectedPvaluesFileFinalStatus(int testTypeIndex, int rPanelIndex) {
+        return testTypeCorrectedPvaluesFile.get(testTypeIndex).get(rPanelIndex).getFinalStatus();
+    }
+
+    /**
+     * Method to access qqPlotPdfFileName
+     * 
+     * @param testTypeIndex
+     * @param rPanelIndex
+     * @return
+     */
+    public String getQqPlotPdfFileName(int testTypeIndex, int rPanelIndex) {
+        return testTypeQqPlotPdfFile.get(testTypeIndex).get(rPanelIndex).getName();
+    }
+
+    /**
+     * Method to access qqPlotPdfFile
+     * 
+     * @param testTypeIndex
+     * @param rPanelIndex
+     * @return
+     */
+    public String getQqPlotPdfFile(int testTypeIndex, int rPanelIndex) {
+        return testTypeQqPlotPdfFile.get(testTypeIndex).get(rPanelIndex).getFullName();
+    }
+
+    /**
+     * Method to set the finalStatus of the qqPlotPdfFile
+     * 
+     * @param testTypeIndex
+     * @param rPanelIndex
+     * @param finalStatus
+     */
+    public void setQqPlotPdfFileFinalStatus(int testTypeIndex, int rPanelIndex, String finalStatus) {
+        testTypeQqPlotPdfFile.get(testTypeIndex).get(rPanelIndex).setFinalStatus(finalStatus);
+    }
+
+    /**
+     * Method to access the finalStatus of the qqPlotPdfFile
+     * 
+     * @param testTypeIndex
+     * @param rPanelIndex
+     * @return
+     */
+    public String getQqPlotPdfFileFinalStatus(int testTypeIndex, int rPanelIndex) {
+        return testTypeQqPlotPdfFile.get(testTypeIndex).get(rPanelIndex).getFinalStatus();
+    }
+
+    /**
+     * Method to access qqPlotTiffFileName
+     * 
+     * @param testTypeIndex
+     * @param rPanelIndex
+     * @return
+     */
+    public String getQqPlotTiffFileName(int testTypeIndex, int rPanelIndex) {
+        return testTypeQqPlotTiffFile.get(testTypeIndex).get(rPanelIndex).getName();
+    }
+
+    /**
+     * Method to access qqPlotTiffFile
+     * 
+     * @param testTypeIndex
+     * @param rPanelIndex
+     * @return
+     */
+    public String getQqPlotTiffFile(int testTypeIndex, int rPanelIndex) {
+        return testTypeQqPlotTiffFile.get(testTypeIndex).get(rPanelIndex).getFullName();
+    }
+
+    /**
+     * Method to set the finalStatus of the qqPlotPdfFile
+     * 
+     * @param testTypeIndex
+     * @param rPanelIndex
+     * @param finalStatus
+     */
+    public void setQqPlotTiffFileFinalStatus(int testTypeIndex, int rPanelIndex, String finalStatus) {
+        testTypeQqPlotTiffFile.get(testTypeIndex).get(rPanelIndex).setFinalStatus(finalStatus);
+    }
+
+    /**
+     * Method to access the finalStatus of the qqPlotTiffFile
+     * 
+     * @param testTypeIndex
+     * @param rPanelIndex
+     * @return
+     */
+    public String getQqPlotTiffFileFinalStatus(int testTypeIndex, int rPanelIndex) {
+        return testTypeQqPlotTiffFile.get(testTypeIndex).get(rPanelIndex).getFinalStatus();
+    }
+
+    /**
+     * Method to access mahattanPdfFileName
+     * 
+     * @param testTypeIndex
+     * @param rPanelIndex
+     * @return
+     */
+    public String getManhattanPdfFileName(int testTypeIndex, int rPanelIndex) {
+        return testTypeManhattanPdfFile.get(testTypeIndex).get(rPanelIndex).getName();
+    }
+
+    /**
+     * Method to access manhattanPdfFile
+     * 
+     * @param testTypeIndex
+     * @param rPanelIndex
+     * @return
+     */
+    public String getManhattanPdfFile(int testTypeIndex, int rPanelIndex) {
+        return testTypeManhattanPdfFile.get(testTypeIndex).get(rPanelIndex).getFullName();
+    }
+
+    /**
+     * Method to set the finalStatus of the manhattanPdfFile
+     * 
+     * @param testTypeIndex
+     * @param rPanelIndex
+     * @param finalStatus
+     */
+    public void setManhattanPdfFileFinalStatus(int testTypeIndex, int rPanelIndex, String finalStatus) {
+        testTypeManhattanPdfFile.get(testTypeIndex).get(rPanelIndex).setFinalStatus(finalStatus);
+    }
+
+    /**
+     * Method to access the finalStatus of the manhattanPdfFile
+     * 
+     * @param testTypeIndex
+     * @param rPanelIndex
+     * @return
+     */
+    public String getManhattanPdfFileFinalStatus(int testTypeIndex, int rPanelIndex) {
+        return testTypeManhattanPdfFile.get(testTypeIndex).get(rPanelIndex).getFinalStatus();
+    }
+
+    /**
+     * Method to access manhattanTiffFileName
+     * 
+     * @param testTypeIndex
+     * @param rPanelIndex
+     * @return
+     */
+    public String getManhattanTiffFileName(int testTypeIndex, int rPanelIndex) {
+        return testTypeManhattanTiffFile.get(testTypeIndex).get(rPanelIndex).getName();
+    }
+
+    /**
+     * Method to access manhattanTiffFile
+     * 
+     * @param testTypeIndex
+     * @param rPanelIndex
+     * @return
+     */
+    public String getManhattanTiffFile(int testTypeIndex, int rPanelIndex) {
+        return testTypeManhattanTiffFile.get(testTypeIndex).get(rPanelIndex).getFullName();
+    }
+
+    /**
+     * Method to set the finalStatus of the manhattanPdfFile
+     * 
+     * @param testTypeIndex
+     * @param rPanelIndex
+     * @param finalStatus
+     */
+    public void setManhattanTiffFileFinalStatus(int testTypeIndex, int rPanelIndex, String finalStatus) {
+        testTypeManhattanTiffFile.get(testTypeIndex).get(rPanelIndex).setFinalStatus(finalStatus);
+    }
+
+    /**
+     * Method to access the finalStatus of the manhattanTiffFile
+     * 
+     * @param testTypeIndex
+     * @param rPanelIndex
+     * @return
+     */
+    public String getManhattanTiffFileFinalStatus(int testTypeIndex, int rPanelIndex) {
+        return testTypeManhattanTiffFile.get(testTypeIndex).get(rPanelIndex).getFinalStatus();
+    }
+
+}

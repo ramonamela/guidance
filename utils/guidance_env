@@ -1,0 +1,21 @@
+# Module files for MN4
+module load COMPSs
+module load samtools/1.5
+module load gcc
+module load R
+module load transfer/1.0
+
+# Routes to internal binaries
+export PLINKBINARY=/home/bsc05/bsc05997/TOOLS/apps_gwimp_compss/plink_1.9/plink
+export EAGLEBINARY=/home/bsc05/bsc05997/TOOLS/Eagle_v2.3/eagle
+export RSCRIPTDIR=/home/bsc05/bsc05997/TOOLS/MN3/guidance_0.9.8/R_scripts/
+export RSCRIPTBINDIR=/gpfs/projects/bsc05/silvia/TOOLS/R-3.2.0/bin
+export GTOOLBINARY=/home/bsc05/bsc05025/TOOLS/gtool/gtool
+export QCTOOLBINARY=/home/bsc05/bsc05025/TOOLS/qctool_v1.4-linux-x86_64/qctool
+export SHAPEITBINARY=/home/bsc05/bsc05025/TOOLS/shapeit_v2/shapeit.v2.r727.linux.x64
+export IMPUTE2BINARY=/home/bsc05/bsc05025/TOOLS/impute_v2.3.2/impute2
+export SNPTESTBINARY=/home/bsc05/bsc05997/TOOLS/apps_gwimp_compss/snptest_v2.5_linux_x86_64_static/snptest_v2.5
+export MINIMACBINARY=/home/bsc05/bsc05997/TOOLS/Minimac3/bin/Minimac3
+export SAMTOOLSBINARY=/apps/SAMTOOLS/1.5-DNANEXUS/INTEL/IMPI/bin
+export LC_ALL="C"
+

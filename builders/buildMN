@@ -1,0 +1,57 @@
+#!/bin/bash -e
+
+  MNuser=bsc19533
+  MNendpoint=mn1.bsc.es
+  guidance_remote_install_dir=/home/bsc05/bsc05997/TOOLS/MN3/guidance_0.9.8_master_Cristian
+
+  # Move to guidance sources root folder
+  cd ..
+
+  # Compile the current sources
+  echo "Compiling current sources"
+  mvn clean package
+
+  # Clean the sources on MareNostrum
+  echo "Cleaning MN installation on ${guidance_remote_install_dir}"
+  ssh ${MNuser}@${MNendpoint} "rm -f ${guidance_remote_install_dir}/hs_err_pid*.log"
+  ssh ${MNuser}@${MNendpoint} "rm -f ${guidance_remote_install_dir}/replay_pid*.log"
+
+  ssh ${MNuser}@${MNendpoint} "rm -f ${guidance_remote_install_dir}/guidance.jar"
+
+  # ssh ${MNuser}@${MNendpoint} "rm -f ${guidance_remote_install_dir}/changelog"
+  # ssh ${MNuser}@${MNendpoint} "rm -f ${guidance_remote_install_dir}/compile.Guidance.sh"
+  # ssh ${MNuser}@${MNendpoint} "rm -rf ${guidance_remote_install_dir}/conf_examples"
+  # ssh ${MNuser}@${MNendpoint} "rm -rf ${guidance_remote_install_dir}/doc"
+  # ssh ${MNuser}@${MNendpoint} "rm -rf ${guidance_remote_install_dir}/guidance"
+  # ssh ${MNuser}@${MNendpoint} "rm -f ${guidance_remote_install_dir}/guidance_env"
+  # ssh ${MNuser}@${MNendpoint} "rm -f ${guidance_remote_install_dir}/LICENSE"
+  # ssh ${MNuser}@${MNendpoint} "rm -f ${guidance_remote_install_dir}/matrix_updated.txt"
+  # ssh ${MNuser}@${MNendpoint} "rm -f ${guidance_remote_install_dir}/NOTICE"
+  # ssh ${MNuser}@${MNendpoint} "rm -f ${guidance_remote_install_dir}/README"
+  # ssh ${MNuser}@${MNendpoint} "rm -f ${guidance_remote_install_dir}/RELEASE_NOTES"
+  # ssh ${MNuser}@${MNendpoint} "rm -rf ${guidance_remote_install_dir}/R_scripts"
+
+  # Deploy the sources to MareNostrum
+  echo "Deploying MN installation on ${guidance_remote_install_dir}"
+  scp guidance.jar ${MNuser}@${MNendpoint}:${guidance_remote_install_dir}/guidance.jar
+
+  # scp -r src/main/java/guidance ${MNuser}@${MNendpoint}:${guidance_remote_install_dir}
+  # scp ../../changelog ${MNuser}@${MNendpoint}:${guidance_remote_install_dir}
+  # scp ../../compile.Guidance.sh ${MNuser}@${MNendpoint}:${guidance_remote_install_dir}
+  # scp -r ../../conf_examples ${MNuser}@${MNendpoint}:${guidance_remote_install_dir}
+  # scp -r ../../doc ${MNuser}@${MNendpoint}:${guidance_remote_install_dir}
+  # scp ../../guidance_env ${MNuser}@${MNendpoint}:${guidance_remote_install_dir}
+  # scp ../../LICENSE ${MNuser}@${MNendpoint}:${guidance_remote_install_dir}
+  # scp ../../matrix_updated.txt ${MNuser}@${MNendpoint}:${guidance_remote_install_dir}
+  # scp ../../NOTICE ${MNuser}@${MNendpoint}:${guidance_remote_install_dir}
+  # scp ../../README ${MNuser}@${MNendpoint}:${guidance_remote_install_dir}
+  # scp ../../RELEASE_NOTES ${MNuser}@${MNendpoint}:${guidance_remote_install_dir}
+  # scp -r ../../R_scripts ${MNuser}@${MNendpoint}:${guidance_remote_install_dir}
+
+  # Adding default ALL permissions
+  echo "Changing MN installation folder permissions"
+  # ssh ${MNuser}@${MNendpoint} "chmod -R 775 ${guidance_remote_install_dir}"
+
+  # END
+  echo "DONE!"
+
