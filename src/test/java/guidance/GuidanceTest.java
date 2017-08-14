@@ -33,6 +33,8 @@ package guidance;
 
 import static org.junit.Assert.assertEquals;
 
+import java.util.Hashtable;
+
 import org.junit.Test;
 
 
@@ -51,6 +53,14 @@ public class GuidanceTest {
 
         assertEquals(filePath + fileName, genFileName);
         assertEquals(fileExtension, genFileExt);
+    }
+
+    @Test
+    public void testHashtable() {
+        Hashtable<String, Integer> table = new Hashtable<>();
+        table.put("A", 1);
+        Integer value = table.get("B");
+        assertEquals(value, null);
     }
 
 }

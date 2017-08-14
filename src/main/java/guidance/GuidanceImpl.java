@@ -51,10 +51,10 @@ import java.io.InputStreamReader;
 import java.io.RandomAccessFile;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.TreeMap;
 import java.util.Iterator;
 import java.util.Map.Entry;
-import java.util.Hashtable;
 import java.util.Set;
 import java.util.zip.GZIPInputStream;
 import java.util.Scanner;
@@ -64,6 +64,10 @@ public class GuidanceImpl {
 
     // Debug flag
     private static final boolean DEBUG = true;
+
+    // Headers
+    private static final String HEADER_MIXED = "chr position    rs_id_all   info_all    certainty_all   alleleA alleleB index   average_maximum_posterior_call  info    cohort_1_AA cohort_1_AB cohort_1_BB cohort_1_NULL   all_AA  all_AB  all_BB  all_NULL    all_total   cases_AA    cases_AB    cases_BB    cases_NULL  cases_total controls_AA controls_AB controls_BB controls_NULL   controls_total  all_maf cases_maf   controls_maf    missing_data_proportion cohort_1_hwe    cases_hwe   controls_hwe    het_OR  het_OR_lower    het_OR_upper    hom_OR  hom_OR_lower    hom_OR_upper    all_OR  all_OR_lower    all_OR_upper    frequentist_add_pvalue  frequentist_add_info    frequentist_add_beta_1  frequentist_add_se_1    frequentist_dom_pvalue  frequentist_dom_info    frequentist_dom_beta_1  frequentist_dom_se_1    frequentist_rec_pvalue  frequentist_rec_info    frequentist_rec_beta_1  frequentist_rec_se_1    frequentist_gen_pvalue  frequentist_gen_info    frequentist_gen_beta_1  frequentist_gen_se_1    frequentist_gen_beta_2  frequentist_gen_se_2    frequentist_het_pvalue  frequentist_het_info    frequentist_het_beta_1  frequentist_het_se_1    comment";
+    private static final String HEADER_MIXED_X = "chr   position    rs_id_all   info_all    certainty_all   alleleA alleleB all_A   all_B   all_AA  all_AB  all_BB  all_NULL    all_total   all_maf all_info    all_impute_info cases_A cases_B cases_AA    cases_AB    cases_BB    cases_NULL  cases_total cases_maf   cases_info  cases_impute_info   controls_A  controls_B  controls_AA controls_AB controls_BB controls_NULL   controls_total  controls_maf    controls_info   controls_impute_info    sex=1_A sex=1_B sex=1_AA    sex=1_AB    sex=1_BB    sex=1_NULL  sex=1_total sex=1_maf   sex=1_info  sex=1_impute_info   sex=2_A sex=2_B sex=2_AA    sex=2_AB    sex=2_BB    sex=2_NULL  sex=2_total sex=2_maf   sex=2_info  sex=2_impute_info   frequentist_add_null_ll frequentist_add_alternative_ll  frequentist_add_beta_1:genotype/sex=1   frequentist_add_beta_2:genotype/sex=2   frequentist_add_se_1:genotype/sex=1 frequentist_add_se_2:genotype/sex=2 frequentist_add_degrees_of_freedom  frequentist_add_pvalue  comment";
 
 
     /**
@@ -1867,8 +1871,8 @@ public class GuidanceImpl {
         Double hweCasesThreshold = Double.parseDouble(hweCasesThresholdS);
         Double hweControlsThreshold = Double.parseDouble(hweControlsThresholdS);
 
-        Hashtable<String, Integer> inputFileHashTableIndex = new Hashtable<>();
-        // Hashtable<Integer, String> inputFileHashTableIndexReversed = new Hashtable<>();
+        HashMap<String, Integer> inputFileHashTableIndex = new HashMap<>();
+        // HashMap<Integer, String> inputFileHashTableIndexReversed = new HashMap<>();
 
         try (GZIPInputStream inputGz = new GZIPInputStream(new FileInputStream(inputFile));
                 Reader decoder = new InputStreamReader(inputGz);
@@ -2394,7 +2398,7 @@ public class GuidanceImpl {
         // are going to lose some SNPs...
         // for(int chromo=chrStart; chromo <=chrEnd; chromo++) {
 
-        Hashtable<String, Integer> resultsHashTableIndex = new Hashtable<>();
+        HashMap<String, Integer> resultsHashTableIndex = new HashMap<>();
         // String chromoS = Integer.toString(chromo);
 
         // Create the first treeMap for the chromo
@@ -2713,8 +2717,8 @@ public class GuidanceImpl {
         // System.out.println("\n[DEBUG] \t- Output file " + combinedCondensedFile + " was succesfuly created? " +
         // bool);
 
-        Hashtable<String, Integer> inputFileHashTableIndex = new Hashtable<>();
-        // Hashtable<Integer, String> inputFileHashTableIndexReversed = new Hashtable<>();
+        HashMap<String, Integer> inputFileHashTableIndex = new HashMap<>();
+        // HashMap<Integer, String> inputFileHashTableIndexReversed = new HashMap<>();
 
         try (BufferedWriter writerCondensed = new BufferedWriter(new FileWriter(plainCombinedCondensedFile))) {
             try (GZIPInputStream inputGz = new GZIPInputStream(new FileInputStream(filteredA));
@@ -2798,8 +2802,8 @@ public class GuidanceImpl {
                         Reader decoder = new InputStreamReader(inputGz);
                         BufferedReader br = new BufferedReader(decoder);) {
 
-                    inputFileHashTableIndex = new Hashtable<>();
-                    // inputFileHashTableIndexReversed = new Hashtable<>();
+                    inputFileHashTableIndex = new HashMap<>();
+                    // inputFileHashTableIndexReversed = new HashMap<>();
 
                     // I read the header
                     String line = br.readLine();
@@ -2922,7 +2926,7 @@ public class GuidanceImpl {
 
         String header = null;
         String newHeader = null;
-        Hashtable<String, Integer> resultsFileHashTableIndex = new Hashtable<>();
+        HashMap<String, Integer> resultsFileHashTableIndex = new HashMap<>();
         // First: read the header and avoid it
         try (GZIPInputStream inputGz = new GZIPInputStream(new FileInputStream(resultsFile));
                 Reader decoder = new InputStreamReader(inputGz);
@@ -3036,8 +3040,8 @@ public class GuidanceImpl {
 
         String header = null;
         String newHeader = null;
-        Hashtable<String, Integer> resultsAFileHashTableIndex = new Hashtable<>();
-        Hashtable<String, Integer> resultsBFileHashTableIndex = new Hashtable<>();
+        HashMap<String, Integer> resultsAFileHashTableIndex = new HashMap<>();
+        HashMap<String, Integer> resultsBFileHashTableIndex = new HashMap<>();
 
         // First: read the header and avoid it
         try (GZIPInputStream inputGz = new GZIPInputStream(new FileInputStream(resultsAFile));
@@ -3086,7 +3090,7 @@ public class GuidanceImpl {
                     Reader decoder = new InputStreamReader(inputGz);
                     BufferedReader br = new BufferedReader(decoder)) {
 
-                resultsBFileHashTableIndex = new Hashtable<>();
+                resultsBFileHashTableIndex = new HashMap<>();
 
                 // First: read the header and avoid it
                 header = br.readLine();
@@ -3409,9 +3413,6 @@ public class GuidanceImpl {
     public static void mergeTwoChunks(String reduceFileA, String reduceFileB, String reduceFileC, String chrS, String type,
             String cmdToStore) throws GuidanceTaskException {
 
-        final String HEADER_MIXED = "chr position    rs_id_all   info_all    certainty_all   alleleA alleleB index   average_maximum_posterior_call  info    cohort_1_AA cohort_1_AB cohort_1_BB cohort_1_NULL   all_AA  all_AB  all_BB  all_NULL    all_total   cases_AA    cases_AB    cases_BB    cases_NULL  cases_total controls_AA controls_AB controls_BB controls_NULL   controls_total  all_maf cases_maf   controls_maf    missing_data_proportion cohort_1_hwe    cases_hwe   controls_hwe    het_OR  het_OR_lower    het_OR_upper    hom_OR  hom_OR_lower    hom_OR_upper    all_OR  all_OR_lower    all_OR_upper    frequentist_add_pvalue  frequentist_add_info    frequentist_add_beta_1  frequentist_add_se_1    frequentist_dom_pvalue  frequentist_dom_info    frequentist_dom_beta_1  frequentist_dom_se_1    frequentist_rec_pvalue  frequentist_rec_info    frequentist_rec_beta_1  frequentist_rec_se_1    frequentist_gen_pvalue  frequentist_gen_info    frequentist_gen_beta_1  frequentist_gen_se_1    frequentist_gen_beta_2  frequentist_gen_se_2    frequentist_het_pvalue  frequentist_het_info    frequentist_het_beta_1  frequentist_het_se_1    comment";
-        final String HEADER_MIXED_X = "chr   position    rs_id_all   info_all    certainty_all   alleleA alleleB all_A   all_B   all_AA  all_AB  all_BB  all_NULL    all_total   all_maf all_info    all_impute_info cases_A cases_B cases_AA    cases_AB    cases_BB    cases_NULL  cases_total cases_maf   cases_info  cases_impute_info   controls_A  controls_B  controls_AA controls_AB controls_BB controls_NULL   controls_total  controls_maf    controls_info   controls_impute_info    sex=1_A sex=1_B sex=1_AA    sex=1_AB    sex=1_BB    sex=1_NULL  sex=1_total sex=1_maf   sex=1_info  sex=1_impute_info   sex=2_A sex=2_B sex=2_AA    sex=2_AB    sex=2_BB    sex=2_NULL  sex=2_total sex=2_maf   sex=2_info  sex=2_impute_info   frequentist_add_null_ll frequentist_add_alternative_ll  frequentist_add_beta_1:genotype/sex=1   frequentist_add_beta_2:genotype/sex=2   frequentist_add_se_1:genotype/sex=1 frequentist_add_se_2:genotype/sex=2 frequentist_add_degrees_of_freedom  frequentist_add_pvalue  comment";
-
         if (DEBUG) {
             System.out.println("\n[DEBUG] Running mergeTwoChunks with parameters:");
             System.out.println("[DEBUG] \t- Input reduceFileA            : " + reduceFileA);
@@ -3441,11 +3442,11 @@ public class GuidanceImpl {
         // We read each line of th reducedFileA and put them into fileAList array of Strings
         TreeMap<String, ArrayList<String>> fileATreeMap = new TreeMap<>();
 
-        Hashtable<String, Integer> reduceFileAHashTableIndex = new Hashtable<>();
-        Hashtable<Integer, String> reduceFileAHashTableIndexReversed = new Hashtable<>();
+        HashMap<String, Integer> reduceFileAHashTableIndex = new HashMap<>();
+        HashMap<Integer, String> reduceFileAHashTableIndexReversed = new HashMap<>();
 
-        // Hashtable<String, Integer> reduceFileBHashTableIndex = new Hashtable<>();
-        Hashtable<Integer, String> reduceFileBHashTableIndexReversed = new Hashtable<>();
+        // HashMap<String, Integer> reduceFileBHashTableIndex = new HashMap<>();
+        HashMap<Integer, String> reduceFileBHashTableIndexReversed = new HashMap<>();
 
         try (GZIPInputStream reduceGz = new GZIPInputStream(new FileInputStream(reduceFileA));
                 Reader decoder = new InputStreamReader(reduceGz);
@@ -3458,7 +3459,6 @@ public class GuidanceImpl {
             line = br.readLine();
 
             // We do not use the previous line, instead, we use a predefined header
-
             if (type.equals("filtered")) {
                 if (chrS.equals("23")) {
                     line = HEADER_MIXED_X;
@@ -3466,7 +3466,7 @@ public class GuidanceImpl {
                     line = HEADER_MIXED;
                 }
             } else if (type.equals("condensed")) {
-                line = "chr\tposition\talleleA\talleleB\tpvalue\tinfo_all";
+                line = "chr position    alleleA alleleB pvalue  info_all";
             }
 
             // By default values for indexes in the header
@@ -3752,8 +3752,8 @@ public class GuidanceImpl {
 
         // A place to store the results of the merge
         TreeMap<String, ArrayList<String>> summaryTotal = new TreeMap<>();
-        Hashtable<String, Integer> snptestHashTableIndex = new Hashtable<>();
-        Hashtable<Integer, String> snptestHashTableIndexReversed = new Hashtable<>();
+        HashMap<String, Integer> snptestHashTableIndex = new HashMap<>();
+        HashMap<Integer, String> snptestHashTableIndexReversed = new HashMap<>();
 
         // We read each line of the firstImputeFileInfo and put them into firstList array of Strings
         TreeMap<String, ArrayList<String>> firstTreeMap = new TreeMap<>();
@@ -3764,7 +3764,7 @@ public class GuidanceImpl {
             // Read the header and avoid the header
             line = br.readLine();
             // ---->
-            Hashtable<String, Integer> imputeHashTableIndex = new Hashtable<>();
+            HashMap<String, Integer> imputeHashTableIndex = new HashMap<>();
             if (line != null && !line.isEmpty()) {
                 // System.err.println("[collectSummary] IMPRIMO line: " + line);
                 // If we are here, the file is not empty.
@@ -4027,8 +4027,8 @@ public class GuidanceImpl {
         // K : number of panels.
         // pa_[j]: name of panel j.
 
-        // Hashtable<String, Integer> phenomeHashTableIndex = new Hashtable<>();
-        // Hashtable<Integer, String> phenomeHashTableIndexReversed = new Hashtable<>();
+        // HashMap<String, Integer> phenomeHashTableIndex = new HashMap<>();
+        // HashMap<Integer, String> phenomeHashTableIndexReversed = new HashMap<>();
 
         // phenomeHashTableIndex = createHashWithHeader(newHeader, "\t");
 
@@ -4038,7 +4038,7 @@ public class GuidanceImpl {
                 BufferedReader br = new BufferedReader(decoder)) {
 
             String line = br.readLine();
-            Hashtable<String, Integer> topHitsHashTableIndex = new Hashtable<>();
+            HashMap<String, Integer> topHitsHashTableIndex = new HashMap<>();
             topHitsHashTableIndex = createHashWithHeader(line, "\t");
 
             int indexChrInTopHitsFile = topHitsHashTableIndex.get("chr");
@@ -4156,7 +4156,7 @@ public class GuidanceImpl {
         // phe_[i]: name of phenotype i.
         // K : number of panels.
         // pa_[j]: name of panel j.
-        Hashtable<String, Integer> phenomeAHashTableIndex = new Hashtable<>();
+        HashMap<String, Integer> phenomeAHashTableIndex = new HashMap<>();
 
         // We start reading the phenomeFileA
         String phenomeAHeader = null;
@@ -4218,7 +4218,7 @@ public class GuidanceImpl {
 
             // We start reading the topHits File
             String line = br.readLine();
-            Hashtable<String, Integer> topHitsHashTableIndex = new Hashtable<>();
+            HashMap<String, Integer> topHitsHashTableIndex = new HashMap<>();
             topHitsHashTableIndex = createHashWithHeader(line, "\t");
 
             int indexChrInTopHitsFile = topHitsHashTableIndex.get("chr");
@@ -4331,8 +4331,8 @@ public class GuidanceImpl {
         // phe_[i]: name of phenotype i.
         // K : number of panels.
         // pa_[j]: name of panel j.
-        Hashtable<String, Integer> phenomeAHashTableIndex = new Hashtable<>();
-        // Hashtable<Integer, String> phenomeAHashTableIndexReversed = new Hashtable<>();
+        HashMap<String, Integer> phenomeAHashTableIndex = new HashMap<>();
+        // HashMap<Integer, String> phenomeAHashTableIndexReversed = new HashMap<>();
 
         // We start reading the phenomeFileA
         // First of all, the header
@@ -4377,8 +4377,8 @@ public class GuidanceImpl {
                 Reader decoder = new InputStreamReader(filteredByAllGz);
                 BufferedReader br = new BufferedReader(decoder)) {
 
-            Hashtable<String, Integer> filteredByAllHashTableIndex = new Hashtable<>();
-            // Hashtable<Integer, String> filteredByAllHashTableIndexReversed = new Hashtable<>();
+            HashMap<String, Integer> filteredByAllHashTableIndex = new HashMap<>();
+            // HashMap<Integer, String> filteredByAllHashTableIndexReversed = new HashMap<>();
 
             // We start reading the filteredByAllFile
             // First of all, the header
@@ -4539,8 +4539,8 @@ public class GuidanceImpl {
         // A place to store the data
         TreeMap<String, ArrayList<String>> phenomeATreeMap = new TreeMap<>();
 
-        Hashtable<String, Integer> phenomeAHashTableIndex = new Hashtable<>();
-        // Hashtable<Integer, String> phenomeAHashTableIndexReversed = new Hashtable<>();
+        HashMap<String, Integer> phenomeAHashTableIndex = new HashMap<>();
+        // HashMap<Integer, String> phenomeAHashTableIndexReversed = new HashMap<>();
 
         // We start reading the phenomeFileA
         String phenomeAHeader = null;
@@ -4618,8 +4618,8 @@ public class GuidanceImpl {
                 Reader decoder = new InputStreamReader(filteredByAllGz);
                 BufferedReader br = new BufferedReader(decoder)) {
 
-            Hashtable<String, Integer> filteredByAllHashTableIndex = new Hashtable<>();
-            // Hashtable<Integer, String> filteredByAllHashTableIndexReversed = new Hashtable<>();
+            HashMap<String, Integer> filteredByAllHashTableIndex = new HashMap<>();
+            // HashMap<Integer, String> filteredByAllHashTableIndexReversed = new HashMap<>();
 
             // We start reading the filteredByAllFile
             // First of all, the header
@@ -4672,8 +4672,8 @@ public class GuidanceImpl {
 
         // Here we have to do some similar with filteredByAllXFile (the results for chr23)
         TreeMap<String, ArrayList<String>> filteredXTreeMap = new TreeMap<>();
-        Hashtable<String, Integer> filteredByAllXHashTableIndex = new Hashtable<>();
-        // Hashtable<Integer, String> filteredByAllXHashTableIndexReversed = new Hashtable<>();
+        HashMap<String, Integer> filteredByAllXHashTableIndex = new HashMap<>();
+        // HashMap<Integer, String> filteredByAllXHashTableIndexReversed = new HashMap<>();
 
         if (endChrS.equals("23")) {
             // Then, we need to extract the information of each snp from the filteredByAllFile
@@ -4853,8 +4853,8 @@ public class GuidanceImpl {
 
         // A place to store the data
         TreeMap<String, ArrayList<String>> phenomeATreeMap = new TreeMap<>();
-        Hashtable<String, Integer> phenomeAHashTableIndex = new Hashtable<>();
-        // Hashtable<Integer, String> phenomeAHashTableIndexReversed = new Hashtable<>();
+        HashMap<String, Integer> phenomeAHashTableIndex = new HashMap<>();
+        // HashMap<Integer, String> phenomeAHashTableIndexReversed = new HashMap<>();
 
         // We start reading the phenomeFileA
         String phenomeAHeader = null;
@@ -4892,8 +4892,8 @@ public class GuidanceImpl {
 
         // Second we read the phenomeBFile and load the information into the phenomeATreeMap
         String phenomeBHeader = null;
-        Hashtable<String, Integer> phenomeBHashTableIndex = new Hashtable<>();
-        Hashtable<Integer, String> phenomeBHashTableIndexReversed = new Hashtable<>();
+        HashMap<String, Integer> phenomeBHashTableIndex = new HashMap<>();
+        HashMap<Integer, String> phenomeBHashTableIndexReversed = new HashMap<>();
         try (GZIPInputStream phenomeBFileGz = new GZIPInputStream(new FileInputStream(phenomeBFile));
                 Reader decoder = new InputStreamReader(phenomeBFileGz);
                 BufferedReader br = new BufferedReader(decoder)) {
@@ -5131,14 +5131,14 @@ public class GuidanceImpl {
     }
 
     /**
-     * Method to create a hashtable from the header of particular files
+     * Method to create a HashMap from the header of particular files
      * 
      * @param line
      * @param separator
      * @return
      */
-    private static Hashtable<String, Integer> createHashWithHeader(String line, String separator) {
-        Hashtable<String, Integer> myHashLine = new Hashtable<>();
+    private static HashMap<String, Integer> createHashWithHeader(String line, String separator) {
+        HashMap<String, Integer> myHashLine = new HashMap<>();
 
         String[] splitted = line.split(separator);
         for (int i = 0; i < splitted.length; i++) {
@@ -5148,14 +5148,14 @@ public class GuidanceImpl {
     }
 
     /**
-     * Method to create a hashtable from the header of particular files
+     * Method to create a HashMap from the header of particular files
      * 
      * @param line
      * @param separator
      * @return
      */
-    private static Hashtable<Integer, String> createHashWithHeaderReversed(String line, String separator) {
-        Hashtable<Integer, String> myHashLine = new Hashtable<>();
+    private static HashMap<Integer, String> createHashWithHeaderReversed(String line, String separator) {
+        HashMap<Integer, String> myHashLine = new HashMap<>();
 
         String[] splitted = line.split(separator);
         for (int i = 0; i < splitted.length; i++) {
