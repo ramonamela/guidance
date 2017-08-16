@@ -38,6 +38,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Properties;
 
 import org.apache.logging.log4j.LogManager;
@@ -82,6 +83,10 @@ public class Guidance {
     private static final double PVA_THRESHOLD = 5e-8;
     private static final String PVA_THRESHOLD_STR = Double.toString(PVA_THRESHOLD);
 
+    // Execution mode variables
+    private static final String FILTERED = "filtered";
+    private static final String CONDENSED = "condensed";
+
     // Environment variables that contain the information of the applications that will be used in the Guidance
     // execution
     private static final String PLINK_BINARY = System.getenv("PLINKBINARY");
@@ -91,7 +96,6 @@ public class Guidance {
     private static final String QCTOOL_BINARY = System.getenv("QCTOOLBINARY");
     private static final String SHAPEIT_BINARY = System.getenv("SHAPEITBINARY");
     private static final String IMPUTE2_BINARY = System.getenv("IMPUTE2BINARY");
-    // private static final String MINIMAC_BINARY = System.getenv("MINIMACBINARY");
     private static final String SNPTEST_BINARY = System.getenv("SNPTESTBINARY");
     private static final String JAVA_HOME = System.getenv("JAVA_HOME");
 
@@ -163,17 +167,17 @@ public class Guidance {
         listOfCommands.add("####################################################################");
 
         // Get the names of the reference panel to be used in the execution
-        ArrayList<String> rpanelTypes = new ArrayList<String>(parsingArgs.getRpanelTypes());
+        ArrayList<String> rpanelTypes = new ArrayList<>(parsingArgs.getRpanelTypes());
         String outDir = parsingArgs.getOutDir();
         ChromoInfo generalChromoInfo = new ChromoInfo();
 
         LOGGER.info("[Guidance] We print testTypes information");
         int numberOfTestTypes = parsingArgs.getNumberOfTestTypeName();
         for (int kk = 0; kk < numberOfTestTypes; kk++) {
-            String tmp_test_type = parsingArgs.getTestTypeName(kk);
-            String tmp_responseVar = parsingArgs.getResponseVar(kk);
-            String tmp_covariables = parsingArgs.getCovariables(kk);
-            LOGGER.info("[Guidance] " + tmp_test_type + " = " + tmp_responseVar + ":" + tmp_covariables);
+            String tmpTestType = parsingArgs.getTestTypeName(kk);
+            String tmpResponseVar = parsingArgs.getResponseVar(kk);
+            String tmpCovariables = parsingArgs.getCovariables(kk);
+            LOGGER.info("[Guidance] " + tmpTestType + " = " + tmpResponseVar + ":" + tmpCovariables);
         }
 
         // Main code of the work flow:
@@ -208,13 +212,13 @@ public class Guidance {
         Map<String, String> env = System.getenv();
         LOGGER.debug("--------------------------------------");
         LOGGER.debug("Environmental Variables in Master:");
-        for (String envName : env.keySet()) {
-            LOGGER.debug(envName + " = " + env.get(envName));
+        for (Entry<String, String> envVar : env.entrySet()) {
+            LOGGER.debug(envVar.getKey() + " = " + envVar.getValue());
         }
         LOGGER.debug("--------------------------------------");
         ArrayList<String> objects = new ArrayList<>();
         for (int ii = 0; ii < 10000000; ii++) {
-            objects.add(("" + 10 * 2710));
+            objects.add((Integer.toString(10 * 2_710)));
         }
 
         freeMemory = Runtime.getRuntime().freeMemory() / 1_048_576;
@@ -294,7 +298,7 @@ public class Guidance {
         setFinalStatusForImputationFiles(parsingArgs, imputationFilesInfo, generalChromoInfo, rpanelTypes);
         setFinalStatusForAssocFiles(parsingArgs, assocFilesInfo, generalChromoInfo, rpanelTypes);
 
-        // int numOfChromosToProcess = endChr - startChr + 1;
+        // The number of Chromos to process is endChr - startChr + 1;
         for (int i = startChr; i <= endChr; i++) {
             // We get the output pairs file name for mixed
             String mixedPairsFile = commonFilesInfo.getPairsFile(i);
@@ -356,7 +360,7 @@ public class Guidance {
                         mixedFilteredHaplotypesSampleFile, mixedFilteredHaplotypesLogFile, mixedFilteredHaplotypesVcfFile,
                         mixedFilteredListOfSnpsFile, exclCgatFlag, exclSVFlag);
 
-            } // End of inputFormat.equals("GEN")
+            } // End of inputFormat GEN
 
             // ***********************************************
             // * Now perform the imputation tasks *
@@ -378,9 +382,9 @@ public class Guidance {
                     lim1 = lim1 + chunkSize;
                     lim2 = lim2 + chunkSize;
                 }
-            } // End for(kk=0; kk<rpanelTypes.size(); kk++)
+            } // End for panel types
 
-        } // End for(i=startChr;i <= endChr; i++)
+        } // End for chromosomes
 
         // *******************************************************************
         // * COMPSs API Call to wait for all tasks *
@@ -424,12 +428,10 @@ public class Guidance {
                     }
 
                     // Now we perform the merge of chunks for each chromosome
-                    String filtered = "filtered";
-                    String condensed = "condensed";
                     makeMergeOfChunks(parsingArgs, listOfCommands, tt, kk, i, minSize, maxSize, chunkSize, assocFilesInfo, mergeFilesInfo,
-                            filtered);
+                            FILTERED);
                     makeMergeOfChunks(parsingArgs, listOfCommands, tt, kk, i, minSize, maxSize, chunkSize, assocFilesInfo, mergeFilesInfo,
-                            condensed);
+                            CONDENSED);
                 } // End for Chromo
 
                 // Now we have to joint the condensedFiles of each chromosome. There is not problem if chr23 is being
@@ -714,7 +716,7 @@ public class Guidance {
         String filteredByAllFile = mergeFilesInfo.getFilteredByAllFile(ttIndex, rpanelIndex, chr);
         String condensedFile = mergeFilesInfo.getCondensedFile(ttIndex, rpanelIndex, chr);
 
-        if (type.equals("filtered")) {
+        if (type.equals(FILTERED)) {
             // LOGGER.info("Number of chunks for testType " + ttIndex + " | rpanel " + rpanelIndex + " |chr " +
             // chr + " " + numberOfChunks);
             for (int processedChunks = 0; processedChunks < 2 * numberOfChunks - 2; processedChunks = processedChunks + 2) {
@@ -750,7 +752,7 @@ public class Guidance {
                  */
             } // End for Chunks
 
-        } else if (type.equals("condensed")) {
+        } else if (type.equals(CONDENSED)) {
             for (int processedChunks = 0; processedChunks < 2 * numberOfChunks - 2; processedChunks = processedChunks + 2) {
                 if (processedChunks < numberOfChunks) {
                     reducedA = assocFilesInfo.getSummaryCondensedFile(ttIndex, rpanelIndex, chr, lim1, lim2, chunkSize);
@@ -912,7 +914,7 @@ public class Guidance {
 
                 doJointFilteredByAllFiles(parsingArgs, listOfCommands, filteredA, filteredB, filteredC, rpanelName, rpanelFlag);
                 indexC++;
-            } // End for(int processedFiltered=0; processedFiltered<= 2*numberOfChrs -2; processedFiltered =
+            } // End for fitlered chromosomes
               // processedFiltered +2)
         }
 
@@ -954,9 +956,6 @@ public class Guidance {
         int startChr = parsingArgs.getStart();
         int endChr = parsingArgs.getEnd();
 
-        String filtered = "filtered";
-        String condensed = "condensed";
-
         String filteredPanelA = null;
         String filteredPanelB = null;
         String filteredPanelC = null;
@@ -982,7 +981,7 @@ public class Guidance {
         int chunkSize = parsingArgs.getChunkSize();
 
         // We have to ask if we have to combine results from different panels or not.
-        if (refPanelCombine == true) {
+        if (refPanelCombine) {
             boolean elemA = false;
             for (int chr = startChr; chr <= endChr; chr++) {
                 int maxSize = generalChromoInfo.getMaxSize(chr);
@@ -1018,7 +1017,7 @@ public class Guidance {
                         listDeleteFiles.add(condensedPanelA);
                     }
 
-                    if (elemA == false) {
+                    if (!elemA) {
                         filteredCombineA = filteredPanelC;
                         condensedCombineA = condensedPanelC;
                         elemA = true;
@@ -1027,7 +1026,7 @@ public class Guidance {
                             filteredCombineB = filteredPanelC;
                             filteredCombineC = mergeFilesInfo.getCombinedReducedFilteredFile(ttIndex, 0, chr, indexFC);
                             doMergeTwoChunks(parsingArgs, listOfCommands, filteredCombineA, filteredCombineB, filteredCombineC,
-                                    Integer.toString(chr), filtered);
+                                    Integer.toString(chr), FILTERED);
                             filteredCombineA = filteredCombineC;
 
                             // Saving files to remove
@@ -1042,7 +1041,7 @@ public class Guidance {
                                 filteredCombineXB = filteredPanelC;
                                 filteredCombineXC = mergeFilesInfo.getCombinedReducedFilteredXFile(ttIndex, 0, chr, indexXFC);
                                 doMergeTwoChunks(parsingArgs, listOfCommands, filteredCombineXA, filteredCombineXB, filteredCombineXC,
-                                        Integer.toString(chr), filtered);
+                                        Integer.toString(chr), FILTERED);
                                 filteredCombineXA = filteredCombineXC;
 
                                 // Saving files to remove
@@ -1056,7 +1055,7 @@ public class Guidance {
                         condensedCombineB = condensedPanelC;
                         condensedCombineC = mergeFilesInfo.getCombinedReducedCondensedFile(ttIndex, 0, chr, indexCC);
                         doMergeTwoChunks(parsingArgs, listOfCommands, condensedCombineA, condensedCombineB, condensedCombineC,
-                                Integer.toString(chr), condensed);
+                                Integer.toString(chr), CONDENSED);
                         condensedCombineA = condensedCombineC;
                         indexCC++;
 
@@ -1250,11 +1249,10 @@ public class Guidance {
     private static void doConvertFromBedToBed(ParseCmdLine parsingArgs, ArrayList<String> listOfCommands, String bedFile, String bimFile,
             String famFile, String mixedBedFile, String mixedBimFile, String mixedFamFile, String mixedBedToBedLogFile, String theChromo) {
 
-        String cmdToStore = null;
         if (parsingArgs.getStageStatus("convertFromBedToBed") == 1) {
             // Task
-            cmdToStore = JAVA_HOME + "/java convertFromBedToBed.jar " + bedFile + " " + bimFile + " " + famFile + " " + mixedBedFile + " "
-                    + mixedBimFile + " " + mixedFamFile + " " + mixedBedToBedLogFile + " " + theChromo;
+            String cmdToStore = JAVA_HOME + "/java convertFromBedToBed.jar " + bedFile + " " + bimFile + " " + famFile + " " + mixedBedFile
+                    + " " + mixedBimFile + " " + mixedFamFile + " " + mixedBedToBedLogFile + " " + theChromo;
             listOfCommands.add(cmdToStore);
             try {
                 GuidanceImpl.convertFromBedToBed(bedFile, bimFile, famFile, mixedBedFile, mixedBimFile, mixedFamFile, mixedBedToBedLogFile,
@@ -1278,10 +1276,9 @@ public class Guidance {
     private static void doCreateRsIdList(ParseCmdLine parsingArgs, ArrayList<String> listOfCommands, String mixedBimOrGenFile,
             String exclCgatFlag, String mixedPairsFile, String inputFormat) {
 
-        String cmdToStore = " ";
         if (parsingArgs.getStageStatus("createRsIdList") == 1) {
             // Task
-            cmdToStore = JAVA_HOME + "/java createRsIdList " + mixedBimOrGenFile + " " + exclCgatFlag + " " + mixedPairsFile + " "
+            String cmdToStore = JAVA_HOME + "/java createRsIdList " + mixedBimOrGenFile + " " + exclCgatFlag + " " + mixedPairsFile + " "
                     + inputFormat;
             listOfCommands.add(cmdToStore);
             try {
@@ -1320,9 +1317,9 @@ public class Guidance {
             String shapeitLogFile, String filteredHaplotypesFile, String filteredHaplotypesSampleFile, String filteredHaplotypesLogFile,
             String filteredHaplotypesVcfFile, String listOfSnpsFile, String exclCgatFlag, String exclSVFlag) {
 
-        String cmdToStore = " ";
         if (parsingArgs.getStageStatus("phasingBed") == 1) {
             // If we process chromoso X (23) then we change the cmdToStore
+            String cmdToStore;
             if (theChromo.equals("23")) {
                 cmdToStore = SHAPEIT_BINARY + " --input-bed " + bedFile + " " + bimFile + " " + famFile + " --input-map " + gmapFile
                         + " --chrX --output-max " + shapeitHapsFile + " " + shapeitSampleFile
@@ -1342,29 +1339,27 @@ public class Guidance {
             }
         }
 
-        String cmdToStore2 = " ";
         if (parsingArgs.getStageStatus("createListOfExcludedSnps") == 1) {
-            cmdToStore2 = JAVA_HOME + "/java createListOfExcludedSnps.jar " + shapeitHapsFile + " " + excludedSnpsFile + " " + exclCgatFlag
-                    + " " + exclSVFlag;
+            String cmdToStore = JAVA_HOME + "/java createListOfExcludedSnps.jar " + shapeitHapsFile + " " + excludedSnpsFile + " "
+                    + exclCgatFlag + " " + exclSVFlag;
 
-            listOfCommands.add(cmdToStore2);
+            listOfCommands.add(cmdToStore);
             try {
-                GuidanceImpl.createListOfExcludedSnps(shapeitHapsFile, excludedSnpsFile, exclCgatFlag, exclSVFlag, cmdToStore2);
+                GuidanceImpl.createListOfExcludedSnps(shapeitHapsFile, excludedSnpsFile, exclCgatFlag, exclSVFlag, cmdToStore);
             } catch (GuidanceTaskException gte) {
                 LOGGER.error("[Guidance] Exception trying the execution of createListOfExcludedSnps task", gte);
             }
         }
 
-        String cmdToStore3 = " ";
         if (parsingArgs.getStageStatus("filterHaplotypes") == 1) {
-            cmdToStore3 = JAVA_HOME + "/java filterHaplotypes.jar " + shapeitHapsFile + " " + shapeitSampleFile + " " + excludedSnpsFile
-                    + " " + filteredHaplotypesFile + " " + filteredHaplotypesSampleFile + " " + filteredHaplotypesLogFile + " "
-                    + filteredHaplotypesVcfFile + " " + listOfSnpsFile;
+            String cmdToStore = JAVA_HOME + "/java filterHaplotypes.jar " + shapeitHapsFile + " " + shapeitSampleFile + " "
+                    + excludedSnpsFile + " " + filteredHaplotypesFile + " " + filteredHaplotypesSampleFile + " " + filteredHaplotypesLogFile
+                    + " " + filteredHaplotypesVcfFile + " " + listOfSnpsFile;
 
-            listOfCommands.add(cmdToStore3);
+            listOfCommands.add(cmdToStore);
             try {
                 GuidanceImpl.filterHaplotypes(shapeitHapsFile, shapeitSampleFile, excludedSnpsFile, filteredHaplotypesFile,
-                        filteredHaplotypesSampleFile, filteredHaplotypesLogFile, filteredHaplotypesVcfFile, listOfSnpsFile, cmdToStore3);
+                        filteredHaplotypesSampleFile, filteredHaplotypesLogFile, filteredHaplotypesVcfFile, listOfSnpsFile, cmdToStore);
             } catch (GuidanceTaskException gte) {
                 LOGGER.error("[Guidance] Exception trying the execution of createListOfExcludedSnps task", gte);
             }
@@ -1398,8 +1393,8 @@ public class Guidance {
             String shapeitLogFile, String filteredHaplotypesFile, String filteredHaplotypesSampleFile, String filteredHaplotypesLogFile,
             String filteredHaplotypesVcfFile, String listOfSnpsFile, String exclCgatFlag, String exclSVFlag) {
 
-        String cmdToStore = null;
         if (parsingArgs.getStageStatus("pashing") == 1) {
+            String cmdToStore;
             if (theChromo.equals("23")) {
                 // If we process chromoso X (23) then we change the cmdToStore
                 cmdToStore = SHAPEIT_BINARY + " --input-gen " + genFile + " " + sampleFile + " --input-map " + gmapFile
@@ -1418,29 +1413,27 @@ public class Guidance {
             }
         }
 
-        String cmdToStore2 = " ";
         if (parsingArgs.getStageStatus("createListOfExcludedSnps") == 1) {
-            cmdToStore2 = JAVA_HOME + "/java createListOfExcludedSnps.jar " + shapeitHapsFile + " " + excludedSnpsFile + " " + exclCgatFlag
-                    + " " + exclSVFlag;
+            String cmdToStore = JAVA_HOME + "/java createListOfExcludedSnps.jar " + shapeitHapsFile + " " + excludedSnpsFile + " "
+                    + exclCgatFlag + " " + exclSVFlag;
 
-            listOfCommands.add(cmdToStore2);
+            listOfCommands.add(cmdToStore);
             try {
-                GuidanceImpl.createListOfExcludedSnps(shapeitHapsFile, excludedSnpsFile, exclCgatFlag, exclSVFlag, cmdToStore2);
+                GuidanceImpl.createListOfExcludedSnps(shapeitHapsFile, excludedSnpsFile, exclCgatFlag, exclSVFlag, cmdToStore);
             } catch (GuidanceTaskException gte) {
                 LOGGER.error("[Guidance] Exception trying the execution of createListOfExcludedSnps task", gte);
             }
         }
 
-        String cmdToStore3 = " ";
         if (parsingArgs.getStageStatus("filterHaplotypes") == 1) {
-            cmdToStore3 = JAVA_HOME + "/java filterHaplotypes.jar " + shapeitHapsFile + " " + shapeitSampleFile + " " + excludedSnpsFile
-                    + " " + filteredHaplotypesFile + " " + filteredHaplotypesSampleFile + " " + filteredHaplotypesLogFile + " "
-                    + filteredHaplotypesVcfFile + " " + listOfSnpsFile;
+            String cmdToStore = JAVA_HOME + "/java filterHaplotypes.jar " + shapeitHapsFile + " " + shapeitSampleFile + " "
+                    + excludedSnpsFile + " " + filteredHaplotypesFile + " " + filteredHaplotypesSampleFile + " " + filteredHaplotypesLogFile
+                    + " " + filteredHaplotypesVcfFile + " " + listOfSnpsFile;
 
-            listOfCommands.add(cmdToStore3);
+            listOfCommands.add(cmdToStore);
             try {
                 GuidanceImpl.filterHaplotypes(shapeitHapsFile, shapeitSampleFile, excludedSnpsFile, filteredHaplotypesFile,
-                        filteredHaplotypesSampleFile, filteredHaplotypesLogFile, filteredHaplotypesVcfFile, listOfSnpsFile, cmdToStore3);
+                        filteredHaplotypesSampleFile, filteredHaplotypesLogFile, filteredHaplotypesVcfFile, listOfSnpsFile, cmdToStore);
             } catch (GuidanceTaskException gte) {
                 LOGGER.error("[Guidance] Exception trying the execution of createListOfExcludedSnps task", gte);
             }
@@ -1470,10 +1463,9 @@ public class Guidance {
             String knownHapFile, String legendFile, String shapeitHapsFile, String shapeitSampleFile, String lim1S, String lim2S,
             String pairsFile, String imputeFile, String imputeFileInfo, String imputeFileSummary, String imputeFileWarnings) {
 
-        String cmdToStore = null;
         if (parsingArgs.getStageStatus("imputeWithImpute") == 1) {
             // Submitting the impute task per chunk
-
+            String cmdToStore;
             if (chrS.equals("23")) {
                 cmdToStore = IMPUTE2_BINARY + " -use_prephased_g -m " + gmapFile + " -h " + knownHapFile + " -l " + legendFile
                         + " -known_haps_g " + shapeitHapsFile + " -sample_g " + shapeitSampleFile + " -int " + lim1S + " " + lim2S
@@ -1519,11 +1511,10 @@ public class Guidance {
             String imputedMMInfoFile, String imputedMMErateFile, String imputedMMRecFile, String imputedMMDoseFile, String imputedMMLogFile,
             String chrS, String lim1S, String lim2S) {
 
-        String cmdToStore = null;
         if (parsingArgs.getStageStatus("imputeWithMinimac") == 1) {
             // Submitting the impute task per chunk
             // We don't distinguish chrS 23 since the cmdToStore is the same
-            cmdToStore = JAVA_HOME + "/java imputationWithMinimac --vcfReference --refHaps " + knownHapFile + " --shape_haps "
+            String cmdToStore = JAVA_HOME + "/java imputationWithMinimac --vcfReference --refHaps " + knownHapFile + " --shape_haps "
                     + filteredHapsFile + " --sample " + filteredSampleFile + " --snps " + filteredListOfSnpsFile + " --vcfstart " + lim1S
                     + " --vcfend " + lim2S + " --chr " + chrS + " --vcfwindow --rounds 5 --states 200 --outInfo " + imputedMMInfoFile
                     + " --outErate " + imputedMMErateFile + " --outRec " + imputedMMRecFile + " --outDose " + imputedMMDoseFile
@@ -1553,10 +1544,9 @@ public class Guidance {
     private static void doFilterByInfo(ParseCmdLine parsingArgs, ArrayList<String> listOfCommands, String imputeFileInfo,
             String filteredRsIdFile, String infoThresholdS) {
 
-        String cmdToStore = null;
         if (parsingArgs.getStageStatus("filterByInfo") == 1) {
             // We create the list of rsId that are greater than or equal to the infoThreshold value
-            cmdToStore = JAVA_HOME + "/java filterByInfo " + imputeFileInfo + " " + filteredRsIdFile + " " + infoThresholdS;
+            String cmdToStore = JAVA_HOME + "/java filterByInfo " + imputeFileInfo + " " + filteredRsIdFile + " " + infoThresholdS;
             listOfCommands.add(cmdToStore);
             try {
                 GuidanceImpl.filterByInfo(imputeFileInfo, filteredRsIdFile, infoThresholdS, cmdToStore);
@@ -1582,9 +1572,8 @@ public class Guidance {
         double mafThreshold = parsingArgs.getMafThreshold();
         String mafThresholdS = Double.toString(mafThreshold);
 
-        String cmdToStore = null;
         if (parsingArgs.getStageStatus("qctoolS") == 1) {
-            cmdToStore = QCTOOL_BINARY + " -g " + imputeFile + " -og " + filteredFile + " -incl-rsids " + filteredRsIdFile
+            String cmdToStore = QCTOOL_BINARY + " -g " + imputeFile + " -og " + filteredFile + " -incl-rsids " + filteredRsIdFile
                     + " -omit-chromosome -force -log " + filteredLogFile + " -maf " + mafThresholdS + " 1";
             listOfCommands.add(cmdToStore);
             try {
@@ -1611,10 +1600,9 @@ public class Guidance {
     private static void doSnptest(ParseCmdLine parsingArgs, ArrayList<String> listOfCommands, String chrS, String mergedGenFile,
             String mergedSampleFile, String snptestOutFile, String snptestLogFile, String responseVar, String covariables) {
 
-        String cmdToStore = null;
         String newStr = covariables.replace(',', ' ');
-
         if (parsingArgs.getStageStatus("snptest") == 1) {
+            String cmdToStore;
             if (covariables.equals("none")) {
                 cmdToStore = SNPTEST_BINARY + " -data " + mergedGenFile + " " + mergedSampleFile + " -o " + snptestOutFile + " -pheno "
                         + responseVar + " -hwe -log " + snptestLogFile;
@@ -1660,12 +1648,11 @@ public class Guidance {
     private static void doCollectSummary(ParseCmdLine parsingArgs, ArrayList<String> listOfCommands, String chrS, String imputeFileInfo,
             String snptestOutFile, String summaryFile, String mafThresholdS, String infoThresholdS, String hweCohortThresholdS,
             String hweCasesThresholdS, String hweControlsThresholdS) {
-        String cmdToStore = null;
 
         if (parsingArgs.getStageStatus("collectSummary") == 1) {
             // Submitting the collect_summary task per this chunk
-            cmdToStore = JAVA_HOME + "/java collectSummary " + chrS + " " + imputeFileInfo + " " + snptestOutFile + " " + summaryFile + " "
-                    + mafThresholdS + " " + infoThresholdS + " " + hweCohortThresholdS + " " + hweCasesThresholdS + " "
+            String cmdToStore = JAVA_HOME + "/java collectSummary " + chrS + " " + imputeFileInfo + " " + snptestOutFile + " " + summaryFile
+                    + " " + mafThresholdS + " " + infoThresholdS + " " + hweCohortThresholdS + " " + hweCasesThresholdS + " "
                     + hweControlsThresholdS;
 
             listOfCommands.add(cmdToStore);
@@ -1690,9 +1677,9 @@ public class Guidance {
      */
     private static void doJointCondenseFiles(ParseCmdLine parsingArgs, ArrayList<String> listOfCommands, String condensedA,
             String condensedB, String condensedC) {
-        String cmdToStore = null;
+
         if (parsingArgs.getStageStatus("jointCondensedFiles") == 1) {
-            cmdToStore = JAVA_HOME + "/java jointCondensedFiles " + condensedA + " " + condensedB + " " + condensedC;
+            String cmdToStore = JAVA_HOME + "/java jointCondensedFiles " + condensedA + " " + condensedB + " " + condensedC;
             listOfCommands.add(cmdToStore);
 
             try {
@@ -1716,10 +1703,10 @@ public class Guidance {
      */
     private static void doJointFilteredByAllFiles(ParseCmdLine parsingArgs, ArrayList<String> listOfCommands, String filteredByAllA,
             String filteredByAllB, String filteredByAllC, String rpanelName, String rpanelFlag) {
-        String cmdToStore = null;
+
         if (parsingArgs.getStageStatus("jointFilteredByAllFiles") == 1) {
-            cmdToStore = JAVA_HOME + "/java jointFilteredByAllFiles " + filteredByAllA + " " + filteredByAllB + " " + filteredByAllC + " "
-                    + rpanelName + " " + rpanelFlag;
+            String cmdToStore = JAVA_HOME + "/java jointFilteredByAllFiles " + filteredByAllA + " " + filteredByAllB + " " + filteredByAllC
+                    + " " + rpanelName + " " + rpanelFlag;
             listOfCommands.add(cmdToStore);
             try {
                 GuidanceImpl.jointFilteredByAllFiles(filteredByAllA, filteredByAllB, filteredByAllC, rpanelName, rpanelFlag, cmdToStore);
@@ -1742,9 +1729,9 @@ public class Guidance {
     private static void doGenerateTopHits(ParseCmdLine parsingArgs, ArrayList<String> listOfCommands, String filteredFile,
             String filteredXFile, String topHitsResults, String pvaThrS) {
 
-        String cmdToStore = null;
         if (parsingArgs.getStageStatus("generateTopHits") == 1) {
-            cmdToStore = JAVA_HOME + "/java generateTopHits " + filteredFile + " " + filteredXFile + " " + topHitsResults + " " + pvaThrS;
+            String cmdToStore = JAVA_HOME + "/java generateTopHits " + filteredFile + " " + filteredXFile + " " + topHitsResults + " "
+                    + pvaThrS;
             listOfCommands.add(cmdToStore);
             try {
                 GuidanceImpl.generateTopHitsAll(filteredFile, filteredXFile, topHitsResults, pvaThrS, cmdToStore);
@@ -1768,10 +1755,10 @@ public class Guidance {
      */
     private static void doGenerateQQManhattanPlots(ParseCmdLine parsingArgs, ArrayList<String> listOfCommands, String condensedFile,
             String qqPlotFile, String manhattanPlotFile, String qqPlotTiffFile, String manhattanPlotTiffFile, String correctedPvaluesFile) {
-        String cmdToStore = null;
+
         if (parsingArgs.getStageStatus("generateQQManhattanPlots") == 1) {
-            cmdToStore = R_SCRIPT_BIN_DIR + "/Rscript " + R_SCRIPT_DIR + "/qqplot_manhattan.R " + condensedFile + " " + qqPlotFile + " "
-                    + manhattanPlotFile + " " + qqPlotTiffFile + " " + manhattanPlotTiffFile + " " + correctedPvaluesFile;
+            String cmdToStore = R_SCRIPT_BIN_DIR + "/Rscript " + R_SCRIPT_DIR + "/qqplot_manhattan.R " + condensedFile + " " + qqPlotFile
+                    + " " + manhattanPlotFile + " " + qqPlotTiffFile + " " + manhattanPlotTiffFile + " " + correctedPvaluesFile;
             listOfCommands.add(cmdToStore);
 
             try {
@@ -1797,11 +1784,9 @@ public class Guidance {
     private static void doCombinePanelsComplex(ParseCmdLine parsingArgs, ArrayList<String> listOfCommands, String resultsPanelA,
             String resultsPanelB, String lastResultFile, int lim1, int lim2) {
 
-        String cmdToStore = null;
-
         if (parsingArgs.getStageStatus("combinePanelsComplex") == 1) {
-            cmdToStore = JAVA_HOME + "/java combinePanelsComplex " + resultsPanelA + " " + resultsPanelB + " " + lastResultFile + " " + lim1
-                    + " " + lim2;
+            String cmdToStore = JAVA_HOME + "/java combinePanelsComplex " + resultsPanelA + " " + resultsPanelB + " " + lastResultFile + " "
+                    + lim1 + " " + lim2;
             listOfCommands.add(cmdToStore);
 
             try {
@@ -1826,10 +1811,9 @@ public class Guidance {
     private static void doMergeTwoChunks(ParseCmdLine parsingArgs, ArrayList<String> listOfCommands, String reduceA, String reduceB,
             String reduceC, String theChromo, String type) {
 
-        String cmdToStore = null;
         if (parsingArgs.getStageStatus("mergeTwoChunks") == 1) {
             // Task
-            cmdToStore = JAVA_HOME + "/java mergeTwoChunks " + reduceA + " " + reduceB + " " + reduceC + " " + theChromo;
+            String cmdToStore = JAVA_HOME + "/java mergeTwoChunks " + reduceA + " " + reduceB + " " + reduceC + " " + theChromo;
             listOfCommands.add(cmdToStore);
             try {
                 GuidanceImpl.mergeTwoChunks(reduceA, reduceB, reduceC, theChromo, type, cmdToStore);
@@ -1851,8 +1835,6 @@ public class Guidance {
     private static void doFilterByAll(ParseCmdLine parsingArgs, ArrayList<String> listOfCommands, String inputFile, String outputFile,
             String outputCondensedFile) {
 
-        String cmdToStore = null;
-
         double mafThreshold = parsingArgs.getMafThreshold();
         double infoThreshold = parsingArgs.getInfoThreshold();
         double hweCohortThreshold = parsingArgs.getHweCohortThreshold();
@@ -1867,8 +1849,9 @@ public class Guidance {
 
         // Task
         if (parsingArgs.getStageStatus("filterByAll") == 1) {
-            cmdToStore = JAVA_HOME + "/java filterByAll " + inputFile + " " + outputFile + " " + outputCondensedFile + " " + mafThresholdS
-                    + " " + infoThresholdS + " " + hweCohortThresholdS + " " + hweCasesThresholdS + " " + hweControlsThresholdS;
+            String cmdToStore = JAVA_HOME + "/java filterByAll " + inputFile + " " + outputFile + " " + outputCondensedFile + " "
+                    + mafThresholdS + " " + infoThresholdS + " " + hweCohortThresholdS + " " + hweCasesThresholdS + " "
+                    + hweControlsThresholdS;
 
             listOfCommands.add(cmdToStore);
             try {
@@ -1892,10 +1875,9 @@ public class Guidance {
      */
     private static void doInitPhenoMatrix(ParseCmdLine parsingArgs, ArrayList<String> listOfCommands, String topHitsFile, String ttName,
             String rpName, String phenomeFile) {
-        String cmdToStore = null;
 
         if (parsingArgs.getStageStatus("initPhenoMatrix") == 1) {
-            cmdToStore = JAVA_HOME + "/java initPhenoMatrix " + topHitsFile + " " + ttName + " " + rpName + " " + phenomeFile;
+            String cmdToStore = JAVA_HOME + "/java initPhenoMatrix " + topHitsFile + " " + ttName + " " + rpName + " " + phenomeFile;
             listOfCommands.add(cmdToStore);
 
             try {
@@ -1919,10 +1901,9 @@ public class Guidance {
      */
     private static void doAddToPhenoMatrix(ParseCmdLine parsingArgs, ArrayList<String> listOfCommands, String phenomeFileA,
             String topHitsFile, String ttName, String rpName, String phenomeFileB) {
-        String cmdToStore = null;
 
         if (parsingArgs.getStageStatus("addToPhenoMatrix") == 1) {
-            cmdToStore = JAVA_HOME + "/java addToPhenoMatrix " + phenomeFileA + " " + topHitsFile + " " + ttName + " " + rpName + " "
+            String cmdToStore = JAVA_HOME + "/java addToPhenoMatrix " + phenomeFileA + " " + topHitsFile + " " + ttName + " " + rpName + " "
                     + phenomeFileB;
             listOfCommands.add(cmdToStore);
 
@@ -1949,10 +1930,9 @@ public class Guidance {
      */
     private static void doFilloutPhenoMatrix(ParseCmdLine parsingArgs, ArrayList<String> listOfCommands, String phenomeFileA,
             String filteredByAllFile, String filteredByAllXFile, String endChrS, String ttName, String rpName, String phenomeFileB) {
-        String cmdToStore = null;
 
         if (parsingArgs.getStageStatus("filloutPhenoMatrix") == 1) {
-            cmdToStore = JAVA_HOME + "/java filloutPhenoMatrix " + phenomeFileA + " " + filteredByAllFile + " " + filteredByAllXFile + " "
+            String cmdToStore = JAVA_HOME + "/java filloutPhenoMatrix " + phenomeFileA + " " + filteredByAllFile + " " + filteredByAllXFile + " "
                     + endChrS + " " + ttName + " " + rpName + " " + phenomeFileB;
             listOfCommands.add(cmdToStore);
 
@@ -1978,10 +1958,9 @@ public class Guidance {
      */
     private static void doFinalizePhenoMatrix(ParseCmdLine parsingArgs, ArrayList<String> listOfCommands, String phenomeFileA,
             String phenomeFileB, String ttName, String rpName, String phenomeFileC) {
-        String cmdToStore = null;
 
         if (parsingArgs.getStageStatus("finalizePhenoMatrix") == 1) {
-            cmdToStore = JAVA_HOME + "/java finalizePhenoMatrix " + phenomeFileA + " " + phenomeFileB + " " + ttName + " " + rpName + " "
+            String cmdToStore = JAVA_HOME + "/java finalizePhenoMatrix " + phenomeFileA + " " + phenomeFileB + " " + ttName + " " + rpName + " "
                     + phenomeFileC;
             listOfCommands.add(cmdToStore);
 
