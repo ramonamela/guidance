@@ -34,19 +34,16 @@ package guidance;
 import guidance.exceptions.GuidanceTaskException;
 import guidance.files.FileUtils;
 import guidance.processes.ProcessUtils;
+import guidance.utils.Headers;
 
 import java.io.File;
 import java.io.Reader;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.RandomAccessFile;
 
@@ -65,6 +62,63 @@ public class GuidanceImpl {
     // Debug flag
     private static final boolean DEBUG = true;
 
+    // File extensions
+    private static final String STDOUT_EXTENSION = ".stdout";
+    private static final String STDERR_EXTENSION = ".stderr";
+
+    // Environment variable names
+    private static final String PLINKBINARY = "PLINKBINARY";
+    private static final String GTOOLBINARY = "GTOOLBINARY";
+    private static final String QCTOOLBINARY = "QCTOOLBINARY";
+    private static final String SHAPEITBINARY = "SHAPEITBINARY";
+    private static final String IMPUTE2BINARY = "IMPUTE2BINARY";
+    private static final String MINIMACBINARY = "MINIMACBINARY";
+    private static final String RSCRIPTBINDIR = "RSCRIPTBINDIR";
+    private static final String RSCRIPTDIR = "RSCRIPTDIR";
+    private static final String SNPTESTBINARY = "SNPTESTBINARY";
+
+    // Error headers
+    private static final String HEADER_CONVERT_FROM_BED_TO_BED = "[convertFromBedToBed]";
+    private static final String HEADER_CONVERT_FROM_BED_TO_PED = "[convertFromBedToPed]";
+    private static final String HEADER_CONVERT_FROM_PED_TO_GEN = "[convertFromPedToGen]";
+    private static final String HEADER_CREATE_RSID_LIST = "[CreateRsIdList]";
+    private static final String HEADER_WRITE_OUT_PAIRS_FILE = "[writeOutPairsFile]";
+    private static final String HEADER_GTOOLS = "[gtoolS]";
+    private static final String HEADER_QCTOOL = "[qctool]";
+    private static final String HEADER_QCTOOLS = "[qctools]";
+    private static final String HEADER_PHASING_BED = "[phasingBed]";
+    private static final String HEADER_PHASING = "[phasing]";
+    private static final String HEADER_FILTER_HAPLOTYPES = "[filterHaplotypes]";
+    private static final String HEADER_IMPUTE = "[impute]";
+    private static final String HEADER_GENERATE_QQ_MANHATTAN_PLOTS = "generateQQManhattanPlots";
+    private static final String HEADER_SNPTEST = "[snptest]";
+
+    // Debug messages
+    private static final String MSG_CMD = "Command: ";
+    private static final String FILE_SUFFIX = " file";
+
+    // Error messages
+    private static final String ERROR_ON_FILE = "Error: the file ";
+    private static final String ERROR_SUFFIX_RENAMED_FILE = " was not succesfully renamed";
+    private static final String ERROR_BINARY_EXEC = "Error executing binary job, exit value is: ";
+    private static final String ERROR_FILE_CREATION = "Error: Cannot create ";
+
+
+    /**
+     * Private constructor to avoid instantiation
+     */
+    private GuidanceImpl() {
+        // Private constructor to avoid instantiation
+    }
+
+    private static String loadFromEnvironment(String envVarName, String methodHeader) throws GuidanceTaskException {
+        String envVar = System.getenv(envVarName);
+        if (envVar == null) {
+            throw new GuidanceTaskException(methodHeader + "Error, " + envVarName + " environment variable is not defined in .bashrc!!!");
+        }
+
+        return envVar;
+    }
 
     /**
      * Method to perform the conversion from Bed to Ped Format file
@@ -85,10 +139,7 @@ public class GuidanceImpl {
     public static void convertFromBedToBed(String bedFile, String bimFile, String famFile, String newBedFile, String newBimFile,
             String newFamFile, String logFile, String chromo, String cmdToStore) throws GuidanceTaskException {
 
-        String plinkBinary = System.getenv("PLINKBINARY");
-        if (plinkBinary == null) {
-            throw new GuidanceTaskException("[convertFromBedToBed] Error, PLINKBINARY environment variable is not defined in .bashrc!!!");
-        }
+        String plinkBinary = loadFromEnvironment(PLINKBINARY, HEADER_CONVERT_FROM_BED_TO_BED);
 
         if (DEBUG) {
             System.out.println("\n[DEBUG] Running convertFromBedToBed with parameters:");
@@ -113,31 +164,25 @@ public class GuidanceImpl {
         }
 
         long startTime = System.currentTimeMillis();
-        String cmd = null;
 
-        // String tmpBedFile = newBedFile + ".bed";
-        // String tmpBimFile = newBedFile + ".bim";
-        // String tmpFamFile = newBedFile + ".fam";
-        // String tmpLogFile = newBedFile + ".log";
-
-        cmd = plinkBinary + " --noweb --bed " + bedFile + " --bim " + bimFile + " --fam " + famFile + " --chr " + chromo
+        String cmd = plinkBinary + " --noweb --bed " + bedFile + " --bim " + bimFile + " --fam " + famFile + " --chr " + chromo
                 + " --recode --out " + newBedFile + " --make-bed";
 
         if (DEBUG) {
-            System.out.println("[convertFromBedToBed] Command: " + cmd);
+            System.out.println(HEADER_CONVERT_FROM_BED_TO_BED + MSG_CMD + cmd);
         }
 
         // Execute the command retrieving its exitValue, output and error
         int exitValue = -1;
         try {
-            exitValue = ProcessUtils.execute(cmd, newBedFile + ".stdout", newBedFile + ".stderr");
+            exitValue = ProcessUtils.execute(cmd, newBedFile + STDOUT_EXTENSION, newBedFile + STDERR_EXTENSION);
         } catch (IOException ioe) {
             throw new GuidanceTaskException(ioe);
         }
 
         // Check process exit value
         if (exitValue != 0) {
-            throw new GuidanceTaskException("[convertFromBedToBed] Error executing convertFromBedToBed job, exit value is: " + exitValue);
+            throw new GuidanceTaskException(HEADER_CONVERT_FROM_BED_TO_BED + ERROR_BINARY_EXEC + exitValue);
         }
 
         // File (or directory) with old name
@@ -147,7 +192,7 @@ public class GuidanceImpl {
         boolean success = file.renameTo(file2);
         if (!success) {
             // File was not successfully renamed
-            throw new GuidanceTaskException("[convertFromBedToBed] Error, the file " + newBedFile + " was not succesfully renamed");
+            throw new GuidanceTaskException(HEADER_CONVERT_FROM_BED_TO_BED + ERROR_ON_FILE + newBedFile + ERROR_SUFFIX_RENAMED_FILE);
         }
 
         file = new File(newBedFile + ".bim");
@@ -156,7 +201,7 @@ public class GuidanceImpl {
         success = file.renameTo(file2);
         if (!success) {
             // File was not successfully renamed
-            throw new GuidanceTaskException("[convertFromBedToBed] Error, the file " + newBimFile + " was not succesfully renamed");
+            throw new GuidanceTaskException(HEADER_CONVERT_FROM_BED_TO_BED + ERROR_ON_FILE + newBimFile + ERROR_SUFFIX_RENAMED_FILE);
         }
 
         file = new File(newBedFile + ".fam");
@@ -164,7 +209,7 @@ public class GuidanceImpl {
         // Rename file (or directory)
         success = file.renameTo(file2);
         if (!success) {
-            throw new GuidanceTaskException("[convertFromBedToBed] Error, the file " + newFamFile + " was not succesfully renamed");
+            throw new GuidanceTaskException(HEADER_CONVERT_FROM_BED_TO_BED + ERROR_ON_FILE + newFamFile + ERROR_SUFFIX_RENAMED_FILE);
             // File was not successfully renamed
         }
 
@@ -173,22 +218,22 @@ public class GuidanceImpl {
         // Rename file (or directory)
         success = file.renameTo(file2);
         if (!success) {
-            throw new GuidanceTaskException("[convertFromBedToBed] Error, the file " + logFile + " was not succesfully renamed");
+            throw new GuidanceTaskException(HEADER_CONVERT_FROM_BED_TO_BED + ERROR_ON_FILE + logFile + ERROR_SUFFIX_RENAMED_FILE);
             // File was not successfully renamed
         }
 
         // If there is not output in the convertFromBedToBed process. Then we have to create some empty outputs
         try {
-            FileUtils.createEmptyFile(newBedFile, "[convertFromBedToBed]");
-            FileUtils.createEmptyFile(newBimFile, "[convertFromBedToBed]");
-            FileUtils.createEmptyFile(newFamFile, "[convertFromBedToBed]");
-            FileUtils.createEmptyFile(logFile, "[convertFromBedToBed]");
+            FileUtils.createEmptyFile(newBedFile, HEADER_CONVERT_FROM_BED_TO_BED);
+            FileUtils.createEmptyFile(newBimFile, HEADER_CONVERT_FROM_BED_TO_BED);
+            FileUtils.createEmptyFile(newFamFile, HEADER_CONVERT_FROM_BED_TO_BED);
+            FileUtils.createEmptyFile(logFile, HEADER_CONVERT_FROM_BED_TO_BED);
         } catch (IOException ioe) {
             throw new GuidanceTaskException(ioe);
         }
 
         long stopTime = System.currentTimeMillis();
-        long elapsedTime = (stopTime - startTime) / 1000;
+        long elapsedTime = (stopTime - startTime) / 1_000;
         if (DEBUG) {
             System.out.println("\n[DEBUG] convertFromBedToBed startTime: " + startTime);
             System.out.println("\n[DEBUG] convertFromBedToBed endTime: " + stopTime);
@@ -216,10 +261,7 @@ public class GuidanceImpl {
     public static void convertFromBedToPed(String bedPrefix, String bedFile, String bimFile, String famFile, String pedFile, String mapFile,
             String logFile, String chromo, String cmdToStore) throws GuidanceTaskException {
 
-        String plinkBinary = System.getenv("PLINKBINARY");
-        if (plinkBinary == null) {
-            throw new GuidanceTaskException("[convertFromBedToPed] Error, PLINKBINARY environment variable is not defined in .bashrc!!!");
-        }
+        String plinkBinary = loadFromEnvironment(PLINKBINARY, HEADER_CONVERT_FROM_BED_TO_PED);
 
         if (DEBUG) {
             System.out.println("\n[DEBUG] Running convertFromBedToPed with parameters:");
@@ -244,24 +286,24 @@ public class GuidanceImpl {
         }
 
         long startTime = System.currentTimeMillis();
-        String cmd = null;
-        cmd = plinkBinary + " --noweb --bfile " + bedPrefix + " --chr " + chromo + " --recode --out " + pedFile;
+
+        String cmd = plinkBinary + " --noweb --bfile " + bedPrefix + " --chr " + chromo + " --recode --out " + pedFile;
 
         if (DEBUG) {
-            System.out.println("[convertFromBedToPed] Command: " + cmd);
+            System.out.println(HEADER_CONVERT_FROM_BED_TO_PED + MSG_CMD + cmd);
         }
 
         // Execute the command retrieving its exitValue, output and error
         int exitValue = -1;
         try {
-            exitValue = ProcessUtils.execute(cmd, pedFile + ".stdout", pedFile + ".stderr");
+            exitValue = ProcessUtils.execute(cmd, pedFile + STDOUT_EXTENSION, pedFile + STDERR_EXTENSION);
         } catch (IOException ioe) {
             throw new GuidanceTaskException(ioe);
         }
 
         // Check process exit value
         if (exitValue != 0) {
-            throw new GuidanceTaskException("[convertFromBedToPed] Error executing convertFromBedToPed job, exit value is: " + exitValue);
+            throw new GuidanceTaskException(HEADER_CONVERT_FROM_BED_TO_PED + ERROR_BINARY_EXEC + exitValue);
         }
 
         // File (or directory) with old name
@@ -272,7 +314,7 @@ public class GuidanceImpl {
         // Rename file (or directory)
         boolean success = file.renameTo(file2);
         if (!success) {
-            throw new GuidanceTaskException("[convertFromBedToPed] Error, the file " + pedFile + " was not succesfully renamed");
+            throw new GuidanceTaskException(HEADER_CONVERT_FROM_BED_TO_PED + ERROR_ON_FILE + pedFile + ERROR_SUFFIX_RENAMED_FILE);
             // File was not successfully renamed
         }
 
@@ -282,7 +324,7 @@ public class GuidanceImpl {
         // Rename file (or directory)
         success = file.renameTo(file2);
         if (!success) {
-            throw new GuidanceTaskException("[convertFromBedToPed] Error, the file " + mapFile + " was not succesfully renamed");
+            throw new GuidanceTaskException(HEADER_CONVERT_FROM_BED_TO_PED + ERROR_ON_FILE + mapFile + ERROR_SUFFIX_RENAMED_FILE);
             // File was not successfully renamed
         }
 
@@ -291,21 +333,21 @@ public class GuidanceImpl {
         // Rename file (or directory)
         success = file.renameTo(file2);
         if (!success) {
-            throw new GuidanceTaskException("[convertFromBedToPed] Error, the file " + logFile + " was not succesfully renamed");
+            throw new GuidanceTaskException(HEADER_CONVERT_FROM_BED_TO_PED + ERROR_ON_FILE + logFile + ERROR_SUFFIX_RENAMED_FILE);
             // File was not successfully renamed
         }
 
         // If there is not output in the convertFromBedToPed process. Then we have to create some empty outputs.
         try {
-            FileUtils.createEmptyFile(mapFile, "[convertFromBedToPed]");
-            FileUtils.createEmptyFile(pedFile, "[convertFromBedToPed]");
-            FileUtils.createEmptyFile(logFile, "[convertFromBedToPed]");
+            FileUtils.createEmptyFile(mapFile, HEADER_CONVERT_FROM_BED_TO_PED);
+            FileUtils.createEmptyFile(pedFile, HEADER_CONVERT_FROM_BED_TO_PED);
+            FileUtils.createEmptyFile(logFile, HEADER_CONVERT_FROM_BED_TO_PED);
         } catch (IOException ioe) {
             throw new GuidanceTaskException(ioe);
         }
 
         long stopTime = System.currentTimeMillis();
-        long elapsedTime = (stopTime - startTime) / 1000;
+        long elapsedTime = (stopTime - startTime) / 1_000;
         if (DEBUG) {
             System.out.println("\n[DEBUG] convertFromBedToPed startTime: " + startTime);
             System.out.println("\n[DEBUG] convertFromBedToPed endTime: " + stopTime);
@@ -331,10 +373,7 @@ public class GuidanceImpl {
     public static void convertFromPedToGen(String pedFile, String mapFile, String genFile, String sampleFile, String logFile,
             String cmdToStore) throws GuidanceTaskException {
 
-        String gtoolBinary = System.getenv("GTOOLBINARY");
-        if (gtoolBinary == null) {
-            throw new GuidanceTaskException("[convertFromPedToGen] Error, GTOOLBINARY environment variable is not defined in .bashrc!!!");
-        }
+        String gtoolBinary = loadFromEnvironment(GTOOLBINARY, HEADER_CONVERT_FROM_PED_TO_GEN);
 
         if (DEBUG) {
             System.out.println("\n[DEBUG] Running convertFromPedToGen with parameters:");
@@ -357,31 +396,30 @@ public class GuidanceImpl {
 
         long startTime = System.currentTimeMillis();
 
-        String cmd = null;
-        cmd = gtoolBinary + " -P --ped " + pedFile + " --map " + mapFile + " --og " + genFile + " --os " + sampleFile
+        String cmd = gtoolBinary + " -P --ped " + pedFile + " --map " + mapFile + " --og " + genFile + " --os " + sampleFile
                 + " --binary_phenotype --order --log " + logFile;
 
         if (DEBUG) {
-            System.out.println("[convertFromPedToGen] Command: " + cmd);
+            System.out.println(HEADER_CONVERT_FROM_PED_TO_GEN + MSG_CMD + cmd);
         }
 
         // Execute the command retrieving its exitValue, output and error
         int exitValue = -1;
         try {
-            exitValue = ProcessUtils.execute(cmd, genFile + ".stdout", genFile + ".stderr");
+            exitValue = ProcessUtils.execute(cmd, genFile + STDOUT_EXTENSION, genFile + STDERR_EXTENSION);
         } catch (IOException ioe) {
             throw new GuidanceTaskException(ioe);
         }
 
         // Check process exit value
         if (exitValue != 0) {
-            throw new GuidanceTaskException("[convertFromPedToGen] Error executing convertFromPedToGed job, exit value is: " + exitValue);
+            throw new GuidanceTaskException(HEADER_CONVERT_FROM_PED_TO_GEN + ERROR_BINARY_EXEC + exitValue);
         }
 
         // If there is not output in the convertFromPedToGen process. Then we have to create some empty outputs.
         try {
-            FileUtils.createEmptyFile(genFile, "[convertFromPedToGen]");
-            FileUtils.createEmptyFile(sampleFile, "[convertFromPedToGen]");
+            FileUtils.createEmptyFile(genFile, HEADER_CONVERT_FROM_PED_TO_GEN);
+            FileUtils.createEmptyFile(sampleFile, HEADER_CONVERT_FROM_PED_TO_GEN);
         } catch (IOException ioe) {
             throw new GuidanceTaskException(ioe);
         }
@@ -397,7 +435,7 @@ public class GuidanceImpl {
         File changedSampleFile = new File(sampleFile + ".changed");
         try {
             if (!changedSampleFile.createNewFile()) {
-                throw new IOException("Error: Cannot create " + changedSampleFile + " file");
+                throw new IOException(ERROR_FILE_CREATION + changedSampleFile + FILE_SUFFIX);
             }
         } catch (IOException ioe) {
             throw new GuidanceTaskException(ioe);
@@ -434,8 +472,8 @@ public class GuidanceImpl {
                     myNewLine = line.substring(0, length - 2) + " 1";
                     // System.out.println("[DEBUG]: 1 New line : " + myNewLine);
                 } else {
-                    System.out.println(
-                            "[convertFromPedToGen]: Error changing the sample file. Invalid affection coding in line " + myNewLine);
+                    System.out.println(HEADER_CONVERT_FROM_PED_TO_GEN + "Error changing the sample file. Invalid affection coding in line "
+                            + myNewLine);
                     // throw new Exception("Error changing the sample file. Invalid affection coding in line " +
                     // counter);
                 }
@@ -455,18 +493,18 @@ public class GuidanceImpl {
         // Rename file (or directory)
         boolean success = file.renameTo(file2);
         if (!success) {
-            throw new GuidanceTaskException("[convertFromPedToGen] Error, the file " + sampleFile + " was not succesfully renamed");
+            throw new GuidanceTaskException(HEADER_CONVERT_FROM_PED_TO_GEN + ERROR_ON_FILE + sampleFile + ERROR_SUFFIX_RENAMED_FILE);
             // File was not successfully renamed
         }
 
         try {
-            FileUtils.createEmptyFile(logFile, "[convertFromPedToGen]");
+            FileUtils.createEmptyFile(logFile, HEADER_CONVERT_FROM_PED_TO_GEN);
         } catch (IOException ioe) {
             throw new GuidanceTaskException(ioe);
         }
 
         long stopTime = System.currentTimeMillis();
-        long elapsedTime = (stopTime - startTime) / 1000;
+        long elapsedTime = (stopTime - startTime) / 1_000;
         if (DEBUG) {
             System.out.println("\n[DEBUG] convertFromPedToGen startTime: " + startTime);
             System.out.println("\n[DEBUG] convertFromPedToGen endTime: " + stopTime);
@@ -517,20 +555,6 @@ public class GuidanceImpl {
             System.out.println("--------------------------------------");
         }
 
-        // ArrayList objects = new ArrayList();
-
-        // for (int ii = 0; ii < 10; ii++) {
-        // objects.add(("" + 10 * 2710));
-        // }
-
-        // freeMemory = Runtime.getRuntime().freeMemory()/1048576;
-        // totalMemory = Runtime.getRuntime().totalMemory()/1048576;
-        // maxMemory = Runtime.getRuntime().maxMemory()/1048576;
-        // System.out.println("Used Memory in JVM: " + (maxMemory - freeMemory));
-        // System.out.println("freeMemory in JVM: " + freeMemory);
-        // System.out.println("totalMemory in JVM shows current size of java heap : " + totalMemory);
-        // System.out.println("maxMemory in JVM: " + maxMemory);
-
         long startTime = System.currentTimeMillis();
 
         // Check if the file is gzip or not.
@@ -548,7 +572,7 @@ public class GuidanceImpl {
         File outPairsFile = new File(pairsFile);
         try {
             if (!outPairsFile.createNewFile()) {
-                throw new IOException("Error: Cannot create " + outPairsFile + " file");
+                throw new IOException(HEADER_CREATE_RSID_LIST + ERROR_FILE_CREATION + outPairsFile + FILE_SUFFIX);
             }
         } catch (IOException ioe) {
             throw new GuidanceTaskException(ioe);
@@ -557,8 +581,8 @@ public class GuidanceImpl {
         boolean thisIsGz = (n == 0x1f8b0000);
 
         if (thisIsGz) {
-            System.out.println(
-                    "[CreateRsIdList] It seems the file " + genOrBimFile + " is a gzip file. Magic Number is " + String.format("%x", n));
+            System.out.println(HEADER_CREATE_RSID_LIST + "It seems the file " + genOrBimFile + " is a gzip file. Magic Number is "
+                    + String.format("%x", n));
 
             try (GZIPInputStream inputGz = new GZIPInputStream(new FileInputStream(genOrBimFile));
                     Reader decoder = new InputStreamReader(inputGz);
@@ -622,8 +646,8 @@ public class GuidanceImpl {
                     }
                 }
             } else {
-                throw new GuidanceTaskException("[createRsIdList] Error, It was not possible to generate " + pairsFile + ". The "
-                        + inputFormat + " is not valid!!");
+                throw new GuidanceTaskException(HEADER_WRITE_OUT_PAIRS_FILE + "Error, It was not possible to generate " + pairsFile
+                        + ". The " + inputFormat + " is not valid!!");
             }
 
             writerPairs.flush();
@@ -650,10 +674,7 @@ public class GuidanceImpl {
     public static void gtoolS(String newGenFile, String modSampleFile, String gtoolGenFile, String gtoolSampleFile, String sampleExclFile,
             String snpWtccFile, String gtoolLogFile, String cmdToStore) throws GuidanceTaskException {
 
-        String gtoolBinary = System.getenv("GTOOLBINARY");
-        if (gtoolBinary == null) {
-            throw new GuidanceTaskException("[gtoolS] Error, GTOOLBINARY environment variable is not defined in .bashrc!!!");
-        }
+        String gtoolBinary = loadFromEnvironment(GTOOLBINARY, HEADER_GTOOLS);
 
         if (DEBUG) {
             System.out.println("\n[DEBUG] Running gtoolS with parameters:");
@@ -669,11 +690,10 @@ public class GuidanceImpl {
             System.out.println("[DEBUG] \t- COMMAND            : " + cmdToStore);
             System.out.println("--------------------------------------");
         }
+
         long startTime = System.currentTimeMillis();
 
-        String cmd = null;
-
-        cmd = gtoolBinary + " -S --g " + newGenFile + " --s " + modSampleFile + " --og " + gtoolGenFile + " --os " + gtoolSampleFile
+        String cmd = gtoolBinary + " -S --g " + newGenFile + " --s " + modSampleFile + " --og " + gtoolGenFile + " --os " + gtoolSampleFile
                 + " --sample_excl " + sampleExclFile + " --exclusion " + snpWtccFile + " --log " + gtoolLogFile;
 
         if (DEBUG) {
@@ -684,18 +704,18 @@ public class GuidanceImpl {
         // Execute the command retrieving its exitValue, output and error
         int exitValue = -1;
         try {
-            exitValue = ProcessUtils.execute(cmd, gtoolGenFile + ".stdout", gtoolGenFile + ".stderr");
+            exitValue = ProcessUtils.execute(cmd, gtoolGenFile + STDOUT_EXTENSION, gtoolGenFile + STDERR_EXTENSION);
         } catch (IOException ioe) {
             throw new GuidanceTaskException(ioe);
         }
 
         // Check process exit value
         if (exitValue != 0) {
-            throw new GuidanceTaskException("[gtoolS] Error executing gtoolSProc job, exit value is: " + exitValue);
+            throw new GuidanceTaskException(HEADER_GTOOLS + ERROR_BINARY_EXEC + exitValue);
         }
 
         long stopTime = System.currentTimeMillis();
-        long elapsedTime = (stopTime - startTime) / 1000;
+        long elapsedTime = (stopTime - startTime) / 1_000;
         if (DEBUG) {
             System.out.println("\n[DEBUG] gtoolS startTime: " + startTime);
             System.out.println("\n[DEBUG] gtoolS endTime: " + stopTime);
@@ -721,10 +741,7 @@ public class GuidanceImpl {
     public static void qctool(String genFile, String sampleFile, String qctoolGenFile, String qctoolSampleFile, String qctoolLogFile,
             String cmdToStore) throws GuidanceTaskException {
 
-        String qctoolBinary = System.getenv("QCTOOLBINARY");
-        if (qctoolBinary == null) {
-            throw new GuidanceTaskException("[qctool] Error, QCTOOLBINARY environment variable is not defined in .bashrc!!!");
-        }
+        String qctoolBinary = loadFromEnvironment(QCTOOLBINARY, HEADER_QCTOOL);
 
         if (DEBUG) {
             System.out.println("\n[DEBUG] Running qctool with parameters:");
@@ -736,46 +753,32 @@ public class GuidanceImpl {
             System.out.println("\n");
             System.out.println("[DEBUG] \t- COMMAND            : " + cmdToStore);
         }
+
         long startTime = System.currentTimeMillis();
 
-        String cmd = null;
-        cmd = qctoolBinary + " -g " + genFile + " -s " + sampleFile + " -og " + qctoolGenFile + " -os " + qctoolSampleFile
+        String cmd = qctoolBinary + " -g " + genFile + " -s " + sampleFile + " -og " + qctoolGenFile + " -os " + qctoolSampleFile
                 + " -omit-chromosome -sort -log " + qctoolLogFile;
 
         if (DEBUG) {
             System.out.println("\n[DEBUG] Cmd -> " + cmd);
             System.out.println(" ");
         }
-        ProcessBuilder pb = new ProcessBuilder(cmd.split(" "));
-        pb.environment().remove("LD_PRELOAD");
-        Process qctoolProc;
-        try {
-            qctoolProc = pb.start();
-        } catch (IOException ioe) {
-            throw new GuidanceTaskException(ioe);
-        }
 
-        // Handling the streams so that dead lock situation never occurs
+        // Execute the command retrieving its exitValue, output and error
+        int exitValue = -1;
         try {
-            readOutputAndError(qctoolProc.getInputStream(), qctoolGenFile + ".stdout", qctoolProc.getErrorStream(),
-                    qctoolGenFile + ".stderr");
+            exitValue = ProcessUtils.execute(cmd, qctoolGenFile + STDOUT_EXTENSION, qctoolGenFile + STDERR_EXTENSION);
         } catch (IOException ioe) {
             throw new GuidanceTaskException(ioe);
         }
 
         // Check the proper ending of the process
-        int exitValue = -1;
-        try {
-            exitValue = qctoolProc.waitFor();
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        }
         if (exitValue != 0) {
-            throw new GuidanceTaskException("[qctool] Error executing qctoolProc job, exit value is: " + exitValue);
+            throw new GuidanceTaskException(HEADER_QCTOOL + ERROR_BINARY_EXEC + exitValue);
         }
 
         long stopTime = System.currentTimeMillis();
-        long elapsedTime = (stopTime - startTime) / 1000;
+        long elapsedTime = (stopTime - startTime) / 1_000;
         if (DEBUG) {
             System.out.println("\n[DEBUG] qctool startTime: " + startTime);
             System.out.println("\n[DEBUG] qctool endTime: " + stopTime);
@@ -800,10 +803,7 @@ public class GuidanceImpl {
     public static void qctoolS(String imputeFile, String inclusionRsIdFile, String mafThresholdS, String filteredFileGz,
             String filteredLogFile, String cmdToStore) throws GuidanceTaskException {
 
-        String qctoolBinary = System.getenv("QCTOOLBINARY");
-        if (qctoolBinary == null) {
-            throw new GuidanceTaskException("[qctoolS] Error, QCTOOLBINARY environment variable is not defined in .bashrc!!!");
-        }
+        String qctoolBinary = loadFromEnvironment(QCTOOLBINARY, HEADER_QCTOOLS);
 
         if (DEBUG) {
             System.out.println("\nRunning qctoolS for generation a subset of rsids with parameters:");
@@ -844,8 +844,7 @@ public class GuidanceImpl {
         // Now we create filteredFileGz
         String filteredFile = filteredFileGz.substring(0, filteredFileGz.length() - 3);
 
-        String cmd = null;
-        cmd = qctoolBinary + " -g " + imputeFileGz + " -og " + filteredFile + " -incl-rsids " + inclusionRsIdFile
+        String cmd = qctoolBinary + " -g " + imputeFileGz + " -og " + filteredFile + " -incl-rsids " + inclusionRsIdFile
                 + " -omit-chromosome -force -log " + filteredLogFile + " -maf " + mafThresholdS + " 1";
 
         if (DEBUG) {
@@ -856,14 +855,14 @@ public class GuidanceImpl {
         // Execute the command retrieving its exitValue, output and error
         int exitValue = -1;
         try {
-            exitValue = ProcessUtils.execute(cmd, filteredFile + ".stdout", filteredFile + ".stderr");
+            exitValue = ProcessUtils.execute(cmd, filteredFile + STDOUT_EXTENSION, filteredFile + STDERR_EXTENSION);
         } catch (IOException ioe) {
             throw new GuidanceTaskException(ioe);
         }
 
         // Check process exit value
         if (exitValue != 0) {
-            throw new GuidanceTaskException("[qctoolS] Error executing qctoolSProc job, exit value is: " + exitValue);
+            throw new GuidanceTaskException(HEADER_QCTOOLS + ERROR_BINARY_EXEC + exitValue);
         }
 
         // This tool always creates a filteredFile output (empty or not)
@@ -871,7 +870,7 @@ public class GuidanceImpl {
         FileUtils.gzipFile(filteredFile, filteredFileGz);
 
         long stopTime = System.currentTimeMillis();
-        long elapsedTime = (stopTime - startTime) / 1000;
+        long elapsedTime = (stopTime - startTime) / 1_000;
         if (DEBUG) {
             System.out.println("\n[DEBUG] qctoolS startTime: " + startTime);
             System.out.println("\n[DEBUG] qctoolS endTime: " + stopTime);
@@ -904,11 +903,12 @@ public class GuidanceImpl {
             System.out.println("\n");
             System.out.println("[DEBUG] \t- Command: " + cmdToStore);
         }
+
         long startTime = System.currentTimeMillis();
 
         // We have to check the haplotypes file and extract tha allele information. For the format file used by shapeit,
-        // the
-        // indices for alleles are:
+        // the indices for alleles are:
+
         // int rsIdIndex = 1;
         int posIndex = 2;
         int a1Index = 3;
@@ -927,7 +927,6 @@ public class GuidanceImpl {
         } else {
             // If the renamed shapeitHapsFile exists, then an extended .gz version exists also.
             shapeitHapsFileGz = shapeitHapsFile + ".gz";
-            // String imputeFileGz = imputeFile + ".gz";
         }
 
         // Array of string to store positions of SNPs to exclude
@@ -986,7 +985,7 @@ public class GuidanceImpl {
         File outputFile = new File(excludedSnpsFile);
         try {
             if (!outputFile.createNewFile()) {
-                throw new IOException("Error: Cannot create " + outputFile + " file");
+                throw new IOException(ERROR_FILE_CREATION + outputFile + FILE_SUFFIX);
             }
         } catch (IOException ioe) {
             throw new GuidanceTaskException(ioe);
@@ -1030,10 +1029,7 @@ public class GuidanceImpl {
     public static void phasingBed(String chromo, String bedFile, String bimFile, String famFile, String gmapFile, String shapeitHapsFile,
             String shapeitSampleFile, String shapeitLogFile, String cmdToStore) throws GuidanceTaskException {
 
-        String shapeitBinary = System.getenv("SHAPEITBINARY");
-        if (shapeitBinary == null) {
-            throw new GuidanceTaskException("[phasingBed] Error, SHAPEITBINARY environment variable is not defined in .bashrc!!!");
-        }
+        String shapeitBinary = loadFromEnvironment(SHAPEITBINARY, HEADER_PHASING_BED);
 
         if (DEBUG) {
             System.out.println("\n[DEBUG] Running phasing with parameters:");
@@ -1056,13 +1052,13 @@ public class GuidanceImpl {
             // }
             // System.out.println("--------------------------------------");
         }
+
         long startTime = System.currentTimeMillis();
 
         // Now we create shapeitHapsFileGz
         String shapeitHapsFileGz = shapeitHapsFile + ".gz";
 
         String cmd = null;
-
         if (chromo.equals("23")) {
             cmd = shapeitBinary + " --input-bed " + bedFile + " " + bimFile + " " + famFile + " --input-map " + gmapFile
                     + " --chrX --output-max " + shapeitHapsFileGz + " " + shapeitSampleFile
@@ -1082,15 +1078,15 @@ public class GuidanceImpl {
         // Ugly issue: If we run shapeit_v2, all the stdXXX is done stdout, and there is not stderr
         int exitValue = -1;
         try {
-            exitValue = ProcessUtils.execute(cmd, shapeitHapsFile + ".stdout", shapeitHapsFile + ".stderr");
+            exitValue = ProcessUtils.execute(cmd, shapeitHapsFile + STDOUT_EXTENSION, shapeitHapsFile + STDERR_EXTENSION);
         } catch (IOException ioe) {
             throw new GuidanceTaskException(ioe);
         }
 
         // Check process exit value
         if (exitValue != 0) {
-            System.err.println("[phasingBed] Warning executing shapeitProc job, exit value is: " + exitValue);
-            System.err.println("[phasingBed]                         (This warning is not fatal).");
+            System.err.println(HEADER_PHASING_BED + "Warning executing shapeitProc job, exit value is: " + exitValue);
+            System.err.println(HEADER_PHASING_BED + "                         (This warning is not fatal).");
             // throw new Exception("Error executing shapeitProc job, exit value is: " + exitValue);
         }
 
@@ -1101,17 +1097,9 @@ public class GuidanceImpl {
         if (tmpShapeitLogFile.exists()) {
             boolean success = tmpShapeitLogFile.renameTo(new File(shapeitLogFile));
             if (!success) {
-                throw new GuidanceTaskException("[phasingBed] Error, the file " + tmpFile + " was not succesfully renamed");
+                throw new GuidanceTaskException(HEADER_PHASING_BED + ERROR_ON_FILE + tmpFile + ERROR_SUFFIX_RENAMED_FILE);
             }
         }
-
-        // Now we rename shapeitHapsFileGz to shapeitHapsFile
-        /*
-         * File myHapsGz = new File(shapeitHapsFileGz); File myHaps = new File(shapeitHapsFile); if(myHaps.exists()) {
-         * throw new java.io.IOException("[phasingBed] Error, file " + myHaps + " exist!!"); } boolean success =
-         * myHapsGz.renameTo(myHaps); if (!success) { throw new java.io.IOException("[phasingBed] Error, file " + myHaps
-         * + " could not be renamed to + " + myHapsGz); }
-         */
 
         // Now we rename shapeitHapsFileGz to shapeitHapsFile
         File source = new File(shapeitHapsFileGz);
@@ -1119,7 +1107,7 @@ public class GuidanceImpl {
         FileUtils.copyFile(source, dest);
 
         long stopTime = System.currentTimeMillis();
-        long elapsedTime = (stopTime - startTime) / 1000;
+        long elapsedTime = (stopTime - startTime) / 1_000;
         if (DEBUG) {
             System.out.println("\n[DEBUG] phasing startTime: " + startTime);
             System.out.println("\n[DEBUG] phasing endTime: " + stopTime);
@@ -1146,10 +1134,7 @@ public class GuidanceImpl {
     public static void phasing(String chromo, String inputGenFile, String inputSampleFile, String gmapFile, String shapeitHapsFile,
             String shapeitSampleFile, String shapeitLogFile, String cmdToStore) throws GuidanceTaskException {
 
-        String shapeitBinary = System.getenv("SHAPEITBINARY");
-        if (shapeitBinary == null) {
-            throw new GuidanceTaskException("[phasing] Error, SHAPEITBINARY environment variable is not defined in .bashrc!!!");
-        }
+        String shapeitBinary = loadFromEnvironment(SHAPEITBINARY, HEADER_PHASING);
 
         if (DEBUG) {
             System.out.println("\n[DEBUG] Running phasing with parameters:");
@@ -1171,24 +1156,10 @@ public class GuidanceImpl {
             // }
             // System.out.println("--------------------------------------");
         }
+
         long startTime = System.currentTimeMillis();
 
-        // Check if the file is genfile is gzip or not.
-        // This is done by checking the magic number of gzip files, which is 0x1f8b (the first two bytes)
-
-        /*
-         * String tmpGtoolGenFile = null; tmpGtoolGenFile = inputGenFile;
-         * 
-         * File tmpInputFile = new File(inputGenFile); RandomAccessFile raf = new RandomAccessFile(tmpInputFile, "r");
-         * long n = raf.readInt(); n = n & 0xFFFF0000; raf.close();
-         * 
-         * if (n == 0x1f8b0000) { System.out.println("[Shapeit] It seems the file " + inputGenFile +
-         * " is a gzip file. Magic Number is " + String.format("%x", n)); // Then,use a renamed file tmpGtoolGenFile =
-         * inputGenFile + ".gz"; //Now we rename shapeitHapsFileGz to shapeitHapsFile File source = new
-         * File(inputGenFile); File dest = new File(tmpGtoolGenFile); copyFile(source, dest); }
-         */
-
-        // Now we creat shapeitHapsFileGz
+        // Now we create shapeitHapsFileGz
         String shapeitHapsFileGz = shapeitHapsFile + ".gz";
 
         String cmd = null;
@@ -1209,15 +1180,15 @@ public class GuidanceImpl {
         // Execute the command retrieving its exitValue, output and error
         int exitValue = -1;
         try {
-            exitValue = ProcessUtils.execute(cmd, shapeitHapsFile + ".stdout", shapeitHapsFile + ".stderr");
+            exitValue = ProcessUtils.execute(cmd, shapeitHapsFile + STDOUT_EXTENSION, shapeitHapsFile + STDERR_EXTENSION);
         } catch (IOException ioe) {
             throw new GuidanceTaskException(ioe);
         }
 
         // Check process exit value
         if (exitValue != 0) {
-            System.err.println("[phasing] Warning executing shapeitProc job, exit value is: " + exitValue);
-            System.err.println("[phasing]                         (This warning is not fatal).");
+            System.err.println(HEADER_PHASING + "Warning executing shapeitProc job, exit value is: " + exitValue);
+            System.err.println(HEADER_PHASING + "                         (This warning is not fatal).");
             // throw new Exception("Error executing shapeitProc job, exit value is: " + exitValue);
         }
 
@@ -1228,7 +1199,7 @@ public class GuidanceImpl {
         if (tmpShapeitLogFile.exists()) {
             boolean success = tmpShapeitLogFile.renameTo(new File(shapeitLogFile));
             if (!success) {
-                throw new GuidanceTaskException("[phasing] Error, the file " + tmpFile + " was not succesfully renamed");
+                throw new GuidanceTaskException(HEADER_PHASING + ERROR_ON_FILE + tmpFile + ERROR_SUFFIX_RENAMED_FILE);
             }
         }
 
@@ -1238,7 +1209,7 @@ public class GuidanceImpl {
         FileUtils.copyFile(source, dest);
 
         long stopTime = System.currentTimeMillis();
-        long elapsedTime = (stopTime - startTime) / 1000;
+        long elapsedTime = (stopTime - startTime) / 1_000;
         if (DEBUG) {
             System.out.println("\n[DEBUG] phasing startTime: " + startTime);
             System.out.println("\n[DEBUG] phasing endTime: " + stopTime);
@@ -1267,10 +1238,7 @@ public class GuidanceImpl {
             String filteredSampleFile, String filteredLogFile, String filteredHapsVcfFile, String listOfSnpsFile, String cmdToStore)
             throws GuidanceTaskException {
 
-        String shapeitBinary = System.getenv("SHAPEITBINARY");
-        if (shapeitBinary == null) {
-            throw new GuidanceTaskException("[phasing] Error, SHAPEITBINARY environment variable is not defined in .bashrc!!!");
-        }
+        String shapeitBinary = loadFromEnvironment(SHAPEITBINARY, HEADER_FILTER_HAPLOTYPES);
 
         if (DEBUG) {
             System.out.println("\n[DEBUG] Running filterHaplotypes with parameters:");
@@ -1310,27 +1278,11 @@ public class GuidanceImpl {
             // String imputeFileGz = imputeFile + ".gz";
         }
 
-        // Check if the file is genfile is gzip or not.
-        // This is done by checking the magic number of gzip files, which is 0x1f8b (the first two bytes)
-
-        /*
-         * String tmpGtoolGenFile = null; tmpGtoolGenFile = inputGenFile;
-         * 
-         * File tmpInputFile = new File(inputGenFile); RandomAccessFile raf = new RandomAccessFile(tmpInputFile, "r");
-         * long n = raf.readInt(); n = n & 0xFFFF0000; raf.close();
-         * 
-         * if (n == 0x1f8b0000) { System.out.println("[Shapeit] It seems the file " + inputGenFile +
-         * " is a gzip file. Magic Number is " + String.format("%x", n)); // Then,use a renamed file tmpGtoolGenFile =
-         * inputGenFile + ".gz"; //Now we rename shapeitHapsFileGz to shapeitHapsFile File source = new
-         * File(inputGenFile); File dest = new File(tmpGtoolGenFile); copyFile(source, dest); }
-         */
-
-        // Now we creat hapsFileGz
+        // Now we create hapsFileGz
         String filteredHapsFileGz = filteredHapsFile + ".gz";
         String filteredHapsVcfFileGz = filteredHapsVcfFile + ".gz";
 
-        String cmd = null;
-        cmd = shapeitBinary + " -convert --input-haps " + hapsFileGz + " " + sampleFile + " --exclude-snp " + excludedSnpsFile + " "
+        String cmd = shapeitBinary + " -convert --input-haps " + hapsFileGz + " " + sampleFile + " --exclude-snp " + excludedSnpsFile + " "
                 + " --output-haps " + filteredHapsFileGz + " " + filteredSampleFile + " --output-log " + filteredLogFile + " --output-vcf "
                 + filteredHapsVcfFileGz;
 
@@ -1344,15 +1296,16 @@ public class GuidanceImpl {
         // Ugly issue: If we run shapeit_v2, all the stdXXX is done stdout, and there is not stderr
         int exitValue = -1;
         try {
-            exitValue = ProcessUtils.execute(cmd, filteredHapsFile + ".stdout", filteredHapsFile + ".stderr");
+            exitValue = ProcessUtils.execute(cmd, filteredHapsFile + STDOUT_EXTENSION, filteredHapsFile + STDERR_EXTENSION);
         } catch (IOException ioe) {
             throw new GuidanceTaskException(ioe);
         }
 
         // Check process exit value
         if (exitValue != 0) {
-            System.err.println("[filterHaplotypes] Warning executing shapeitProc job in mode -convert, exit value is: " + exitValue);
-            System.err.println("[filterHaplotypes]                         (This warning is not fatal).");
+            System.err
+                    .println(HEADER_FILTER_HAPLOTYPES + "Warning executing shapeitProc job in mode -convert, exit value is: " + exitValue);
+            System.err.println(HEADER_FILTER_HAPLOTYPES + "                         (This warning is not fatal).");
             // throw new Exception("Error executing shapeitProc job, exit value is: " + exitValue);
         }
 
@@ -1363,17 +1316,17 @@ public class GuidanceImpl {
         if (tmpFilteredLogFile.exists()) {
             boolean success = tmpFilteredLogFile.renameTo(new File(filteredLogFile));
             if (!success) {
-                throw new GuidanceTaskException("[filterHaplotypes] Error, the file " + tmpFile + " was not succesfully renamed");
+                throw new GuidanceTaskException(HEADER_FILTER_HAPLOTYPES + ERROR_ON_FILE + tmpFile + ERROR_SUFFIX_RENAMED_FILE);
             }
         }
 
-        System.err.println("[filterHaplotypes] Filtering haplotypes OK. Now we create the listofSnps...");
+        System.err.println(HEADER_FILTER_HAPLOTYPES + "Filtering haplotypes OK. Now we create the listofSnps...");
 
         // Now we have to create the list of snps and write them into the output file.
         // Taking into account that shapeit had generated a gziped file, then we have to use GZIPInputStream.
         File outFilteredFile = new File(listOfSnpsFile);
 
-        // Trys to create the file
+        // Tries to create the file
         boolean bool = false;
         try {
             bool = outFilteredFile.createNewFile();
@@ -1412,7 +1365,7 @@ public class GuidanceImpl {
         FileUtils.copyFile(source, dest);
 
         long stopTime = System.currentTimeMillis();
-        long elapsedTime = (stopTime - startTime) / 1000;
+        long elapsedTime = (stopTime - startTime) / 1_000;
         if (DEBUG) {
             System.out.println("\n[DEBUG] filterHaplotypes startTime: " + startTime);
             System.out.println("\n[DEBUG] filterHaplotypes endTime: " + stopTime);
@@ -1446,10 +1399,7 @@ public class GuidanceImpl {
             String shapeitSampleFile, String lim1S, String lim2S, String pairsFile, String imputeFile, String imputeFileInfo,
             String imputeFileSummary, String imputeFileWarnings, String theChromo, String cmdToStore) throws GuidanceTaskException {
 
-        String impute2Binary = System.getenv("IMPUTE2BINARY");
-        if (impute2Binary == null) {
-            throw new GuidanceTaskException("[impute] Error, IMPUTE2BINARY environment variable is not defined in .bashrc!!!");
-        }
+        String impute2Binary = loadFromEnvironment(IMPUTE2BINARY, HEADER_IMPUTE);
 
         if (DEBUG) {
             System.out.println("\n[DEBUG] Running impute with parameters:");
@@ -1478,6 +1428,7 @@ public class GuidanceImpl {
             // }
             // System.out.println("--------------------------------------");
         }
+
         long startTime = System.currentTimeMillis();
 
         // We have to make sure whether we are using renamed files of the original gz files.
@@ -1495,7 +1446,6 @@ public class GuidanceImpl {
         }
 
         String cmd = null;
-
         if (theChromo.equals("23")) {
             cmd = impute2Binary + " -use_prephased_g -m " + gmapFile + " -h " + knownHapFile + " -l " + legendFile + " -known_haps_g "
                     + shapeitHapsFileGz + " -sample_g " + shapeitSampleFile + " -int " + lim1S + " " + lim2S + "  -chrX -exclude_snps_g "
@@ -1516,15 +1466,15 @@ public class GuidanceImpl {
         // Execute the command retrieving its exitValue, output and error
         int exitValue = -1;
         try {
-            exitValue = ProcessUtils.execute(cmd, imputeFile + ".stdout", imputeFile + ".stderr");
+            exitValue = ProcessUtils.execute(cmd, imputeFile + STDOUT_EXTENSION, imputeFile + STDERR_EXTENSION);
         } catch (IOException ioe) {
             throw new GuidanceTaskException(ioe);
         }
 
         // Check process exit value
         if (exitValue != 0) {
-            System.err.println("[impute] Warning executing imputeProc job, exit value is: " + exitValue);
-            System.err.println("                        (This warning is not fatal).");
+            System.err.println(HEADER_IMPUTE + " Warning executing imputeProc job, exit value is: " + exitValue);
+            System.err.println(HEADER_IMPUTE + "                        (This warning is not fatal).");
             // throw new Exception("Error executing imputeProc job, exit value is: " + exitValue);
         }
 
@@ -1537,7 +1487,7 @@ public class GuidanceImpl {
             // imputeFile);
             try {
                 if (!fImpute.createNewFile()) {
-                    throw new IOException("Error: Cannot create " + fImpute + " file");
+                    throw new IOException(HEADER_IMPUTE + ERROR_FILE_CREATION + fImpute + FILE_SUFFIX);
                 }
             } catch (IOException ioe) {
                 throw new GuidanceTaskException(ioe);
@@ -1549,15 +1499,15 @@ public class GuidanceImpl {
         FileUtils.copyFile(source, dest);
 
         try {
-            FileUtils.createEmptyFile(imputeFileInfo, "[imputeWithImpute]");
-            FileUtils.createEmptyFile(imputeFileSummary, "[imputeWithImpute]");
-            FileUtils.createEmptyFile(imputeFileWarnings, "[imputeWithImpute]");
+            FileUtils.createEmptyFile(imputeFileInfo, HEADER_IMPUTE);
+            FileUtils.createEmptyFile(imputeFileSummary, HEADER_IMPUTE);
+            FileUtils.createEmptyFile(imputeFileWarnings, HEADER_IMPUTE);
         } catch (IOException ioe) {
             throw new GuidanceTaskException(ioe);
         }
 
         long stopTime = System.currentTimeMillis();
-        long elapsedTime = (stopTime - startTime) / 1000;
+        long elapsedTime = (stopTime - startTime) / 1_000;
         if (DEBUG) {
             System.out.println("\n[DEBUG] imputeWithImpute startTime: " + startTime);
             System.out.println("\n[DEBUG] imputeWithImpute endTime: " + stopTime);
@@ -1594,10 +1544,7 @@ public class GuidanceImpl {
             String imputedMMErateFile, String imputedMMRecFile, String imputedMMDoseFile, String imputedMMLogFile, String theChromo,
             String lim1S, String lim2S, String cmdToStore) throws GuidanceTaskException {
 
-        String minimacBinary = System.getenv("MINIMACBINARY");
-        if (minimacBinary == null) {
-            throw new GuidanceTaskException("[impute] Error, MINIMACBINARY environment variable is not defined in .bashrc!!!");
-        }
+        String minimacBinary = loadFromEnvironment(MINIMACBINARY, HEADER_IMPUTE);
 
         if (DEBUG) {
             System.out.println("\n[DEBUG] Running imputation with parameters:");
@@ -1627,6 +1574,7 @@ public class GuidanceImpl {
             // }
             // System.out.println("--------------------------------------");
         }
+
         long startTime = System.currentTimeMillis();
 
         // We have to make sure whether we are using renamed files of the original gz files.
@@ -1655,15 +1603,15 @@ public class GuidanceImpl {
         // Execute the command retrieving its exitValue, output and error
         int exitValue = -1;
         try {
-            exitValue = ProcessUtils.execute(cmd, imputedMMFileName + ".stdout", imputedMMFileName + ".stderr");
+            exitValue = ProcessUtils.execute(cmd, imputedMMFileName + STDOUT_EXTENSION, imputedMMFileName + STDERR_EXTENSION);
         } catch (IOException ioe) {
             throw new GuidanceTaskException(ioe);
         }
 
         // Check process exit value
         if (exitValue != 0) {
-            System.err.println("[impute] Warning executing minimacProc job, exit value is: " + exitValue);
-            System.err.println("                        (This warning is not fatal).");
+            System.err.println(HEADER_IMPUTE + " Warning executing minimacProc job, exit value is: " + exitValue);
+            System.err.println(HEADER_IMPUTE + "                        (This warning is not fatal).");
             // throw new Exception("Error executing imputeProc job, exit value is: " + exitValue);
         }
 
@@ -1676,7 +1624,7 @@ public class GuidanceImpl {
             // imputeFile);
             try {
                 if (!infoFile.createNewFile()) {
-                    throw new IOException("Error: Cannot create " + infoFile + " file");
+                    throw new IOException(HEADER_IMPUTE + ERROR_FILE_CREATION + infoFile + FILE_SUFFIX);
                 }
             } catch (IOException ioe) {
                 throw new GuidanceTaskException(ioe);
@@ -1706,7 +1654,7 @@ public class GuidanceImpl {
             // imputeFile);
             try {
                 if (!erateFile.createNewFile()) {
-                    throw new IOException("Error: Cannot create " + erateFile + " file");
+                    throw new IOException(HEADER_IMPUTE + ERROR_FILE_CREATION + erateFile + FILE_SUFFIX);
                 }
             } catch (IOException ioe) {
                 throw new GuidanceTaskException(ioe);
@@ -1724,7 +1672,7 @@ public class GuidanceImpl {
             // imputeFile);
             try {
                 if (!recFile.createNewFile()) {
-                    throw new IOException("Error: Cannot create " + recFile + " file");
+                    throw new IOException(HEADER_IMPUTE + ERROR_FILE_CREATION + recFile + FILE_SUFFIX);
                 }
             } catch (IOException ioe) {
                 throw new GuidanceTaskException(ioe);
@@ -1742,7 +1690,7 @@ public class GuidanceImpl {
             // imputeFile);
             try {
                 if (!doseFile.createNewFile()) {
-                    throw new IOException("Error: Cannot create " + doseFile + " file");
+                    throw new IOException(HEADER_IMPUTE + ERROR_FILE_CREATION + doseFile + FILE_SUFFIX);
                 }
             } catch (IOException ioe) {
                 throw new GuidanceTaskException(ioe);
@@ -1753,12 +1701,12 @@ public class GuidanceImpl {
         dest = new File(imputedMMDoseFile);
         FileUtils.copyFile(source, dest);
 
-        source = new File(imputedMMFileName + ".stdout");
+        source = new File(imputedMMFileName + STDOUT_EXTENSION);
         dest = new File(imputedMMLogFile);
         FileUtils.copyFile(source, dest);
 
         long stopTime = System.currentTimeMillis();
-        long elapsedTime = (stopTime - startTime) / 1000;
+        long elapsedTime = (stopTime - startTime) / 1_000;
         if (DEBUG) {
             System.out.println("\n[DEBUG] imputeWithMinimac startTime: " + startTime);
             System.out.println("\n[DEBUG] imputeWithMinimac endTime: " + stopTime);
@@ -1836,7 +1784,7 @@ public class GuidanceImpl {
         }
 
         long stopTime = System.currentTimeMillis();
-        long elapsedTime = (stopTime - startTime) / 1000;
+        long elapsedTime = (stopTime - startTime) / 1_000;
         if (DEBUG) {
             System.out.println("\n[DEBUG] filterByInfo startTime: " + startTime);
             System.out.println("\n[DEBUG] filterByInfo endTime: " + stopTime);
@@ -1907,7 +1855,7 @@ public class GuidanceImpl {
             writerFiltered.write(line);
             writerFiltered.newLine();
 
-            inputFileHashTableIndex = createHashWithHeader(line, "\t");
+            inputFileHashTableIndex = Headers.createHashWithHeader(line, "\t");
             // inputFileHashTableIndexReversed = createHashWithHeaderReversed(line, "\t");
 
             String headerCondensed = "chr\tposition\talleleA\talleleB\tpvalue\tinfo_all";
@@ -2333,7 +2281,7 @@ public class GuidanceImpl {
         File outputFile = new File(resultsPanelC);
         try {
             if (!outputFile.createNewFile()) {
-                throw new IOException("Error: Cannot create " + outputFile + " file");
+                throw new IOException(ERROR_FILE_CREATION + outputFile + FILE_SUFFIX);
             }
         } catch (IOException ioe) {
             throw new GuidanceTaskException(ioe);
@@ -2434,7 +2382,7 @@ public class GuidanceImpl {
             header = sc1.nextLine();
 
             if (!header.equals("chr\tposition\trs_id_all\tinfo_all\tcertainty_all\t")) {
-                resultsHashTableIndex = createHashWithHeader(header, "\t");
+                resultsHashTableIndex = Headers.createHashWithHeader(header, "\t");
                 chrIdx = resultsHashTableIndex.get("chr");
                 posIdx = resultsHashTableIndex.get("position");
                 a1Idx = resultsHashTableIndex.get("alleleA");
@@ -2754,7 +2702,7 @@ public class GuidanceImpl {
                 // I read the header
                 String line = br.readLine();
 
-                inputFileHashTableIndex = createHashWithHeader(line, "\t");
+                inputFileHashTableIndex = Headers.createHashWithHeader(line, "\t");
                 // inputFileHashTableIndexReversed = createHashWithHeaderReversed(line, "\t");
 
                 String headerCondensed = "CHR\tBP\tP";
@@ -2835,7 +2783,7 @@ public class GuidanceImpl {
                     // I read the header
                     String line = br.readLine();
 
-                    inputFileHashTableIndex = createHashWithHeader(line, "\t");
+                    inputFileHashTableIndex = Headers.createHashWithHeader(line, "\t");
                     // inputFileHashTableIndexReversed = createHashWithHeaderReversed(line, "\t");
 
                     while ((line = br.readLine()) != null) {
@@ -2960,7 +2908,7 @@ public class GuidanceImpl {
                 BufferedReader br = new BufferedReader(decoder)) {
 
             header = br.readLine();
-            resultsFileHashTableIndex = createHashWithHeader(header, "\t");
+            resultsFileHashTableIndex = Headers.createHashWithHeader(header, "\t");
 
             int indexPosition = resultsFileHashTableIndex.get("position");
             int indexRsId = resultsFileHashTableIndex.get("rs_id_all");
@@ -3076,7 +3024,7 @@ public class GuidanceImpl {
                 BufferedReader br = new BufferedReader(decoder)) {
 
             header = br.readLine();
-            resultsAFileHashTableIndex = createHashWithHeader(header, "\t");
+            resultsAFileHashTableIndex = Headers.createHashWithHeader(header, "\t");
 
             int indexPosition = resultsAFileHashTableIndex.get("position");
             int indexRsId = resultsAFileHashTableIndex.get("rs_id_all");
@@ -3121,7 +3069,7 @@ public class GuidanceImpl {
 
                 // First: read the header and avoid it
                 header = br.readLine();
-                resultsBFileHashTableIndex = createHashWithHeader(header, "\t");
+                resultsBFileHashTableIndex = Headers.createHashWithHeader(header, "\t");
 
                 int indexPosition = resultsBFileHashTableIndex.get("position");
                 int indexRsId = resultsBFileHashTableIndex.get("rs_id_all");
@@ -3229,17 +3177,8 @@ public class GuidanceImpl {
             String qqPlotTiffFile, String manhattanPlotTiffFile, String correctedPvaluesFile, String cmdToStore)
             throws GuidanceTaskException {
 
-        String rScriptBinDir = System.getenv("RSCRIPTBINDIR");
-        if (rScriptBinDir == null) {
-            throw new GuidanceTaskException(
-                    "[generateQQManhattanPlots] Error, RSCRIPTBINDIR environment variable is not defined in .bashrc!!!");
-        }
-
-        String rScriptDir = System.getenv("RSCRIPTDIR");
-        if (rScriptDir == null) {
-            throw new GuidanceTaskException(
-                    "[generateQQManhattanPlots] Error, RSCRIPTDIR environment variable is not defined in .bashrc!!!");
-        }
+        String rScriptBinDir = loadFromEnvironment(RSCRIPTBINDIR, HEADER_GENERATE_QQ_MANHATTAN_PLOTS);
+        String rScriptDir = loadFromEnvironment(RSCRIPTDIR, HEADER_GENERATE_QQ_MANHATTAN_PLOTS);
 
         if (DEBUG) {
             System.out.println("\n[DEBUG] Running generateQQManhattanPlots with parameters:");
@@ -3273,7 +3212,7 @@ public class GuidanceImpl {
         // Execute the command retrieving its exitValue, output and error
         int exitValue = -1;
         try {
-            exitValue = ProcessUtils.execute(cmd, lastCondensedFile + ".stdout", lastCondensedFile + ".stderr");
+            exitValue = ProcessUtils.execute(cmd, lastCondensedFile + STDOUT_EXTENSION, lastCondensedFile + STDERR_EXTENSION);
         } catch (IOException ioe) {
             throw new GuidanceTaskException(ioe);
         }
@@ -3281,7 +3220,7 @@ public class GuidanceImpl {
         // Check process exit value
         if (exitValue != 0) {
             throw new GuidanceTaskException(
-                    "[generateQQManhattanPlots] Error executing generateQQManProc job, exit value is: " + exitValue);
+                    HEADER_GENERATE_QQ_MANHATTAN_PLOTS + " Error executing generateQQManProc job, exit value is: " + exitValue);
         }
 
         long stopTime = System.currentTimeMillis();
@@ -3313,10 +3252,7 @@ public class GuidanceImpl {
     public static void snptest(String mergedGenFile, String mergedSampleFile, String snptestOutFileGz, String snptestLogFile,
             String responseVar, String covariables, String theChromo, String cmdToStore) throws GuidanceTaskException {
 
-        String snptestBinary = System.getenv("SNPTESTBINARY");
-        if (snptestBinary == null) {
-            throw new GuidanceTaskException("[snptest] Error, SNPTESTBINARY environment variable is not defined in .bashrc!!!");
-        }
+        String snptestBinary = loadFromEnvironment(SNPTESTBINARY, HEADER_SNPTEST);
 
         if (DEBUG) {
             System.out.println("\n[DEBUG] Running snptest with parameters:");
@@ -3390,23 +3326,23 @@ public class GuidanceImpl {
             // Execute the command retrieving its exitValue, output and error
             int exitValue = -1;
             try {
-                exitValue = ProcessUtils.execute(cmd, snptestLogFile + ".stdout", snptestLogFile + ".stderr");
+                exitValue = ProcessUtils.execute(cmd, snptestLogFile + STDOUT_EXTENSION, snptestLogFile + STDERR_EXTENSION);
             } catch (IOException ioe) {
                 throw new GuidanceTaskException(ioe);
             }
 
             // Check process exit value
             if (exitValue != 0) {
-                System.err.println("[snptest] Error executing snptestProc job, exit value is: " + exitValue);
-                System.err.println("                         (This error is not fatal).");
+                System.err.println(HEADER_SNPTEST + "Warning executing snptestProc job, exit value is: " + exitValue);
+                System.err.println(HEADER_SNPTEST + "                         (This error is not fatal).");
                 // throw new Exception("Error executing snptestProc job, exit value is: " + exitValue);
             }
         }
 
         // The SNP Test binary does not create an empty file if there are not outputs. Check it
         try {
-            FileUtils.createEmptyFile(snptestOutFile, "[snptest]");
-            FileUtils.createEmptyFile(snptestLogFile, "[snptest]");
+            FileUtils.createEmptyFile(snptestOutFile, HEADER_SNPTEST);
+            FileUtils.createEmptyFile(snptestLogFile, HEADER_SNPTEST);
         } catch (IOException ioe) {
             throw new GuidanceTaskException(ioe);
         }
@@ -3415,7 +3351,7 @@ public class GuidanceImpl {
         FileUtils.gzipFile(snptestOutFile, snptestOutFileGz);
 
         long stopTime = System.currentTimeMillis();
-        long elapsedTime = (stopTime - startTime) / 1000;
+        long elapsedTime = (stopTime - startTime) / 1_000;
         if (DEBUG) {
             System.out.println("\n[DEBUG] snptest startTime: " + startTime);
             System.out.println("\n[DEBUG] snptest endTime: " + stopTime);
@@ -3448,14 +3384,6 @@ public class GuidanceImpl {
             System.out.println("\n");
             System.out.println("[DEBUG] \t- COMMAND         : " + cmdToStore);
 
-            // long freeMemory = Runtime.getRuntime().freeMemory()/1048576;
-            // long totalMemory = Runtime.getRuntime().totalMemory()/1048576;
-            // long maxMemory = Runtime.getRuntime().maxMemory()/1048576;
-
-            // System.out.println("JVM freeMemory: " + freeMemory);
-            // System.out.println("JVM totalMemory also equals to initial heap size of JVM : " + totalMemory);
-            // System.out.println("JVM maxMemory also equals to maximum heap size of JVM : " + maxMemory);
-
             // Map<String, String> env = System.getenv();
             // System.out.println("--------------------------------------");
             // System.out.println("Environmental Variables in Master:");
@@ -3485,12 +3413,12 @@ public class GuidanceImpl {
             // We do not use the previous line, instead, we use a predefined header
             if (type.equals("filtered")) {
                 if (chrS.equals("23")) {
-                    line = constructHeaderX();
+                    line = Headers.constructHeaderX();
                 } else {
-                    line = constructHeader();
+                    line = Headers.constructHeader();
                 }
             } else if (type.equals("condensed")) {
-                line = constructCondensedHeader();
+                line = Headers.constructCondensedHeader();
             }
 
             // By default values for indexes in the header
@@ -3501,8 +3429,8 @@ public class GuidanceImpl {
             int indexAlleleB = 0;
 
             if (line != null && !line.isEmpty()) {
-                reduceFileAHashTableIndex = createHashWithHeader(line, "\t");
-                reduceFileAHashTableIndexReversed = createHashWithHeaderReversed(line, "\t");
+                reduceFileAHashTableIndex = Headers.createHashWithHeader(line, "\t");
+                reduceFileAHashTableIndexReversed = Headers.createHashWithHeaderReversed(line, "\t");
 
                 indexChr = reduceFileAHashTableIndex.get("chr");
                 indexPosition = reduceFileAHashTableIndex.get("position");
@@ -3532,16 +3460,6 @@ public class GuidanceImpl {
         } catch (IOException ioe) {
             throw new GuidanceTaskException(ioe);
         }
-
-        // if (debug) {
-        // long freeMemory = Runtime.getRuntime().freeMemory()/1048576;
-        // long totalMemory = Runtime.getRuntime().totalMemory()/1048576;
-        // long maxMemory = Runtime.getRuntime().maxMemory()/1048576;
-
-        // System.out.println("JVM freeMemory: " + freeMemory);
-        // System.out.println("JVM totalMemory also equals to initial heap size of JVM : " + totalMemory);
-        // System.out.println("JVM maxMemory also equals to maximum heap size of JVM : " + maxMemory);
-        // }
 
         // We read each line of th reducedFileB and put them into fileBList array of Strings
         TreeMap<String, ArrayList<String>> fileBTreeMap = new TreeMap<>();
@@ -3699,177 +3617,6 @@ public class GuidanceImpl {
     }
 
     /**
-     * Construct the X Header
-     * 
-     * @return
-     */
-    private static String constructHeaderX() {
-        StringBuilder headerMixedXBuilder = new StringBuilder();
-        headerMixedXBuilder.append("chr").append("\t");
-        headerMixedXBuilder.append("position").append("\t");
-        headerMixedXBuilder.append("rs_id_all").append("\t");
-        headerMixedXBuilder.append("info_all").append("\t");
-        headerMixedXBuilder.append("certainty_all").append("\t");
-        headerMixedXBuilder.append("alleleA").append("\t");
-        headerMixedXBuilder.append("alleleB").append("\t");
-        headerMixedXBuilder.append("all_A").append("\t");
-        headerMixedXBuilder.append("all_B").append("\t");
-        headerMixedXBuilder.append("all_AA").append("\t");
-        headerMixedXBuilder.append("all_AB").append("\t");
-        headerMixedXBuilder.append("all_BB").append("\t");
-        headerMixedXBuilder.append("all_NULL").append("\t");
-        headerMixedXBuilder.append("all_total").append("\t");
-        headerMixedXBuilder.append("all_maf").append("\t");
-        headerMixedXBuilder.append("all_info").append("\t");
-        headerMixedXBuilder.append("all_impute_info").append("\t");
-        headerMixedXBuilder.append("cases_A").append("\t");
-        headerMixedXBuilder.append("cases_B").append("\t");
-        headerMixedXBuilder.append("cases_AA").append("\t");
-        headerMixedXBuilder.append("cases_AB").append("\t");
-        headerMixedXBuilder.append("cases_BB").append("\t");
-        headerMixedXBuilder.append("cases_NULL").append("\t");
-        headerMixedXBuilder.append("cases_total").append("\t");
-        headerMixedXBuilder.append("cases_maf").append("\t");
-        headerMixedXBuilder.append("cases_info").append("\t");
-        headerMixedXBuilder.append("cases_impute_info").append("\t");
-        headerMixedXBuilder.append("controls_A").append("\t");
-        headerMixedXBuilder.append("controls_B").append("\t");
-        headerMixedXBuilder.append("controls_AA ").append("\t");
-        headerMixedXBuilder.append("controls_AB ").append("\t");
-        headerMixedXBuilder.append("controls_BB ").append("\t");
-        headerMixedXBuilder.append("controls_NULL").append("\t");
-        headerMixedXBuilder.append("controls_total").append("\t");
-        headerMixedXBuilder.append("controls_maf").append("\t");
-        headerMixedXBuilder.append("controls_info").append("\t");
-        headerMixedXBuilder.append("controls_impute_info").append("\t");
-        headerMixedXBuilder.append("sex=1_A ").append("\t");
-        headerMixedXBuilder.append("sex=1_B").append("\t");
-        headerMixedXBuilder.append("sex=1_AA").append("\t");
-        headerMixedXBuilder.append("sex=1_AB").append("\t");
-        headerMixedXBuilder.append("sex=1_BB").append("\t");
-        headerMixedXBuilder.append("sex=1_NULL").append("\t");
-        headerMixedXBuilder.append("sex=1_total").append("\t");
-        headerMixedXBuilder.append("sex=1_maf").append("\t");
-        headerMixedXBuilder.append("sex=1_info").append("\t");
-        headerMixedXBuilder.append("sex=1_impute_info").append("\t");
-        headerMixedXBuilder.append("sex=2_A").append("\t");
-        headerMixedXBuilder.append("sex=2_B").append("\t");
-        headerMixedXBuilder.append("sex=2_AA").append("\t");
-        headerMixedXBuilder.append("sex=2_AB").append("\t");
-        headerMixedXBuilder.append("sex=2_BB").append("\t");
-        headerMixedXBuilder.append("sex=2_NULL").append("\t");
-        headerMixedXBuilder.append("sex=2_total").append("\t");
-        headerMixedXBuilder.append("sex=2_maf").append("\t");
-        headerMixedXBuilder.append("sex=2_info").append("\t");
-        headerMixedXBuilder.append("sex=2_impute_info").append("\t");
-        headerMixedXBuilder.append("frequentist_add_null_ll").append("\t");
-        headerMixedXBuilder.append("frequentist_add_alternative_ll").append("\t");
-        headerMixedXBuilder.append("frequentist_add_beta_1:genotype/sex=1").append("\t");
-        headerMixedXBuilder.append("frequentist_add_beta_2:genotype/sex=2").append("\t");
-        headerMixedXBuilder.append("frequentist_add_se_1:genotype/sex=1").append("\t");
-        headerMixedXBuilder.append("frequentist_add_se_2:genotype/sex=2").append("\t");
-        headerMixedXBuilder.append("frequentist_add_degrees_of_freedom").append("\t");
-        headerMixedXBuilder.append("frequentist_add_pvalue").append("\t");
-        headerMixedXBuilder.append("comment");
-
-        return headerMixedXBuilder.toString();
-    }
-
-    /**
-     * Construct the header (1-22)
-     * 
-     * @return
-     */
-    private static String constructHeader() {
-        StringBuilder headerMixedBuilder = new StringBuilder();
-        headerMixedBuilder.append("chr").append("\t");
-        headerMixedBuilder.append("position").append("\t");
-        headerMixedBuilder.append("rs_id_all").append("\t");
-        headerMixedBuilder.append("info_all").append("\t");
-        headerMixedBuilder.append("certainty_all").append("\t");
-        headerMixedBuilder.append("alleleA").append("\t");
-        headerMixedBuilder.append("alleleB").append("\t");
-        headerMixedBuilder.append("index").append("\t");
-        headerMixedBuilder.append("average_maximum_posterior_call").append("\t");
-        headerMixedBuilder.append("info").append("\t");
-        headerMixedBuilder.append("cohort_1_AA").append("\t");
-        headerMixedBuilder.append("cohort_1_AB").append("\t");
-        headerMixedBuilder.append("cohort_1_BB").append("\t");
-        headerMixedBuilder.append("cohort_1_NULL").append("\t");
-        headerMixedBuilder.append("all_AA").append("\t");
-        headerMixedBuilder.append("all_AB").append("\t");
-        headerMixedBuilder.append("all_BB").append("\t");
-        headerMixedBuilder.append("all_NULL").append("\t");
-        headerMixedBuilder.append("all_total").append("\t");
-        headerMixedBuilder.append("cases_AA").append("\t");
-        headerMixedBuilder.append("cases_AB").append("\t");
-        headerMixedBuilder.append("cases_BB").append("\t");
-        headerMixedBuilder.append("cases_NULL").append("\t");
-        headerMixedBuilder.append("cases_total").append("\t");
-        headerMixedBuilder.append("controls_AA").append("\t");
-        headerMixedBuilder.append("controls_AB").append("\t");
-        headerMixedBuilder.append("controls_BB").append("\t");
-        headerMixedBuilder.append("controls_NULL").append("\t");
-        headerMixedBuilder.append("controls_total").append("\t");
-        headerMixedBuilder.append("all_maf").append("\t");
-        headerMixedBuilder.append("cases_maf").append("\t");
-        headerMixedBuilder.append("controls_maf").append("\t");
-        headerMixedBuilder.append("missing_data_proportion").append("\t");
-        headerMixedBuilder.append("cohort_1_hwe").append("\t");
-        headerMixedBuilder.append("cases_hwe").append("\t");
-        headerMixedBuilder.append("controls_hwe").append("\t");
-        headerMixedBuilder.append("het_OR").append("\t");
-        headerMixedBuilder.append("het_OR_lower").append("\t");
-        headerMixedBuilder.append("het_OR_upper").append("\t");
-        headerMixedBuilder.append("hom_OR").append("\t");
-        headerMixedBuilder.append("hom_OR_lower").append("\t");
-        headerMixedBuilder.append("hom_OR_upper").append("\t");
-        headerMixedBuilder.append("all_OR").append("\t");
-        headerMixedBuilder.append("all_OR_lower").append("\t");
-        headerMixedBuilder.append("all_OR_upper").append("\t");
-        headerMixedBuilder.append("frequentist_add_pvalue").append("\t");
-        headerMixedBuilder.append("frequentist_add_info").append("\t");
-        headerMixedBuilder.append("frequentist_add_beta_1").append("\t");
-        headerMixedBuilder.append("frequentist_add_se_1").append("\t");
-        headerMixedBuilder.append("frequentist_dom_pvalue").append("\t");
-        headerMixedBuilder.append("frequentist_dom_info").append("\t");
-        headerMixedBuilder.append("frequentist_dom_beta_1").append("\t");
-        headerMixedBuilder.append("frequentist_dom_se_1").append("\t");
-        headerMixedBuilder.append("frequentist_rec_pvalue").append("\t");
-        headerMixedBuilder.append("frequentist_rec_info").append("\t");
-        headerMixedBuilder.append("frequentist_rec_beta_1").append("\t");
-        headerMixedBuilder.append("frequentist_rec_se_1").append("\t");
-        headerMixedBuilder.append("frequentist_gen_pvalue").append("\t");
-        headerMixedBuilder.append("frequentist_gen_info").append("\t");
-        headerMixedBuilder.append("frequentist_gen_beta_1").append("\t");
-        headerMixedBuilder.append("frequentist_gen_se_1").append("\t");
-        headerMixedBuilder.append("frequentist_gen_beta_2").append("\t");
-        headerMixedBuilder.append("frequentist_gen_se_2").append("\t");
-        headerMixedBuilder.append("frequentist_het_pvalue").append("\t");
-        headerMixedBuilder.append("frequentist_het_info").append("\t");
-        headerMixedBuilder.append("frequentist_het_beta_1").append("\t");
-        headerMixedBuilder.append("frequentist_het_se_1").append("\t");
-        headerMixedBuilder.append("comment").append("\t");
-        return headerMixedBuilder.toString();
-    }
-
-    /**
-     * Construct the condensed header
-     * 
-     * @return
-     */
-    private static String constructCondensedHeader() {
-        StringBuilder condensedHeaderBuilder = new StringBuilder();
-        condensedHeaderBuilder.append("chr").append("\t");
-        condensedHeaderBuilder.append("position").append("\t");
-        condensedHeaderBuilder.append("alleleA").append("\t");
-        condensedHeaderBuilder.append("alleleB").append("\t");
-        condensedHeaderBuilder.append("pvalue").append("\t");
-        condensedHeaderBuilder.append("info_all");
-        return condensedHeaderBuilder.toString();
-    }
-
-    /**
      * Method to collect the summary
      * 
      * @param chr
@@ -3903,14 +3650,6 @@ public class GuidanceImpl {
             System.out.println("[DEBUG] \t- Input hweControlsThresholdS  : " + hweControlsThresholdS);
             System.out.println("\n");
             System.out.println("[DEBUG] \t- COMMAND         : " + cmdToStore);
-
-            // long freeMemory = Runtime.getRuntime().freeMemory()/1048576;
-            // long totalMemory = Runtime.getRuntime().totalMemory()/1048576;
-            // long maxMemory = Runtime.getRuntime().maxMemory()/1048576;
-
-            // System.out.println("JVM freeMemory: " + freeMemory);
-            // System.out.println("JVM totalMemory also equals to initial heap size of JVM : " + totalMemory);
-            // System.out.println("JVM maxMemory also equals to maximum heap size of JVM : " + maxMemory);
 
             // Map<String, String> env = System.getenv();
             // System.out.println("--------------------------------------");
@@ -3954,7 +3693,7 @@ public class GuidanceImpl {
             if (line != null && !line.isEmpty()) {
                 // System.err.println("[collectSummary] IMPRIMO line: " + line);
                 // If we are here, the file is not empty.
-                imputeHashTableIndex = createHashWithHeader(line, " ");
+                imputeHashTableIndex = Headers.createHashWithHeader(line, " ");
 
                 indexPosition = imputeHashTableIndex.get("position");
                 indexRsId = imputeHashTableIndex.get("rs_id");
@@ -4009,8 +3748,8 @@ public class GuidanceImpl {
 
                 // TODO: the next if is ugly.
                 if (firstHeader.equals("alternate_ids")) {
-                    snptestHashTableIndex = createHashWithHeader(line, " ");
-                    snptestHashTableIndexReversed = createHashWithHeaderReversed(line, " ");
+                    snptestHashTableIndex = Headers.createHashWithHeader(line, " ");
+                    snptestHashTableIndexReversed = Headers.createHashWithHeaderReversed(line, " ");
                 }
 
                 if ((firstChar != '#') && (firstChar != 'a')) {
@@ -4102,16 +3841,6 @@ public class GuidanceImpl {
                 writer.newLine();
             }
 
-            // if (debug) {
-            // long freeMemory = Runtime.getRuntime().freeMemory()/1048576;
-            // long totalMemory = Runtime.getRuntime().totalMemory()/1048576;
-            // long maxMemory = Runtime.getRuntime().maxMemory()/1048576;
-
-            // System.out.println("JVM freeMemory: " + freeMemory);
-            // System.out.println("JVM totalMemory also equals to initial heap size of JVM : " + totalMemory);
-            // System.out.println("JVM maxMemory also equals to maximum heap size of JVM : " + maxMemory);
-            // }
-
             writer.flush();
         } catch (IOException ioe) {
             throw new GuidanceTaskException(ioe);
@@ -4187,10 +3916,7 @@ public class GuidanceImpl {
         // Then, read the input file
 
         String chrAndPosition = null;
-        // TODO HERE
-        // replace commas in the header variable by a TAB
         String newHeader = headerPhenomeFile;
-        // String newHeader = headerPhenomeFile.replace(',', '\t');
         if (DEBUG) {
             System.out.println("[DEBUG] \t- The new header will be : [" + newHeader + "]");
         }
@@ -4225,7 +3951,7 @@ public class GuidanceImpl {
 
             String line = br.readLine();
             HashMap<String, Integer> topHitsHashTableIndex = new HashMap<>();
-            topHitsHashTableIndex = createHashWithHeader(line, "\t");
+            topHitsHashTableIndex = Headers.createHashWithHeader(line, "\t");
 
             int indexChrInTopHitsFile = topHitsHashTableIndex.get("chr");
             int indexPositionInTopHitsFile = topHitsHashTableIndex.get("position");
@@ -4369,7 +4095,7 @@ public class GuidanceImpl {
             // headerPhenomeFile = headerPhenomeFile + "\t" + ttName + ":" + rpName + ":" +
             // "frequentist_add_se_2:genotype/sex=2";
 
-            phenomeAHashTableIndex = createHashWithHeader(phenomeAHeader, "\t");
+            phenomeAHashTableIndex = Headers.createHashWithHeader(phenomeAHeader, "\t");
 
             int indexChrInPhenomeAFile = phenomeAHashTableIndex.get("chr");
             int indexPositionInPhenomeAFile = phenomeAHashTableIndex.get("position");
@@ -4405,7 +4131,7 @@ public class GuidanceImpl {
             // We start reading the topHits File
             String line = br.readLine();
             HashMap<String, Integer> topHitsHashTableIndex = new HashMap<>();
-            topHitsHashTableIndex = createHashWithHeader(line, "\t");
+            topHitsHashTableIndex = Headers.createHashWithHeader(line, "\t");
 
             int indexChrInTopHitsFile = topHitsHashTableIndex.get("chr");
             int indexPositionInTopHitsFile = topHitsHashTableIndex.get("position");
@@ -4528,7 +4254,7 @@ public class GuidanceImpl {
                 BufferedReader br = new BufferedReader(decoder)) {
 
             phenomeAHeader = br.readLine();
-            phenomeAHashTableIndex = createHashWithHeader(phenomeAHeader, "\t");
+            phenomeAHashTableIndex = Headers.createHashWithHeader(phenomeAHeader, "\t");
 
             int indexChrInPhenomeAFile = phenomeAHashTableIndex.get("chr");
             int indexPositionInPhenomeAFile = phenomeAHashTableIndex.get("position");
@@ -4569,7 +4295,7 @@ public class GuidanceImpl {
             // We start reading the filteredByAllFile
             // First of all, the header
             String filteredHeader = br.readLine();
-            filteredByAllHashTableIndex = createHashWithHeader(filteredHeader, "\t");
+            filteredByAllHashTableIndex = Headers.createHashWithHeader(filteredHeader, "\t");
 
             int indexChrInFiltered = filteredByAllHashTableIndex.get("chr");
             int indexPositionInFiltered = filteredByAllHashTableIndex.get("position");
@@ -4751,7 +4477,7 @@ public class GuidanceImpl {
             phenomeAHeader = phenomeAHeader + "\t" + ttName + ":" + rpName + ":" + "frequentist_add_se_1:genotype/sex=1";
             phenomeAHeader = phenomeAHeader + "\t" + ttName + ":" + rpName + ":" + "frequentist_add_se_2:genotype/sex=2";
 
-            phenomeAHashTableIndex = createHashWithHeader(phenomeAHeader, "\t");
+            phenomeAHashTableIndex = Headers.createHashWithHeader(phenomeAHeader, "\t");
 
             int indexChrInPhenomeAFile = phenomeAHashTableIndex.get("chr");
             int indexPositionInPhenomeAFile = phenomeAHashTableIndex.get("position");
@@ -4813,7 +4539,7 @@ public class GuidanceImpl {
             // We start reading the filteredByAllFile
             // First of all, the header
             String filteredHeader = br.readLine();
-            filteredByAllHashTableIndex = createHashWithHeader(filteredHeader, "\t");
+            filteredByAllHashTableIndex = Headers.createHashWithHeader(filteredHeader, "\t");
 
             int indexChrInFiltered = filteredByAllHashTableIndex.get("chr");
             int indexPositionInFiltered = filteredByAllHashTableIndex.get("position");
@@ -4874,7 +4600,7 @@ public class GuidanceImpl {
                 // We start reading the filteredByAllXFile
                 // First of all, the header
                 String filteredXHeader = br.readLine();
-                filteredByAllXHashTableIndex = createHashWithHeader(filteredXHeader, "\t");
+                filteredByAllXHashTableIndex = Headers.createHashWithHeader(filteredXHeader, "\t");
 
                 int indexChrInFilteredX = filteredByAllXHashTableIndex.get("chr");
                 int indexPositionInFilteredX = filteredByAllXHashTableIndex.get("position");
@@ -5052,7 +4778,7 @@ public class GuidanceImpl {
                 BufferedReader br = new BufferedReader(decoder)) {
             // First of all, the header
             phenomeAHeader = br.readLine();
-            phenomeAHashTableIndex = createHashWithHeader(phenomeAHeader, "\t");
+            phenomeAHashTableIndex = Headers.createHashWithHeader(phenomeAHeader, "\t");
 
             int indexChrInPhenomeAFile = phenomeAHashTableIndex.get("chr");
             int indexPositionInPhenomeAFile = phenomeAHashTableIndex.get("position");
@@ -5072,7 +4798,7 @@ public class GuidanceImpl {
                     firstList.add(splitted[i]);
                 }
                 // Finally, we put this data into the phenomeATreeMap, using chrPosition as key and the firstList as
-                // value.
+                // value
                 phenomeATreeMap.put(chrAndPosition, firstList);
             }
         } catch (IOException ioe) {
@@ -5090,8 +4816,8 @@ public class GuidanceImpl {
             // We start reading the phenomeFileA
             // First of all, the header
             phenomeBHeader = br.readLine();
-            phenomeBHashTableIndex = createHashWithHeader(phenomeBHeader, "\t");
-            phenomeBHashTableIndexReversed = createHashWithHeaderReversed(phenomeBHeader, "\t");
+            phenomeBHashTableIndex = Headers.createHashWithHeader(phenomeBHeader, "\t");
+            phenomeBHashTableIndexReversed = Headers.createHashWithHeaderReversed(phenomeBHeader, "\t");
 
             int indexChrInPhenomeBFile = phenomeBHashTableIndex.get("chr");
             int indexPositionInPhenomeBFile = phenomeBHashTableIndex.get("position");
@@ -5246,7 +4972,6 @@ public class GuidanceImpl {
      * @throws Exception
      */
     public static String getAllele(String allele1, String allele2, String typeAllele) throws GuidanceTaskException {
-
         // Lets compute the reverse of allele1
         // String a1Reverse = new StringBuffer().reverse(allele1).toString();
 
@@ -5315,71 +5040,6 @@ public class GuidanceImpl {
             throw new GuidanceTaskException("Error, the option (" + typeAllele + ") for creating alternative alleles is now correct!!");
         }
 
-    }
-
-    /**
-     * Method to create a HashMap from the header of particular files
-     * 
-     * @param line
-     * @param separator
-     * @return
-     */
-    private static HashMap<String, Integer> createHashWithHeader(String line, String separator) {
-        HashMap<String, Integer> myHashLine = new HashMap<>();
-
-        String[] splitted = line.split(separator);
-        for (int i = 0; i < splitted.length; i++) {
-            myHashLine.put(splitted[i], i);
-        }
-        return myHashLine;
-    }
-
-    /**
-     * Method to create a HashMap from the header of particular files
-     * 
-     * @param line
-     * @param separator
-     * @return
-     */
-    private static HashMap<Integer, String> createHashWithHeaderReversed(String line, String separator) {
-        HashMap<Integer, String> myHashLine = new HashMap<>();
-
-        String[] splitted = line.split(separator);
-        for (int i = 0; i < splitted.length; i++) {
-            myHashLine.put(i, splitted[i]);
-        }
-        return myHashLine;
-    }
-
-    /**
-     * Reads the given output and error of a process and stores to the given file paths
-     * 
-     * @param in
-     * @param outputPath
-     * @param error
-     * @param errorPath
-     * @throws IOException
-     */
-    private static void readOutputAndError(InputStream in, String outputPath, InputStream error, String errorPath) throws IOException {
-        try (BufferedInputStream bisInp = new BufferedInputStream(in);
-                BufferedOutputStream bosInp = new BufferedOutputStream(new FileOutputStream(outputPath))) {
-
-            byte[] b = new byte[1024];
-            int read;
-            while ((read = bisInp.read(b)) >= 0) {
-                bosInp.write(b, 0, read);
-            }
-        }
-
-        try (BufferedInputStream bisErr = new BufferedInputStream(error);
-                BufferedOutputStream bosErr = new BufferedOutputStream(new FileOutputStream(errorPath))) {
-
-            byte[] b = new byte[1024];
-            int read;
-            while ((read = bisErr.read(b)) >= 0) {
-                bosErr.write(b, 0, read);
-            }
-        }
     }
 
 }

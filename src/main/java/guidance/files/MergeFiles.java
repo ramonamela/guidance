@@ -44,6 +44,13 @@ public class MergeFiles {
 
     private static final int MAX_NUMBER_OF_CHROMOSOMES = 23;
 
+    // File names and extensions
+    private static final String EXT_TXT_GZ = ".txt.gz";
+    private static final String REDUCE_FILTERED_FILENAME = "_reduce_filtered_file_";
+    private static final String REDUCE_CONDENSED_FILENAME = "_reduce_condensed_file_";
+    private static final String FILTER_BY_ALL_FILENAME = "_filteredByAll_chr_";
+    private static final String UNCOMPRESSED_FILE = "uncompressed";
+
     private ArrayList<ArrayList<ArrayList<String>>> testTypeReducedOutDir = new ArrayList<>();
 
     private ArrayList<ArrayList<ArrayList<ArrayList<GenericFile>>>> testTypeReducedFile = new ArrayList<>();
@@ -80,13 +87,6 @@ public class MergeFiles {
     public MergeFiles(ParseCmdLine parsingArgs, ChromoInfo generalChromoInfo, String baseOutDir, List<String> refPanels) {
         this.startChr = parsingArgs.getStart();
         this.endChr = parsingArgs.getEnd();
-
-        // int endChrNormal =0;
-        // for(i=startChr; i<=endChr;i++) {
-        // if(i < 23 ) {
-        // endChrNormal = i;
-        // }
-        // }
 
         int chunkSize = parsingArgs.getChunkSize();
         int numberOfTestTypesNames = parsingArgs.getNumberOfTestTypeName();
@@ -179,15 +179,16 @@ public class MergeFiles {
                     int counter = 0;
                     for (int deep = 0; deep < total_chunks - 1; deep++) {
                         String tmpReducedFileName = "chr_" + chromo + "_" + testTypeName + "_" + rPanel + "_reduce_file_" + counter
-                                + ".txt.gz";
-                        String tmpReducedFilteredFileName = "chr_" + chromo + "_" + testTypeName + "_" + rPanel + "_reduce_filtered_file_"
-                                + counter + ".txt.gz";
-                        String tmpReducedCondensedFileName = "chr_" + chromo + "_" + testTypeName + "_" + rPanel + "_reduce_condensed_file_"
-                                + counter + ".txt.gz";
+                                + EXT_TXT_GZ;
+                        String tmpReducedFilteredFileName = "chr_" + chromo + "_" + testTypeName + "_" + rPanel + REDUCE_FILTERED_FILENAME
+                                + counter + EXT_TXT_GZ;
+                        String tmpReducedCondensedFileName = "chr_" + chromo + "_" + testTypeName + "_" + rPanel + REDUCE_CONDENSED_FILENAME
+                                + counter + EXT_TXT_GZ;
 
-                        GenericFile myReducedFile = new GenericFile(tmpChrDir, tmpReducedFileName, "uncompressed", "none");
-                        GenericFile myReducedFilteredFile = new GenericFile(tmpChrDir, tmpReducedFilteredFileName, "uncompressed", "none");
-                        GenericFile myReducedCondensedFile = new GenericFile(tmpChrDir, tmpReducedCondensedFileName, "uncompressed",
+                        GenericFile myReducedFile = new GenericFile(tmpChrDir, tmpReducedFileName, UNCOMPRESSED_FILE, "none");
+                        GenericFile myReducedFilteredFile = new GenericFile(tmpChrDir, tmpReducedFilteredFileName, UNCOMPRESSED_FILE,
+                                "none");
+                        GenericFile myReducedCondensedFile = new GenericFile(tmpChrDir, tmpReducedCondensedFileName, UNCOMPRESSED_FILE,
                                 "none");
 
                         listReducedFile.add(myReducedFile);
@@ -196,24 +197,24 @@ public class MergeFiles {
 
                         if (j == 0) {
                             if (i != 23) {
-                                String tmpCombinedReducedFilteredFileName = "chr_" + chromo + "_" + testTypeName + "_reduce_filtered_file_"
-                                        + counter + ".txt.gz";
+                                String tmpCombinedReducedFilteredFileName = "chr_" + chromo + "_" + testTypeName + REDUCE_FILTERED_FILENAME
+                                        + counter + EXT_TXT_GZ;
                                 GenericFile myCombinedReducedFilteredFile = new GenericFile(testTypeOutDir2,
-                                        tmpCombinedReducedFilteredFileName, "uncompressed", "none");
+                                        tmpCombinedReducedFilteredFileName, UNCOMPRESSED_FILE, "none");
 
                                 listCombinedReducedFilteredFile.add(myCombinedReducedFilteredFile);
                             } else {
-                                String tmpCombinedReducedFilteredXFileName = "chr_" + chromo + "_" + testTypeName + "_reduce_filtered_file_"
-                                        + counter + ".txt.gz";
+                                String tmpCombinedReducedFilteredXFileName = "chr_" + chromo + "_" + testTypeName + REDUCE_FILTERED_FILENAME
+                                        + counter + EXT_TXT_GZ;
                                 GenericFile myCombinedReducedFilteredXFile = new GenericFile(testTypeOutDir2,
-                                        tmpCombinedReducedFilteredXFileName, "uncompressed", "none");
+                                        tmpCombinedReducedFilteredXFileName, UNCOMPRESSED_FILE, "none");
                                 listCombinedReducedFilteredXFile.add(myCombinedReducedFilteredXFile);
                             }
 
-                            String tmpCombinedReducedCondensedFileName = "chr_" + chromo + "_" + testTypeName + "_reduce_condensed_file_"
-                                    + counter + ".txt.gz";
+                            String tmpCombinedReducedCondensedFileName = "chr_" + chromo + "_" + testTypeName + REDUCE_CONDENSED_FILENAME
+                                    + counter + EXT_TXT_GZ;
                             GenericFile myCombinedReducedCondensedFile = new GenericFile(testTypeOutDir2,
-                                    tmpCombinedReducedCondensedFileName, "uncompressed", "none");
+                                    tmpCombinedReducedCondensedFileName, UNCOMPRESSED_FILE, "none");
                             listCombinedReducedCondensedFile.add(myCombinedReducedCondensedFile);
                         }
                         counter++;
@@ -229,14 +230,14 @@ public class MergeFiles {
                     if (addExtraCount) {
                         System.out.println("mon :: DINS EXTRA :: chr " + chromo + " ::  counter " + counter);
 
-                        String tmpCombinedReducedFilteredFileName = "chr_" + chromo + "_" + testTypeName + "_reduce_filtered_file_"
-                                + counter + ".txt.gz";
-                        String tmpCombinedReducedCondensedFileName = "chr_" + chromo + "_" + testTypeName + "_reduce_condensed_file_"
-                                + counter + ".txt.gz";
+                        String tmpCombinedReducedFilteredFileName = "chr_" + chromo + "_" + testTypeName + REDUCE_FILTERED_FILENAME
+                                + counter + EXT_TXT_GZ;
+                        String tmpCombinedReducedCondensedFileName = "chr_" + chromo + "_" + testTypeName + REDUCE_CONDENSED_FILENAME
+                                + counter + EXT_TXT_GZ;
                         GenericFile myCombinedReducedFilteredFile = new GenericFile(testTypeOutDir2, tmpCombinedReducedFilteredFileName,
-                                "uncompressed", "none");
+                                UNCOMPRESSED_FILE, "none");
                         GenericFile myCombinedReducedCondensedFile = new GenericFile(testTypeOutDir2, tmpCombinedReducedCondensedFileName,
-                                "uncompressed", "none");
+                                UNCOMPRESSED_FILE, "none");
 
                         listCombinedReducedFilteredFile.add(myCombinedReducedFilteredFile);
                         listCombinedReducedCondensedFile.add(myCombinedReducedCondensedFile);
@@ -264,11 +265,11 @@ public class MergeFiles {
 
                     String tmpFilteredByAllFileName = "chr_" + chromo + "_" + testTypeName + "_" + rPanel
                             + "_filtered_by_maf_info_hwe.txt.gz";
-                    GenericFile myFilteredByAllFile = new GenericFile(tmpChrDir, tmpFilteredByAllFileName, "uncompressed", "none");
+                    GenericFile myFilteredByAllFile = new GenericFile(tmpChrDir, tmpFilteredByAllFileName, UNCOMPRESSED_FILE, "none");
                     chromoFilteredByAllFile.add(myFilteredByAllFile);
 
                     String tmpCondensedFileName = "chr_" + chromo + "_" + testTypeName + "_" + rPanel + "_condensed.txt.gz";
-                    GenericFile myCondensedFile = new GenericFile(tmpChrDir, tmpCondensedFileName, "uncompressed", "none");
+                    GenericFile myCondensedFile = new GenericFile(tmpChrDir, tmpCondensedFileName, UNCOMPRESSED_FILE, "none");
                     chromoCondensedFile.add(myCondensedFile);
 
                 } // End for Chromo
@@ -295,12 +296,12 @@ public class MergeFiles {
                     String tmpAdditionalCondensedFileName = null;
                     if (deep == (this.endChr - 1)) {
                         tmpAdditionalCondensedFileName = testTypeName + "_" + rPanel + "_condensed_chr_" + this.startChr + "_to_"
-                                + this.endChr + ".txt.gz";
+                                + this.endChr + EXT_TXT_GZ;
                     } else {
-                        tmpAdditionalCondensedFileName = testTypeName + "_" + rPanel + "_condensed_" + addCondensed + ".txt.gz";
+                        tmpAdditionalCondensedFileName = testTypeName + "_" + rPanel + "_condensed_" + addCondensed + EXT_TXT_GZ;
                     }
                     GenericFile myAdditionalCondensedFile = new GenericFile(rpanelOutDirSummary, tmpAdditionalCondensedFileName,
-                            "uncompressed", "none");
+                            UNCOMPRESSED_FILE, "none");
                     additionalCondensedFile.add(myAdditionalCondensedFile);
                     // System.out.println("\t[MergeFiles.java] " + tmpAdditionalCondensedFile);
 
@@ -308,9 +309,9 @@ public class MergeFiles {
                 }
 
                 if (this.startChr == this.endChr) {
-                    String tmpAdditionalCondensedFileName = testTypeName + "_" + rPanel + "_condensed_chr_" + this.startChr + ".txt.gz";
+                    String tmpAdditionalCondensedFileName = testTypeName + "_" + rPanel + "_condensed_chr_" + this.startChr + EXT_TXT_GZ;
                     GenericFile myAdditionalCondensedFile = new GenericFile(rpanelOutDirSummary, tmpAdditionalCondensedFileName,
-                            "uncompressed", "none");
+                            UNCOMPRESSED_FILE, "none");
                     additionalCondensedFile.add(myAdditionalCondensedFile);
                     // System.out.println("\t[MergeFiles.java] only " + tmpAdditionalCondensedFile);
                     addCondensed++;
@@ -337,13 +338,13 @@ public class MergeFiles {
                 for (int deep = this.startChr; deep < endChrNormal; deep++) {
                     String tmpAdditionalFilteredByAllFileName = null;
                     if (deep == (endChrNormal - 1)) {
-                        tmpAdditionalFilteredByAllFileName = testTypeName + "_" + rPanel + "_filteredByAll_chr_" + this.startChr + "_to_"
-                                + endChrNormal + ".txt.gz";
+                        tmpAdditionalFilteredByAllFileName = testTypeName + "_" + rPanel + FILTER_BY_ALL_FILENAME + this.startChr + "_to_"
+                                + endChrNormal + EXT_TXT_GZ;
                     } else {
-                        tmpAdditionalFilteredByAllFileName = testTypeName + "_" + rPanel + "_filteredByAll_" + addFiltered + ".txt.gz";
+                        tmpAdditionalFilteredByAllFileName = testTypeName + "_" + rPanel + "_filteredByAll_" + addFiltered + EXT_TXT_GZ;
                     }
                     GenericFile myAdditionalFilteredByAllFile = new GenericFile(rpanelOutDirSummary, tmpAdditionalFilteredByAllFileName,
-                            "uncompressed", "none");
+                            UNCOMPRESSED_FILE, "none");
                     additionalFilteredByAllFile.add(myAdditionalFilteredByAllFile);
                     // System.out.println("\t[MergeFiles.java] " + tmpAdditionalFilteredByAllFile);
 
@@ -351,10 +352,10 @@ public class MergeFiles {
                 }
 
                 if (this.startChr == endChrNormal) {
-                    String tmpAdditionalFilteredByAllFileName = testTypeName + "_" + rPanel + "_filteredByAll_chr_" + this.startChr
-                            + ".txt.gz";
+                    String tmpAdditionalFilteredByAllFileName = testTypeName + "_" + rPanel + FILTER_BY_ALL_FILENAME + this.startChr
+                            + EXT_TXT_GZ;
                     GenericFile myAdditionalFilteredByAllFile = new GenericFile(rpanelOutDirSummary, tmpAdditionalFilteredByAllFileName,
-                            "uncompressed", "none");
+                            UNCOMPRESSED_FILE, "none");
                     additionalFilteredByAllFile.add(myAdditionalFilteredByAllFile);
                     addFiltered++;
                 }
@@ -365,10 +366,10 @@ public class MergeFiles {
 
                 // If there is chr 23:
                 if (this.endChr == 23) {
-                    String tmpAdditionalFilteredByAllXFileName = testTypeName + "_" + rPanel + "_filteredByAll_chr_" + this.endChr
-                            + ".txt.gz";
+                    String tmpAdditionalFilteredByAllXFileName = testTypeName + "_" + rPanel + FILTER_BY_ALL_FILENAME + this.endChr
+                            + EXT_TXT_GZ;
                     GenericFile myAdditionalFilteredByAllXFile = new GenericFile(rpanelOutDirSummary, tmpAdditionalFilteredByAllXFileName,
-                            "uncompressed", "none");
+                            UNCOMPRESSED_FILE, "none");
 
                     additionalFilteredByAllXFile.add(myAdditionalFilteredByAllXFile);
                     // System.out.println("\t[MergeFiles.java] " + tmpAdditionalFilteredByAllXFile);
@@ -416,7 +417,6 @@ public class MergeFiles {
         checkChromoIndex(chromo);
 
         int i = chromo - this.startChr;
-        // int i= chromo - 1 ;
         return this.testTypeReducedOutDir.get(testTypeIndex).get(rPanelIndex).get(i);
     }
 
@@ -433,20 +433,11 @@ public class MergeFiles {
         // Check that chromo index is within the bounds
         checkChromoIndex(chromo);
 
-        // int i = chromo -1;
         int i = chromo - this.startChr;
 
-        // TODO: IMPORTANT: Verify the index range!!!!
-        // ArrayList<String> tmpList = new ArrayList<String>();
-        // testTypeReducedFileName.get(rPanelIndex).get(i);
-        // int lastIndex = tmpList.size() - 1;
-
-        // if(index > lastIndex) {
-        // System.err.println("[MergeFiles] Error, the number of testTypeReducedFileName is greater than the existing in
-        // chromosome " + chromo);
-        // System.err.println(" index " + index + " > lastIndex = " + lastIndex);
-        // System.exit(1);
-        // }
+        // Check the index
+        int maxIndex = this.testTypeReducedFile.get(testTypeIndex).get(rPanelIndex).get(i).size();
+        checkIndex(index, maxIndex, chromo);
 
         return this.testTypeReducedFile.get(testTypeIndex).get(rPanelIndex).get(i).get(index).getFullName();
     }
@@ -464,19 +455,11 @@ public class MergeFiles {
         // Check that chromo index is within the bounds
         checkChromoIndex(chromo);
 
-        // int i = chromo -1;
         int i = chromo - this.startChr;
-        // TODO: IMPORTANT: Verify the index range!!!!
-        // ArrayList<String> tmpList = new ArrayList<String>();
-        // tmpList = (testTypeReducedFileName.get(rPanelIndex, i));
-        // int lastIndex = tmpList.size() - 1;
 
-        // if(index > lastIndex) {
-        // System.err.println("[MergeFiles] Error, the number of testTypeReducedFile is greater than the existing in
-        // chromosome " + chromo);
-        // System.err.println(" index " + index + " > lastIndex = " + lastIndex);
-        // System.exit(1);
-        // }
+        // Check the index
+        int maxIndex = this.testTypeReducedFile.get(testTypeIndex).get(rPanelIndex).get(i).size();
+        checkIndex(index, maxIndex, chromo);
 
         return this.testTypeReducedFile.get(testTypeIndex).get(rPanelIndex).get(i).get(index).getFullName();
     }
@@ -494,19 +477,11 @@ public class MergeFiles {
         // Check that chromo index is within the bounds
         checkChromoIndex(chromo);
 
-        // int i = chromo -1;
         int i = chromo - this.startChr;
-        // TODO: IMPORTANT: Verify the index range!!!!
-        // ArrayList<String> tmpList = new ArrayList<String>();
-        // tmpList = (testTypeReducedFileName.get(rPanelIndex, i));
-        // int lastIndex = tmpList.size() - 1;
 
-        // if(index > lastIndex) {
-        // System.err.println("[MergeFiles] Error, the number of testTypeReducedFile is greater than the existing in
-        // chromosome " + chromo);
-        // System.err.println(" index " + index + " > lastIndex = " + lastIndex);
-        // System.exit(1);
-        // }
+        // Check the index
+        int maxIndex = this.testTypeReducedFile.get(testTypeIndex).get(rPanelIndex).get(i).size();
+        checkIndex(index, maxIndex, chromo);
 
         this.testTypeReducedFile.get(testTypeIndex).get(rPanelIndex).get(i).get(index).setFinalStatus(finalStatus);
     }
@@ -524,19 +499,11 @@ public class MergeFiles {
         // Check that chromo index is within the bounds
         checkChromoIndex(chromo);
 
-        // int i = chromo -1;
         int i = chromo - this.startChr;
-        // TODO: IMPORTANT: Verify the index range!!!!
-        // ArrayList<String> tmpList = new ArrayList<String>();
-        // tmpList = (testTypeReducedFileName.get(rPanelIndex, i));
-        // int lastIndex = tmpList.size() - 1;
 
-        // if(index > lastIndex) {
-        // System.err.println("[MergeFiles] Error, the number of testTypeReducedFile is greater than the existing in
-        // chromosome " + chromo);
-        // System.err.println(" index " + index + " > lastIndex = " + lastIndex);
-        // System.exit(1);
-        // }
+        // Check the index
+        int maxIndex = this.testTypeReducedFile.get(testTypeIndex).get(rPanelIndex).get(i).size();
+        checkIndex(index, maxIndex, chromo);
 
         return this.testTypeReducedFile.get(testTypeIndex).get(rPanelIndex).get(i).get(index).getFinalStatus();
     }
@@ -554,20 +521,11 @@ public class MergeFiles {
         // Check that chromo index is within the bounds
         checkChromoIndex(chromo);
 
-        // int i = chromo -1;
         int i = chromo - this.startChr;
 
-        // TODO: IMPORTANT: Verify the index range!!!!
-        // ArrayList<String> tmpList = new ArrayList<String>();
-        // testTypeReducedFilteredFileName.get(rPanelIndex).get(i);
-        // int lastIndex = tmpList.size() - 1;
-
-        // if(index > lastIndex) {
-        // System.err.println("[MergeFiles] Error, the number of testTypeReducedFilteredFileName is greater than the
-        // existing in chromosome " + chromo);
-        // System.err.println(" index " + index + " > lastIndex = " + lastIndex);
-        // System.exit(1);
-        // }
+        // Check the index
+        int maxIndex = this.testTypeReducedFilteredFile.get(testTypeIndex).get(rPanelIndex).get(i).size();
+        checkIndex(index, maxIndex, chromo);
 
         return this.testTypeReducedFilteredFile.get(testTypeIndex).get(rPanelIndex).get(i).get(index).getFullName();
     }
@@ -585,19 +543,11 @@ public class MergeFiles {
         // Check that chromo index is within the bounds
         checkChromoIndex(chromo);
 
-        // int i = chromo -1;
         int i = chromo - this.startChr;
-        // TODO: IMPORTANT: Verify the index range!!!!
-        // ArrayList<String> tmpList = new ArrayList<String>();
-        // tmpList = (testTypeReducedFilteredFileName.get(rPanelIndex, i));
-        // int lastIndex = tmpList.size() - 1;
 
-        // if(index > lastIndex) {
-        // System.err.println("[MergeFiles] Error, the number of testTypeReducedFilteredFile is greater than the
-        // existing in chromosome " + chromo);
-        // System.err.println(" index " + index + " > lastIndex = " + lastIndex);
-        // System.exit(1);
-        // }
+        // Check the index
+        int maxIndex = this.testTypeReducedFilteredFile.get(testTypeIndex).get(rPanelIndex).get(i).size();
+        checkIndex(index, maxIndex, chromo);
 
         return this.testTypeReducedFilteredFile.get(testTypeIndex).get(rPanelIndex).get(i).get(index).getFullName();
     }
@@ -615,19 +565,11 @@ public class MergeFiles {
         // Check that chromo index is within the bounds
         checkChromoIndex(chromo);
 
-        // int i = chromo -1;
         int i = chromo - this.startChr;
-        // TODO: IMPORTANT: Verify the index range!!!!
-        // ArrayList<String> tmpList = new ArrayList<String>();
-        // tmpList = (testTypeReducedFilteredFileName.get(rPanelIndex, i));
-        // int lastIndex = tmpList.size() - 1;
 
-        // if(index > lastIndex) {
-        // System.err.println("[MergeFiles] Error, the number of testTypeReducedFilteredFile is greater than the
-        // existing in chromosome " + chromo);
-        // System.err.println(" index " + index + " > lastIndex = " + lastIndex);
-        // System.exit(1);
-        // }
+        // Check the index
+        int maxIndex = this.testTypeReducedFilteredFile.get(testTypeIndex).get(rPanelIndex).get(i).size();
+        checkIndex(index, maxIndex, chromo);
 
         this.testTypeReducedFilteredFile.get(testTypeIndex).get(rPanelIndex).get(i).get(index).setFinalStatus(finalStatus);
     }
@@ -645,19 +587,11 @@ public class MergeFiles {
         // Check that chromo index is within the bounds
         checkChromoIndex(chromo);
 
-        // int i = chromo -1;
         int i = chromo - this.startChr;
-        // TODO: IMPORTANT: Verify the index range!!!!
-        // ArrayList<String> tmpList = new ArrayList<String>();
-        // tmpList = (testTypeReducedFilteredFileName.get(rPanelIndex, i));
-        // int lastIndex = tmpList.size() - 1;
 
-        // if(index > lastIndex) {
-        // System.err.println("[MergeFiles] Error, the number of testTypeReducedFilteredFile is greater than the
-        // existing in chromosome " + chromo);
-        // System.err.println(" index " + index + " > lastIndex = " + lastIndex);
-        // System.exit(1);
-        // }
+        // Check the index
+        int maxIndex = this.testTypeReducedFilteredFile.get(testTypeIndex).get(rPanelIndex).get(i).size();
+        checkIndex(index, maxIndex, chromo);
 
         return this.testTypeReducedFilteredFile.get(testTypeIndex).get(rPanelIndex).get(i).get(index).getFinalStatus();
     }
@@ -675,20 +609,11 @@ public class MergeFiles {
         // Check that chromo index is within the bounds
         checkChromoIndex(chromo);
 
-        // int i = chromo -1;
         int i = chromo - this.startChr;
 
-        // TODO: IMPORTANT: Verify the index range!!!!
-        // ArrayList<String> tmpList = new ArrayList<String>();
-        // testTypeReducedCondensedFileName.get(rPanelIndex).get(i);
-        // int lastIndex = tmpList.size() - 1;
-
-        // if(index > lastIndex) {
-        // System.err.println("[MergeFiles] Error, the number of testTypeReducedCondensedFileName is greater than the
-        // existing in chromosome " + chromo);
-        // System.err.println(" index " + index + " > lastIndex = " + lastIndex);
-        // System.exit(1);
-        // }
+        // Check the index
+        int maxIndex = this.testTypeReducedCondensedFile.get(testTypeIndex).get(rPanelIndex).get(i).size();
+        checkIndex(index, maxIndex, chromo);
 
         return this.testTypeReducedCondensedFile.get(testTypeIndex).get(rPanelIndex).get(i).get(index).getFullName();
     }
@@ -706,19 +631,11 @@ public class MergeFiles {
         // Check that chromo index is within the bounds
         checkChromoIndex(chromo);
 
-        // int i = chromo -1;
         int i = chromo - this.startChr;
-        // TODO: IMPORTANT: Verify the index range!!!!
-        // ArrayList<String> tmpList = new ArrayList<String>();
-        // tmpList = (testTypeReducedCondensedFileName.get(rPanelIndex, i));
-        // int lastIndex = tmpList.size() - 1;
 
-        // if(index > lastIndex) {
-        // System.err.println("[MergeFiles] Error, the number of testTypeReducedCondensedFile is greater than the
-        // existing in chromosome " + chromo);
-        // System.err.println(" index " + index + " > lastIndex = " + lastIndex);
-        // System.exit(1);
-        // }
+        // Check the index
+        int maxIndex = this.testTypeReducedCondensedFile.get(testTypeIndex).get(rPanelIndex).get(i).size();
+        checkIndex(index, maxIndex, chromo);
 
         return this.testTypeReducedCondensedFile.get(testTypeIndex).get(rPanelIndex).get(i).get(index).getFullName();
     }
@@ -736,19 +653,11 @@ public class MergeFiles {
         // Check that chromo index is within the bounds
         checkChromoIndex(chromo);
 
-        // int i = chromo -1;
         int i = chromo - this.startChr;
-        // TODO: IMPORTANT: Verify the index range!!!!
-        // ArrayList<String> tmpList = new ArrayList<String>();
-        // tmpList = (testTypeReducedCondensedFileName.get(rPanelIndex, i));
-        // int lastIndex = tmpList.size() - 1;
 
-        // if(index > lastIndex) {
-        // System.err.println("[MergeFiles] Error, the number of testTypeReducedCondensedFile is greater than the
-        // existing in chromosome " + chromo);
-        // System.err.println(" index " + index + " > lastIndex = " + lastIndex);
-        // System.exit(1);
-        // }
+        // Check the index
+        int maxIndex = this.testTypeReducedCondensedFile.get(testTypeIndex).get(rPanelIndex).get(i).size();
+        checkIndex(index, maxIndex, chromo);
 
         this.testTypeReducedCondensedFile.get(testTypeIndex).get(rPanelIndex).get(i).get(index).setFinalStatus(finalStatus);
     }
@@ -766,19 +675,11 @@ public class MergeFiles {
         // Check that chromo index is within the bounds
         checkChromoIndex(chromo);
 
-        // int i = chromo -1;
         int i = chromo - this.startChr;
-        // TODO: IMPORTANT: Verify the index range!!!!
-        // ArrayList<String> tmpList = new ArrayList<String>();
-        // tmpList = (testTypeReducedCondensedFileName.get(rPanelIndex, i));
-        // int lastIndex = tmpList.size() - 1;
 
-        // if(index > lastIndex) {
-        // System.err.println("[MergeFiles] Error, the number of testTypeReducedCondensedFile is greater than the
-        // existing in chromosome " + chromo);
-        // System.err.println(" index " + index + " > lastIndex = " + lastIndex);
-        // System.exit(1);
-        // }
+        // Check the index
+        int maxIndex = this.testTypeReducedCondensedFile.get(testTypeIndex).get(rPanelIndex).get(i).size();
+        checkIndex(index, maxIndex, chromo);
 
         return this.testTypeReducedCondensedFile.get(testTypeIndex).get(rPanelIndex).get(i).get(index).getFinalStatus();
     }
@@ -796,20 +697,11 @@ public class MergeFiles {
         // Check that chromo index is within the bounds
         checkChromoIndex(chromo);
 
-        // int i = chromo -1;
         int i = chromo - this.startChr;
 
-        // TODO: IMPORTANT: Verify the index range!!!!
-        // ArrayList<String> tmpList = new ArrayList<String>();
-        // testTypeCombinedReducedFilteredFileName.get(rPanelIndex).get(i);
-        // int lastIndex = tmpList.size() - 1;
-
-        // if(index > lastIndex) {
-        // System.err.println("[MergeFiles] Error, the number of testTypeCombinedReducedFilteredFileName is greater than
-        // the existing in chromosome " + chromo);
-        // System.err.println(" index " + index + " > lastIndex = " + lastIndex);
-        // System.exit(1);
-        // }
+        // Check the index
+        int maxIndex = this.testTypeCombinedReducedFilteredFile.get(testTypeIndex).get(rPanelIndex).get(i).size();
+        checkIndex(index, maxIndex, chromo);
 
         return this.testTypeCombinedReducedFilteredFile.get(testTypeIndex).get(rPanelIndex).get(i).get(index).getFullName();
     }
@@ -827,19 +719,11 @@ public class MergeFiles {
         // Check that chromo index is within the bounds
         checkChromoIndex(chromo);
 
-        // int i = chromo -1;
         int i = chromo - this.startChr;
-        // TODO: IMPORTANT: Verify the index range!!!!
-        // ArrayList<String> tmpList = new ArrayList<String>();
-        // tmpList = (testTypeCombinedReducedFilteredFileName.get(rPanelIndex, i));
-        // int lastIndex = tmpList.size() - 1;
 
-        // if(index > lastIndex) {
-        // System.err.println("[MergeFiles] Error, the number of testTypeCombinedReducedFilteredFile is greater than the
-        // existing in chromosome " + chromo);
-        // System.err.println(" index " + index + " > lastIndex = " + lastIndex);
-        // System.exit(1);
-        // }
+        // Check the index
+        int maxIndex = this.testTypeCombinedReducedFilteredFile.get(testTypeIndex).get(rPanelIndex).get(i).size();
+        checkIndex(index, maxIndex, chromo);
 
         return this.testTypeCombinedReducedFilteredFile.get(testTypeIndex).get(rPanelIndex).get(i).get(index).getFullName();
     }
@@ -857,19 +741,11 @@ public class MergeFiles {
         // Check that chromo index is within the bounds
         checkChromoIndex(chromo);
 
-        // int i = chromo -1;
         int i = chromo - this.startChr;
-        // TODO: IMPORTANT: Verify the index range!!!!
-        // ArrayList<String> tmpList = new ArrayList<String>();
-        // tmpList = (testTypeCombinedReducedFilteredFileName.get(rPanelIndex, i));
-        // int lastIndex = tmpList.size() - 1;
 
-        // if(index > lastIndex) {
-        // System.err.println("[MergeFiles] Error, the number of testTypeCombinedReducedFilteredFile is greater than the
-        // existing in chromosome " + chromo);
-        // System.err.println(" index " + index + " > lastIndex = " + lastIndex);
-        // System.exit(1);
-        // }
+        // Check the index
+        int maxIndex = this.testTypeCombinedReducedFilteredFile.get(testTypeIndex).get(rPanelIndex).get(i).size();
+        checkIndex(index, maxIndex, chromo);
 
         this.testTypeCombinedReducedFilteredFile.get(testTypeIndex).get(rPanelIndex).get(i).get(index).setFinalStatus(finalStatus);
     }
@@ -887,19 +763,11 @@ public class MergeFiles {
         // Check that chromo index is within the bounds
         checkChromoIndex(chromo);
 
-        // int i = chromo -1;
         int i = chromo - this.startChr;
-        // TODO: IMPORTANT: Verify the index range!!!!
-        // ArrayList<String> tmpList = new ArrayList<String>();
-        // tmpList = (testTypeCombinedReducedFilteredFileName.get(rPanelIndex, i));
-        // int lastIndex = tmpList.size() - 1;
 
-        // if(index > lastIndex) {
-        // System.err.println("[MergeFiles] Error, the number of testTypeCombinedReducedFilteredFile is greater than the
-        // existing in chromosome " + chromo);
-        // System.err.println(" index " + index + " > lastIndex = " + lastIndex);
-        // System.exit(1);
-        // }
+        // Check the index
+        int maxIndex = this.testTypeCombinedReducedFilteredFile.get(testTypeIndex).get(rPanelIndex).get(i).size();
+        checkIndex(index, maxIndex, chromo);
 
         return this.testTypeCombinedReducedFilteredFile.get(testTypeIndex).get(rPanelIndex).get(i).get(index).getFinalStatus();
     }
@@ -917,20 +785,11 @@ public class MergeFiles {
         // Check that chromo index is within the bounds
         checkChromoIndex(chromo);
 
-        // int i = chromo -1;
         int i = chromo - this.startChr;
 
-        // TODO: IMPORTANT: Verify the index range!!!!
-        // ArrayList<String> tmpList = new ArrayList<String>();
-        // testTypeCombinedReducedFilteredXFileName.get(rPanelIndex).get(i);
-        // int lastIndex = tmpList.size() - 1;
-
-        // if(index > lastIndex) {
-        // System.err.println("[MergeFiles] Error, the number of testTypeCombinedReducedFilteredXFileName is greater
-        // than the existing in chromosome " + chromo);
-        // System.err.println(" index " + index + " > lastIndex = " + lastIndex);
-        // System.exit(1);
-        // }
+        // Check the index
+        int maxIndex = this.testTypeCombinedReducedFilteredXFile.get(testTypeIndex).get(rPanelIndex).get(i).size();
+        checkIndex(index, maxIndex, chromo);
 
         return this.testTypeCombinedReducedFilteredXFile.get(testTypeIndex).get(rPanelIndex).get(i).get(index).getFullName();
     }
@@ -948,19 +807,11 @@ public class MergeFiles {
         // Check that chromo index is within the bounds
         checkChromoIndex(chromo);
 
-        // int i = chromo -1;
         int i = chromo - this.startChr;
-        // TODO: IMPORTANT: Verify the index range!!!!
-        // ArrayList<String> tmpList = new ArrayList<String>();
-        // tmpList = (testTypeCombinedReducedFilteredXFileName.get(rPanelIndex, i));
-        // int lastIndex = tmpList.size() - 1;
 
-        // if(index > lastIndex) {
-        // System.err.println("[MergeFiles] Error, the number of testTypeCombinedReducedFilteredXFile is greater than
-        // the existing in chromosome " + chromo);
-        // System.err.println(" index " + index + " > lastIndex = " + lastIndex);
-        // System.exit(1);
-        // }
+        // Check the index
+        int maxIndex = this.testTypeCombinedReducedFilteredXFile.get(testTypeIndex).get(rPanelIndex).get(i).size();
+        checkIndex(index, maxIndex, chromo);
 
         return this.testTypeCombinedReducedFilteredXFile.get(testTypeIndex).get(rPanelIndex).get(i).get(index).getFullName();
     }
@@ -978,19 +829,11 @@ public class MergeFiles {
         // Check that chromo index is within the bounds
         checkChromoIndex(chromo);
 
-        // int i = chromo -1;
         int i = chromo - this.startChr;
-        // TODO: IMPORTANT: Verify the index range!!!!
-        // ArrayList<String> tmpList = new ArrayList<String>();
-        // tmpList = (testTypeCombinedReducedFilteredXFileName.get(rPanelIndex, i));
-        // int lastIndex = tmpList.size() - 1;
 
-        // if(index > lastIndex) {
-        // System.err.println("[MergeFiles] Error, the number of testTypeCombinedReducedFilteredXFile is greater than
-        // the existing in chromosome " + chromo);
-        // System.err.println(" index " + index + " > lastIndex = " + lastIndex);
-        // System.exit(1);
-        // }
+        // Check the index
+        int maxIndex = this.testTypeCombinedReducedFilteredXFile.get(testTypeIndex).get(rPanelIndex).get(i).size();
+        checkIndex(index, maxIndex, chromo);
 
         this.testTypeCombinedReducedFilteredXFile.get(testTypeIndex).get(rPanelIndex).get(i).get(index).setFinalStatus(finalStatus);
     }
@@ -1008,19 +851,11 @@ public class MergeFiles {
         // Check that chromo index is within the bounds
         checkChromoIndex(chromo);
 
-        // int i = chromo -1;
         int i = chromo - this.startChr;
-        // TODO: IMPORTANT: Verify the index range!!!!
-        // ArrayList<String> tmpList = new ArrayList<String>();
-        // tmpList = (testTypeCombinedReducedFilteredXFileName.get(rPanelIndex, i));
-        // int lastIndex = tmpList.size() - 1;
 
-        // if(index > lastIndex) {
-        // System.err.println("[MergeFiles] Error, the number of testTypeCombinedReducedFilteredXFile is greater than
-        // the existing in chromosome " + chromo);
-        // System.err.println(" index " + index + " > lastIndex = " + lastIndex);
-        // System.exit(1);
-        // }
+        // Check the index
+        int maxIndex = this.testTypeCombinedReducedFilteredXFile.get(testTypeIndex).get(rPanelIndex).get(i).size();
+        checkIndex(index, maxIndex, chromo);
 
         return this.testTypeCombinedReducedFilteredXFile.get(testTypeIndex).get(rPanelIndex).get(i).get(index).getFinalStatus();
     }
@@ -1038,20 +873,11 @@ public class MergeFiles {
         // Check that chromo index is within the bounds
         checkChromoIndex(chromo);
 
-        // int i = chromo -1;
         int i = chromo - this.startChr;
 
-        // TODO: IMPORTANT: Verify the index range!!!!
-        // ArrayList<String> tmpList = new ArrayList<String>();
-        // testTypeCombinedReducedCondensedFileName.get(rPanelIndex).get(i);
-        // int lastIndex = tmpList.size() - 1;
-
-        // if(index > lastIndex) {
-        // System.err.println("[MergeFiles] Error, the number of testTypeCombinedReducedCondensedFileName is greater
-        // than the existing in chromosome " + chromo);
-        // System.err.println(" index " + index + " > lastIndex = " + lastIndex);
-        // System.exit(1);
-        // }
+        // Check the index
+        int maxIndex = this.testTypeCombinedReducedCondensedFile.get(testTypeIndex).get(rPanelIndex).get(i).size();
+        checkIndex(index, maxIndex, chromo);
 
         return this.testTypeCombinedReducedCondensedFile.get(testTypeIndex).get(rPanelIndex).get(i).get(index).getFullName();
     }
@@ -1069,19 +895,11 @@ public class MergeFiles {
         // Check that chromo index is within the bounds
         checkChromoIndex(chromo);
 
-        // int i = chromo -1;
         int i = chromo - this.startChr;
-        // TODO: IMPORTANT: Verify the index range!!!!
-        // ArrayList<String> tmpList = new ArrayList<String>();
-        // tmpList = (testTypeCombinedReducedCondensedFileName.get(rPanelIndex, i));
-        // int lastIndex = tmpList.size() - 1;
 
-        // if(index > lastIndex) {
-        // System.err.println("[MergeFiles] Error, the number of testTypeCombinedReducedCondensedFile is greater than
-        // the existing in chromosome " + chromo);
-        // System.err.println(" index " + index + " > lastIndex = " + lastIndex);
-        // System.exit(1);
-        // }
+        // Check the index
+        int maxIndex = this.testTypeCombinedReducedCondensedFile.get(testTypeIndex).get(rPanelIndex).get(i).size();
+        checkIndex(index, maxIndex, chromo);
 
         return this.testTypeCombinedReducedCondensedFile.get(testTypeIndex).get(rPanelIndex).get(i).get(index).getFullName();
     }
@@ -1099,19 +917,11 @@ public class MergeFiles {
         // Check that chromo index is within the bounds
         checkChromoIndex(chromo);
 
-        // int i = chromo -1;
         int i = chromo - this.startChr;
-        // TODO: IMPORTANT: Verify the index range!!!!
-        // ArrayList<String> tmpList = new ArrayList<String>();
-        // tmpList = (testTypeCombinedReducedCondensedFileName.get(rPanelIndex, i));
-        // int lastIndex = tmpList.size() - 1;
 
-        // if(index > lastIndex) {
-        // System.err.println("[MergeFiles] Error, the number of testTypeCombinedReducedCondensedFile is greater than
-        // the existing in chromosome " + chromo);
-        // System.err.println(" index " + index + " > lastIndex = " + lastIndex);
-        // System.exit(1);
-        // }
+        // Check the index
+        int maxIndex = this.testTypeCombinedReducedCondensedFile.get(testTypeIndex).get(rPanelIndex).get(i).size();
+        checkIndex(index, maxIndex, chromo);
 
         this.testTypeCombinedReducedCondensedFile.get(testTypeIndex).get(rPanelIndex).get(i).get(index).setFinalStatus(finalStatus);
     }
@@ -1129,19 +939,11 @@ public class MergeFiles {
         // Check that chromo index is within the bounds
         checkChromoIndex(chromo);
 
-        // int i = chromo -1;
         int i = chromo - this.startChr;
-        // TODO: IMPORTANT: Verify the index range!!!!
-        // ArrayList<String> tmpList = new ArrayList<String>();
-        // tmpList = (testTypeCombinedReducedCondensedFileName.get(rPanelIndex, i));
-        // int lastIndex = tmpList.size() - 1;
 
-        // if(index > lastIndex) {
-        // System.err.println("[MergeFiles] Error, the number of testTypeCombinedReducedCondensedFile is greater than
-        // the existing in chromosome " + chromo);
-        // System.err.println(" index " + index + " > lastIndex = " + lastIndex);
-        // System.exit(1);
-        // }
+        // Check the index
+        int maxIndex = this.testTypeCombinedReducedCondensedFile.get(testTypeIndex).get(rPanelIndex).get(i).size();
+        checkIndex(index, maxIndex, chromo);
 
         return this.testTypeCombinedReducedCondensedFile.get(testTypeIndex).get(rPanelIndex).get(i).get(index).getFinalStatus();
     }
@@ -1158,13 +960,9 @@ public class MergeFiles {
         // Check that chromo index is within the bounds
         checkChromoIndex(chromo);
 
-        // int i = chromo -1;
         int i = chromo - this.startChr;
 
-        // ArrayList<String> tmpList = new ArrayList<String>();
         int lastIndex = this.testTypeReducedFile.get(testTypeIndex).get(rPanelIndex).get(i).size() - 1;
-        // System.out.println("[MergeFiles] lastIndex size = " + lastIndex);
-
         return this.testTypeReducedFile.get(testTypeIndex).get(rPanelIndex).get(i).get(lastIndex).getFullName();
     }
 
@@ -1180,12 +978,9 @@ public class MergeFiles {
         // Check that chromo index is within the bounds
         checkChromoIndex(chromo);
 
-        // int i = chromo -1;
         int i = chromo - this.startChr;
 
-        // ArrayList<String> tmpList = new ArrayList<String>();
         int lastIndex = this.testTypeReducedFile.get(testTypeIndex).get(rPanelIndex).get(i).size() - 1;
-        // System.out.println("[MergeFiles] lastIndex size = " + lastIndex);
         return lastIndex;
     }
 
@@ -1197,11 +992,11 @@ public class MergeFiles {
      * @param chromo
      */
     public void printTheLastReducedFiles(int testTypeIndex, int rPanelIndex, int chromo) {
-        // System.out.println("\t[MergeFiles] theLastReducedFiles ARE:");
+        System.out.println("\t[MergeFiles] theLastReducedFiles ARE:");
         for (int hh = 0; hh <= testTypeIndex; hh++) {
             for (int kk = 0; kk <= rPanelIndex; kk++) {
                 for (int j = 0; j <= chromo - this.startChr; j++) {
-                    // System.out.println("\t[MergeFiles] " + testTypeReducedFile.get(rPanelIndex).get(kk).get(j));
+                    System.out.println("\t[MergeFiles] " + testTypeReducedFile.get(rPanelIndex).get(kk).get(j));
                 }
             }
         }
@@ -1219,20 +1014,11 @@ public class MergeFiles {
         // Check that chromo index is within the bounds
         checkChromoIndex(chromo);
 
-        // int i = chromo -1;
         int i = chromo - this.startChr;
 
-        // TODO: IMPORTANT: Verify the index range!!!!
-        // ArrayList<String> tmpList = new ArrayList<String>();
-        // testTypeReducedFileName.get(rPanelIndex).get(i);
-        // int lastIndex = tmpList.size() - 1;
-
-        // if(index > lastIndex) {
-        // System.err.println("[MergeFiles] Error, the number of testTypeReducedFileName is greater than the existing in
-        // chromosome " + chromo);
-        // System.err.println(" index " + index + " > lastIndex = " + lastIndex);
-        // System.exit(1);
-        // }
+        // Check the index
+        int maxIndex = this.testTypeFilteredByAllFile.get(testTypeIndex).get(rPanelIndex).size();
+        checkIndex(i, maxIndex, chromo);
 
         return this.testTypeFilteredByAllFile.get(testTypeIndex).get(rPanelIndex).get(i).getFullName();
     }
@@ -1249,19 +1035,11 @@ public class MergeFiles {
         // Check that chromo index is within the bounds
         checkChromoIndex(chromo);
 
-        // int i = chromo -1;
         int i = chromo - this.startChr;
-        // TODO: IMPORTANT: Verify the index range!!!!
-        // ArrayList<String> tmpList = new ArrayList<String>();
-        // tmpList = (testTypeReducedFileName.get(rPanelIndex, i));
-        // int lastIndex = tmpList.size() - 1;
 
-        // if(index > lastIndex) {
-        // System.err.println("[MergeFiles] Error, the number of testTypeReducedFile is greater than the existing in
-        // chromosome " + chromo);
-        // System.err.println(" index " + index + " > lastIndex = " + lastIndex);
-        // System.exit(1);
-        // }
+        // Check the index
+        int maxIndex = this.testTypeFilteredByAllFile.get(testTypeIndex).get(rPanelIndex).size();
+        checkIndex(i, maxIndex, chromo);
 
         return this.testTypeFilteredByAllFile.get(testTypeIndex).get(rPanelIndex).get(i).getFullName();
     }
@@ -1278,19 +1056,11 @@ public class MergeFiles {
         // Check that chromo index is within the bounds
         checkChromoIndex(chromo);
 
-        // int i = chromo -1;
         int i = chromo - this.startChr;
-        // TODO: IMPORTANT: Verify the index range!!!!
-        // ArrayList<String> tmpList = new ArrayList<String>();
-        // tmpList = (testTypeReducedFileName.get(rPanelIndex, i));
-        // int lastIndex = tmpList.size() - 1;
-
-        // if(index > lastIndex) {
-        // System.err.println("[MergeFiles] Error, the number of testTypeReducedFile is greater than the existing in
-        // chromosome " + chromo);
-        // System.err.println(" index " + index + " > lastIndex = " + lastIndex);
-        // System.exit(1);
-        // }
+        
+        // Check the index
+        int maxIndex = this.testTypeFilteredByAllFile.get(testTypeIndex).get(rPanelIndex).size();
+        checkIndex(i, maxIndex, chromo);
 
         this.testTypeFilteredByAllFile.get(testTypeIndex).get(rPanelIndex).get(i).setFinalStatus(finalStatus);
     }
@@ -1307,19 +1077,11 @@ public class MergeFiles {
         // Check that chromo index is within the bounds
         checkChromoIndex(chromo);
 
-        // int i = chromo -1;
         int i = chromo - this.startChr;
-        // TODO: IMPORTANT: Verify the index range!!!!
-        // ArrayList<String> tmpList = new ArrayList<String>();
-        // tmpList = (testTypeReducedFileName.get(rPanelIndex, i));
-        // int lastIndex = tmpList.size() - 1;
-
-        // if(index > lastIndex) {
-        // System.err.println("[MergeFiles] Error, the number of testTypeReducedFile is greater than the existing in
-        // chromosome " + chromo);
-        // System.err.println(" index " + index + " > lastIndex = " + lastIndex);
-        // System.exit(1);
-        // }
+        
+        // Check the index
+        int maxIndex = this.testTypeFilteredByAllFile.get(testTypeIndex).get(rPanelIndex).size();
+        checkIndex(i, maxIndex, chromo);
 
         return this.testTypeFilteredByAllFile.get(testTypeIndex).get(rPanelIndex).get(i).getFinalStatus();
     }
@@ -1336,20 +1098,11 @@ public class MergeFiles {
         // Check that chromo index is within the bounds
         checkChromoIndex(chromo);
 
-        // int i = chromo -1;
         int i = chromo - this.startChr;
 
-        // TODO: IMPORTANT: Verify the index range!!!!
-        // ArrayList<String> tmpList = new ArrayList<String>();
-        // testTypeReducedFileName.get(rPanelIndex).get(i);
-        // int lastIndex = tmpList.size() - 1;
-
-        // if(index > lastIndex) {
-        // System.err.println("[MergeFiles] Error, the number of testTypeReducedFileName is greater than the existing in
-        // chromosome " + chromo);
-        // System.err.println(" index " + index + " > lastIndex = " + lastIndex);
-        // System.exit(1);
-        // }
+        // Check the index
+        int maxIndex = this.testTypeCondensedFile.get(testTypeIndex).get(rPanelIndex).size();
+        checkIndex(i, maxIndex, chromo);
 
         return this.testTypeCondensedFile.get(testTypeIndex).get(rPanelIndex).get(i).getFullName();
     }
@@ -1366,19 +1119,11 @@ public class MergeFiles {
         // Check that chromo index is within the bounds
         checkChromoIndex(chromo);
 
-        // int i = chromo -1;
         int i = chromo - this.startChr;
-        // TODO: IMPORTANT: Verify the index range!!!!
-        // ArrayList<String> tmpList = new ArrayList<String>();
-        // tmpList = (testTypeReducedFileName.get(rPanelIndex, i));
-        // int lastIndex = tmpList.size() - 1;
-
-        // if(index > lastIndex) {
-        // System.err.println("[MergeFiles] Error, the number of testTypeReducedFile is greater than the existing in
-        // chromosome " + chromo);
-        // System.err.println(" index " + index + " > lastIndex = " + lastIndex);
-        // System.exit(1);
-        // }
+        
+        // Check the index
+        int maxIndex = this.testTypeCondensedFile.get(testTypeIndex).get(rPanelIndex).size();
+        checkIndex(i, maxIndex, chromo);
 
         return this.testTypeCondensedFile.get(testTypeIndex).get(rPanelIndex).get(i).getFullName();
     }
@@ -1395,19 +1140,11 @@ public class MergeFiles {
         // Check that chromo index is within the bounds
         checkChromoIndex(chromo);
 
-        // int i = chromo -1;
         int i = chromo - this.startChr;
-        // TODO: IMPORTANT: Verify the index range!!!!
-        // ArrayList<String> tmpList = new ArrayList<String>();
-        // tmpList = (testTypeReducedFileName.get(rPanelIndex, i));
-        // int lastIndex = tmpList.size() - 1;
-
-        // if(index > lastIndex) {
-        // System.err.println("[MergeFiles] Error, the number of testTypeReducedFile is greater than the existing in
-        // chromosome " + chromo);
-        // System.err.println(" index " + index + " > lastIndex = " + lastIndex);
-        // System.exit(1);
-        // }
+        
+        // Check the index
+        int maxIndex = this.testTypeCondensedFile.get(testTypeIndex).get(rPanelIndex).size();
+        checkIndex(i, maxIndex, chromo);
 
         this.testTypeCondensedFile.get(testTypeIndex).get(rPanelIndex).get(i).setFinalStatus(finalStatus);
     }
@@ -1424,19 +1161,11 @@ public class MergeFiles {
         // Check that chromo index is within the bounds
         checkChromoIndex(chromo);
 
-        // int i = chromo -1;
         int i = chromo - this.startChr;
-        // TODO: IMPORTANT: Verify the index range!!!!
-        // ArrayList<String> tmpList = new ArrayList<String>();
-        // tmpList = (testTypeReducedFileName.get(rPanelIndex, i));
-        // int lastIndex = tmpList.size() - 1;
-
-        // if(index > lastIndex) {
-        // System.err.println("[MergeFiles] Error, the number of testTypeReducedFile is greater than the existing in
-        // chromosome " + chromo);
-        // System.err.println(" index " + index + " > lastIndex = " + lastIndex);
-        // System.exit(1);
-        // }
+        
+        // Check the index
+        int maxIndex = this.testTypeCondensedFile.get(testTypeIndex).get(rPanelIndex).size();
+        checkIndex(i, maxIndex, chromo);
 
         return this.testTypeCondensedFile.get(testTypeIndex).get(rPanelIndex).get(i).getFinalStatus();
     }
@@ -1450,18 +1179,9 @@ public class MergeFiles {
      * @return
      */
     public String getAdditionalCondensedFileName(int testTypeIndex, int rPanelIndex, int index) {
-
-        // TODO: IMPORTANT: Verify the index range!!!!
-        // ArrayList<String> tmpList = new ArrayList<String>();
-        // testTypeReducedFileName.get(rPanelIndex).get(i);
-        // int lastIndex = tmpList.size() - 1;
-
-        // if(index > lastIndex) {
-        // System.err.println("[MergeFiles] Error, the number of testTypeReducedFileName is greater than the existing in
-        // chromosome " + chromo);
-        // System.err.println(" index " + index + " > lastIndex = " + lastIndex);
-        // System.exit(1);
-        // }
+        // Check the index
+        int maxIndex = this.testTypeAdditionalCondensedFile.get(testTypeIndex).get(rPanelIndex).size();
+        checkIndex(index, maxIndex, index);
 
         return this.testTypeAdditionalCondensedFile.get(testTypeIndex).get(rPanelIndex).get(index).getFullName();
     }
@@ -1475,17 +1195,9 @@ public class MergeFiles {
      * @return
      */
     public String getAdditionalCondensedFile(int testTypeIndex, int rPanelIndex, int index) {
-        // TODO: IMPORTANT: Verify the index range!!!!
-        // ArrayList<String> tmpList = new ArrayList<String>();
-        // tmpList = (testTypeReducedFileName.get(rPanelIndex, i));
-        // int lastIndex = tmpList.size() - 1;
-
-        // if(index > lastIndex) {
-        // System.err.println("[MergeFiles] Error, the number of testTypeReducedFile is greater than the existing in
-        // chromosome " + chromo);
-        // System.err.println(" index " + index + " > lastIndex = " + lastIndex);
-        // System.exit(1);
-        // }
+        // Check the index
+        int maxIndex = this.testTypeAdditionalCondensedFile.get(testTypeIndex).get(rPanelIndex).size();
+        checkIndex(index, maxIndex, index);
 
         return this.testTypeAdditionalCondensedFile.get(testTypeIndex).get(rPanelIndex).get(index).getFullName();
     }
@@ -1499,17 +1211,9 @@ public class MergeFiles {
      * @param finalStatus
      */
     public void setAdditionalCondensedFileFinalStatus(int testTypeIndex, int rPanelIndex, int index, String finalStatus) {
-        // TODO: IMPORTANT: Verify the index range!!!!
-        // ArrayList<String> tmpList = new ArrayList<String>();
-        // tmpList = (testTypeReducedFileName.get(rPanelIndex, i));
-        // int lastIndex = tmpList.size() - 1;
-
-        // if(index > lastIndex) {
-        // System.err.println("[MergeFiles] Error, the number of testTypeReducedFile is greater than the existing in
-        // chromosome " + chromo);
-        // System.err.println(" index " + index + " > lastIndex = " + lastIndex);
-        // System.exit(1);
-        // }
+        // Check the index
+        int maxIndex = this.testTypeAdditionalCondensedFile.get(testTypeIndex).get(rPanelIndex).size();
+        checkIndex(index, maxIndex, index);
 
         this.testTypeAdditionalCondensedFile.get(testTypeIndex).get(rPanelIndex).get(index).setFinalStatus(finalStatus);
     }
@@ -1523,17 +1227,9 @@ public class MergeFiles {
      * @return
      */
     public String getAdditionalCondensedFileFinalStatus(int testTypeIndex, int rPanelIndex, int index) {
-        // TODO: IMPORTANT: Verify the index range!!!!
-        // ArrayList<String> tmpList = new ArrayList<String>();
-        // tmpList = (testTypeReducedFileName.get(rPanelIndex, i));
-        // int lastIndex = tmpList.size() - 1;
-
-        // if(index > lastIndex) {
-        // System.err.println("[MergeFiles] Error, the number of testTypeReducedFile is greater than the existing in
-        // chromosome " + chromo);
-        // System.err.println(" index " + index + " > lastIndex = " + lastIndex);
-        // System.exit(1);
-        // }
+        // Check the index
+        int maxIndex = this.testTypeAdditionalCondensedFile.get(testTypeIndex).get(rPanelIndex).size();
+        checkIndex(index, maxIndex, index);
 
         return this.testTypeAdditionalCondensedFile.get(testTypeIndex).get(rPanelIndex).get(index).getFinalStatus();
     }
@@ -1547,17 +1243,9 @@ public class MergeFiles {
      * @return
      */
     public String getAdditionalFilteredByAllFileName(int testTypeIndex, int rPanelIndex, int index) {
-        // TODO: IMPORTANT: Verify the index range!!!!
-        // ArrayList<String> tmpList = new ArrayList<String>();
-        // testTypeReducedFileName.get(rPanelIndex).get(i);
-        // int lastIndex = tmpList.size() - 1;
-
-        // if(index > lastIndex) {
-        // System.err.println("[MergeFiles] Error, the number of testTypeReducedFileName is greater than the existing in
-        // chromosome " + chromo);
-        // System.err.println(" index " + index + " > lastIndex = " + lastIndex);
-        // System.exit(1);
-        // }
+        // Check the index
+        int maxIndex = this.testTypeAdditionalFilteredByAllFile.get(testTypeIndex).get(rPanelIndex).size();
+        checkIndex(index, maxIndex, index);
 
         return this.testTypeAdditionalFilteredByAllFile.get(testTypeIndex).get(rPanelIndex).get(index).getFullName();
     }
@@ -1571,17 +1259,9 @@ public class MergeFiles {
      * @return
      */
     public String getAdditionalFilteredByAllFile(int testTypeIndex, int rPanelIndex, int index) {
-        // TODO: IMPORTANT: Verify the index range!!!!
-        // ArrayList<String> tmpList = new ArrayList<String>();
-        // tmpList = (testTypeReducedFileName.get(rPanelIndex, i));
-        // int lastIndex = tmpList.size() - 1;
-
-        // if(index > lastIndex) {
-        // System.err.println("[MergeFiles] Error, the number of testTypeReducedFile is greater than the existing in
-        // chromosome " + chromo);
-        // System.err.println(" index " + index + " > lastIndex = " + lastIndex);
-        // System.exit(1);
-        // }
+        // Check the index
+        int maxIndex = this.testTypeAdditionalFilteredByAllFile.get(testTypeIndex).get(rPanelIndex).size();
+        checkIndex(index, maxIndex, index);
 
         return this.testTypeAdditionalFilteredByAllFile.get(testTypeIndex).get(rPanelIndex).get(index).getFullName();
     }
@@ -1595,17 +1275,9 @@ public class MergeFiles {
      * @param finalStatus
      */
     public void setAdditionalFilteredByAllFileFinalStatus(int testTypeIndex, int rPanelIndex, int index, String finalStatus) {
-        // TODO: IMPORTANT: Verify the index range!!!!
-        // ArrayList<String> tmpList = new ArrayList<String>();
-        // tmpList = (testTypeReducedFileName.get(rPanelIndex, i));
-        // int lastIndex = tmpList.size() - 1;
-
-        // if(index > lastIndex) {
-        // System.err.println("[MergeFiles] Error, the number of testTypeReducedFile is greater than the existing in
-        // chromosome " + chromo);
-        // System.err.println(" index " + index + " > lastIndex = " + lastIndex);
-        // System.exit(1);
-        // }
+        // Check the index
+        int maxIndex = this.testTypeAdditionalFilteredByAllFile.get(testTypeIndex).get(rPanelIndex).size();
+        checkIndex(index, maxIndex, index);
 
         this.testTypeAdditionalFilteredByAllFile.get(testTypeIndex).get(rPanelIndex).get(index).setFinalStatus(finalStatus);
     }
@@ -1619,17 +1291,9 @@ public class MergeFiles {
      * @return
      */
     public String getAdditionalFilteredByAllFileFinalStatus(int testTypeIndex, int rPanelIndex, int index) {
-        // TODO: IMPORTANT: Verify the index range!!!!
-        // ArrayList<String> tmpList = new ArrayList<String>();
-        // tmpList = (testTypeReducedFileName.get(rPanelIndex, i));
-        // int lastIndex = tmpList.size() - 1;
-
-        // if(index > lastIndex) {
-        // System.err.println("[MergeFiles] Error, the number of testTypeReducedFile is greater than the existing in
-        // chromosome " + chromo);
-        // System.err.println(" index " + index + " > lastIndex = " + lastIndex);
-        // System.exit(1);
-        // }
+        // Check the index
+        int maxIndex = this.testTypeAdditionalFilteredByAllFile.get(testTypeIndex).get(rPanelIndex).size();
+        checkIndex(index, maxIndex, index);
 
         return this.testTypeAdditionalFilteredByAllFile.get(testTypeIndex).get(rPanelIndex).get(index).getFinalStatus();
     }
@@ -1643,17 +1307,9 @@ public class MergeFiles {
      * @return
      */
     public String getAdditionalFilteredByAllXFileName(int testTypeIndex, int rPanelIndex, int index) {
-        // TODO: IMPORTANT: Verify the index range!!!!
-        // ArrayList<String> tmpList = new ArrayList<String>();
-        // testTypeReducedFileName.get(rPanelIndex).get(i);
-        // int lastIndex = tmpList.size() - 1;
-
-        // if(index > lastIndex) {
-        // System.err.println("[MergeFiles] Error, the number of testTypeReducedFileName is greater than the existing in
-        // chromosome " + chromo);
-        // System.err.println(" index " + index + " > lastIndex = " + lastIndex);
-        // System.exit(1);
-        // }
+        // Check the index
+        int maxIndex = this.testTypeAdditionalFilteredByAllXFile.get(testTypeIndex).get(rPanelIndex).size();
+        checkIndex(index, maxIndex, index);
 
         return this.testTypeAdditionalFilteredByAllXFile.get(testTypeIndex).get(rPanelIndex).get(index).getFullName();
     }
@@ -1667,17 +1323,9 @@ public class MergeFiles {
      * @return
      */
     public String getAdditionalFilteredByAllXFile(int testTypeIndex, int rPanelIndex, int index) {
-        // TODO: IMPORTANT: Verify the index range!!!!
-        // ArrayList<String> tmpList = new ArrayList<String>();
-        // tmpList = (testTypeReducedFileName.get(rPanelIndex, i));
-        // int lastIndex = tmpList.size() - 1;
-
-        // if(index > lastIndex) {
-        // System.err.println("[MergeFiles] Error, the number of testTypeReducedFile is greater than the existing in
-        // chromosome " + chromo);
-        // System.err.println(" index " + index + " > lastIndex = " + lastIndex);
-        // System.exit(1);
-        // }
+        // Check the index
+        int maxIndex = this.testTypeAdditionalFilteredByAllXFile.get(testTypeIndex).get(rPanelIndex).size();
+        checkIndex(index, maxIndex, index);
 
         return this.testTypeAdditionalFilteredByAllXFile.get(testTypeIndex).get(rPanelIndex).get(index).getFullName();
     }
@@ -1691,17 +1339,9 @@ public class MergeFiles {
      * @param finalStatus
      */
     public void setAdditionalFilteredByAllXFileFinalStatus(int testTypeIndex, int rPanelIndex, int index, String finalStatus) {
-        // TODO: IMPORTANT: Verify the index range!!!!
-        // ArrayList<String> tmpList = new ArrayList<String>();
-        // tmpList = (testTypeReducedFileName.get(rPanelIndex, i));
-        // int lastIndex = tmpList.size() - 1;
-
-        // if(index > lastIndex) {
-        // System.err.println("[MergeFiles] Error, the number of testTypeReducedFile is greater than the existing in
-        // chromosome " + chromo);
-        // System.err.println(" index " + index + " > lastIndex = " + lastIndex);
-        // System.exit(1);
-        // }
+        // Check the index
+        int maxIndex = this.testTypeAdditionalFilteredByAllXFile.get(testTypeIndex).get(rPanelIndex).size();
+        checkIndex(index, maxIndex, index);
 
         this.testTypeAdditionalFilteredByAllXFile.get(testTypeIndex).get(rPanelIndex).get(index).setFinalStatus(finalStatus);
     }
@@ -1715,17 +1355,9 @@ public class MergeFiles {
      * @return
      */
     public String getAdditionalFilteredByAllXFileFinalStatus(int testTypeIndex, int rPanelIndex, int index) {
-        // TODO: IMPORTANT: Verify the index range!!!!
-        // ArrayList<String> tmpList = new ArrayList<String>();
-        // tmpList = (testTypeReducedFileName.get(rPanelIndex, i));
-        // int lastIndex = tmpList.size() - 1;
-
-        // if(index > lastIndex) {
-        // System.err.println("[MergeFiles] Error, the number of testTypeReducedFile is greater than the existing in
-        // chromosome " + chromo);
-        // System.err.println(" index " + index + " > lastIndex = " + lastIndex);
-        // System.exit(1);
-        // }
+        // Check the index
+        int maxIndex = this.testTypeAdditionalFilteredByAllXFile.get(testTypeIndex).get(rPanelIndex).size();
+        checkIndex(index, maxIndex, index);
 
         return this.testTypeAdditionalFilteredByAllXFile.get(testTypeIndex).get(rPanelIndex).get(index).getFinalStatus();
     }
@@ -1756,7 +1388,15 @@ public class MergeFiles {
 
     private void checkChromoIndex(int chromo) {
         if ((chromo < 1) || (chromo > MAX_NUMBER_OF_CHROMOSOMES)) {
-            System.err.println("[MergeFiles] Error, chromosome " + chromo + "does not exist");
+            System.err.println("[MergeFiles] Error, chromosome " + chromo + " does not exist");
+            System.exit(1);
+        }
+    }
+
+    private void checkIndex(int index, int maxIndex, int chromo) {
+        if (index >= maxIndex) {
+            System.err.println(
+                    "[MergeFiles] Error, the index " + index + " is greater than the maximum " + maxIndex + " in chromosome " + chromo);
             System.exit(1);
         }
     }
