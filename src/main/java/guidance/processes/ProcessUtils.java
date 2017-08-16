@@ -9,7 +9,17 @@ import java.io.InputStream;
 
 public class ProcessUtils {
 
-    public static int exec(String cmd, String outputFile, String errorFile) throws IOException {
+    /**
+     * Executes the given cmd and retrieves the STDOUT and STDERR to the given files. At the end of the command
+     * execution returns the exitValue
+     * 
+     * @param cmd
+     * @param outputFile
+     * @param errorFile
+     * @return
+     * @throws IOException
+     */
+    public static int execute(String cmd, String outputFile, String errorFile) throws IOException {
         // Create the process
         ProcessBuilder pb = new ProcessBuilder(cmd.split(" "));
 
@@ -34,6 +44,15 @@ public class ProcessUtils {
         return exitValue;
     }
 
+    /**
+     * Processes the input streams to their given output and error files
+     * 
+     * @param in
+     * @param outputPath
+     * @param error
+     * @param errorPath
+     * @throws IOException
+     */
     private static void readOutputAndError(InputStream in, String outputPath, InputStream error, String errorPath) throws IOException {
         try (BufferedInputStream bisInp = new BufferedInputStream(in);
                 BufferedOutputStream bosInp = new BufferedOutputStream(new FileOutputStream(outputPath))) {

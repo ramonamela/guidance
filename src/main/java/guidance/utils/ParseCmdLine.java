@@ -41,16 +41,7 @@ import java.util.ArrayList;
 
 public class ParseCmdLine {
 
-    private static final int MINIMUMCHUNKSIZE = 1000;
-    private static final int GENMASK = 0x0001;
-    private static final int BEDMASK = 0x0002;
-    private static final int MIXMASK = 0x0004;
-    private static final int SEPMASK = 0x0008;
-    private static final int MIXANDGEN = 0x0005;
-    private static final int MIXANDBED = 0x0006;
-    private static final int SEPANDGEN = 0x0009;
-    private static final int SEPANDBED = 0x000A;
-
+    private static final int MINIMUMCHUNKSIZE = 1_000;
     private static final int MAX_NUMBER_OF_CHROMOSOMES = 23;
 
     private String gwasConfigFile = null;
@@ -70,10 +61,6 @@ public class ParseCmdLine {
     private String mixedSampleFileName = null;
     private String mixedSampleFile = null;;
 
-    // Only for the case of BED format
-    private ArrayList<String> mixedGenLogFileName = new ArrayList<>();
-    private ArrayList<String> mixedGenLogFile = new ArrayList<>();
-
     private String gmapDir = null;
     private ArrayList<String> gmapFileName = new ArrayList<>();
 
@@ -82,9 +69,8 @@ public class ParseCmdLine {
     private String imputationTool = null;
 
     // chunkSize is always rewritten below.
-    private int chunkSize = 1000000;
+    private int chunkSize = 1_000_000;
 
-    private int numberOfrpanelTypes = 0;
     private int refPanelNumber = 0;
     // By default we do not combine panels
     private boolean refPanelCombine = false;
@@ -107,8 +93,6 @@ public class ParseCmdLine {
     private int end = 0;
     private int endNormal = 0;
 
-    private boolean doChr23independently = false;
-
     private String wfDeepRequired = null;
     private Hashtable<String, Integer> wfPossibleDeeps = new Hashtable<>();
     private Hashtable<String, Integer> wfAllStages = new Hashtable<>();
@@ -123,10 +107,7 @@ public class ParseCmdLine {
     private String removeTemporalFiles = "NO";
     private String compressFiles = "NO";
 
-    private int procsPerChromo = 1; // Default value
-
     private String inputFormat = null;
-    private String outputfile = null;
 
 
     /**
@@ -135,31 +116,32 @@ public class ParseCmdLine {
      * @param args
      */
     public ParseCmdLine(String[] args) {
-        wfPossibleDeeps.put("until_convertFromBedToBed", 0x0000000);
-        wfPossibleDeeps.put("until_phasing", 0x0000000);
-        wfPossibleDeeps.put("until_imputation", 0x0000000);
-        wfPossibleDeeps.put("until_association", 0x0000000);
-        wfPossibleDeeps.put("until_filterByAll", 0x0000000);
-        wfPossibleDeeps.put("until_summary", 0x0000000);
-        wfPossibleDeeps.put("whole_workflow", 0X0000000);
-        wfPossibleDeeps.put("from_phasing", 0x0000000);
-        wfPossibleDeeps.put("from_phasing_to_summary", 0x0000000);
-        wfPossibleDeeps.put("from_phasing_to_filterByAll", 0x0000000);
-        wfPossibleDeeps.put("from_phasing_to_association", 0x0000000);
-        wfPossibleDeeps.put("from_phasing_to_imputation", 0x0000000);
-        wfPossibleDeeps.put("from_imputation", 0x0000000);
-        wfPossibleDeeps.put("from_imputation_to_summary", 0x0000000);
-        wfPossibleDeeps.put("from_imputation_to_filterByAll", 0x0000000);
-        wfPossibleDeeps.put("from_imputation_to_association", 0x0000000);
-        wfPossibleDeeps.put("from_imputation_to_filterByInfo", 0x0000000);
-        wfPossibleDeeps.put("from_filterByInfo_to_qctoolS", 0x0000000);
-        wfPossibleDeeps.put("from_qctoolS_to_association", 0x0000000);
-        wfPossibleDeeps.put("from_association", 0x0000000);
-        wfPossibleDeeps.put("from_association_to_filterByAll", 0x0000000);
-        wfPossibleDeeps.put("from_association_to_summary", 0x0000000);
-        wfPossibleDeeps.put("from_filterByAll", 0x0000000);
-        wfPossibleDeeps.put("from_filterByAll_to_summary", 0x0000000);
-        wfPossibleDeeps.put("from_summary", 0x0000000);
+        final Integer EMPTY_MASK = 0x0000000;
+        wfPossibleDeeps.put("until_convertFromBedToBed", EMPTY_MASK);
+        wfPossibleDeeps.put("until_phasing", EMPTY_MASK);
+        wfPossibleDeeps.put("until_imputation", EMPTY_MASK);
+        wfPossibleDeeps.put("until_association", EMPTY_MASK);
+        wfPossibleDeeps.put("until_filterByAll", EMPTY_MASK);
+        wfPossibleDeeps.put("until_summary", EMPTY_MASK);
+        wfPossibleDeeps.put("whole_workflow", EMPTY_MASK);
+        wfPossibleDeeps.put("from_phasing", EMPTY_MASK);
+        wfPossibleDeeps.put("from_phasing_to_summary", EMPTY_MASK);
+        wfPossibleDeeps.put("from_phasing_to_filterByAll", EMPTY_MASK);
+        wfPossibleDeeps.put("from_phasing_to_association", EMPTY_MASK);
+        wfPossibleDeeps.put("from_phasing_to_imputation", EMPTY_MASK);
+        wfPossibleDeeps.put("from_imputation", EMPTY_MASK);
+        wfPossibleDeeps.put("from_imputation_to_summary", EMPTY_MASK);
+        wfPossibleDeeps.put("from_imputation_to_filterByAll", EMPTY_MASK);
+        wfPossibleDeeps.put("from_imputation_to_association", EMPTY_MASK);
+        wfPossibleDeeps.put("from_imputation_to_filterByInfo", EMPTY_MASK);
+        wfPossibleDeeps.put("from_filterByInfo_to_qctoolS", EMPTY_MASK);
+        wfPossibleDeeps.put("from_qctoolS_to_association", EMPTY_MASK);
+        wfPossibleDeeps.put("from_association", EMPTY_MASK);
+        wfPossibleDeeps.put("from_association_to_filterByAll", EMPTY_MASK);
+        wfPossibleDeeps.put("from_association_to_summary", EMPTY_MASK);
+        wfPossibleDeeps.put("from_filterByAll", EMPTY_MASK);
+        wfPossibleDeeps.put("from_filterByAll_to_summary", EMPTY_MASK);
+        wfPossibleDeeps.put("from_summary", EMPTY_MASK);
 
         // Step 1: We read the file with the configuration and
         // clean the lines from (spaces and comments
@@ -175,7 +157,6 @@ public class ParseCmdLine {
         }
 
         try (FileReader fr = new FileReader(gwasConfigFile); BufferedReader br = new BufferedReader(fr);) {
-
             String line = null;
             while ((line = br.readLine()) != null) {
                 char firstChar = line.charAt(0);
@@ -184,7 +165,7 @@ public class ParseCmdLine {
                     myLine = myLine.replaceAll("\t", "");
                     argumentsArray.add(myLine);
                 }
-                // Process the line.
+                // Process the line
             }
         } catch (IOException ioe) {
             System.err.println("[ParseCmdLine.java] Error opening/reading " + gwasConfigFile);
@@ -194,7 +175,6 @@ public class ParseCmdLine {
         // Now, we load the parameters of the execution.
         // There is a strict order in which parameters should be put in the configuration input file.
         // We follow this order.
-
         int i = 0;
         String tmpArg = argumentsArray.get(i++);
         String[] myArgument = tmpArg.split("=");
@@ -257,10 +237,8 @@ public class ParseCmdLine {
             System.exit(1);
         }
 
-        /*
-         * Here we have to analyse if we have to include the chromosome 23 or not. If we have to include it, then we
-         * enable the doChr23 variable.
-         */
+        // Here we have to analyse if we have to include the chromosome 23 or not. If we have to include it, then we
+        // enable the doChr23 variable.
         start = tmpStart;
         end = tmpEnd;
         for (int counter = start; counter <= end; counter++) {
@@ -268,25 +246,6 @@ public class ParseCmdLine {
                 endNormal = counter;
             }
         }
-
-        // doDefaultChrs = true;
-        // doChr23 = false;
-        // } else if (tmpStar < 23 && tmpEnd == 23 ) {
-        // start = tmpStart;
-        // end = tmpEnd -1;
-        // doDefaultChrs = true;
-        // doChr23 = true;
-        // } else if( tmpStar == 23 && tmpEnd == 23) {
-        // start = 0;
-        // end = 0;
-        // doDefaultChrs = false;
-        // doChr23 = true
-        // } else {
-        // No other options allowed
-        // System.err.println("[ParseCmdLine.java] Start and End chromosomes should be: 0<init_chromosome<23 and >=
-        // init_chromosome");
-        // System.exit(1);
-        // }
 
         tmpArg = argumentsArray.get(i++);
         myArgument = tmpArg.split("=");
@@ -401,13 +360,6 @@ public class ParseCmdLine {
             System.err.println("[ParseCmdLine.java] Error of sintax in " + gwasConfigFile + ", in parameter: " + myArgument[0]);
             System.exit(1);
         }
-        /*
-         * tmpArg = argumentsArray.get(i++); myArgument = tmpArg.split("="); if( (myArgument.length >0) &&
-         * (myArgument.length<3) ) { if( myArgument[0].equals("response_variable") ) { responseVar = myArgument[1]; }
-         * else { System.err.println("[ParseCmdLine.java] Error in the order of parameters, in parameter: " +
-         * myArgument[0]); System.exit(1); } } else { System.err.println("[ParseCmdLine.java] Error of sintax in " +
-         * gwasConfigFile + ", in parameter: " + myArgument[0]); System.exit(1); }
-         */
 
         tmpArg = argumentsArray.get(i++);
         myArgument = tmpArg.split("=");
@@ -458,14 +410,6 @@ public class ParseCmdLine {
                 System.exit(1);
             }
         }
-
-        /*
-         * tmpArg = argumentsArray.get(i++); myArgument = tmpArg.split("="); if( (myArgument.length >0) &&
-         * (myArgument.length<3) ) { if( myArgument[0].equals("names_of_covariables") ) { covariables = myArgument[1]; }
-         * else { System.err.println("[ParseCmdLine.java] Error in the order of parameters, in parameter: " +
-         * myArgument[0]); System.exit(1); } } else { System.err.println("[ParseCmdLine.java] Error of sintax in " +
-         * gwasConfigFile + ", in parameter: " + myArgument[0]); System.exit(1); }
-         */
 
         tmpArg = argumentsArray.get(i++);
         myArgument = tmpArg.split("=");
@@ -893,7 +837,7 @@ public class ParseCmdLine {
      * @return
      */
     public String getWfDeepRequired() {
-        return wfDeepRequired;
+        return this.wfDeepRequired;
     }
 
     /**
@@ -903,7 +847,7 @@ public class ParseCmdLine {
      * @return
      */
     public int getWfDeepValue(String wfDeepRequired) {
-        return wfPossibleDeeps.get(wfDeepRequired);
+        return this.wfPossibleDeeps.get(wfDeepRequired);
     }
 
     /**
@@ -912,7 +856,7 @@ public class ParseCmdLine {
      * @return
      */
     public int getStart() {
-        return start;
+        return this.start;
     }
 
     /**
@@ -921,7 +865,7 @@ public class ParseCmdLine {
      * @return
      */
     public int getEnd() {
-        return end;
+        return this.end;
     }
 
     /**
@@ -930,7 +874,7 @@ public class ParseCmdLine {
      * @return
      */
     public int getEndNormal() {
-        return endNormal;
+        return this.endNormal;
     }
 
     /**
@@ -939,7 +883,7 @@ public class ParseCmdLine {
      * @return
      */
     public Double getMafThreshold() {
-        return mafThreshold;
+        return this.mafThreshold;
     }
 
     /**
@@ -948,7 +892,7 @@ public class ParseCmdLine {
      * @return
      */
     public Double getInfoThreshold() {
-        return infoThreshold;
+        return this.infoThreshold;
     }
 
     /**
@@ -957,7 +901,7 @@ public class ParseCmdLine {
      * @return
      */
     public Double getHweCohortThreshold() {
-        return hweCohortThreshold;
+        return this.hweCohortThreshold;
     }
 
     /**
@@ -966,7 +910,7 @@ public class ParseCmdLine {
      * @return
      */
     public Double getHweCasesThreshold() {
-        return hweCasesThreshold;
+        return this.hweCasesThreshold;
     }
 
     /**
@@ -975,7 +919,7 @@ public class ParseCmdLine {
      * @return
      */
     public Double getHweControlsThreshold() {
-        return hweControlsThreshold;
+        return this.hweControlsThreshold;
     }
 
     /**
@@ -984,7 +928,7 @@ public class ParseCmdLine {
      * @return
      */
     public String getExclCgatSnp() {
-        return exclCgatSnp;
+        return this.exclCgatSnp;
     }
 
     /**
@@ -993,7 +937,7 @@ public class ParseCmdLine {
      * @return
      */
     public String getExclSVSnp() {
-        return exclSVSnp;
+        return this.exclSVSnp;
     }
 
     /**
@@ -1002,7 +946,7 @@ public class ParseCmdLine {
      * @return
      */
     public String getImputationTool() {
-        return imputationTool;
+        return this.imputationTool;
     }
 
     /**
@@ -1012,7 +956,7 @@ public class ParseCmdLine {
      * @return
      */
     public String getTestTypeName(int testNameIndex) {
-        return testTypesNames.get(testNameIndex);
+        return this.testTypesNames.get(testNameIndex);
     }
 
     /**
@@ -1021,7 +965,7 @@ public class ParseCmdLine {
      * @return
      */
     public int getNumberOfTestTypeName() {
-        return testTypesNames.size();
+        return this.testTypesNames.size();
     }
 
     /**
@@ -1031,7 +975,7 @@ public class ParseCmdLine {
      * @return
      */
     public String getCovariables(int testNameIndex) {
-        return covariables.get(testNameIndex);
+        return this.covariables.get(testNameIndex);
     }
 
     /**
@@ -1041,7 +985,7 @@ public class ParseCmdLine {
      * @return
      */
     public String getResponseVar(int testNameIndex) {
-        return responseVars.get(testNameIndex);
+        return this.responseVars.get(testNameIndex);
     }
 
     /**
@@ -1050,7 +994,7 @@ public class ParseCmdLine {
      * @return
      */
     public int getChunkSize() {
-        return chunkSize;
+        return this.chunkSize;
     }
 
     /**
@@ -1059,7 +1003,7 @@ public class ParseCmdLine {
      * @return
      */
     public String getListOfStagesFile() {
-        return listOfStagesFile;
+        return this.listOfStagesFile;
     }
 
     /**
@@ -1068,7 +1012,7 @@ public class ParseCmdLine {
      * @return
      */
     public String getInputFormat() {
-        return inputFormat;
+        return this.inputFormat;
     }
 
     /**
@@ -1077,7 +1021,7 @@ public class ParseCmdLine {
      * @return
      */
     public String getRemoveTemporalFiles() {
-        return removeTemporalFiles;
+        return this.removeTemporalFiles;
     }
 
     /**
@@ -1086,7 +1030,7 @@ public class ParseCmdLine {
      * @return
      */
     public String getCompressFiles() {
-        return compressFiles;
+        return this.compressFiles;
     }
 
     /**
@@ -1095,7 +1039,7 @@ public class ParseCmdLine {
      * @return
      */
     public String getBedFileName() {
-        return mixedBedFileName;
+        return this.mixedBedFileName;
     }
 
     /**
@@ -1104,7 +1048,7 @@ public class ParseCmdLine {
      * @return
      */
     public String getBimFileName() {
-        return mixedBimFileName;
+        return this.mixedBimFileName;
     }
 
     /**
@@ -1113,7 +1057,7 @@ public class ParseCmdLine {
      * @return
      */
     public String getFamFileName() {
-        return mixedFamFileName;
+        return this.mixedFamFileName;
     }
 
     /**
@@ -1122,7 +1066,7 @@ public class ParseCmdLine {
      * @return
      */
     public String getCohort() {
-        return mixedCohort;
+        return this.mixedCohort;
     }
 
     // Cases information
@@ -1132,7 +1076,7 @@ public class ParseCmdLine {
      * @return
      */
     public String getBedDir() {
-        return mixedBedDir;
+        return this.mixedBedDir;
     }
 
     // Cases information
@@ -1142,7 +1086,7 @@ public class ParseCmdLine {
      * @return
      */
     public String getChrDir() {
-        return mixedChrDir;
+        return this.mixedChrDir;
     }
 
     /**
@@ -1159,7 +1103,7 @@ public class ParseCmdLine {
             return "none";
         }
 
-        return mixedGenFileName.get(index);
+        return this.mixedGenFileName.get(index);
     }
 
     /**
@@ -1177,7 +1121,7 @@ public class ParseCmdLine {
             return "none";
         }
 
-        return mixedGenFile.get(index);
+        return this.mixedGenFile.get(index);
     }
 
     /**
@@ -1186,7 +1130,7 @@ public class ParseCmdLine {
      * @return
      */
     public String getSampleDir() {
-        return mixedSampleDir;
+        return this.mixedSampleDir;
     }
 
     /**
@@ -1195,7 +1139,7 @@ public class ParseCmdLine {
      * @return
      */
     public String getSampleFileName() {
-        return mixedSampleFileName;
+        return this.mixedSampleFileName;
     }
 
     /**
@@ -1204,7 +1148,7 @@ public class ParseCmdLine {
      * @return
      */
     public String getSampleFile() {
-        return mixedSampleFile;
+        return this.mixedSampleFile;
     }
 
     // General information
@@ -1214,7 +1158,7 @@ public class ParseCmdLine {
      * @return
      */
     public String getGmapDir() {
-        return gmapDir;
+        return this.gmapDir;
     }
 
     /**
@@ -1230,7 +1174,7 @@ public class ParseCmdLine {
             System.exit(1);
             return "none";
         }
-        return gmapFileName.get(index);
+        return this.gmapFileName.get(index);
     }
 
     /**
@@ -1239,7 +1183,7 @@ public class ParseCmdLine {
      * @return
      */
     public int getRpanelNumber() {
-        return refPanelNumber;
+        return this.refPanelNumber;
     }
 
     /**
@@ -1248,7 +1192,7 @@ public class ParseCmdLine {
      * @return
      */
     public boolean getRefPanelCombine() {
-        return refPanelCombine;
+        return this.refPanelCombine;
     }
 
     /**
@@ -1258,7 +1202,7 @@ public class ParseCmdLine {
      * @return
      */
     public String getRpanelType(int indexRpanel) {
-        return rpanelTypes.get(indexRpanel);
+        return this.rpanelTypes.get(indexRpanel);
     }
 
     /**
@@ -1268,7 +1212,7 @@ public class ParseCmdLine {
      * @return
      */
     public String getRpanelDir(int indexRpanel) {
-        return rpanelDir.get(indexRpanel);
+        return this.rpanelDir.get(indexRpanel);
 
     }
 
@@ -1278,7 +1222,7 @@ public class ParseCmdLine {
      * @return
      */
     public ArrayList<String> getRpanelTypes() {
-        return rpanelTypes;
+        return this.rpanelTypes;
     }
 
     /**
@@ -1302,7 +1246,7 @@ public class ParseCmdLine {
             return "none";
         }
 
-        return rpanelHapFileName.get(indexRpanel).get(index);
+        return this.rpanelHapFileName.get(indexRpanel).get(index);
     }
 
     /**
@@ -1326,7 +1270,7 @@ public class ParseCmdLine {
             return "none";
         }
 
-        return rpanelLegFileName.get(indexRpanel).get(index);
+        return this.rpanelLegFileName.get(indexRpanel).get(index);
     }
 
     /**
@@ -1335,7 +1279,7 @@ public class ParseCmdLine {
      * @return
      */
     public String getOutDir() {
-        return outDir;
+        return this.outDir;
     }
 
     /*
@@ -1365,6 +1309,7 @@ public class ParseCmdLine {
      * System.out.println("   -end              : Last chromosome to process, from 1 to 23.");
      * System.out.println("---------------------------------"); }
      */
+
     /**
      * Method for printing the input command line
      * 
@@ -1444,41 +1389,41 @@ public class ParseCmdLine {
 
         // Lets create the complete list of stages of the workflow
         // With the value 0, meaning initially they are not active.
-        // They will be activated whe activateStages is called, at the end of the class.
+        // They will be activated when activateStages is called, at the end of the class.
 
-        wfAllStages.put("convertFromBedToBed", 0);
-        wfAllStages.put("createRsIdList", 0);
-        wfAllStages.put("phasingBed", 0);
-        wfAllStages.put("phasing", 0);
-        wfAllStages.put("createListOfExcludedSnps", 0);
-        wfAllStages.put("filterHaplotypes", 0);
-        wfAllStages.put("imputeWithImpute", 0);
-        wfAllStages.put("imputeWithMinimac", 0);
-        wfAllStages.put("filterByInfo", 0);
-        wfAllStages.put("qctoolS", 0);
-        wfAllStages.put("snptest", 0);
-        wfAllStages.put("collectSummary", 0);
-        wfAllStages.put("mergeTwoChunks", 0);
-        wfAllStages.put("filterByAll", 0);
-        wfAllStages.put("jointCondensedFiles", 0);
-        wfAllStages.put("jointFilteredByAllFiles", 0);
-        wfAllStages.put("generateTopHits", 0);
-        wfAllStages.put("generateQQManhattanPlots", 0);
-        wfAllStages.put("combinePanelsComplex", 0);
-        wfAllStages.put("combineCondensedFiles", 0);
-        wfAllStages.put("initPhenoMatrix", 0);
-        wfAllStages.put("addToPhenoMatrix", 0);
-        wfAllStages.put("filloutPhenoMatrix", 0);
-        wfAllStages.put("finalizePhenoMatrix", 0);
-        wfAllStages.put("taskx", 0);
-        wfAllStages.put("tasky", 0);
-        wfAllStages.put("taskz", 0);
+        final Integer DISABLED_MASK = 0;
+        wfAllStages.put("convertFromBedToBed", DISABLED_MASK);
+        wfAllStages.put("createRsIdList", DISABLED_MASK);
+        wfAllStages.put("phasingBed", DISABLED_MASK);
+        wfAllStages.put("phasing", DISABLED_MASK);
+        wfAllStages.put("createListOfExcludedSnps", DISABLED_MASK);
+        wfAllStages.put("filterHaplotypes", DISABLED_MASK);
+        wfAllStages.put("imputeWithImpute", DISABLED_MASK);
+        wfAllStages.put("imputeWithMinimac", DISABLED_MASK);
+        wfAllStages.put("filterByInfo", DISABLED_MASK);
+        wfAllStages.put("qctoolS", DISABLED_MASK);
+        wfAllStages.put("snptest", DISABLED_MASK);
+        wfAllStages.put("collectSummary", DISABLED_MASK);
+        wfAllStages.put("mergeTwoChunks", DISABLED_MASK);
+        wfAllStages.put("filterByAll", DISABLED_MASK);
+        wfAllStages.put("jointCondensedFiles", DISABLED_MASK);
+        wfAllStages.put("jointFilteredByAllFiles", DISABLED_MASK);
+        wfAllStages.put("generateTopHits", DISABLED_MASK);
+        wfAllStages.put("generateQQManhattanPlots", DISABLED_MASK);
+        wfAllStages.put("combinePanelsComplex", DISABLED_MASK);
+        wfAllStages.put("combineCondensedFiles", DISABLED_MASK);
+        wfAllStages.put("initPhenoMatrix", DISABLED_MASK);
+        wfAllStages.put("addToPhenoMatrix", DISABLED_MASK);
+        wfAllStages.put("filloutPhenoMatrix", DISABLED_MASK);
+        wfAllStages.put("finalizePhenoMatrix", DISABLED_MASK);
+        wfAllStages.put("taskx", DISABLED_MASK);
+        wfAllStages.put("tasky", DISABLED_MASK);
+        wfAllStages.put("taskz", DISABLED_MASK);
 
         // First of all, we activate the correct PossibleDeeps depending on the kind of imputation tool that is used:
-        // Important: The order of the bits in the value are related to the order
-        // of the stages in the wfAllStages Hastable below.
-        // If you are going to modify the list of stages you should
-        // fix the new binary value in wfPossibleDeeps.
+        // Important: The order of the bits in the value are related to the order of the stages in the wfAllStages
+        // Hastable below. If you are going to modify the list of stages you should fix the new binary value in
+        // wfPossibleDeeps.
         if (imputationTool.equals("impute")) {
             wfPossibleDeeps.put("until_convertFromBedToBed", 0x6000000);
             wfPossibleDeeps.put("until_phasing", 0x7800000);
@@ -1537,7 +1482,7 @@ public class ParseCmdLine {
             System.exit(1);
         }
 
-        int MASK1 = 0x00001;
+        final Integer MASK1 = 0x00001;
         int stageNumber = 0;
         // Shift 1 and Mask1
         int tmpVar = (wfPossibleDeeps.get(wfDeepRequired) >> stageNumber) & MASK1;
@@ -1646,7 +1591,6 @@ public class ParseCmdLine {
 
         tmpVar = (wfPossibleDeeps.get(wfDeepRequired) >> stageNumber) & MASK1;
         wfAllStages.put("convertFromBedToBed", tmpVar);
-        // stageNumber++;
     }
 
     /**
@@ -1656,7 +1600,7 @@ public class ParseCmdLine {
      * @return
      */
     public int getStageStatus(String myStage) {
-        return wfAllStages.get(myStage);
+        return this.wfAllStages.get(myStage);
     }
 
     /**

@@ -36,6 +36,7 @@ import java.util.List;
 import guidance.utils.ChromoInfo;
 import guidance.utils.ParseCmdLine;
 
+import java.io.File;
 import java.util.ArrayList;
 
 
@@ -78,245 +79,266 @@ public class ImputationFiles {
      * @param refPanels
      */
     public ImputationFiles(ParseCmdLine parsingArgs, ChromoInfo generalChromoInfo, String myOutDir, List<String> refPanels) {
-        startChr = parsingArgs.getStart();
-        endChr = parsingArgs.getEnd();
-        int chunkSize = parsingArgs.getChunkSize();
+        this.startChr = parsingArgs.getStart();
+        this.endChr = parsingArgs.getEnd();
+
         String imputationTool = parsingArgs.getImputationTool();
-
         if (imputationTool.equals("impute")) {
-            // We create the first directory name: the cohort directory.
-            String cohort = parsingArgs.getCohort();
-            String tmpOutDir = myOutDir + "/" + cohort;
-
-            // Now I create the directories for imputedOutDir
-            for (int j = 0; j < refPanels.size(); j++) {
-                String rPanel = refPanels.get(j);
-                String tmpPanelDir = tmpOutDir + "/" + rPanel;
-                // Next level: Create directories.
-                String mixOutDir = tmpPanelDir + "/mixed";
-                ArrayList<String> chromoListImputedOutDir = new ArrayList<>();
-                ArrayList<ArrayList<GenericFile>> chromoListImputedFile = new ArrayList<>();
-                ArrayList<ArrayList<GenericFile>> chromoListImputedInfoFile = new ArrayList<>();
-                ArrayList<ArrayList<GenericFile>> chromoListImputedSummaryFile = new ArrayList<>();
-                ArrayList<ArrayList<GenericFile>> chromoListImputedWarningsFile = new ArrayList<>();
-                ArrayList<ArrayList<GenericFile>> chromoListImputedLogFile = new ArrayList<>();
-                ArrayList<ArrayList<GenericFile>> chromoListFilteredFile = new ArrayList<>();
-                ArrayList<ArrayList<GenericFile>> chromoListFilteredLogFile = new ArrayList<>();
-                ArrayList<ArrayList<GenericFile>> chromoListFilteredRsIdFile = new ArrayList<>();
-
-                // int maxSize = chromoInformation.getMaxSize(i);
-                for (int i = startChr; i <= endChr; i++) {
-                    int chromo = i;
-                    int lim1 = 1;
-                    int lim2 = lim1 + chunkSize - 1;
-                    String tmpChrDir = mixOutDir + "/Chr_" + chromo;
-                    chromoListImputedOutDir.add(tmpChrDir);
-
-                    ArrayList<GenericFile> chunkListImputedFile = new ArrayList<>();
-                    ArrayList<GenericFile> chunkListImputedInfoFile = new ArrayList<>();
-                    ArrayList<GenericFile> chunkListImputedSummaryFile = new ArrayList<>();
-                    ArrayList<GenericFile> chunkListImputedWarningsFile = new ArrayList<>();
-                    ArrayList<GenericFile> chunkListImputedLogFile = new ArrayList<>();
-                    ArrayList<GenericFile> chunkListFilteredFile = new ArrayList<>();
-                    ArrayList<GenericFile> chunkListFilteredLogFile = new ArrayList<>();
-                    ArrayList<GenericFile> chunkListFilteredRsIdFile = new ArrayList<>();
-
-                    int numberOfChunks = generalChromoInfo.getMaxSize(chromo) / chunkSize;
-                    int module = generalChromoInfo.getMaxSize(chromo) % chunkSize;
-                    if (module != 0)
-                        numberOfChunks++;
-
-                    for (int k = 0; k < numberOfChunks; k++) {
-                        // Now we have to create the impute files for this iteration
-                        // String imputedFileName = parsingArgs.getGenFileName(chromo) + "_" + rPanel + "_" + lim1 + "_"
-                        // + lim2 +".impute";
-                        String imputedFileName = "chr_" + chromo + "_mixed_" + rPanel + "_" + lim1 + "_" + lim2 + ".impute";
-                        GenericFile myChunkListImputedFile = new GenericFile(tmpChrDir, imputedFileName + ".gz", "compressed", "none");
-                        chunkListImputedFile.add(myChunkListImputedFile);
-
-                        GenericFile myChunkListImputedInfoFile = new GenericFile(tmpChrDir, imputedFileName + "_info", "compressed",
-                                "none");
-                        chunkListImputedInfoFile.add(myChunkListImputedInfoFile);
-
-                        GenericFile myChunkListImputedSummaryFile = new GenericFile(tmpChrDir, imputedFileName + "_summary", "decompressed",
-                                "none");
-                        chunkListImputedSummaryFile.add(myChunkListImputedSummaryFile);
-
-                        GenericFile myChunkListImputedWarningsFile = new GenericFile(tmpChrDir, imputedFileName + "_warnings",
-                                "decompressed", "none");
-                        chunkListImputedWarningsFile.add(myChunkListImputedWarningsFile);
-
-                        GenericFile myChunkListImputedLogFile = new GenericFile(tmpChrDir, imputedFileName + ".log", "decompressed",
-                                "none");
-                        chunkListImputedLogFile.add(myChunkListImputedLogFile);
-
-                        String filteredFileName = "chr_" + chromo + "_mixed_" + rPanel + "_" + lim1 + "_" + lim2 + "_filtered.impute";
-                        GenericFile myChunkListFilteredFile = new GenericFile(tmpChrDir, filteredFileName, "compressed", "none");
-                        chunkListFilteredFile.add(myChunkListFilteredFile);
-
-                        String filteredLogFileName = "chr_" + chromo + "_mixed_" + rPanel + "_" + lim1 + "_" + lim2
-                                + "_filtered.impute.log";
-                        GenericFile myChunkListFilteredLogFile = new GenericFile(tmpChrDir, filteredLogFileName, "decompressed", "none");
-                        chunkListFilteredLogFile.add(myChunkListFilteredLogFile);
-
-                        // String filteredRsIdFileName = parsingArgs.getGenFileName(chromo) + "_" + rPanel + "_" + lim1
-                        // + "_" + lim2 +"_filtered_rsid.txt";
-                        String filteredRsIdFileName = "chr_" + chromo + "_mixed_" + rPanel + "_" + lim1 + "_" + lim2 + "_filtered_rsid.txt";
-                        GenericFile myChunkListFilteredRsIdFile = new GenericFile(tmpChrDir, filteredRsIdFileName, "compressed", "none");
-                        chunkListFilteredRsIdFile.add(myChunkListFilteredRsIdFile);
-
-                        lim1 = lim1 + chunkSize;
-                        lim2 = lim2 + chunkSize;
-                    }
-                    chromoListImputedFile.add(chunkListImputedFile);
-                    chromoListImputedInfoFile.add(chunkListImputedInfoFile);
-                    chromoListImputedSummaryFile.add(chunkListImputedSummaryFile);
-                    chromoListImputedWarningsFile.add(chunkListImputedWarningsFile);
-                    chromoListImputedLogFile.add(chunkListImputedLogFile);
-                    chromoListFilteredFile.add(chunkListFilteredFile);
-                    chromoListFilteredLogFile.add(chunkListFilteredLogFile);
-                    chromoListFilteredRsIdFile.add(chunkListFilteredRsIdFile);
-                }
-                imputedOutDir.add(chromoListImputedOutDir);
-                imputedFile.add(chromoListImputedFile);
-
-                imputedInfoFile.add(chromoListImputedInfoFile);
-                imputedSummaryFile.add(chromoListImputedSummaryFile);
-                imputedWarningsFile.add(chromoListImputedWarningsFile);
-                imputedLogFile.add(chromoListImputedLogFile);
-                filteredFile.add(chromoListFilteredFile);
-                filteredFileLogFile.add(chromoListFilteredLogFile);
-                filteredFileRsIdFile.add(chromoListFilteredRsIdFile);
-            }
+            initializeForImpute(parsingArgs, generalChromoInfo, myOutDir, refPanels);
         } else if (imputationTool.equals("minimac")) {
-            // We create the first directory name: the cohort directory.
-            String cohort = parsingArgs.getCohort();
-            String tmpOutDir = myOutDir + "/" + cohort;
-
-            // Now we create the directories for imputedMMOutDir
-            for (int j = 0; j < refPanels.size(); j++) {
-                String rPanel = refPanels.get(j);
-                String tmpPanelDir = tmpOutDir + "/" + rPanel;
-                // Next level: Create directories.
-                String mixOutDir = tmpPanelDir + "/mixed";
-                ArrayList<String> chromoListImputedMMOutDir = new ArrayList<>();
-                ArrayList<ArrayList<GenericFile>> chromoListImputedMMFile = new ArrayList<>();
-                ArrayList<ArrayList<GenericFile>> chromoListImputedMMInfoFile = new ArrayList<>();
-                ArrayList<ArrayList<GenericFile>> chromoListImputedMMDraftFile = new ArrayList<>();
-                ArrayList<ArrayList<GenericFile>> chromoListImputedMMErateFile = new ArrayList<>();
-                ArrayList<ArrayList<GenericFile>> chromoListImputedMMRecFile = new ArrayList<>();
-                ArrayList<ArrayList<GenericFile>> chromoListImputedMMDoseFile = new ArrayList<>();
-                ArrayList<ArrayList<GenericFile>> chromoListImputedMMLogFile = new ArrayList<>();
-                // ArrayList<ArrayList<GenericFile>> chromoListFilteredFile = new ArrayList<>();
-                // ArrayList<ArrayList<GenericFile>> chromoListFilteredLogFile = new ArrayList<>();
-                // ArrayList<ArrayList<GenericFile>> chromoListFilteredRsIdFile = new ArrayList<>();
-
-                // int maxSize = chromoInformation.getMaxSize(i);
-                for (int i = startChr; i <= endChr; i++) {
-                    int chromo = i;
-                    int lim1 = 1;
-                    int lim2 = lim1 + chunkSize - 1;
-                    String tmpChrDir = mixOutDir + "/Chr_" + chromo;
-                    chromoListImputedMMOutDir.add(tmpChrDir);
-
-                    ArrayList<GenericFile> chunkListImputedMMFile = new ArrayList<>();
-                    ArrayList<GenericFile> chunkListImputedMMInfoFile = new ArrayList<>();
-                    ArrayList<GenericFile> chunkListImputedMMDraftFile = new ArrayList<>();
-                    ArrayList<GenericFile> chunkListImputedMMErateFile = new ArrayList<>();
-                    ArrayList<GenericFile> chunkListImputedMMRecFile = new ArrayList<>();
-                    ArrayList<GenericFile> chunkListImputedMMDoseFile = new ArrayList<>();
-                    ArrayList<GenericFile> chunkListImputedMMLogFile = new ArrayList<>();
-                    // ArrayList<GenericFile> chunkListFilteredFile = new ArrayList<>();
-                    // ArrayList<GenericFile> chunkListFilteredLogFile = new ArrayList<>();
-                    // ArrayList<GenericFile> chunkListFilteredRsIdFile = new ArrayList<>();
-
-                    int numberOfChunks = generalChromoInfo.getMaxSize(chromo) / chunkSize;
-                    int module = generalChromoInfo.getMaxSize(chromo) % chunkSize;
-                    if (module != 0)
-                        numberOfChunks++;
-
-                    for (int k = 0; k < numberOfChunks; k++) {
-                        // Now we have to create the impute files for this iteration
-                        // String imputedFileName = parsingArgs.getGenFileName(chromo) + "_" + rPanel + "_" + lim1 + "_"
-                        // + lim2 +".impute";
-                        String imputedMMFileName = "chr_" + chromo + "_mixed_" + rPanel + "_" + lim1 + "_" + lim2 + "_minimac";
-                        GenericFile myChunkListImputedMMFile = new GenericFile(tmpChrDir, imputedMMFileName, "decompressed", "none");
-                        chunkListImputedMMFile.add(myChunkListImputedMMFile);
-
-                        GenericFile myChunkListImputedMMInfoFile = new GenericFile(tmpChrDir, imputedMMFileName + ".info.gz", "compressed",
-                                "none");
-                        chunkListImputedMMInfoFile.add(myChunkListImputedMMInfoFile);
-
-                        GenericFile myChunkListImputedMMDraftFile = new GenericFile(tmpChrDir, imputedMMFileName + ".info.draft.gz",
-                                "compressed", "none");
-                        chunkListImputedMMDraftFile.add(myChunkListImputedMMDraftFile);
-
-                        GenericFile myChunkListImputedMMErateFile = new GenericFile(tmpChrDir, imputedMMFileName + ".erate.gz",
-                                "compressed", "none");
-                        chunkListImputedMMErateFile.add(myChunkListImputedMMErateFile);
-
-                        GenericFile myChunkListImputedMMRecFile = new GenericFile(tmpChrDir, imputedMMFileName + ".rec.gz", "compressed",
-                                "none");
-                        chunkListImputedMMRecFile.add(myChunkListImputedMMRecFile);
-
-                        GenericFile myChunkListImputedMMDoseFile = new GenericFile(tmpChrDir, imputedMMFileName + ".dose.gz", "compressed",
-                                "none");
-                        chunkListImputedMMDoseFile.add(myChunkListImputedMMDoseFile);
-
-                        GenericFile myChunkListImputedMMLogFile = new GenericFile(tmpChrDir, imputedMMFileName + ".log", "decompressed",
-                                "none");
-                        chunkListImputedMMLogFile.add(myChunkListImputedMMLogFile);
-
-                        // String filteredFileName = "chr_" + chromo + "_mixed_" + rPanel + "_" + lim1 + "_" + lim2
-                        // +"_filtered.impute.gz";
-                        // GenericFile myChunkListFilteredFile = new GenericFile(tmpChrDir, filteredFileName,
-                        // "compressed", "none");
-                        // chunkListFilteredFile.add(myChunkListFilteredFile);
-
-                        // String filteredLogFileName = "chr_" + chromo + "_mixed_" + rPanel + "_" + lim1 + "_" + lim2
-                        // +"_filtered.impute.log";
-                        // GenericFile myChunkListFilteredLogFile = new GenericFile(tmpChrDir, filteredLogFileName,
-                        // "decompressed", "none");
-                        // chunkListFilteredLogFile.add(myChunkListFilteredLogFile);
-
-                        // //String filteredRsIdFileName = parsingArgs.getGenFileName(chromo) + "_" + rPanel + "_" +
-                        // lim1 + "_" + lim2 +"_filtered_rsid.txt";
-                        // String filteredRsIdFileName = "chr_" + chromo + "_mixed_" + rPanel + "_" + lim1 + "_" + lim2
-                        // +"_filtered_rsid.txt";
-                        // GenericFile myChunkListFilteredRsIdFile = new GenericFile(tmpChrDir, filteredRsIdFileName,
-                        // "compressed", "none");
-                        // chunkListFilteredRsIdFile.add(myChunkListFilteredRsIdFile);
-
-                        lim1 = lim1 + chunkSize;
-                        lim2 = lim2 + chunkSize;
-                    }
-                    chromoListImputedMMFile.add(chunkListImputedMMFile);
-                    chromoListImputedMMInfoFile.add(chunkListImputedMMInfoFile);
-                    chromoListImputedMMDraftFile.add(chunkListImputedMMDraftFile);
-                    chromoListImputedMMErateFile.add(chunkListImputedMMErateFile);
-                    chromoListImputedMMRecFile.add(chunkListImputedMMRecFile);
-                    chromoListImputedMMDoseFile.add(chunkListImputedMMDoseFile);
-                    chromoListImputedMMLogFile.add(chunkListImputedMMLogFile);
-                    // chromoListFilteredFile.add(chunkListFilteredFile);
-                    // chromoListFilteredLogFile.add(chunkListFilteredLogFile);
-                    // chromoListFilteredRsIdFile.add(chunkListFilteredRsIdFile);
-                }
-                imputedMMOutDir.add(chromoListImputedMMOutDir);
-                imputedMMFile.add(chromoListImputedMMFile);
-
-                imputedMMInfoFile.add(chromoListImputedMMInfoFile);
-                imputedMMDraftFile.add(chromoListImputedMMDraftFile);
-                imputedMMErateFile.add(chromoListImputedMMErateFile);
-                imputedMMRecFile.add(chromoListImputedMMRecFile);
-                imputedMMDoseFile.add(chromoListImputedMMDoseFile);
-                imputedMMLogFile.add(chromoListImputedMMLogFile);
-                // filteredFile.add(chromoListFilteredFile);
-                // filteredFileLogFile.add(chromoListFilteredLogFile);
-                // filteredFileRsIdFile.add(chromoListFilteredRsIdFile);
-            }
+            initializeForMinimac(parsingArgs, generalChromoInfo, myOutDir, refPanels);
         } else {
             System.err.println("[ImputationFiles] Error, this imputation tool (" + imputationTool + ") is not supported yet!.");
             System.exit(1);
+        }
+    }
+
+    /**
+     * Initialize file structure for impute
+     * 
+     * @param parsingArgs
+     * @param generalChromoInfo
+     * @param myOutDir
+     * @param refPanels
+     */
+    private void initializeForImpute(ParseCmdLine parsingArgs, ChromoInfo generalChromoInfo, String myOutDir, List<String> refPanels) {
+        int chunkSize = parsingArgs.getChunkSize();
+
+        // We create the first directory name: the cohort directory.
+        String cohort = parsingArgs.getCohort();
+        String tmpOutDir = myOutDir + File.separator + cohort;
+
+        // Now I create the directories for imputedOutDir
+        for (int j = 0; j < refPanels.size(); j++) {
+            String rPanel = refPanels.get(j);
+            String tmpPanelDir = tmpOutDir + File.separator + rPanel;
+            // Next level: Create directories.
+            String mixOutDir = tmpPanelDir + File.separator + "mixed";
+            ArrayList<String> chromoListImputedOutDir = new ArrayList<>();
+            ArrayList<ArrayList<GenericFile>> chromoListImputedFile = new ArrayList<>();
+            ArrayList<ArrayList<GenericFile>> chromoListImputedInfoFile = new ArrayList<>();
+            ArrayList<ArrayList<GenericFile>> chromoListImputedSummaryFile = new ArrayList<>();
+            ArrayList<ArrayList<GenericFile>> chromoListImputedWarningsFile = new ArrayList<>();
+            ArrayList<ArrayList<GenericFile>> chromoListImputedLogFile = new ArrayList<>();
+            ArrayList<ArrayList<GenericFile>> chromoListFilteredFile = new ArrayList<>();
+            ArrayList<ArrayList<GenericFile>> chromoListFilteredLogFile = new ArrayList<>();
+            ArrayList<ArrayList<GenericFile>> chromoListFilteredRsIdFile = new ArrayList<>();
+
+            // int maxSize = chromoInformation.getMaxSize(i);
+            for (int i = this.startChr; i <= this.endChr; i++) {
+                int chromo = i;
+                int lim1 = 1;
+                int lim2 = lim1 + chunkSize - 1;
+                String tmpChrDir = mixOutDir + File.separator + "Chr_" + chromo;
+                chromoListImputedOutDir.add(tmpChrDir);
+
+                ArrayList<GenericFile> chunkListImputedFile = new ArrayList<>();
+                ArrayList<GenericFile> chunkListImputedInfoFile = new ArrayList<>();
+                ArrayList<GenericFile> chunkListImputedSummaryFile = new ArrayList<>();
+                ArrayList<GenericFile> chunkListImputedWarningsFile = new ArrayList<>();
+                ArrayList<GenericFile> chunkListImputedLogFile = new ArrayList<>();
+                ArrayList<GenericFile> chunkListFilteredFile = new ArrayList<>();
+                ArrayList<GenericFile> chunkListFilteredLogFile = new ArrayList<>();
+                ArrayList<GenericFile> chunkListFilteredRsIdFile = new ArrayList<>();
+
+                int numberOfChunks = generalChromoInfo.getMaxSize(chromo) / chunkSize;
+                int module = generalChromoInfo.getMaxSize(chromo) % chunkSize;
+                if (module != 0)
+                    numberOfChunks++;
+
+                for (int k = 0; k < numberOfChunks; k++) {
+                    // Now we have to create the impute files for this iteration
+                    // String imputedFileName = parsingArgs.getGenFileName(chromo) + "_" + rPanel + "_" + lim1 + "_"
+                    // + lim2 +".impute";
+                    String imputedFileName = "chr_" + chromo + "_mixed_" + rPanel + "_" + lim1 + "_" + lim2 + ".impute";
+                    GenericFile myChunkListImputedFile = new GenericFile(tmpChrDir, imputedFileName + ".gz", "compressed", "none");
+                    chunkListImputedFile.add(myChunkListImputedFile);
+
+                    GenericFile myChunkListImputedInfoFile = new GenericFile(tmpChrDir, imputedFileName + "_info", "compressed", "none");
+                    chunkListImputedInfoFile.add(myChunkListImputedInfoFile);
+
+                    GenericFile myChunkListImputedSummaryFile = new GenericFile(tmpChrDir, imputedFileName + "_summary", "decompressed",
+                            "none");
+                    chunkListImputedSummaryFile.add(myChunkListImputedSummaryFile);
+
+                    GenericFile myChunkListImputedWarningsFile = new GenericFile(tmpChrDir, imputedFileName + "_warnings", "decompressed",
+                            "none");
+                    chunkListImputedWarningsFile.add(myChunkListImputedWarningsFile);
+
+                    GenericFile myChunkListImputedLogFile = new GenericFile(tmpChrDir, imputedFileName + ".log", "decompressed", "none");
+                    chunkListImputedLogFile.add(myChunkListImputedLogFile);
+
+                    String filteredFileName = "chr_" + chromo + "_mixed_" + rPanel + "_" + lim1 + "_" + lim2 + "_filtered.impute";
+                    GenericFile myChunkListFilteredFile = new GenericFile(tmpChrDir, filteredFileName, "compressed", "none");
+                    chunkListFilteredFile.add(myChunkListFilteredFile);
+
+                    String filteredLogFileName = "chr_" + chromo + "_mixed_" + rPanel + "_" + lim1 + "_" + lim2 + "_filtered.impute.log";
+                    GenericFile myChunkListFilteredLogFile = new GenericFile(tmpChrDir, filteredLogFileName, "decompressed", "none");
+                    chunkListFilteredLogFile.add(myChunkListFilteredLogFile);
+
+                    // String filteredRsIdFileName = parsingArgs.getGenFileName(chromo) + "_" + rPanel + "_" + lim1
+                    // + "_" + lim2 +"_filtered_rsid.txt";
+                    String filteredRsIdFileName = "chr_" + chromo + "_mixed_" + rPanel + "_" + lim1 + "_" + lim2 + "_filtered_rsid.txt";
+                    GenericFile myChunkListFilteredRsIdFile = new GenericFile(tmpChrDir, filteredRsIdFileName, "compressed", "none");
+                    chunkListFilteredRsIdFile.add(myChunkListFilteredRsIdFile);
+
+                    lim1 = lim1 + chunkSize;
+                    lim2 = lim2 + chunkSize;
+                }
+                chromoListImputedFile.add(chunkListImputedFile);
+                chromoListImputedInfoFile.add(chunkListImputedInfoFile);
+                chromoListImputedSummaryFile.add(chunkListImputedSummaryFile);
+                chromoListImputedWarningsFile.add(chunkListImputedWarningsFile);
+                chromoListImputedLogFile.add(chunkListImputedLogFile);
+                chromoListFilteredFile.add(chunkListFilteredFile);
+                chromoListFilteredLogFile.add(chunkListFilteredLogFile);
+                chromoListFilteredRsIdFile.add(chunkListFilteredRsIdFile);
+            }
+            this.imputedOutDir.add(chromoListImputedOutDir);
+            this.imputedFile.add(chromoListImputedFile);
+
+            this.imputedInfoFile.add(chromoListImputedInfoFile);
+            this.imputedSummaryFile.add(chromoListImputedSummaryFile);
+            this.imputedWarningsFile.add(chromoListImputedWarningsFile);
+            this.imputedLogFile.add(chromoListImputedLogFile);
+            this.filteredFile.add(chromoListFilteredFile);
+            this.filteredFileLogFile.add(chromoListFilteredLogFile);
+            this.filteredFileRsIdFile.add(chromoListFilteredRsIdFile);
+        }
+    }
+
+    /**
+     * Initialize file structure for Minimac
+     * 
+     * @param parsingArgs
+     * @param generalChromoInfo
+     * @param myOutDir
+     * @param refPanels
+     */
+    private void initializeForMinimac(ParseCmdLine parsingArgs, ChromoInfo generalChromoInfo, String myOutDir, List<String> refPanels) {
+        int chunkSize = parsingArgs.getChunkSize();
+
+        // We create the first directory name: the cohort directory.
+        String cohort = parsingArgs.getCohort();
+        String tmpOutDir = myOutDir + File.separator + cohort;
+
+        // Now we create the directories for imputedMMOutDir
+        for (int j = 0; j < refPanels.size(); j++) {
+            String rPanel = refPanels.get(j);
+            String tmpPanelDir = tmpOutDir + File.separator + rPanel;
+            // Next level: Create directories.
+            String mixOutDir = tmpPanelDir + File.separator + "mixed";
+            ArrayList<String> chromoListImputedMMOutDir = new ArrayList<>();
+            ArrayList<ArrayList<GenericFile>> chromoListImputedMMFile = new ArrayList<>();
+            ArrayList<ArrayList<GenericFile>> chromoListImputedMMInfoFile = new ArrayList<>();
+            ArrayList<ArrayList<GenericFile>> chromoListImputedMMDraftFile = new ArrayList<>();
+            ArrayList<ArrayList<GenericFile>> chromoListImputedMMErateFile = new ArrayList<>();
+            ArrayList<ArrayList<GenericFile>> chromoListImputedMMRecFile = new ArrayList<>();
+            ArrayList<ArrayList<GenericFile>> chromoListImputedMMDoseFile = new ArrayList<>();
+            ArrayList<ArrayList<GenericFile>> chromoListImputedMMLogFile = new ArrayList<>();
+            // ArrayList<ArrayList<GenericFile>> chromoListFilteredFile = new ArrayList<>();
+            // ArrayList<ArrayList<GenericFile>> chromoListFilteredLogFile = new ArrayList<>();
+            // ArrayList<ArrayList<GenericFile>> chromoListFilteredRsIdFile = new ArrayList<>();
+
+            for (int i = this.startChr; i <= this.endChr; i++) {
+                int chromo = i;
+                int lim1 = 1;
+                int lim2 = lim1 + chunkSize - 1;
+                String tmpChrDir = mixOutDir + File.separator + "Chr_" + chromo;
+                chromoListImputedMMOutDir.add(tmpChrDir);
+
+                ArrayList<GenericFile> chunkListImputedMMFile = new ArrayList<>();
+                ArrayList<GenericFile> chunkListImputedMMInfoFile = new ArrayList<>();
+                ArrayList<GenericFile> chunkListImputedMMDraftFile = new ArrayList<>();
+                ArrayList<GenericFile> chunkListImputedMMErateFile = new ArrayList<>();
+                ArrayList<GenericFile> chunkListImputedMMRecFile = new ArrayList<>();
+                ArrayList<GenericFile> chunkListImputedMMDoseFile = new ArrayList<>();
+                ArrayList<GenericFile> chunkListImputedMMLogFile = new ArrayList<>();
+
+                int numberOfChunks = generalChromoInfo.getMaxSize(chromo) / chunkSize;
+                int module = generalChromoInfo.getMaxSize(chromo) % chunkSize;
+                if (module != 0) {
+                    numberOfChunks++;
+                }
+
+                for (int k = 0; k < numberOfChunks; k++) {
+                    // Now we have to create the impute files for this iteration
+                    // String imputedFileName = parsingArgs.getGenFileName(chromo) + "_" + rPanel + "_" + lim1 + "_"
+                    // + lim2 +".impute";
+                    String imputedMMFileName = "chr_" + chromo + "_mixed_" + rPanel + "_" + lim1 + "_" + lim2 + "_minimac";
+                    GenericFile myChunkListImputedMMFile = new GenericFile(tmpChrDir, imputedMMFileName, "decompressed", "none");
+                    chunkListImputedMMFile.add(myChunkListImputedMMFile);
+
+                    GenericFile myChunkListImputedMMInfoFile = new GenericFile(tmpChrDir, imputedMMFileName + ".info.gz", "compressed",
+                            "none");
+                    chunkListImputedMMInfoFile.add(myChunkListImputedMMInfoFile);
+
+                    GenericFile myChunkListImputedMMDraftFile = new GenericFile(tmpChrDir, imputedMMFileName + ".info.draft.gz",
+                            "compressed", "none");
+                    chunkListImputedMMDraftFile.add(myChunkListImputedMMDraftFile);
+
+                    GenericFile myChunkListImputedMMErateFile = new GenericFile(tmpChrDir, imputedMMFileName + ".erate.gz", "compressed",
+                            "none");
+                    chunkListImputedMMErateFile.add(myChunkListImputedMMErateFile);
+
+                    GenericFile myChunkListImputedMMRecFile = new GenericFile(tmpChrDir, imputedMMFileName + ".rec.gz", "compressed",
+                            "none");
+                    chunkListImputedMMRecFile.add(myChunkListImputedMMRecFile);
+
+                    GenericFile myChunkListImputedMMDoseFile = new GenericFile(tmpChrDir, imputedMMFileName + ".dose.gz", "compressed",
+                            "none");
+                    chunkListImputedMMDoseFile.add(myChunkListImputedMMDoseFile);
+
+                    GenericFile myChunkListImputedMMLogFile = new GenericFile(tmpChrDir, imputedMMFileName + ".log", "decompressed",
+                            "none");
+                    chunkListImputedMMLogFile.add(myChunkListImputedMMLogFile);
+
+                    // String filteredFileName = "chr_" + chromo + "_mixed_" + rPanel + "_" + lim1 + "_" + lim2
+                    // +"_filtered.impute.gz";
+                    // GenericFile myChunkListFilteredFile = new GenericFile(tmpChrDir, filteredFileName,
+                    // "compressed", "none");
+                    // chunkListFilteredFile.add(myChunkListFilteredFile);
+
+                    // String filteredLogFileName = "chr_" + chromo + "_mixed_" + rPanel + "_" + lim1 + "_" + lim2
+                    // +"_filtered.impute.log";
+                    // GenericFile myChunkListFilteredLogFile = new GenericFile(tmpChrDir, filteredLogFileName,
+                    // "decompressed", "none");
+                    // chunkListFilteredLogFile.add(myChunkListFilteredLogFile);
+
+                    // //String filteredRsIdFileName = parsingArgs.getGenFileName(chromo) + "_" + rPanel + "_" +
+                    // lim1 + "_" + lim2 +"_filtered_rsid.txt";
+                    // String filteredRsIdFileName = "chr_" + chromo + "_mixed_" + rPanel + "_" + lim1 + "_" + lim2
+                    // +"_filtered_rsid.txt";
+                    // GenericFile myChunkListFilteredRsIdFile = new GenericFile(tmpChrDir, filteredRsIdFileName,
+                    // "compressed", "none");
+                    // chunkListFilteredRsIdFile.add(myChunkListFilteredRsIdFile);
+
+                    lim1 = lim1 + chunkSize;
+                    lim2 = lim2 + chunkSize;
+                }
+                chromoListImputedMMFile.add(chunkListImputedMMFile);
+                chromoListImputedMMInfoFile.add(chunkListImputedMMInfoFile);
+                chromoListImputedMMDraftFile.add(chunkListImputedMMDraftFile);
+                chromoListImputedMMErateFile.add(chunkListImputedMMErateFile);
+                chromoListImputedMMRecFile.add(chunkListImputedMMRecFile);
+                chromoListImputedMMDoseFile.add(chunkListImputedMMDoseFile);
+                chromoListImputedMMLogFile.add(chunkListImputedMMLogFile);
+                // chromoListFilteredFile.add(chunkListFilteredFile);
+                // chromoListFilteredLogFile.add(chunkListFilteredLogFile);
+                // chromoListFilteredRsIdFile.add(chunkListFilteredRsIdFile);
+            }
+            this.imputedMMOutDir.add(chromoListImputedMMOutDir);
+            this.imputedMMFile.add(chromoListImputedMMFile);
+
+            this.imputedMMInfoFile.add(chromoListImputedMMInfoFile);
+            this.imputedMMDraftFile.add(chromoListImputedMMDraftFile);
+            this.imputedMMErateFile.add(chromoListImputedMMErateFile);
+            this.imputedMMRecFile.add(chromoListImputedMMRecFile);
+            this.imputedMMDoseFile.add(chromoListImputedMMDoseFile);
+            this.imputedMMLogFile.add(chromoListImputedMMLogFile);
+            // filteredFile.add(chromoListFilteredFile);
+            // filteredFileLogFile.add(chromoListFilteredLogFile);
+            // filteredFileRsIdFile.add(chromoListFilteredRsIdFile);
         }
     }
 
@@ -331,8 +353,8 @@ public class ImputationFiles {
         // Check that chromo index is within the bounds
         checkChromoIndex(chromo);
 
-        int indexChr = chromo - startChr;
-        return imputedOutDir.get(rPanelIndex).get(indexChr);
+        int indexChr = chromo - this.startChr;
+        return this.imputedOutDir.get(rPanelIndex).get(indexChr);
     }
 
     /**
@@ -352,10 +374,10 @@ public class ImputationFiles {
         // Check limits are within the bounds
         checkLimits(chromo, lim1, lim2);
 
-        int indexChr = chromo - startChr;
+        int indexChr = chromo - this.startChr;
         int indexChunk = lim1 / chunkSize;
         // The offset is because the array start in position 0.
-        return imputedFile.get(rPanelIndex).get(indexChr).get(indexChunk).getName();
+        return this.imputedFile.get(rPanelIndex).get(indexChr).get(indexChunk).getName();
     }
 
     /**
@@ -375,9 +397,9 @@ public class ImputationFiles {
         // Check limits are within the bounds
         checkLimits(chromo, lim1, lim2);
 
-        int indexChr = chromo - startChr;
+        int indexChr = chromo - this.startChr;
         int indexChunk = lim1 / chunkSize;
-        return imputedFile.get(rPanelIndex).get(indexChr).get(indexChunk).getFullName();
+        return this.imputedFile.get(rPanelIndex).get(indexChr).get(indexChunk).getFullName();
     }
 
     /**
@@ -397,9 +419,9 @@ public class ImputationFiles {
         // Check limits are within the bounds
         checkLimits(chromo, lim1, lim2);
 
-        int indexChr = chromo - startChr;
+        int indexChr = chromo - this.startChr;
         int indexChunk = lim1 / chunkSize;
-        imputedFile.get(rPanelIndex).get(indexChr).get(indexChunk).setFinalStatus(finalStatus);
+        this.imputedFile.get(rPanelIndex).get(indexChr).get(indexChunk).setFinalStatus(finalStatus);
     }
 
     /**
@@ -419,9 +441,9 @@ public class ImputationFiles {
         // Check limits are within the bounds
         checkLimits(chromo, lim1, lim2);
 
-        int indexChr = chromo - startChr;
+        int indexChr = chromo - this.startChr;
         int indexChunk = lim1 / chunkSize;
-        imputedInfoFile.get(rPanelIndex).get(indexChr).get(indexChunk).setFinalStatus(finalStatus);
+        this.imputedInfoFile.get(rPanelIndex).get(indexChr).get(indexChunk).setFinalStatus(finalStatus);
     }
 
     /**
@@ -441,9 +463,9 @@ public class ImputationFiles {
         // Check limits are within the bounds
         checkLimits(chromo, lim1, lim2);
 
-        int indexChr = chromo - startChr;
+        int indexChr = chromo - this.startChr;
         int indexChunk = lim1 / chunkSize;
-        return imputedFile.get(rPanelIndex).get(indexChr).get(indexChunk).getFinalStatus();
+        return this.imputedFile.get(rPanelIndex).get(indexChr).get(indexChunk).getFinalStatus();
     }
 
     /**
@@ -463,9 +485,9 @@ public class ImputationFiles {
         // Check limits are within the bounds
         checkLimits(chromo, lim1, lim2);
 
-        int indexChr = chromo - startChr;
+        int indexChr = chromo - this.startChr;
         int indexChunk = lim1 / chunkSize;
-        return imputedInfoFile.get(rPanelIndex).get(indexChr).get(indexChunk).getFinalStatus();
+        return this.imputedInfoFile.get(rPanelIndex).get(indexChr).get(indexChunk).getFinalStatus();
     }
 
     /**
@@ -485,9 +507,9 @@ public class ImputationFiles {
         // Check limits are within the bounds
         checkLimits(chromo, lim1, lim2);
 
-        int indexChr = chromo - startChr;
+        int indexChr = chromo - this.startChr;
         int indexChunk = lim1 / chunkSize;
-        return imputedInfoFile.get(rPanelIndex).get(indexChr).get(indexChunk).getFullName();
+        return this.imputedInfoFile.get(rPanelIndex).get(indexChr).get(indexChunk).getFullName();
     }
 
     /**
@@ -507,9 +529,9 @@ public class ImputationFiles {
         // Check limits are within the bounds
         checkLimits(chromo, lim1, lim2);
 
-        int indexChr = chromo - startChr;
+        int indexChr = chromo - this.startChr;
         int indexChunk = lim1 / chunkSize;
-        return imputedSummaryFile.get(rPanelIndex).get(indexChr).get(indexChunk).getFullName();
+        return this.imputedSummaryFile.get(rPanelIndex).get(indexChr).get(indexChunk).getFullName();
     }
 
     /**
@@ -529,9 +551,9 @@ public class ImputationFiles {
         // Check limits are within the bounds
         checkLimits(chromo, lim1, lim2);
 
-        int indexChr = chromo - startChr;
+        int indexChr = chromo - this.startChr;
         int indexChunk = lim1 / chunkSize;
-        return imputedWarningsFile.get(rPanelIndex).get(indexChr).get(indexChunk).getFullName();
+        return this.imputedWarningsFile.get(rPanelIndex).get(indexChr).get(indexChunk).getFullName();
     }
 
     /**
@@ -551,9 +573,9 @@ public class ImputationFiles {
         // Check limits are within the bounds
         checkLimits(chromo, lim1, lim2);
 
-        int indexChr = chromo - startChr;
+        int indexChr = chromo - this.startChr;
         int indexChunk = lim1 / chunkSize;
-        return imputedLogFile.get(rPanelIndex).get(indexChr).get(indexChunk).getName();
+        return this.imputedLogFile.get(rPanelIndex).get(indexChr).get(indexChunk).getName();
     }
 
     /**
@@ -573,9 +595,9 @@ public class ImputationFiles {
         // Check limits are within the bounds
         checkLimits(chromo, lim1, lim2);
 
-        int indexChr = chromo - startChr;
+        int indexChr = chromo - this.startChr;
         int indexChunk = lim1 / chunkSize;
-        return imputedLogFile.get(rPanelIndex).get(indexChr).get(indexChunk).getFullName();
+        return this.imputedLogFile.get(rPanelIndex).get(indexChr).get(indexChunk).getFullName();
     }
 
     /**
@@ -595,9 +617,9 @@ public class ImputationFiles {
         // Check limits are within the bounds
         checkLimits(chromo, lim1, lim2);
 
-        int indexChr = chromo - startChr;
+        int indexChr = chromo - this.startChr;
         int indexChunk = lim1 / chunkSize;
-        return imputedMMFile.get(rPanelIndex).get(indexChr).get(indexChunk).getFullName();
+        return this.imputedMMFile.get(rPanelIndex).get(indexChr).get(indexChunk).getFullName();
     }
 
     /**
@@ -617,9 +639,9 @@ public class ImputationFiles {
         // Check limits are within the bounds
         checkLimits(chromo, lim1, lim2);
 
-        int indexChr = chromo - startChr;
+        int indexChr = chromo - this.startChr;
         int indexChunk = lim1 / chunkSize;
-        imputedMMFile.get(rPanelIndex).get(indexChr).get(indexChunk).setFinalStatus(finalStatus);
+        this.imputedMMFile.get(rPanelIndex).get(indexChr).get(indexChunk).setFinalStatus(finalStatus);
     }
 
     /**
@@ -639,9 +661,9 @@ public class ImputationFiles {
         // Check limits are within the bounds
         checkLimits(chromo, lim1, lim2);
 
-        int indexChr = chromo - startChr;
+        int indexChr = chromo - this.startChr;
         int indexChunk = lim1 / chunkSize;
-        return imputedMMInfoFile.get(rPanelIndex).get(indexChr).get(indexChunk).getFullName();
+        return this.imputedMMInfoFile.get(rPanelIndex).get(indexChr).get(indexChunk).getFullName();
     }
 
     /**
@@ -683,9 +705,9 @@ public class ImputationFiles {
         // Check limits are within the bounds
         checkLimits(chromo, lim1, lim2);
 
-        int indexChr = chromo - startChr;
+        int indexChr = chromo - this.startChr;
         int indexChunk = lim1 / chunkSize;
-        return imputedMMDraftFile.get(rPanelIndex).get(indexChr).get(indexChunk).getFullName();
+        return this.imputedMMDraftFile.get(rPanelIndex).get(indexChr).get(indexChunk).getFullName();
     }
 
     /**
@@ -705,9 +727,9 @@ public class ImputationFiles {
         // Check limits are within the bounds
         checkLimits(chromo, lim1, lim2);
 
-        int indexChr = chromo - startChr;
+        int indexChr = chromo - this.startChr;
         int indexChunk = lim1 / chunkSize;
-        imputedMMDraftFile.get(rPanelIndex).get(indexChr).get(indexChunk).setFinalStatus(finalStatus);
+        this.imputedMMDraftFile.get(rPanelIndex).get(indexChr).get(indexChunk).setFinalStatus(finalStatus);
     }
 
     /**
@@ -727,9 +749,9 @@ public class ImputationFiles {
         // Check limits are within the bounds
         checkLimits(chromo, lim1, lim2);
 
-        int indexChr = chromo - startChr;
+        int indexChr = chromo - this.startChr;
         int indexChunk = lim1 / chunkSize;
-        return imputedMMErateFile.get(rPanelIndex).get(indexChr).get(indexChunk).getFullName();
+        return this.imputedMMErateFile.get(rPanelIndex).get(indexChr).get(indexChunk).getFullName();
     }
 
     /**
@@ -749,9 +771,9 @@ public class ImputationFiles {
         // Check limits are within the bounds
         checkLimits(chromo, lim1, lim2);
 
-        int indexChr = chromo - startChr;
+        int indexChr = chromo - this.startChr;
         int indexChunk = lim1 / chunkSize;
-        imputedMMErateFile.get(rPanelIndex).get(indexChr).get(indexChunk).setFinalStatus(finalStatus);
+        this.imputedMMErateFile.get(rPanelIndex).get(indexChr).get(indexChunk).setFinalStatus(finalStatus);
     }
 
     /**
@@ -771,9 +793,9 @@ public class ImputationFiles {
         // Check limits are within the bounds
         checkLimits(chromo, lim1, lim2);
 
-        int indexChr = chromo - startChr;
+        int indexChr = chromo - this.startChr;
         int indexChunk = lim1 / chunkSize;
-        return imputedMMRecFile.get(rPanelIndex).get(indexChr).get(indexChunk).getFullName();
+        return this.imputedMMRecFile.get(rPanelIndex).get(indexChr).get(indexChunk).getFullName();
     }
 
     /**
@@ -793,9 +815,9 @@ public class ImputationFiles {
         // Check limits are within the bounds
         checkLimits(chromo, lim1, lim2);
 
-        int indexChr = chromo - startChr;
+        int indexChr = chromo - this.startChr;
         int indexChunk = lim1 / chunkSize;
-        imputedMMRecFile.get(rPanelIndex).get(indexChr).get(indexChunk).setFinalStatus(finalStatus);
+        this.imputedMMRecFile.get(rPanelIndex).get(indexChr).get(indexChunk).setFinalStatus(finalStatus);
     }
 
     /**
@@ -815,9 +837,9 @@ public class ImputationFiles {
         // Check limits are within the bounds
         checkLimits(chromo, lim1, lim2);
 
-        int indexChr = chromo - startChr;
+        int indexChr = chromo - this.startChr;
         int indexChunk = lim1 / chunkSize;
-        return imputedMMDoseFile.get(rPanelIndex).get(indexChr).get(indexChunk).getFullName();
+        return this.imputedMMDoseFile.get(rPanelIndex).get(indexChr).get(indexChunk).getFullName();
     }
 
     /**
@@ -837,9 +859,9 @@ public class ImputationFiles {
         // Check limits are within the bounds
         checkLimits(chromo, lim1, lim2);
 
-        int indexChr = chromo - startChr;
+        int indexChr = chromo - this.startChr;
         int indexChunk = lim1 / chunkSize;
-        imputedMMDoseFile.get(rPanelIndex).get(indexChr).get(indexChunk).setFinalStatus(finalStatus);
+        this.imputedMMDoseFile.get(rPanelIndex).get(indexChr).get(indexChunk).setFinalStatus(finalStatus);
     }
 
     /**
@@ -859,9 +881,9 @@ public class ImputationFiles {
         // Check limits are within the bounds
         checkLimits(chromo, lim1, lim2);
 
-        int indexChr = chromo - startChr;
+        int indexChr = chromo - this.startChr;
         int indexChunk = lim1 / chunkSize;
-        return imputedMMLogFile.get(rPanelIndex).get(indexChr).get(indexChunk).getFullName();
+        return this.imputedMMLogFile.get(rPanelIndex).get(indexChr).get(indexChunk).getFullName();
     }
 
     /**
@@ -881,9 +903,9 @@ public class ImputationFiles {
         // Check limits are within the bounds
         checkLimits(chromo, lim1, lim2);
 
-        int indexChr = chromo - startChr;
+        int indexChr = chromo - this.startChr;
         int indexChunk = lim1 / chunkSize;
-        imputedMMLogFile.get(rPanelIndex).get(indexChr).get(indexChunk).setFinalStatus(finalStatus);
+        this.imputedMMLogFile.get(rPanelIndex).get(indexChr).get(indexChunk).setFinalStatus(finalStatus);
     }
 
     /**
@@ -903,10 +925,10 @@ public class ImputationFiles {
         // Check limits are within the bounds
         checkLimits(chromo, lim1, lim2);
 
-        int indexChr = chromo - startChr;
+        int indexChr = chromo - this.startChr;
         int indexChunk = lim1 / chunkSize;
         // The offset is because the array start in position 0.
-        return filteredFile.get(rPanelIndex).get(indexChr).get(indexChunk).getName();
+        return this.filteredFile.get(rPanelIndex).get(indexChr).get(indexChunk).getName();
     }
 
     /**
@@ -926,9 +948,9 @@ public class ImputationFiles {
         // Check limits are within the bounds
         checkLimits(chromo, lim1, lim2);
 
-        int indexChr = chromo - startChr;
+        int indexChr = chromo - this.startChr;
         int indexChunk = lim1 / chunkSize;
-        return filteredFile.get(rPanelIndex).get(indexChr).get(indexChunk).getFullName() + ".gz";
+        return this.filteredFile.get(rPanelIndex).get(indexChr).get(indexChunk).getFullName() + ".gz";
     }
 
     /**
@@ -948,9 +970,9 @@ public class ImputationFiles {
         // Check limits are within the bounds
         checkLimits(chromo, lim1, lim2);
 
-        int indexChr = chromo - startChr;
+        int indexChr = chromo - this.startChr;
         int indexChunk = lim1 / chunkSize;
-        filteredFile.get(rPanelIndex).get(indexChr).get(indexChunk).setFinalStatus(finalStatus);
+        this.filteredFile.get(rPanelIndex).get(indexChr).get(indexChunk).setFinalStatus(finalStatus);
     }
 
     /**
@@ -970,9 +992,9 @@ public class ImputationFiles {
         // Check limits are within the bounds
         checkLimits(chromo, lim1, lim2);
 
-        int indexChr = chromo - startChr;
+        int indexChr = chromo - this.startChr;
         int indexChunk = lim1 / chunkSize;
-        return filteredFile.get(rPanelIndex).get(indexChr).get(indexChunk).getFinalStatus();
+        return this.filteredFile.get(rPanelIndex).get(indexChr).get(indexChunk).getFinalStatus();
     }
 
     /**
@@ -992,10 +1014,10 @@ public class ImputationFiles {
         // Check limits are within the bounds
         checkLimits(chromo, lim1, lim2);
 
-        int indexChr = chromo - startChr;
+        int indexChr = chromo - this.startChr;
         int indexChunk = lim1 / chunkSize;
         // The offset is because the array start in position 0.
-        return filteredFileLogFile.get(rPanelIndex).get(indexChr).get(indexChunk).getName();
+        return this.filteredFileLogFile.get(rPanelIndex).get(indexChr).get(indexChunk).getName();
     }
 
     /**
@@ -1015,9 +1037,9 @@ public class ImputationFiles {
         // Check limits are within the bounds
         checkLimits(chromo, lim1, lim2);
 
-        int indexChr = chromo - startChr;
+        int indexChr = chromo - this.startChr;
         int indexChunk = lim1 / chunkSize;
-        return filteredFileLogFile.get(rPanelIndex).get(indexChr).get(indexChunk).getFullName();
+        return this.filteredFileLogFile.get(rPanelIndex).get(indexChr).get(indexChunk).getFullName();
     }
 
     /**
@@ -1037,10 +1059,10 @@ public class ImputationFiles {
         // Check limits are within the bounds
         checkLimits(chromo, lim1, lim2);
 
-        int indexChr = chromo - startChr;
+        int indexChr = chromo - this.startChr;
         int indexChunk = lim1 / chunkSize;
         // The offset is because the array start in position 0.
-        return filteredFileRsIdFile.get(rPanelIndex).get(indexChr).get(indexChunk).getName();
+        return this.filteredFileRsIdFile.get(rPanelIndex).get(indexChr).get(indexChunk).getName();
     }
 
     /**
@@ -1060,9 +1082,9 @@ public class ImputationFiles {
         // Check limits are within the bounds
         checkLimits(chromo, lim1, lim2);
 
-        int indexChr = chromo - startChr;
+        int indexChr = chromo - this.startChr;
         int indexChunk = lim1 / chunkSize;
-        return filteredFileRsIdFile.get(rPanelIndex).get(indexChr).get(indexChunk).getFullName();
+        return this.filteredFileRsIdFile.get(rPanelIndex).get(indexChr).get(indexChunk).getFullName();
     }
 
     /**
@@ -1081,12 +1103,12 @@ public class ImputationFiles {
         // Check limits are within the bounds
         checkLimits(chromo, lim1, lim2);
 
-        int indexChr = chromo - startChr;
+        int indexChr = chromo - this.startChr;
         int indexLow = lim1 / chunkSize;
         int indexHigh = lim2 / chunkSize;
         System.out.println("-------------------------------------------------");
         System.out.println("Files information for the chromosome " + chromo);
-        System.out.println("OutDir[" + rPanelIndex + "][Chr_" + chromo + "]=" + imputedOutDir.get(rPanelIndex).get(indexChr));
+        System.out.println("OutDir[" + rPanelIndex + "][Chr_" + chromo + "]=" + this.imputedOutDir.get(rPanelIndex).get(indexChr));
 
         for (int j = indexLow; j < indexHigh; j++) {
             System.out.println("        ImputedFile[" + rPanelIndex + "][Chr_" + chromo + "][" + lim1 + "-" + lim2 + "]="

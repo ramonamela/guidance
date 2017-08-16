@@ -36,6 +36,7 @@ import java.util.List;
 import guidance.utils.ChromoInfo;
 import guidance.utils.ParseCmdLine;
 
+import java.io.File;
 import java.util.ArrayList;
 
 
@@ -50,9 +51,6 @@ public class AssocFiles {
     private ArrayList<ArrayList<ArrayList<ArrayList<GenericFile>>>> snptestOutFile = new ArrayList<>();
     private ArrayList<ArrayList<ArrayList<ArrayList<GenericFile>>>> snptestLogFileName = new ArrayList<>();
     private ArrayList<ArrayList<ArrayList<ArrayList<GenericFile>>>> snptestLogFile = new ArrayList<>();
-
-    // private ArrayList<ArrayList<ArrayList<ArrayList<GenericFile>>>> snptestOutFilteredFile = new ArrayList<>();
-    // private ArrayList<ArrayList<ArrayList<ArrayList<GenericFile>>>> snptestOutCondensedFile = new ArrayList<>();
 
     private ArrayList<ArrayList<ArrayList<ArrayList<GenericFile>>>> summaryFile = new ArrayList<>();
     private ArrayList<ArrayList<ArrayList<ArrayList<GenericFile>>>> summaryFilteredFile = new ArrayList<>();
@@ -74,37 +72,32 @@ public class AssocFiles {
      * @param refPanels
      */
     public AssocFiles(ParseCmdLine parsingArgs, ChromoInfo generalChromoInfo, String baseOutDir, List<String> refPanels) {
-        startChr = parsingArgs.getStart();
-        endChr = parsingArgs.getEnd();
+        this.startChr = parsingArgs.getStart();
+        this.endChr = parsingArgs.getEnd();
 
         int chunkSize = parsingArgs.getChunkSize();
         int numberOfTestTypesNames = parsingArgs.getNumberOfTestTypeName();
 
-        /** We create the first directory name: the cohort directory */
+        // We create the first directory name: the cohort directory
         String mixedCohort = parsingArgs.getCohort();
 
         for (int tt = 0; tt < numberOfTestTypesNames; tt++) {
             String testTypeName = parsingArgs.getTestTypeName(tt);
 
-            String testTypeOutDir = baseOutDir + "/associations/" + testTypeName;
-            // String testTypeOutDir2 = baseOutDir + "/associations/" + testTypeName + "/" + mixedCohort +
-            // "_combined_panels";
+            String testTypeOutDir = baseOutDir + File.separator + "associations" + File.separator + testTypeName;
 
-            ArrayList<ArrayList<String>> rpanelListOutDir = new ArrayList<ArrayList<String>>();
-
+            ArrayList<ArrayList<String>> rpanelListOutDir = new ArrayList<>();
             ArrayList<ArrayList<ArrayList<GenericFile>>> rpanelListSnptestOutFile = new ArrayList<>();
             ArrayList<ArrayList<ArrayList<GenericFile>>> rpanelListSnptestLogFile = new ArrayList<>();
             ArrayList<ArrayList<ArrayList<GenericFile>>> rpanelListSummaryFile = new ArrayList<>();
-
             ArrayList<ArrayList<ArrayList<GenericFile>>> rpanelListSummaryFilteredFile = new ArrayList<>();
             ArrayList<ArrayList<ArrayList<GenericFile>>> rpanelListSummaryCondensedFile = new ArrayList<>();
-
             ArrayList<ArrayList<ArrayList<GenericFile>>> rpanelListCombinedFilteredFile = new ArrayList<>();
             ArrayList<ArrayList<ArrayList<GenericFile>>> rpanelListCombinedCondensedFile = new ArrayList<>();
 
             String rPanel = null;
-            String testTypeOutDir2 = baseOutDir + "/associations/" + testTypeName + "/" + mixedCohort + "_combined_panels";
-
+            String testTypeOutDir2 = baseOutDir + File.separator + "associations" + File.separator + testTypeName + File.separator
+                    + mixedCohort + "_combined_panels";
             for (int j = 0; j < refPanels.size(); j++) {
                 rPanel = refPanels.get(j);
                 testTypeOutDir2 = testTypeOutDir2 + "_" + rPanel;
@@ -113,27 +106,23 @@ public class AssocFiles {
             rPanel = refPanels.get(0);
             String prefixFilteredName = "filteredByAll_results_" + testTypeName + "_" + mixedCohort + "_" + rPanel;
             String prefixCondensedName = "condensed_results_" + testTypeName + "_" + mixedCohort + "_" + rPanel;
-            // String prefixTopHitsName = "tophits_" + testTypeName + "_" + mixedCohort + "_" + rPanel;
-            // String prefixCorrectedPvaluesName = "corrected_pvalues_" + testTypeName + "_" + mixedCohort + "_" +
-            // rPanel;
 
             for (int j = 1; j < refPanels.size(); j++) {
                 rPanel = refPanels.get(j);
                 prefixFilteredName = prefixFilteredName + "_" + rPanel;
                 prefixCondensedName = prefixCondensedName + "_" + rPanel;
-                // prefixTopHitsName = prefixTopHitsName + "_" + rPanel;
-                // prefixCorrectedPvaluesName = prefixCorrectedPvaluesName + "_" + rPanel;
 
                 ArrayList<ArrayList<GenericFile>> chromoListCombinedFilteredFile = new ArrayList<>();
                 ArrayList<ArrayList<GenericFile>> chromoListCombinedCondensedFile = new ArrayList<>();
 
-                for (int i = startChr; i <= endChr; i++) {
+                for (int i = this.startChr; i <= this.endChr; i++) {
                     int chromo = i;
                     int maxSize = generalChromoInfo.getMaxSize(chromo);
                     int total_chunks = maxSize / chunkSize;
                     int module = maxSize % chunkSize;
-                    if (module != 0)
+                    if (module != 0) {
                         total_chunks++;
+                    }
                     int lim1 = 1;
                     int lim2 = lim1 + chunkSize - 1;
 
@@ -143,14 +132,12 @@ public class AssocFiles {
                     for (int k = 0; k < total_chunks; k++) {
                         String tmpCombinedFilteredFileName = prefixFilteredName + "_chr_" + chromo + "_" + lim1 + "_" + lim2
                                 + "_combined.txt.gz";
-                        String tmpCombinedFilteredFile = testTypeOutDir2 + "/" + tmpCombinedFilteredFileName;
                         GenericFile myChunkListCombinedFilteredFile = new GenericFile(testTypeOutDir2, tmpCombinedFilteredFileName,
                                 "uncompressed", "none");
                         chunkListCombinedFilteredFile.add(myChunkListCombinedFilteredFile);
 
                         String tmpCombinedCondensedFileName = prefixCondensedName + "_chr_" + chromo + "_" + lim1 + "_" + lim2
                                 + "_combined.txt.gz";
-                        String tmpCombinedCondensedFile = testTypeOutDir2 + "/" + tmpCombinedCondensedFileName;
                         GenericFile myChunkListCombinedCondensedFile = new GenericFile(testTypeOutDir2, tmpCombinedCondensedFileName,
                                 "uncompressed", "none");
                         chunkListCombinedCondensedFile.add(myChunkListCombinedCondensedFile);
@@ -162,37 +149,32 @@ public class AssocFiles {
                     chromoListCombinedFilteredFile.add(chunkListCombinedFilteredFile);
                     chromoListCombinedCondensedFile.add(chunkListCombinedCondensedFile);
 
-                } // end for(i=startChr; i<=endChr;i++)
+                } // End for Chromo
 
                 rpanelListCombinedFilteredFile.add(chromoListCombinedFilteredFile);
                 rpanelListCombinedCondensedFile.add(chromoListCombinedCondensedFile);
 
-            } // End of for(j=0; j<refPanels.size();j++)
+            } // End of for refPanels
 
-            combinedFilteredFile.add(rpanelListCombinedFilteredFile);
-            combinedCondensedFile.add(rpanelListCombinedCondensedFile);
+            this.combinedFilteredFile.add(rpanelListCombinedFilteredFile);
+            this.combinedCondensedFile.add(rpanelListCombinedCondensedFile);
 
             for (int j = 0; j < refPanels.size(); j++) {
-
                 // String rpanel = refPanels.get(j);
                 rPanel = refPanels.get(j);
-                String rpanelOutDir = testTypeOutDir + "/" + mixedCohort + "_for_" + rPanel;
+                String rpanelOutDir = testTypeOutDir + File.separator + mixedCohort + "_for_" + rPanel;
 
                 ArrayList<String> chromoListOutDir = new ArrayList<>();
                 ArrayList<ArrayList<GenericFile>> chromoListSnptestOutFile = new ArrayList<>();
                 ArrayList<ArrayList<GenericFile>> chromoListSnptestLogFile = new ArrayList<>();
                 ArrayList<ArrayList<GenericFile>> chromoListSummaryFile = new ArrayList<>();
-
                 ArrayList<ArrayList<GenericFile>> chromoListSummaryFilteredFile = new ArrayList<>();
                 ArrayList<ArrayList<GenericFile>> chromoListSummaryCondensedFile = new ArrayList<>();
 
-                // ArrayList<ArrayList<GenericFile>> chromoListCombinedFilteredFile = new ArrayList<>();
-                // ArrayList<ArrayList<GenericFile>> chromoListCombinedCondensedFile = new ArrayList<>();
-
-                for (int i = startChr; i <= endChr; i++) {
+                for (int i = this.startChr; i <= this.endChr; i++) {
                     int chromo = i;
 
-                    String tmpChrDir = rpanelOutDir + "/" + "Chr_" + chromo;
+                    String tmpChrDir = rpanelOutDir + File.separator + "Chr_" + chromo;
                     chromoListOutDir.add(tmpChrDir);
 
                     int maxSize = generalChromoInfo.getMaxSize(chromo);
@@ -209,72 +191,34 @@ public class AssocFiles {
 
                     ArrayList<GenericFile> chunkListSummaryFilteredFile = new ArrayList<>();
                     ArrayList<GenericFile> chunkListSummaryCondensedFile = new ArrayList<>();
-
-                    // ArrayList<GenericFile> chunkListCombinedFilteredFile = new ArrayList<>();
-                    // ArrayList<GenericFile> chunkListCombinedCondensedFile = new ArrayList<>();
-
                     for (int k = 0; k < total_chunks; k++) {
-                        /** Now we have to create the impute files for this iteration */
+                        // Now we have to create the impute files for this iteration
                         String tmpSnptestOutFileName = "chr_" + chromo + "_" + testTypeName + "_" + rPanel + "_" + lim1 + "_" + lim2
                                 + "_snptest.out.gz";
-                        String tmpSnptestOutFile = tmpChrDir + "/" + tmpSnptestOutFileName;
                         GenericFile myChunkListSnptestOutFile = new GenericFile(tmpChrDir, tmpSnptestOutFileName, "uncompressed", "none");
                         chunkListSnptestOutFile.add(myChunkListSnptestOutFile);
 
                         String tmpSnptestLogFileName = "chr_" + chromo + "_" + testTypeName + "_" + rPanel + "_" + lim1 + "_" + lim2
                                 + "_snptest.log";
-                        String tmpSnptestLogFile = tmpChrDir + "/" + tmpSnptestLogFileName;
                         GenericFile myChunkListSnptestLogFile = new GenericFile(tmpChrDir, tmpSnptestLogFileName, "uncompressed", "none");
                         chunkListSnptestLogFile.add(myChunkListSnptestLogFile);
 
                         String tmpSummaryFileName = "chr_" + chromo + "_" + testTypeName + "_" + rPanel + "_" + lim1 + "_" + lim2
                                 + "_summary.txt.gz";
-                        String tmpSummaryFile = tmpChrDir + "/" + tmpSummaryFileName;
                         GenericFile myChunkListSummaryFile = new GenericFile(tmpChrDir, tmpSummaryFileName, "uncompressed", "none");
                         chunkListSummaryFile.add(myChunkListSummaryFile);
 
                         String tmpSummaryFilteredFileName = "chr_" + chromo + "_" + testTypeName + "_" + rPanel + "_" + lim1 + "_" + lim2
                                 + "_summary_filtered.txt.gz";
-                        String tmpSummaryFilteredFile = tmpChrDir + "/" + tmpSummaryFileName;
                         GenericFile myChunkListSummaryFilteredFile = new GenericFile(tmpChrDir, tmpSummaryFilteredFileName, "uncompressed",
                                 "none");
                         chunkListSummaryFilteredFile.add(myChunkListSummaryFilteredFile);
 
                         String tmpSummaryCondensedFileName = "chr_" + chromo + "_" + testTypeName + "_" + rPanel + "_" + lim1 + "_" + lim2
                                 + "_summary_condensed.txt.gz";
-                        String tmpSummaryCondensedFile = tmpChrDir + "/" + tmpSummaryFileName;
                         GenericFile myChunkListSummaryCondensedFile = new GenericFile(tmpChrDir, tmpSummaryCondensedFileName,
                                 "uncompressed", "none");
                         chunkListSummaryCondensedFile.add(myChunkListSummaryCondensedFile);
-
-                        /*
-                         * rPanel = refPanels.get(0); String prefixFilteredName = "filteredByAll_results_" +
-                         * testTypeName + "_" + mixedCohort + "_" + rPanel; String prefixCondensedName =
-                         * "condensed_results_" + testTypeName + "_" + mixedCohort + "_" + rPanel; //String
-                         * prefixTopHitsName = "tophits_" + testTypeName + "_" + mixedCohort + "_" + rPanel; //String
-                         * prefixCorrectedPvaluesName = "corrected_pvalues_" + testTypeName + "_" + mixedCohort + "_" +
-                         * rPanel;
-                         * 
-                         * for(j=1; j<refPanels.size();j++) { rPanel = refPanels.get(j); prefixFilteredName =
-                         * prefixFilteredName + "_" + rPanel; prefixCondensedName = prefixCondensedName + "_" + rPanel;
-                         * // prefixTopHitsName = prefixTopHitsName + "_" + rPanel; // prefixCorrectedPvaluesName =
-                         * prefixCorrectedPvaluesName + "_" + rPanel;
-                         * 
-                         * }
-                         * 
-                         * 
-                         * //TODO posar 2 String tmpCombinedFilteredFileName = prefixFilteredName + "_chr_" + chromo +
-                         * "_" + lim1 + "_" + lim2 + "_filtered_combined.txt.gz"; String tmpCombinedFilteredFile =
-                         * tmpChrDir + "/" + tmpCombinedFilteredFileName; GenericFile myChunkListCombinedFilteredFile =
-                         * new GenericFile(tmpChrDir, tmpCombinedFilteredFileName, "uncompressed", "none");
-                         * chunkListCombinedFilteredFile.add(myChunkListCombinedFilteredFile);
-                         * 
-                         * String tmpCombinedCondensedFileName = prefixCondensedName + "_chr_" + chromo + "_" + lim1 +
-                         * "_" + lim2 + "_condensed_combined.txt.gz"; String tmpCombinedCondensedFile = tmpChrDir + "/"
-                         * + tmpCombinedCondensedFileName; GenericFile myChunkListCombinedCondensedFile = new
-                         * GenericFile(tmpChrDir, tmpCombinedCondensedFileName, "uncompressed", "none");
-                         * chunkListCombinedCondensedFile.add(myChunkListCombinedCondensedFile);
-                         */
 
                         lim1 = lim1 + chunkSize;
                         lim2 = lim2 + chunkSize;
@@ -287,10 +231,7 @@ public class AssocFiles {
                     chromoListSummaryFilteredFile.add(chunkListSummaryFilteredFile);
                     chromoListSummaryCondensedFile.add(chunkListSummaryCondensedFile);
 
-                    // chromoListCombinedFilteredFile.add(chunkListCombinedFilteredFile);
-                    // chromoListCombinedCondensedFile.add(chunkListCombinedCondensedFile);
-
-                } // end for(i=startChr; i<=endChr;i++)
+                } // End for chromo
 
                 rpanelListOutDir.add(chromoListOutDir);
 
@@ -301,23 +242,17 @@ public class AssocFiles {
                 rpanelListSummaryFilteredFile.add(chromoListSummaryFilteredFile);
                 rpanelListSummaryCondensedFile.add(chromoListSummaryCondensedFile);
 
-                // rpanelListCombinedFilteredFile.add(chromoListCombinedFilteredFile);
-                // rpanelListCombinedCondensedFile.add(chromoListCombinedCondensedFile);
+            } // End of for refPanels
 
-            } // End of for(j=0; j<refPanels.size();j++)
-            snptestOutFile.add(rpanelListSnptestOutFile);
-            snptestLogFile.add(rpanelListSnptestLogFile);
-            summaryFile.add(rpanelListSummaryFile);
+            this.snptestOutFile.add(rpanelListSnptestOutFile);
+            this.snptestLogFile.add(rpanelListSnptestLogFile);
+            this.summaryFile.add(rpanelListSummaryFile);
 
-            summaryFilteredFile.add(rpanelListSummaryFilteredFile);
-            summaryCondensedFile.add(rpanelListSummaryCondensedFile);
+            this.summaryFilteredFile.add(rpanelListSummaryFilteredFile);
+            this.summaryCondensedFile.add(rpanelListSummaryCondensedFile);
 
-            // combinedFilteredFile.add(rpanelListCombinedFilteredFile);
-            // combinedCondensedFile.add(rpanelListCombinedCondensedFile);
-
-            outDir.add(rpanelListOutDir);
-        } // Enf of for(tt==; tt< numberOfTestTypesName;tt++)
-
+            this.outDir.add(rpanelListOutDir);
+        } // End of for test types
     }
 
     /**
@@ -332,9 +267,9 @@ public class AssocFiles {
         // Check that chromo index is within the bounds
         checkChromoIndex(chromo);
 
-        int i = chromo - startChr;
+        int i = chromo - this.startChr;
         // int i= chromo - 1 ;
-        return outDir.get(testTypeIndex).get(rPanelIndex).get(i);
+        return this.outDir.get(testTypeIndex).get(rPanelIndex).get(i);
     }
 
     /**
@@ -357,9 +292,9 @@ public class AssocFiles {
 
         // The offset is because the array start in position 0
         // int i = chromo -1;
-        int i = chromo - startChr;
+        int i = chromo - this.startChr;
         int index = lim1 / chunkSize;
-        return snptestOutFile.get(testTypeIndex).get(rPanelIndex).get(i).get(index).getName();
+        return this.snptestOutFile.get(testTypeIndex).get(rPanelIndex).get(i).get(index).getName();
     }
 
     /**
@@ -382,9 +317,9 @@ public class AssocFiles {
 
         // The offset is because the array start in position 0
         // int i = chromo -1;
-        int i = chromo - startChr;
+        int i = chromo - this.startChr;
         int index = lim1 / chunkSize;
-        return snptestOutFile.get(testTypeIndex).get(rPanelIndex).get(i).get(index).getFullName();
+        return this.snptestOutFile.get(testTypeIndex).get(rPanelIndex).get(i).get(index).getFullName();
     }
 
     /**
@@ -409,9 +344,9 @@ public class AssocFiles {
 
         // The offset is because the array start in position 0
         // int i = chromo -1;
-        int i = chromo - startChr;
+        int i = chromo - this.startChr;
         int index = lim1 / chunkSize;
-        snptestOutFile.get(testTypeIndex).get(rPanelIndex).get(i).get(index).setFinalStatus(finalStatus);
+        this.snptestOutFile.get(testTypeIndex).get(rPanelIndex).get(i).get(index).setFinalStatus(finalStatus);
     }
 
     /**
@@ -434,9 +369,9 @@ public class AssocFiles {
 
         // The offset is because the array start in position 0
         // int i = chromo -1;
-        int i = chromo - startChr;
+        int i = chromo - this.startChr;
         int index = lim1 / chunkSize;
-        return snptestOutFile.get(testTypeIndex).get(rPanelIndex).get(i).get(index).getFinalStatus();
+        return this.snptestOutFile.get(testTypeIndex).get(rPanelIndex).get(i).get(index).getFinalStatus();
     }
 
     /* Filtered -------------------------------------- */
@@ -460,9 +395,9 @@ public class AssocFiles {
 
         // The offset is because the array start in position 0
         // int i = chromo -1;
-        int i = chromo - startChr;
+        int i = chromo - this.startChr;
         int index = lim1 / chunkSize;
-        return summaryFilteredFile.get(testTypeIndex).get(rPanelIndex).get(i).get(index).getName();
+        return this.summaryFilteredFile.get(testTypeIndex).get(rPanelIndex).get(i).get(index).getName();
     }
 
     /**
@@ -485,9 +420,9 @@ public class AssocFiles {
 
         // The offset is because the array start in position 0
         // int i = chromo -1;
-        int i = chromo - startChr;
+        int i = chromo - this.startChr;
         int index = lim1 / chunkSize;
-        return summaryFilteredFile.get(testTypeIndex).get(rPanelIndex).get(i).get(index).getFullName();
+        return this.summaryFilteredFile.get(testTypeIndex).get(rPanelIndex).get(i).get(index).getFullName();
     }
 
     /**
@@ -512,9 +447,9 @@ public class AssocFiles {
 
         // The offset is because the array start in position 0
         // int i = chromo -1;
-        int i = chromo - startChr;
+        int i = chromo - this.startChr;
         int index = lim1 / chunkSize;
-        summaryFilteredFile.get(testTypeIndex).get(rPanelIndex).get(i).get(index).setFinalStatus(finalStatus);
+        this.summaryFilteredFile.get(testTypeIndex).get(rPanelIndex).get(i).get(index).setFinalStatus(finalStatus);
     }
 
     /**
@@ -537,9 +472,9 @@ public class AssocFiles {
 
         // The offset is because the array start in position 0
         // int i = chromo -1;
-        int i = chromo - startChr;
+        int i = chromo - this.startChr;
         int index = lim1 / chunkSize;
-        return summaryFilteredFile.get(testTypeIndex).get(rPanelIndex).get(i).get(index).getFinalStatus();
+        return this.summaryFilteredFile.get(testTypeIndex).get(rPanelIndex).get(i).get(index).getFinalStatus();
     }
 
     /**
@@ -562,9 +497,9 @@ public class AssocFiles {
 
         // The offset is because the array start in position 0
         // int i = chromo -1;
-        int i = chromo - startChr;
+        int i = chromo - this.startChr;
         int index = lim1 / chunkSize;
-        return combinedFilteredFile.get(testTypeIndex).get(rPanelIndex).get(i).get(index).getName();
+        return this.combinedFilteredFile.get(testTypeIndex).get(rPanelIndex).get(i).get(index).getName();
     }
 
     /**
@@ -587,9 +522,9 @@ public class AssocFiles {
 
         // The offset is because the array start in position 0
         // int i = chromo -1;
-        int i = chromo - startChr;
+        int i = chromo - this.startChr;
         int index = lim1 / chunkSize;
-        return combinedFilteredFile.get(testTypeIndex).get(rPanelIndex).get(i).get(index).getFullName();
+        return this.combinedFilteredFile.get(testTypeIndex).get(rPanelIndex).get(i).get(index).getFullName();
     }
 
     /**
@@ -614,9 +549,9 @@ public class AssocFiles {
 
         // The offset is because the array start in position 0
         // int i = chromo -1;
-        int i = chromo - startChr;
+        int i = chromo - this.startChr;
         int index = lim1 / chunkSize;
-        combinedFilteredFile.get(testTypeIndex).get(rPanelIndex).get(i).get(index).setFinalStatus(finalStatus);
+        this.combinedFilteredFile.get(testTypeIndex).get(rPanelIndex).get(i).get(index).setFinalStatus(finalStatus);
     }
 
     /**
@@ -639,9 +574,9 @@ public class AssocFiles {
 
         // The offset is because the array start in position 0
         // int i = chromo -1;
-        int i = chromo - startChr;
+        int i = chromo - this.startChr;
         int index = lim1 / chunkSize;
-        return combinedFilteredFile.get(testTypeIndex).get(rPanelIndex).get(i).get(index).getFinalStatus();
+        return this.combinedFilteredFile.get(testTypeIndex).get(rPanelIndex).get(i).get(index).getFinalStatus();
     }
 
     /** Condensed ------------------------------------- */
@@ -666,9 +601,9 @@ public class AssocFiles {
 
         // The offset is because the array start in position 0
         // int i = chromo -1;
-        int i = chromo - startChr;
+        int i = chromo - this.startChr;
         int index = lim1 / chunkSize;
-        return summaryCondensedFile.get(testTypeIndex).get(rPanelIndex).get(i).get(index).getName();
+        return this.summaryCondensedFile.get(testTypeIndex).get(rPanelIndex).get(i).get(index).getName();
     }
 
     /**
@@ -691,9 +626,9 @@ public class AssocFiles {
 
         // The offset is because the array start in position 0
         // int i = chromo -1;
-        int i = chromo - startChr;
+        int i = chromo - this.startChr;
         int index = lim1 / chunkSize;
-        return summaryCondensedFile.get(testTypeIndex).get(rPanelIndex).get(i).get(index).getFullName();
+        return this.summaryCondensedFile.get(testTypeIndex).get(rPanelIndex).get(i).get(index).getFullName();
     }
 
     /**
@@ -718,9 +653,9 @@ public class AssocFiles {
 
         // The offset is because the array start in position 0
         // int i = chromo -1;
-        int i = chromo - startChr;
+        int i = chromo - this.startChr;
         int index = lim1 / chunkSize;
-        summaryCondensedFile.get(testTypeIndex).get(rPanelIndex).get(i).get(index).setFinalStatus(finalStatus);
+        this.summaryCondensedFile.get(testTypeIndex).get(rPanelIndex).get(i).get(index).setFinalStatus(finalStatus);
     }
 
     /**
@@ -743,9 +678,9 @@ public class AssocFiles {
 
         // The offset is because the array start in position 0
         // int i = chromo -1;
-        int i = chromo - startChr;
+        int i = chromo - this.startChr;
         int index = lim1 / chunkSize;
-        return summaryCondensedFile.get(testTypeIndex).get(rPanelIndex).get(i).get(index).getFinalStatus();
+        return this.summaryCondensedFile.get(testTypeIndex).get(rPanelIndex).get(i).get(index).getFinalStatus();
     }
 
     /**
@@ -768,9 +703,9 @@ public class AssocFiles {
 
         // The offset is because the array start in position 0
         // int i = chromo -1;
-        int i = chromo - startChr;
+        int i = chromo - this.startChr;
         int index = lim1 / chunkSize;
-        return combinedCondensedFile.get(testTypeIndex).get(rPanelIndex).get(i).get(index).getName();
+        return this.combinedCondensedFile.get(testTypeIndex).get(rPanelIndex).get(i).get(index).getName();
     }
 
     /**
@@ -793,9 +728,9 @@ public class AssocFiles {
 
         // The offset is because the array start in position 0
         // int i = chromo -1;
-        int i = chromo - startChr;
+        int i = chromo - this.startChr;
         int index = lim1 / chunkSize;
-        return combinedCondensedFile.get(testTypeIndex).get(rPanelIndex).get(i).get(index).getFullName();
+        return this.combinedCondensedFile.get(testTypeIndex).get(rPanelIndex).get(i).get(index).getFullName();
     }
 
     /**
@@ -820,9 +755,9 @@ public class AssocFiles {
 
         // The offset is because the array start in position 0
         // int i = chromo -1;
-        int i = chromo - startChr;
+        int i = chromo - this.startChr;
         int index = lim1 / chunkSize;
-        combinedCondensedFile.get(testTypeIndex).get(rPanelIndex).get(i).get(index).setFinalStatus(finalStatus);
+        this.combinedCondensedFile.get(testTypeIndex).get(rPanelIndex).get(i).get(index).setFinalStatus(finalStatus);
     }
 
     /**
@@ -845,9 +780,9 @@ public class AssocFiles {
 
         // The offset is because the array start in position 0
         // int i = chromo -1;
-        int i = chromo - startChr;
+        int i = chromo - this.startChr;
         int index = lim1 / chunkSize;
-        return combinedCondensedFile.get(testTypeIndex).get(rPanelIndex).get(i).get(index).getFinalStatus();
+        return this.combinedCondensedFile.get(testTypeIndex).get(rPanelIndex).get(i).get(index).getFinalStatus();
     }
 
     /**
@@ -870,9 +805,9 @@ public class AssocFiles {
 
         // The offset is because the array start in position 0
         // int i = chromo -1;
-        int i = chromo - startChr;
+        int i = chromo - this.startChr;
         int index = lim1 / chunkSize;
-        return snptestLogFileName.get(testTypeIndex).get(rPanelIndex).get(i).get(index).getName();
+        return this.snptestLogFileName.get(testTypeIndex).get(rPanelIndex).get(i).get(index).getName();
     }
 
     /**
@@ -895,9 +830,9 @@ public class AssocFiles {
 
         // The offset is because the array start in position 0
         // int i = chromo -1;
-        int i = chromo - startChr;
+        int i = chromo - this.startChr;
         int index = lim1 / chunkSize;
-        return snptestLogFile.get(testTypeIndex).get(rPanelIndex).get(i).get(index).getFullName();
+        return this.snptestLogFile.get(testTypeIndex).get(rPanelIndex).get(i).get(index).getFullName();
     }
 
     /**
@@ -920,9 +855,9 @@ public class AssocFiles {
 
         // The offset is because the array start in position 0
         // int i = chromo -1;
-        int i = chromo - startChr;
+        int i = chromo - this.startChr;
         int index = lim1 / chunkSize;
-        return summaryFile.get(testTypeIndex).get(rPanelIndex).get(i).get(index).getName();
+        return this.summaryFile.get(testTypeIndex).get(rPanelIndex).get(i).get(index).getName();
     }
 
     /**
@@ -945,9 +880,9 @@ public class AssocFiles {
 
         // The offset is because the array start in position 0
         // int i = chromo -1;
-        int i = chromo - startChr;
+        int i = chromo - this.startChr;
         int index = lim1 / chunkSize;
-        return summaryFile.get(testTypeIndex).get(rPanelIndex).get(i).get(index).getFullName();
+        return this.summaryFile.get(testTypeIndex).get(rPanelIndex).get(i).get(index).getFullName();
     }
 
     /**
@@ -972,9 +907,9 @@ public class AssocFiles {
 
         // The offset is because the array start in position 0
         // int i = chromo -1;
-        int i = chromo - startChr;
+        int i = chromo - this.startChr;
         int index = lim1 / chunkSize;
-        summaryFile.get(testTypeIndex).get(rPanelIndex).get(i).get(index).setFinalStatus(finalStatus);
+        this.summaryFile.get(testTypeIndex).get(rPanelIndex).get(i).get(index).setFinalStatus(finalStatus);
     }
 
     /**
@@ -997,9 +932,9 @@ public class AssocFiles {
 
         // The offset is because the array start in position 0
         // int i = chromo -1;
-        int i = chromo - startChr;
+        int i = chromo - this.startChr;
         int index = lim1 / chunkSize;
-        return summaryFile.get(testTypeIndex).get(rPanelIndex).get(i).get(index).getFinalStatus();
+        return this.summaryFile.get(testTypeIndex).get(rPanelIndex).get(i).get(index).getFinalStatus();
     }
 
     /**

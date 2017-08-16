@@ -36,6 +36,7 @@ import java.util.List;
 import guidance.utils.ChromoInfo;
 import guidance.utils.ParseCmdLine;
 
+import java.io.File;
 import java.util.ArrayList;
 
 
@@ -63,12 +64,9 @@ public class MergeFiles {
     private ArrayList<ArrayList<ArrayList<ArrayList<GenericFile>>>> testTypeCombinedReducedCondensedFile = new ArrayList<>();
 
     private ArrayList<ArrayList<ArrayList<ArrayList<GenericFile>>>> testTypeCombinedReducedFilteredXFile = new ArrayList<>();
-    // private ArrayList<ArrayList<ArrayList<ArrayList<GenericFile>>>> testTypeCombinedReducedCondensedXFile = new
-    // ArrayList<ArrayList<ArrayList<ArrayList<GenericFile>>>>();
 
     private int startChr = 0;
     private int endChr = 0;
-    // private int endChrNormal=endChr;
 
 
     /**
@@ -80,11 +78,8 @@ public class MergeFiles {
      * @param refPanels
      */
     public MergeFiles(ParseCmdLine parsingArgs, ChromoInfo generalChromoInfo, String baseOutDir, List<String> refPanels) {
-        int i;
-        int j;
-
-        startChr = parsingArgs.getStart();
-        endChr = parsingArgs.getEnd();
+        this.startChr = parsingArgs.getStart();
+        this.endChr = parsingArgs.getEnd();
 
         // int endChrNormal =0;
         // for(i=startChr; i<=endChr;i++) {
@@ -96,16 +91,16 @@ public class MergeFiles {
         int chunkSize = parsingArgs.getChunkSize();
         int numberOfTestTypesNames = parsingArgs.getNumberOfTestTypeName();
 
-        /** We create the first directory name: the cohort directory */
+        // We create the first directory name: the cohort directory
         String mixedCohort = parsingArgs.getCohort();
-
         for (int tt = 0; tt < numberOfTestTypesNames; tt++) {
             String testTypeName = parsingArgs.getTestTypeName(tt);
-            String testTypeOutDir = baseOutDir + "/associations/" + testTypeName;
-            String testTypeOutDir2 = baseOutDir + "/associations/" + testTypeName + "/" + mixedCohort + "_combined_panels";
+            String testTypeOutDir = baseOutDir + File.separator + "associations" + File.separator + testTypeName;
+            String testTypeOutDir2 = baseOutDir + File.separator + "associations" + File.separator + testTypeName + File.separator
+                    + mixedCohort + "_combined_panels";
 
             String rPanel = null;
-            for (j = 0; j < refPanels.size(); j++) {
+            for (int j = 0; j < refPanels.size(); j++) {
                 rPanel = refPanels.get(j);
                 testTypeOutDir2 = testTypeOutDir2 + "_" + rPanel;
             }
@@ -129,13 +124,11 @@ public class MergeFiles {
             ArrayList<ArrayList<ArrayList<GenericFile>>> rpanelCombinedReducedCondensedFile = new ArrayList<>();
 
             ArrayList<ArrayList<ArrayList<GenericFile>>> rpanelCombinedReducedFilteredXFile = new ArrayList<>();
-            // ArrayList<ArrayList<ArrayList<GenericFile>>> rpanelCombinedReducedCondensedXFile = new
-            // ArrayList<ArrayList<ArrayList<GenericFile>>>();
 
-            for (j = 0; j < refPanels.size(); j++) {
+            for (int j = 0; j < refPanels.size(); j++) {
                 rPanel = refPanels.get(j);
-                String rpanelOutDir = testTypeOutDir + "/" + mixedCohort + "_for_" + rPanel;
-                String rpanelOutDirSummary = testTypeOutDir + "/" + mixedCohort + "_for_" + rPanel + "/summary";
+                String rpanelOutDir = testTypeOutDir + File.separator + mixedCohort + "_for_" + rPanel;
+                String rpanelOutDirSummary = testTypeOutDir + File.separator + mixedCohort + "_for_" + rPanel + File.separator + "summary";
 
                 ArrayList<String> chromoListOutDir = new ArrayList<>();
                 ArrayList<ArrayList<GenericFile>> chromoListReducedFile = new ArrayList<>();
@@ -153,29 +146,25 @@ public class MergeFiles {
                 ArrayList<ArrayList<GenericFile>> chromoListCombinedReducedCondensedFile = new ArrayList<>();
 
                 ArrayList<ArrayList<GenericFile>> chromoListCombinedReducedFilteredXFile = new ArrayList<>();
-                // ArrayList<ArrayList<GenericFile>> chromoListCombinedReducedCondensedXFile = new
-                // ArrayList<ArrayList<GenericFile>>();
 
                 boolean addExtraCount = false;
-                for (i = startChr; i <= endChr; i++) {
+                for (int i = this.startChr; i <= this.endChr; i++) {
                     int chromo = i;
 
-                    if (i != startChr) {
-
+                    if (i != this.startChr) {
                         System.out.println("mon :: TRUE :: i = " + i);
                         addExtraCount = true;
                     }
 
-                    String tmpChrDir = rpanelOutDir + "/" + "Chr_" + chromo;
+                    String tmpChrDir = rpanelOutDir + File.separator + "Chr_" + chromo;
                     chromoListOutDir.add(tmpChrDir);
 
                     int maxSize = generalChromoInfo.getMaxSize(chromo);
                     int total_chunks = maxSize / chunkSize;
                     int module = maxSize % chunkSize;
-                    if (module != 0)
+                    if (module != 0) {
                         total_chunks++;
-                    int lim1 = 1;
-                    int lim2 = lim1 + chunkSize - 1;
+                    }
 
                     ArrayList<GenericFile> listReducedFile = new ArrayList<>();
                     ArrayList<GenericFile> listReducedFilteredFile = new ArrayList<>();
@@ -185,11 +174,9 @@ public class MergeFiles {
                     ArrayList<GenericFile> listCombinedReducedCondensedFile = new ArrayList<>();
 
                     ArrayList<GenericFile> listCombinedReducedFilteredXFile = new ArrayList<>();
-                    // ArrayList<GenericFile> listCombinedReducedCondensedXFile = new ArrayList<>();
 
                     // Now we have to create the rest of file names that will be used to reduce files
                     int counter = 0;
-
                     for (int deep = 0; deep < total_chunks - 1; deep++) {
                         String tmpReducedFileName = "chr_" + chromo + "_" + testTypeName + "_" + rPanel + "_reduce_file_" + counter
                                 + ".txt.gz";
@@ -197,10 +184,6 @@ public class MergeFiles {
                                 + counter + ".txt.gz";
                         String tmpReducedCondensedFileName = "chr_" + chromo + "_" + testTypeName + "_" + rPanel + "_reduce_condensed_file_"
                                 + counter + ".txt.gz";
-
-                        String tmpReducedFile = tmpChrDir + "/" + tmpReducedFileName;
-                        String tmpReducedFilteredFile = tmpChrDir + "/" + tmpReducedFilteredFileName;
-                        String tmpReducedCondensedFile = tmpChrDir + "/" + tmpReducedCondensedFileName;
 
                         GenericFile myReducedFile = new GenericFile(tmpChrDir, tmpReducedFileName, "uncompressed", "none");
                         GenericFile myReducedFilteredFile = new GenericFile(tmpChrDir, tmpReducedFilteredFileName, "uncompressed", "none");
@@ -215,64 +198,41 @@ public class MergeFiles {
                             if (i != 23) {
                                 String tmpCombinedReducedFilteredFileName = "chr_" + chromo + "_" + testTypeName + "_reduce_filtered_file_"
                                         + counter + ".txt.gz";
-                                // String tmpCombinedReducedCondensedFileName = "chr_" + chromo + "_" + testTypeName +
-                                // "_reduce_condensed_file_" + counter + ".txt.gz";
-                                String tmpCombinedReducedFilteredFile = testTypeOutDir2 + "/" + tmpCombinedReducedFilteredFileName;
-                                // String tmpCombinedReducedCondensedFile = testTypeOutDir2 + "/" +
-                                // tmpCombinedReducedCondensedFileName;
                                 GenericFile myCombinedReducedFilteredFile = new GenericFile(testTypeOutDir2,
                                         tmpCombinedReducedFilteredFileName, "uncompressed", "none");
-                                // GenericFile myCombinedReducedCondensedFile = new GenericFile(testTypeOutDir2,
-                                // tmpCombinedReducedCondensedFileName, "uncompressed", "none");
 
                                 listCombinedReducedFilteredFile.add(myCombinedReducedFilteredFile);
-                                // listCombinedReducedCondensedFile.add(myCombinedReducedCondensedFile);
-
-                            } else if (i == 23) {
+                            } else {
                                 String tmpCombinedReducedFilteredXFileName = "chr_" + chromo + "_" + testTypeName + "_reduce_filtered_file_"
                                         + counter + ".txt.gz";
-                                // String tmpCombinedReducedCondensedXFileName = "chr_" + chromo + "_" + testTypeName +
-                                // "_reduce_condensed_file_" + counter + ".txt.gz";
-                                String tmpCombinedReducedFilteredXFile = testTypeOutDir2 + "/" + tmpCombinedReducedFilteredXFileName;
-                                // String tmpCombinedReducedCondensedXFile = testTypeOutDir2 + "/" +
-                                // tmpCombinedReducedCondensedXFileName;
                                 GenericFile myCombinedReducedFilteredXFile = new GenericFile(testTypeOutDir2,
                                         tmpCombinedReducedFilteredXFileName, "uncompressed", "none");
-                                // GenericFile myCombinedReducedCondensedXFile = new GenericFile(testTypeOutDir2,
-                                // tmpCombinedReducedCondensedXFileName, "uncompressed", "none");
-
                                 listCombinedReducedFilteredXFile.add(myCombinedReducedFilteredXFile);
-                                // listCombinedReducedCondensedXFile.add(myCombinedReducedCondensedXFile);
                             }
 
                             String tmpCombinedReducedCondensedFileName = "chr_" + chromo + "_" + testTypeName + "_reduce_condensed_file_"
                                     + counter + ".txt.gz";
-                            String tmpCombinedReducedCondensedFile = testTypeOutDir2 + "/" + tmpCombinedReducedCondensedFileName;
                             GenericFile myCombinedReducedCondensedFile = new GenericFile(testTypeOutDir2,
                                     tmpCombinedReducedCondensedFileName, "uncompressed", "none");
                             listCombinedReducedCondensedFile.add(myCombinedReducedCondensedFile);
-
                         }
-
                         counter++;
                     }
 
-                    if (i != 23)
+                    if (i != 23) {
                         System.out.println("mon :: ABANS F :: chr " + chromo + " ::  size = " + listCombinedReducedFilteredFile.size());
-                    else
+                    } else {
                         System.out.println("mon :: ABANS F :: chr " + chromo + " ::  size = " + listCombinedReducedFilteredXFile.size());
+                    }
                     System.out.println("mon :: ABANS C :: chr " + chromo + " ::  size = " + listCombinedReducedCondensedFile.size());
 
                     if (addExtraCount) {
-
                         System.out.println("mon :: DINS EXTRA :: chr " + chromo + " ::  counter " + counter);
 
                         String tmpCombinedReducedFilteredFileName = "chr_" + chromo + "_" + testTypeName + "_reduce_filtered_file_"
                                 + counter + ".txt.gz";
                         String tmpCombinedReducedCondensedFileName = "chr_" + chromo + "_" + testTypeName + "_reduce_condensed_file_"
                                 + counter + ".txt.gz";
-                        String tmpCombinedReducedFilteredFile = testTypeOutDir2 + "/" + tmpCombinedReducedFilteredFileName;
-                        String tmpCombinedReducedCondensedFile = testTypeOutDir2 + "/" + tmpCombinedReducedCondensedFileName;
                         GenericFile myCombinedReducedFilteredFile = new GenericFile(testTypeOutDir2, tmpCombinedReducedFilteredFileName,
                                 "uncompressed", "none");
                         GenericFile myCombinedReducedCondensedFile = new GenericFile(testTypeOutDir2, tmpCombinedReducedCondensedFileName,
@@ -284,10 +244,11 @@ public class MergeFiles {
                         addExtraCount = false;
                     }
 
-                    if (i != 23)
+                    if (i != 23) {
                         System.out.println("mon :: DESPRES F :: chr " + chromo + " ::  size = " + listCombinedReducedFilteredFile.size());
-                    else
+                    } else {
                         System.out.println("mon :: DESPRES F :: chr " + chromo + " ::  size = " + listCombinedReducedFilteredXFile.size());
+                    }
                     System.out.println("mon :: DESPRES C :: chr " + chromo + " ::  size = " + listCombinedReducedCondensedFile.size());
 
                     System.out.println("\n\n");
@@ -300,20 +261,17 @@ public class MergeFiles {
                     chromoListCombinedReducedFilteredFile.add(listCombinedReducedFilteredFile);
                     chromoListCombinedReducedCondensedFile.add(listCombinedReducedCondensedFile);
                     chromoListCombinedReducedFilteredXFile.add(listCombinedReducedFilteredXFile);
-                    // chromoListCombinedReducedCondensedXFile.add(listCombinedReducedCondensedXFile);
 
                     String tmpFilteredByAllFileName = "chr_" + chromo + "_" + testTypeName + "_" + rPanel
                             + "_filtered_by_maf_info_hwe.txt.gz";
-                    String tmpFilteredByAllFile = tmpChrDir + "/" + tmpFilteredByAllFileName;
                     GenericFile myFilteredByAllFile = new GenericFile(tmpChrDir, tmpFilteredByAllFileName, "uncompressed", "none");
                     chromoFilteredByAllFile.add(myFilteredByAllFile);
 
                     String tmpCondensedFileName = "chr_" + chromo + "_" + testTypeName + "_" + rPanel + "_condensed.txt.gz";
-                    String tmpCondensedFile = tmpChrDir + "/" + tmpCondensedFileName;
                     GenericFile myCondensedFile = new GenericFile(tmpChrDir, tmpCondensedFileName, "uncompressed", "none");
                     chromoCondensedFile.add(myCondensedFile);
 
-                } // end for(i=startChr; i<=endChr;i++)
+                } // End for Chromo
                 rpanelListOutDir.add(chromoListOutDir);
                 rpanelReducedFile.add(chromoListReducedFile);
                 rpanelReducedFilteredFile.add(chromoListReducedFilteredFile);
@@ -324,30 +282,23 @@ public class MergeFiles {
                     rpanelCombinedReducedFilteredFile.add(chromoListCombinedReducedFilteredFile);
                     rpanelCombinedReducedCondensedFile.add(chromoListCombinedReducedCondensedFile);
                     rpanelCombinedReducedFilteredXFile.add(chromoListCombinedReducedFilteredXFile);
-                    // rpanelCombinedReducedCondensedXFile.add(chromoListCombinedReducedCondensedXFile);
                 }
 
                 rpanelFilteredByAllFile.add(chromoFilteredByAllFile);
                 rpanelCondensedFile.add(chromoCondensedFile);
 
                 // Here we have to create an additional list of condensed files that will be used when we execute
-                // jointCondensedFiles Task,
-                // for all chromosomes.
+                // jointCondensedFiles Task, for all chromosomes.
                 // The number of additional files is the number of chromosomes minus 1.
                 int addCondensed = 0;
-                for (int deep = startChr; deep < endChr; deep++) {
+                for (int deep = this.startChr; deep < this.endChr; deep++) {
                     String tmpAdditionalCondensedFileName = null;
-                    // if(startChr == endChr) {
-                    // tmpAdditionalCondensedFileName = testTypeName + "_" + rPanel + "_condensed_chr_" + startChr +
-                    // ".txt.gz";
-                    // } else
-                    if (deep == (endChr - 1)) {
-                        tmpAdditionalCondensedFileName = testTypeName + "_" + rPanel + "_condensed_chr_" + startChr + "_to_" + endChr
-                                + ".txt.gz";
+                    if (deep == (this.endChr - 1)) {
+                        tmpAdditionalCondensedFileName = testTypeName + "_" + rPanel + "_condensed_chr_" + this.startChr + "_to_"
+                                + this.endChr + ".txt.gz";
                     } else {
                         tmpAdditionalCondensedFileName = testTypeName + "_" + rPanel + "_condensed_" + addCondensed + ".txt.gz";
                     }
-                    String tmpAdditionalCondensedFile = rpanelOutDirSummary + "/" + tmpAdditionalCondensedFileName;
                     GenericFile myAdditionalCondensedFile = new GenericFile(rpanelOutDirSummary, tmpAdditionalCondensedFileName,
                             "uncompressed", "none");
                     additionalCondensedFile.add(myAdditionalCondensedFile);
@@ -356,9 +307,8 @@ public class MergeFiles {
                     addCondensed++;
                 }
 
-                if (startChr == endChr) {
-                    String tmpAdditionalCondensedFileName = testTypeName + "_" + rPanel + "_condensed_chr_" + startChr + ".txt.gz";
-                    String tmpAdditionalCondensedFile = rpanelOutDirSummary + "/" + tmpAdditionalCondensedFileName;
+                if (this.startChr == this.endChr) {
+                    String tmpAdditionalCondensedFileName = testTypeName + "_" + rPanel + "_condensed_chr_" + this.startChr + ".txt.gz";
                     GenericFile myAdditionalCondensedFile = new GenericFile(rpanelOutDirSummary, tmpAdditionalCondensedFileName,
                             "uncompressed", "none");
                     additionalCondensedFile.add(myAdditionalCondensedFile);
@@ -369,36 +319,29 @@ public class MergeFiles {
                 rpanelAdditionalCondensedIndex.add(addCondensed);
 
                 // Here we have to create an additional list of filteredByAll files that will be used when we execute
-                // jointFilteredByAllFile task
-                // for all chromosomes.
+                // jointFilteredByAllFile task for all chromosomes.
                 // Unlike the previous case with condensed files, we can not include chromosome 23. (Chr 23 format fo
-                // filteredByAllFile is different to
-                // the rest of chromosomes (thanks to snptest).
+                // filteredByAllFile is different to the rest of chromosomes (thanks to snptest).
 
                 // The number of additional files is the number of chromosomes minus 1.
                 int addFiltered = 0;
-                int endChrNormal = endChr;
-                if (startChr < endChr) {
-                    if (endChr != 23) {
-                        endChrNormal = endChr;
+                int endChrNormal = this.endChr;
+                if (this.startChr < this.endChr) {
+                    if (this.endChr != 23) {
+                        endChrNormal = this.endChr;
                     } else {
-                        endChrNormal = endChr - 1;
+                        endChrNormal = this.endChr - 1;
                     }
                 }
 
-                for (int deep = startChr; deep < endChrNormal; deep++) {
+                for (int deep = this.startChr; deep < endChrNormal; deep++) {
                     String tmpAdditionalFilteredByAllFileName = null;
-                    // if(startChr == endChrNormal) {
-                    // tmpAdditionalFilteredByAllFileName = testTypeName + "_" + rPanel + "_filteredByAll_chr_" +
-                    // startChr + ".txt.gz";
-                    // } else
                     if (deep == (endChrNormal - 1)) {
-                        tmpAdditionalFilteredByAllFileName = testTypeName + "_" + rPanel + "_filteredByAll_chr_" + startChr + "_to_"
+                        tmpAdditionalFilteredByAllFileName = testTypeName + "_" + rPanel + "_filteredByAll_chr_" + this.startChr + "_to_"
                                 + endChrNormal + ".txt.gz";
                     } else {
                         tmpAdditionalFilteredByAllFileName = testTypeName + "_" + rPanel + "_filteredByAll_" + addFiltered + ".txt.gz";
                     }
-                    String tmpAdditionalFilteredByAllFile = rpanelOutDirSummary + "/" + tmpAdditionalFilteredByAllFileName;
                     GenericFile myAdditionalFilteredByAllFile = new GenericFile(rpanelOutDirSummary, tmpAdditionalFilteredByAllFileName,
                             "uncompressed", "none");
                     additionalFilteredByAllFile.add(myAdditionalFilteredByAllFile);
@@ -407,25 +350,23 @@ public class MergeFiles {
                     addFiltered++;
                 }
 
-                if (startChr == endChrNormal) {
-                    String tmpAdditionalFilteredByAllFileName = testTypeName + "_" + rPanel + "_filteredByAll_chr_" + startChr + ".txt.gz";
-                    String tmpAdditionalFilteredByAllFile = rpanelOutDirSummary + "/" + tmpAdditionalFilteredByAllFileName;
+                if (this.startChr == endChrNormal) {
+                    String tmpAdditionalFilteredByAllFileName = testTypeName + "_" + rPanel + "_filteredByAll_chr_" + this.startChr
+                            + ".txt.gz";
                     GenericFile myAdditionalFilteredByAllFile = new GenericFile(rpanelOutDirSummary, tmpAdditionalFilteredByAllFileName,
                             "uncompressed", "none");
                     additionalFilteredByAllFile.add(myAdditionalFilteredByAllFile);
-                    // System.out.println("\t[MergeFiles.java] only " + tmpAdditionalFilteredByAllFile);
                     addFiltered++;
                 }
 
                 rpanelAdditionalFilteredByAllIndex.add(addFiltered);
-
                 rpanelAdditionalCondensedFile.add(additionalCondensedFile);
                 rpanelAdditionalFilteredByAllFile.add(additionalFilteredByAllFile);
 
                 // If there is chr 23:
-                if (endChr == 23) {
-                    String tmpAdditionalFilteredByAllXFileName = testTypeName + "_" + rPanel + "_filteredByAll_chr_" + endChr + ".txt.gz";
-                    String tmpAdditionalFilteredByAllXFile = rpanelOutDirSummary + "/" + tmpAdditionalFilteredByAllXFileName;
+                if (this.endChr == 23) {
+                    String tmpAdditionalFilteredByAllXFileName = testTypeName + "_" + rPanel + "_filteredByAll_chr_" + this.endChr
+                            + ".txt.gz";
                     GenericFile myAdditionalFilteredByAllXFile = new GenericFile(rpanelOutDirSummary, tmpAdditionalFilteredByAllXFileName,
                             "uncompressed", "none");
 
@@ -434,32 +375,32 @@ public class MergeFiles {
 
                     rpanelAdditionalFilteredByAllXFile.add(additionalFilteredByAllXFile);
                 }
-            } // End of for(j=0; j<refPanels.size();j++)
-              // Now we have to build the list of reduced files for the type of Test. We store this list
-            testTypeReducedOutDir.add(rpanelListOutDir);
-            testTypeReducedFile.add(rpanelReducedFile);
-            testTypeReducedFilteredFile.add(rpanelReducedFilteredFile);
-            testTypeReducedCondensedFile.add(rpanelReducedCondensedFile);
+            } // End of for refPanels
 
-            testTypeCombinedReducedFilteredFile.add(rpanelCombinedReducedFilteredFile);
-            testTypeCombinedReducedCondensedFile.add(rpanelCombinedReducedCondensedFile);
-            testTypeCombinedReducedFilteredXFile.add(rpanelCombinedReducedFilteredXFile);
-            // testTypeCombinedReducedCondensedXFile.add(rpanelCombinedReducedCondensedXFile);
+            // Now we have to build the list of reduced files for the type of Test. We store this list
+            this.testTypeReducedOutDir.add(rpanelListOutDir);
+            this.testTypeReducedFile.add(rpanelReducedFile);
+            this.testTypeReducedFilteredFile.add(rpanelReducedFilteredFile);
+            this.testTypeReducedCondensedFile.add(rpanelReducedCondensedFile);
 
-            testTypeFilteredByAllFile.add(rpanelFilteredByAllFile);
-            testTypeCondensedFile.add(rpanelCondensedFile);
+            this.testTypeCombinedReducedFilteredFile.add(rpanelCombinedReducedFilteredFile);
+            this.testTypeCombinedReducedCondensedFile.add(rpanelCombinedReducedCondensedFile);
+            this.testTypeCombinedReducedFilteredXFile.add(rpanelCombinedReducedFilteredXFile);
 
-            testTypeAdditionalCondensedFile.add(rpanelAdditionalCondensedFile);
-            testTypeAdditionalFilteredByAllFile.add(rpanelAdditionalFilteredByAllFile);
+            this.testTypeFilteredByAllFile.add(rpanelFilteredByAllFile);
+            this.testTypeCondensedFile.add(rpanelCondensedFile);
 
-            if (endChr == 23) {
-                testTypeAdditionalFilteredByAllXFile.add(rpanelAdditionalFilteredByAllXFile);
+            this.testTypeAdditionalCondensedFile.add(rpanelAdditionalCondensedFile);
+            this.testTypeAdditionalFilteredByAllFile.add(rpanelAdditionalFilteredByAllFile);
+
+            if (this.endChr == 23) {
+                this.testTypeAdditionalFilteredByAllXFile.add(rpanelAdditionalFilteredByAllXFile);
             }
 
-            testTypeAdditionalCondensedIndex.add(rpanelAdditionalCondensedIndex);
-            testTypeAdditionalFilteredByAllIndex.add(rpanelAdditionalFilteredByAllIndex);
+            this.testTypeAdditionalCondensedIndex.add(rpanelAdditionalCondensedIndex);
+            this.testTypeAdditionalFilteredByAllIndex.add(rpanelAdditionalFilteredByAllIndex);
 
-        } // end of for(int tt=0; tt< numberOfTestTypesNames; tt++)
+        } // End of for test types
     }
 
     /**
@@ -474,9 +415,9 @@ public class MergeFiles {
         // Check that chromo index is within the bounds
         checkChromoIndex(chromo);
 
-        int i = chromo - startChr;
+        int i = chromo - this.startChr;
         // int i= chromo - 1 ;
-        return testTypeReducedOutDir.get(testTypeIndex).get(rPanelIndex).get(i);
+        return this.testTypeReducedOutDir.get(testTypeIndex).get(rPanelIndex).get(i);
     }
 
     /**
@@ -493,7 +434,7 @@ public class MergeFiles {
         checkChromoIndex(chromo);
 
         // int i = chromo -1;
-        int i = chromo - startChr;
+        int i = chromo - this.startChr;
 
         // TODO: IMPORTANT: Verify the index range!!!!
         // ArrayList<String> tmpList = new ArrayList<String>();
@@ -507,7 +448,7 @@ public class MergeFiles {
         // System.exit(1);
         // }
 
-        return testTypeReducedFile.get(testTypeIndex).get(rPanelIndex).get(i).get(index).getFullName();
+        return this.testTypeReducedFile.get(testTypeIndex).get(rPanelIndex).get(i).get(index).getFullName();
     }
 
     /**
@@ -524,7 +465,7 @@ public class MergeFiles {
         checkChromoIndex(chromo);
 
         // int i = chromo -1;
-        int i = chromo - startChr;
+        int i = chromo - this.startChr;
         // TODO: IMPORTANT: Verify the index range!!!!
         // ArrayList<String> tmpList = new ArrayList<String>();
         // tmpList = (testTypeReducedFileName.get(rPanelIndex, i));
@@ -537,7 +478,7 @@ public class MergeFiles {
         // System.exit(1);
         // }
 
-        return testTypeReducedFile.get(testTypeIndex).get(rPanelIndex).get(i).get(index).getFullName();
+        return this.testTypeReducedFile.get(testTypeIndex).get(rPanelIndex).get(i).get(index).getFullName();
     }
 
     /**
@@ -554,7 +495,7 @@ public class MergeFiles {
         checkChromoIndex(chromo);
 
         // int i = chromo -1;
-        int i = chromo - startChr;
+        int i = chromo - this.startChr;
         // TODO: IMPORTANT: Verify the index range!!!!
         // ArrayList<String> tmpList = new ArrayList<String>();
         // tmpList = (testTypeReducedFileName.get(rPanelIndex, i));
@@ -567,7 +508,7 @@ public class MergeFiles {
         // System.exit(1);
         // }
 
-        testTypeReducedFile.get(testTypeIndex).get(rPanelIndex).get(i).get(index).setFinalStatus(finalStatus);
+        this.testTypeReducedFile.get(testTypeIndex).get(rPanelIndex).get(i).get(index).setFinalStatus(finalStatus);
     }
 
     /**
@@ -584,7 +525,7 @@ public class MergeFiles {
         checkChromoIndex(chromo);
 
         // int i = chromo -1;
-        int i = chromo - startChr;
+        int i = chromo - this.startChr;
         // TODO: IMPORTANT: Verify the index range!!!!
         // ArrayList<String> tmpList = new ArrayList<String>();
         // tmpList = (testTypeReducedFileName.get(rPanelIndex, i));
@@ -597,7 +538,7 @@ public class MergeFiles {
         // System.exit(1);
         // }
 
-        return testTypeReducedFile.get(testTypeIndex).get(rPanelIndex).get(i).get(index).getFinalStatus();
+        return this.testTypeReducedFile.get(testTypeIndex).get(rPanelIndex).get(i).get(index).getFinalStatus();
     }
 
     /**
@@ -614,7 +555,7 @@ public class MergeFiles {
         checkChromoIndex(chromo);
 
         // int i = chromo -1;
-        int i = chromo - startChr;
+        int i = chromo - this.startChr;
 
         // TODO: IMPORTANT: Verify the index range!!!!
         // ArrayList<String> tmpList = new ArrayList<String>();
@@ -628,7 +569,7 @@ public class MergeFiles {
         // System.exit(1);
         // }
 
-        return testTypeReducedFilteredFile.get(testTypeIndex).get(rPanelIndex).get(i).get(index).getFullName();
+        return this.testTypeReducedFilteredFile.get(testTypeIndex).get(rPanelIndex).get(i).get(index).getFullName();
     }
 
     /**
@@ -645,7 +586,7 @@ public class MergeFiles {
         checkChromoIndex(chromo);
 
         // int i = chromo -1;
-        int i = chromo - startChr;
+        int i = chromo - this.startChr;
         // TODO: IMPORTANT: Verify the index range!!!!
         // ArrayList<String> tmpList = new ArrayList<String>();
         // tmpList = (testTypeReducedFilteredFileName.get(rPanelIndex, i));
@@ -658,7 +599,7 @@ public class MergeFiles {
         // System.exit(1);
         // }
 
-        return testTypeReducedFilteredFile.get(testTypeIndex).get(rPanelIndex).get(i).get(index).getFullName();
+        return this.testTypeReducedFilteredFile.get(testTypeIndex).get(rPanelIndex).get(i).get(index).getFullName();
     }
 
     /**
@@ -675,7 +616,7 @@ public class MergeFiles {
         checkChromoIndex(chromo);
 
         // int i = chromo -1;
-        int i = chromo - startChr;
+        int i = chromo - this.startChr;
         // TODO: IMPORTANT: Verify the index range!!!!
         // ArrayList<String> tmpList = new ArrayList<String>();
         // tmpList = (testTypeReducedFilteredFileName.get(rPanelIndex, i));
@@ -688,7 +629,7 @@ public class MergeFiles {
         // System.exit(1);
         // }
 
-        testTypeReducedFilteredFile.get(testTypeIndex).get(rPanelIndex).get(i).get(index).setFinalStatus(finalStatus);
+        this.testTypeReducedFilteredFile.get(testTypeIndex).get(rPanelIndex).get(i).get(index).setFinalStatus(finalStatus);
     }
 
     /**
@@ -705,7 +646,7 @@ public class MergeFiles {
         checkChromoIndex(chromo);
 
         // int i = chromo -1;
-        int i = chromo - startChr;
+        int i = chromo - this.startChr;
         // TODO: IMPORTANT: Verify the index range!!!!
         // ArrayList<String> tmpList = new ArrayList<String>();
         // tmpList = (testTypeReducedFilteredFileName.get(rPanelIndex, i));
@@ -718,7 +659,7 @@ public class MergeFiles {
         // System.exit(1);
         // }
 
-        return testTypeReducedFilteredFile.get(testTypeIndex).get(rPanelIndex).get(i).get(index).getFinalStatus();
+        return this.testTypeReducedFilteredFile.get(testTypeIndex).get(rPanelIndex).get(i).get(index).getFinalStatus();
     }
 
     /**
@@ -735,7 +676,7 @@ public class MergeFiles {
         checkChromoIndex(chromo);
 
         // int i = chromo -1;
-        int i = chromo - startChr;
+        int i = chromo - this.startChr;
 
         // TODO: IMPORTANT: Verify the index range!!!!
         // ArrayList<String> tmpList = new ArrayList<String>();
@@ -749,7 +690,7 @@ public class MergeFiles {
         // System.exit(1);
         // }
 
-        return testTypeReducedCondensedFile.get(testTypeIndex).get(rPanelIndex).get(i).get(index).getFullName();
+        return this.testTypeReducedCondensedFile.get(testTypeIndex).get(rPanelIndex).get(i).get(index).getFullName();
     }
 
     /**
@@ -766,7 +707,7 @@ public class MergeFiles {
         checkChromoIndex(chromo);
 
         // int i = chromo -1;
-        int i = chromo - startChr;
+        int i = chromo - this.startChr;
         // TODO: IMPORTANT: Verify the index range!!!!
         // ArrayList<String> tmpList = new ArrayList<String>();
         // tmpList = (testTypeReducedCondensedFileName.get(rPanelIndex, i));
@@ -779,7 +720,7 @@ public class MergeFiles {
         // System.exit(1);
         // }
 
-        return testTypeReducedCondensedFile.get(testTypeIndex).get(rPanelIndex).get(i).get(index).getFullName();
+        return this.testTypeReducedCondensedFile.get(testTypeIndex).get(rPanelIndex).get(i).get(index).getFullName();
     }
 
     /**
@@ -796,7 +737,7 @@ public class MergeFiles {
         checkChromoIndex(chromo);
 
         // int i = chromo -1;
-        int i = chromo - startChr;
+        int i = chromo - this.startChr;
         // TODO: IMPORTANT: Verify the index range!!!!
         // ArrayList<String> tmpList = new ArrayList<String>();
         // tmpList = (testTypeReducedCondensedFileName.get(rPanelIndex, i));
@@ -809,7 +750,7 @@ public class MergeFiles {
         // System.exit(1);
         // }
 
-        testTypeReducedCondensedFile.get(testTypeIndex).get(rPanelIndex).get(i).get(index).setFinalStatus(finalStatus);
+        this.testTypeReducedCondensedFile.get(testTypeIndex).get(rPanelIndex).get(i).get(index).setFinalStatus(finalStatus);
     }
 
     /**
@@ -826,7 +767,7 @@ public class MergeFiles {
         checkChromoIndex(chromo);
 
         // int i = chromo -1;
-        int i = chromo - startChr;
+        int i = chromo - this.startChr;
         // TODO: IMPORTANT: Verify the index range!!!!
         // ArrayList<String> tmpList = new ArrayList<String>();
         // tmpList = (testTypeReducedCondensedFileName.get(rPanelIndex, i));
@@ -839,7 +780,7 @@ public class MergeFiles {
         // System.exit(1);
         // }
 
-        return testTypeReducedCondensedFile.get(testTypeIndex).get(rPanelIndex).get(i).get(index).getFinalStatus();
+        return this.testTypeReducedCondensedFile.get(testTypeIndex).get(rPanelIndex).get(i).get(index).getFinalStatus();
     }
 
     /**
@@ -856,7 +797,7 @@ public class MergeFiles {
         checkChromoIndex(chromo);
 
         // int i = chromo -1;
-        int i = chromo - startChr;
+        int i = chromo - this.startChr;
 
         // TODO: IMPORTANT: Verify the index range!!!!
         // ArrayList<String> tmpList = new ArrayList<String>();
@@ -870,7 +811,7 @@ public class MergeFiles {
         // System.exit(1);
         // }
 
-        return testTypeCombinedReducedFilteredFile.get(testTypeIndex).get(rPanelIndex).get(i).get(index).getFullName();
+        return this.testTypeCombinedReducedFilteredFile.get(testTypeIndex).get(rPanelIndex).get(i).get(index).getFullName();
     }
 
     /**
@@ -887,7 +828,7 @@ public class MergeFiles {
         checkChromoIndex(chromo);
 
         // int i = chromo -1;
-        int i = chromo - startChr;
+        int i = chromo - this.startChr;
         // TODO: IMPORTANT: Verify the index range!!!!
         // ArrayList<String> tmpList = new ArrayList<String>();
         // tmpList = (testTypeCombinedReducedFilteredFileName.get(rPanelIndex, i));
@@ -900,7 +841,7 @@ public class MergeFiles {
         // System.exit(1);
         // }
 
-        return testTypeCombinedReducedFilteredFile.get(testTypeIndex).get(rPanelIndex).get(i).get(index).getFullName();
+        return this.testTypeCombinedReducedFilteredFile.get(testTypeIndex).get(rPanelIndex).get(i).get(index).getFullName();
     }
 
     /**
@@ -917,7 +858,7 @@ public class MergeFiles {
         checkChromoIndex(chromo);
 
         // int i = chromo -1;
-        int i = chromo - startChr;
+        int i = chromo - this.startChr;
         // TODO: IMPORTANT: Verify the index range!!!!
         // ArrayList<String> tmpList = new ArrayList<String>();
         // tmpList = (testTypeCombinedReducedFilteredFileName.get(rPanelIndex, i));
@@ -930,7 +871,7 @@ public class MergeFiles {
         // System.exit(1);
         // }
 
-        testTypeCombinedReducedFilteredFile.get(testTypeIndex).get(rPanelIndex).get(i).get(index).setFinalStatus(finalStatus);
+        this.testTypeCombinedReducedFilteredFile.get(testTypeIndex).get(rPanelIndex).get(i).get(index).setFinalStatus(finalStatus);
     }
 
     /**
@@ -947,7 +888,7 @@ public class MergeFiles {
         checkChromoIndex(chromo);
 
         // int i = chromo -1;
-        int i = chromo - startChr;
+        int i = chromo - this.startChr;
         // TODO: IMPORTANT: Verify the index range!!!!
         // ArrayList<String> tmpList = new ArrayList<String>();
         // tmpList = (testTypeCombinedReducedFilteredFileName.get(rPanelIndex, i));
@@ -960,7 +901,7 @@ public class MergeFiles {
         // System.exit(1);
         // }
 
-        return testTypeCombinedReducedFilteredFile.get(testTypeIndex).get(rPanelIndex).get(i).get(index).getFinalStatus();
+        return this.testTypeCombinedReducedFilteredFile.get(testTypeIndex).get(rPanelIndex).get(i).get(index).getFinalStatus();
     }
 
     /**
@@ -977,7 +918,7 @@ public class MergeFiles {
         checkChromoIndex(chromo);
 
         // int i = chromo -1;
-        int i = chromo - startChr;
+        int i = chromo - this.startChr;
 
         // TODO: IMPORTANT: Verify the index range!!!!
         // ArrayList<String> tmpList = new ArrayList<String>();
@@ -991,7 +932,7 @@ public class MergeFiles {
         // System.exit(1);
         // }
 
-        return testTypeCombinedReducedFilteredXFile.get(testTypeIndex).get(rPanelIndex).get(i).get(index).getFullName();
+        return this.testTypeCombinedReducedFilteredXFile.get(testTypeIndex).get(rPanelIndex).get(i).get(index).getFullName();
     }
 
     /**
@@ -1008,7 +949,7 @@ public class MergeFiles {
         checkChromoIndex(chromo);
 
         // int i = chromo -1;
-        int i = chromo - startChr;
+        int i = chromo - this.startChr;
         // TODO: IMPORTANT: Verify the index range!!!!
         // ArrayList<String> tmpList = new ArrayList<String>();
         // tmpList = (testTypeCombinedReducedFilteredXFileName.get(rPanelIndex, i));
@@ -1021,7 +962,7 @@ public class MergeFiles {
         // System.exit(1);
         // }
 
-        return testTypeCombinedReducedFilteredXFile.get(testTypeIndex).get(rPanelIndex).get(i).get(index).getFullName();
+        return this.testTypeCombinedReducedFilteredXFile.get(testTypeIndex).get(rPanelIndex).get(i).get(index).getFullName();
     }
 
     /**
@@ -1038,7 +979,7 @@ public class MergeFiles {
         checkChromoIndex(chromo);
 
         // int i = chromo -1;
-        int i = chromo - startChr;
+        int i = chromo - this.startChr;
         // TODO: IMPORTANT: Verify the index range!!!!
         // ArrayList<String> tmpList = new ArrayList<String>();
         // tmpList = (testTypeCombinedReducedFilteredXFileName.get(rPanelIndex, i));
@@ -1051,7 +992,7 @@ public class MergeFiles {
         // System.exit(1);
         // }
 
-        testTypeCombinedReducedFilteredXFile.get(testTypeIndex).get(rPanelIndex).get(i).get(index).setFinalStatus(finalStatus);
+        this.testTypeCombinedReducedFilteredXFile.get(testTypeIndex).get(rPanelIndex).get(i).get(index).setFinalStatus(finalStatus);
     }
 
     /**
@@ -1068,7 +1009,7 @@ public class MergeFiles {
         checkChromoIndex(chromo);
 
         // int i = chromo -1;
-        int i = chromo - startChr;
+        int i = chromo - this.startChr;
         // TODO: IMPORTANT: Verify the index range!!!!
         // ArrayList<String> tmpList = new ArrayList<String>();
         // tmpList = (testTypeCombinedReducedFilteredXFileName.get(rPanelIndex, i));
@@ -1081,7 +1022,7 @@ public class MergeFiles {
         // System.exit(1);
         // }
 
-        return testTypeCombinedReducedFilteredXFile.get(testTypeIndex).get(rPanelIndex).get(i).get(index).getFinalStatus();
+        return this.testTypeCombinedReducedFilteredXFile.get(testTypeIndex).get(rPanelIndex).get(i).get(index).getFinalStatus();
     }
 
     /**
@@ -1098,7 +1039,7 @@ public class MergeFiles {
         checkChromoIndex(chromo);
 
         // int i = chromo -1;
-        int i = chromo - startChr;
+        int i = chromo - this.startChr;
 
         // TODO: IMPORTANT: Verify the index range!!!!
         // ArrayList<String> tmpList = new ArrayList<String>();
@@ -1112,7 +1053,7 @@ public class MergeFiles {
         // System.exit(1);
         // }
 
-        return testTypeCombinedReducedCondensedFile.get(testTypeIndex).get(rPanelIndex).get(i).get(index).getFullName();
+        return this.testTypeCombinedReducedCondensedFile.get(testTypeIndex).get(rPanelIndex).get(i).get(index).getFullName();
     }
 
     /**
@@ -1129,7 +1070,7 @@ public class MergeFiles {
         checkChromoIndex(chromo);
 
         // int i = chromo -1;
-        int i = chromo - startChr;
+        int i = chromo - this.startChr;
         // TODO: IMPORTANT: Verify the index range!!!!
         // ArrayList<String> tmpList = new ArrayList<String>();
         // tmpList = (testTypeCombinedReducedCondensedFileName.get(rPanelIndex, i));
@@ -1142,7 +1083,7 @@ public class MergeFiles {
         // System.exit(1);
         // }
 
-        return testTypeCombinedReducedCondensedFile.get(testTypeIndex).get(rPanelIndex).get(i).get(index).getFullName();
+        return this.testTypeCombinedReducedCondensedFile.get(testTypeIndex).get(rPanelIndex).get(i).get(index).getFullName();
     }
 
     /**
@@ -1159,7 +1100,7 @@ public class MergeFiles {
         checkChromoIndex(chromo);
 
         // int i = chromo -1;
-        int i = chromo - startChr;
+        int i = chromo - this.startChr;
         // TODO: IMPORTANT: Verify the index range!!!!
         // ArrayList<String> tmpList = new ArrayList<String>();
         // tmpList = (testTypeCombinedReducedCondensedFileName.get(rPanelIndex, i));
@@ -1172,7 +1113,7 @@ public class MergeFiles {
         // System.exit(1);
         // }
 
-        testTypeCombinedReducedCondensedFile.get(testTypeIndex).get(rPanelIndex).get(i).get(index).setFinalStatus(finalStatus);
+        this.testTypeCombinedReducedCondensedFile.get(testTypeIndex).get(rPanelIndex).get(i).get(index).setFinalStatus(finalStatus);
     }
 
     /**
@@ -1189,7 +1130,7 @@ public class MergeFiles {
         checkChromoIndex(chromo);
 
         // int i = chromo -1;
-        int i = chromo - startChr;
+        int i = chromo - this.startChr;
         // TODO: IMPORTANT: Verify the index range!!!!
         // ArrayList<String> tmpList = new ArrayList<String>();
         // tmpList = (testTypeCombinedReducedCondensedFileName.get(rPanelIndex, i));
@@ -1202,75 +1143,8 @@ public class MergeFiles {
         // System.exit(1);
         // }
 
-        return testTypeCombinedReducedCondensedFile.get(testTypeIndex).get(rPanelIndex).get(i).get(index).getFinalStatus();
+        return this.testTypeCombinedReducedCondensedFile.get(testTypeIndex).get(rPanelIndex).get(i).get(index).getFinalStatus();
     }
-
-    /*
-     * // Method to access reducedCombinedReducedCondensedXFileName public String
-     * getCombinedReducedCondensedXFileName(int testTypeIndex, int rPanelIndex,int chromo, int index) {
-     * 
-     * if ( (chromo < 1) || (chromo > maxNumberOfChromosomes) ) { System.err.println("[MergeFiles] Error, chromosome " +
-     * chromo + "does not exist"); System.exit(1); } //int i = chromo -1; int i = chromo - startChr;
-     * 
-     * //TODO: IMPORTANT: Verify the index range!!!! //ArrayList<String> tmpList = new ArrayList<String>();
-     * //testTypeCombinedReducedCondensedXFileName.get(rPanelIndex).get(i); //int lastIndex = tmpList.size() - 1;
-     * 
-     * //if(index > lastIndex) { // System.err.
-     * println("[MergeFiles] Error, the number of testTypeCombinedReducedCondensedXFileName is greater than the existing in chromosome "
-     * + chromo); // System.err.println("             index " + index + " > lastIndex = " + lastIndex); //
-     * System.exit(1); //}
-     * 
-     * return testTypeCombinedReducedCondensedXFile.get(testTypeIndex).get(rPanelIndex).get(i).get(index).getFullName();
-     * }
-     * 
-     * 
-     * // Method to access reducedCombinedReducedCondensedXFile public String getCombinedReducedCondensedXFile(int
-     * testTypeIndex, int rPanelIndex,int chromo, int index) { if ( (chromo < 1) || (chromo > maxNumberOfChromosomes) )
-     * { System.err.println("[MergeFiles] Error, chromosome " + chromo + "does not exist"); System.exit(1); } //int i =
-     * chromo -1; int i = chromo - startChr; //TODO: IMPORTANT: Verify the index range!!!! //ArrayList<String> tmpList =
-     * new ArrayList<String>(); //tmpList = (testTypeCombinedReducedCondensedXFileName.get(rPanelIndex, i)); //int
-     * lastIndex = tmpList.size() - 1;
-     * 
-     * //if(index > lastIndex) { // System.err.
-     * println("[MergeFiles] Error, the number of testTypeCombinedReducedCondensedXFile  is greater than the existing in chromosome "
-     * + chromo); // System.err.println("             index " + index + " > lastIndex = " + lastIndex); //
-     * System.exit(1); //}
-     * 
-     * return testTypeCombinedReducedCondensedXFile.get(testTypeIndex).get(rPanelIndex).get(i).get(index).getFullName();
-     * }
-     * 
-     * /** Method to set the finalStatus of the reducedCombinedReducedCondensedXFile / public void
-     * setCombinedReducedCondensedXFileFinalStatus(int testTypeIndex, int rPanelIndex,int chromo,int index, String
-     * finalStatus) { if ( (chromo < 1) || (chromo > maxNumberOfChromosomes) ) {
-     * System.err.println("[MergeFiles] Error, chromosome " + chromo + "does not exist"); System.exit(1); } //int i =
-     * chromo -1; int i = chromo - startChr; //TODO: IMPORTANT: Verify the index range!!!! //ArrayList<String> tmpList =
-     * new ArrayList<String>(); //tmpList = (testTypeCombinedReducedCondensedXFileName.get(rPanelIndex, i)); //int
-     * lastIndex = tmpList.size() - 1;
-     * 
-     * //if(index > lastIndex) { // System.err.
-     * println("[MergeFiles] Error, the number of testTypeCombinedReducedCondensedXFile  is greater than the existing in chromosome "
-     * + chromo); // System.err.println("             index " + index + " > lastIndex = " + lastIndex); //
-     * System.exit(1); //}
-     * 
-     * testTypeCombinedReducedCondensedXFile.get(testTypeIndex).get(rPanelIndex).get(i).get(index).setFinalStatus(
-     * finalStatus); }
-     * 
-     * 
-     * /** Method to access the finalStatus of the reducedCombinedReducedCondensedXFile / public String
-     * getCombinedReducedCondensedXFileFinalStatus(int testTypeIndex, int rPanelIndex,int chromo,int index) { if (
-     * (chromo < 1) || (chromo > maxNumberOfChromosomes) ) { System.err.println("[MergeFiles] Error, chromosome " +
-     * chromo + "does not exist"); System.exit(1); } //int i = chromo -1; int i = chromo - startChr; //TODO: IMPORTANT:
-     * Verify the index range!!!! //ArrayList<String> tmpList = new ArrayList<String>(); //tmpList =
-     * (testTypeCombinedReducedCondensedXFileName.get(rPanelIndex, i)); //int lastIndex = tmpList.size() - 1;
-     * 
-     * //if(index > lastIndex) { // System.err.
-     * println("[MergeFiles] Error, the number of testTypeCombinedReducedCondensedXFile  is greater than the existing in chromosome "
-     * + chromo); // System.err.println("             index " + index + " > lastIndex = " + lastIndex); //
-     * System.exit(1); //}
-     * 
-     * return
-     * testTypeCombinedReducedCondensedXFile.get(testTypeIndex).get(rPanelIndex).get(i).get(index).getFinalStatus(); }
-     */
 
     /**
      * Method to access reducedFile
@@ -1285,13 +1159,13 @@ public class MergeFiles {
         checkChromoIndex(chromo);
 
         // int i = chromo -1;
-        int i = chromo - startChr;
+        int i = chromo - this.startChr;
 
         // ArrayList<String> tmpList = new ArrayList<String>();
-        int lastIndex = testTypeReducedFile.get(testTypeIndex).get(rPanelIndex).get(i).size() - 1;
+        int lastIndex = this.testTypeReducedFile.get(testTypeIndex).get(rPanelIndex).get(i).size() - 1;
         // System.out.println("[MergeFiles] lastIndex size = " + lastIndex);
 
-        return testTypeReducedFile.get(testTypeIndex).get(rPanelIndex).get(i).get(lastIndex).getFullName();
+        return this.testTypeReducedFile.get(testTypeIndex).get(rPanelIndex).get(i).get(lastIndex).getFullName();
     }
 
     /**
@@ -1307,10 +1181,10 @@ public class MergeFiles {
         checkChromoIndex(chromo);
 
         // int i = chromo -1;
-        int i = chromo - startChr;
+        int i = chromo - this.startChr;
 
         // ArrayList<String> tmpList = new ArrayList<String>();
-        int lastIndex = testTypeReducedFile.get(testTypeIndex).get(rPanelIndex).get(i).size() - 1;
+        int lastIndex = this.testTypeReducedFile.get(testTypeIndex).get(rPanelIndex).get(i).size() - 1;
         // System.out.println("[MergeFiles] lastIndex size = " + lastIndex);
         return lastIndex;
     }
@@ -1326,7 +1200,7 @@ public class MergeFiles {
         // System.out.println("\t[MergeFiles] theLastReducedFiles ARE:");
         for (int hh = 0; hh <= testTypeIndex; hh++) {
             for (int kk = 0; kk <= rPanelIndex; kk++) {
-                for (int j = 0; j <= chromo - startChr; j++) {
+                for (int j = 0; j <= chromo - this.startChr; j++) {
                     // System.out.println("\t[MergeFiles] " + testTypeReducedFile.get(rPanelIndex).get(kk).get(j));
                 }
             }
@@ -1346,7 +1220,7 @@ public class MergeFiles {
         checkChromoIndex(chromo);
 
         // int i = chromo -1;
-        int i = chromo - startChr;
+        int i = chromo - this.startChr;
 
         // TODO: IMPORTANT: Verify the index range!!!!
         // ArrayList<String> tmpList = new ArrayList<String>();
@@ -1360,7 +1234,7 @@ public class MergeFiles {
         // System.exit(1);
         // }
 
-        return testTypeFilteredByAllFile.get(testTypeIndex).get(rPanelIndex).get(i).getFullName();
+        return this.testTypeFilteredByAllFile.get(testTypeIndex).get(rPanelIndex).get(i).getFullName();
     }
 
     /**
@@ -1376,7 +1250,7 @@ public class MergeFiles {
         checkChromoIndex(chromo);
 
         // int i = chromo -1;
-        int i = chromo - startChr;
+        int i = chromo - this.startChr;
         // TODO: IMPORTANT: Verify the index range!!!!
         // ArrayList<String> tmpList = new ArrayList<String>();
         // tmpList = (testTypeReducedFileName.get(rPanelIndex, i));
@@ -1389,7 +1263,7 @@ public class MergeFiles {
         // System.exit(1);
         // }
 
-        return testTypeFilteredByAllFile.get(testTypeIndex).get(rPanelIndex).get(i).getFullName();
+        return this.testTypeFilteredByAllFile.get(testTypeIndex).get(rPanelIndex).get(i).getFullName();
     }
 
     /**
@@ -1405,7 +1279,7 @@ public class MergeFiles {
         checkChromoIndex(chromo);
 
         // int i = chromo -1;
-        int i = chromo - startChr;
+        int i = chromo - this.startChr;
         // TODO: IMPORTANT: Verify the index range!!!!
         // ArrayList<String> tmpList = new ArrayList<String>();
         // tmpList = (testTypeReducedFileName.get(rPanelIndex, i));
@@ -1418,7 +1292,7 @@ public class MergeFiles {
         // System.exit(1);
         // }
 
-        testTypeFilteredByAllFile.get(testTypeIndex).get(rPanelIndex).get(i).setFinalStatus(finalStatus);
+        this.testTypeFilteredByAllFile.get(testTypeIndex).get(rPanelIndex).get(i).setFinalStatus(finalStatus);
     }
 
     /**
@@ -1434,7 +1308,7 @@ public class MergeFiles {
         checkChromoIndex(chromo);
 
         // int i = chromo -1;
-        int i = chromo - startChr;
+        int i = chromo - this.startChr;
         // TODO: IMPORTANT: Verify the index range!!!!
         // ArrayList<String> tmpList = new ArrayList<String>();
         // tmpList = (testTypeReducedFileName.get(rPanelIndex, i));
@@ -1447,7 +1321,7 @@ public class MergeFiles {
         // System.exit(1);
         // }
 
-        return testTypeFilteredByAllFile.get(testTypeIndex).get(rPanelIndex).get(i).getFinalStatus();
+        return this.testTypeFilteredByAllFile.get(testTypeIndex).get(rPanelIndex).get(i).getFinalStatus();
     }
 
     /**
@@ -1463,7 +1337,7 @@ public class MergeFiles {
         checkChromoIndex(chromo);
 
         // int i = chromo -1;
-        int i = chromo - startChr;
+        int i = chromo - this.startChr;
 
         // TODO: IMPORTANT: Verify the index range!!!!
         // ArrayList<String> tmpList = new ArrayList<String>();
@@ -1477,7 +1351,7 @@ public class MergeFiles {
         // System.exit(1);
         // }
 
-        return testTypeCondensedFile.get(testTypeIndex).get(rPanelIndex).get(i).getFullName();
+        return this.testTypeCondensedFile.get(testTypeIndex).get(rPanelIndex).get(i).getFullName();
     }
 
     /**
@@ -1493,7 +1367,7 @@ public class MergeFiles {
         checkChromoIndex(chromo);
 
         // int i = chromo -1;
-        int i = chromo - startChr;
+        int i = chromo - this.startChr;
         // TODO: IMPORTANT: Verify the index range!!!!
         // ArrayList<String> tmpList = new ArrayList<String>();
         // tmpList = (testTypeReducedFileName.get(rPanelIndex, i));
@@ -1506,7 +1380,7 @@ public class MergeFiles {
         // System.exit(1);
         // }
 
-        return testTypeCondensedFile.get(testTypeIndex).get(rPanelIndex).get(i).getFullName();
+        return this.testTypeCondensedFile.get(testTypeIndex).get(rPanelIndex).get(i).getFullName();
     }
 
     /**
@@ -1522,7 +1396,7 @@ public class MergeFiles {
         checkChromoIndex(chromo);
 
         // int i = chromo -1;
-        int i = chromo - startChr;
+        int i = chromo - this.startChr;
         // TODO: IMPORTANT: Verify the index range!!!!
         // ArrayList<String> tmpList = new ArrayList<String>();
         // tmpList = (testTypeReducedFileName.get(rPanelIndex, i));
@@ -1535,7 +1409,7 @@ public class MergeFiles {
         // System.exit(1);
         // }
 
-        testTypeCondensedFile.get(testTypeIndex).get(rPanelIndex).get(i).setFinalStatus(finalStatus);
+        this.testTypeCondensedFile.get(testTypeIndex).get(rPanelIndex).get(i).setFinalStatus(finalStatus);
     }
 
     /**
@@ -1551,7 +1425,7 @@ public class MergeFiles {
         checkChromoIndex(chromo);
 
         // int i = chromo -1;
-        int i = chromo - startChr;
+        int i = chromo - this.startChr;
         // TODO: IMPORTANT: Verify the index range!!!!
         // ArrayList<String> tmpList = new ArrayList<String>();
         // tmpList = (testTypeReducedFileName.get(rPanelIndex, i));
@@ -1564,7 +1438,7 @@ public class MergeFiles {
         // System.exit(1);
         // }
 
-        return testTypeCondensedFile.get(testTypeIndex).get(rPanelIndex).get(i).getFinalStatus();
+        return this.testTypeCondensedFile.get(testTypeIndex).get(rPanelIndex).get(i).getFinalStatus();
     }
 
     /**
@@ -1589,7 +1463,7 @@ public class MergeFiles {
         // System.exit(1);
         // }
 
-        return testTypeAdditionalCondensedFile.get(testTypeIndex).get(rPanelIndex).get(index).getFullName();
+        return this.testTypeAdditionalCondensedFile.get(testTypeIndex).get(rPanelIndex).get(index).getFullName();
     }
 
     /**
@@ -1613,7 +1487,7 @@ public class MergeFiles {
         // System.exit(1);
         // }
 
-        return testTypeAdditionalCondensedFile.get(testTypeIndex).get(rPanelIndex).get(index).getFullName();
+        return this.testTypeAdditionalCondensedFile.get(testTypeIndex).get(rPanelIndex).get(index).getFullName();
     }
 
     /**
@@ -1637,7 +1511,7 @@ public class MergeFiles {
         // System.exit(1);
         // }
 
-        testTypeAdditionalCondensedFile.get(testTypeIndex).get(rPanelIndex).get(index).setFinalStatus(finalStatus);
+        this.testTypeAdditionalCondensedFile.get(testTypeIndex).get(rPanelIndex).get(index).setFinalStatus(finalStatus);
     }
 
     /**
@@ -1661,7 +1535,7 @@ public class MergeFiles {
         // System.exit(1);
         // }
 
-        return testTypeAdditionalCondensedFile.get(testTypeIndex).get(rPanelIndex).get(index).getFinalStatus();
+        return this.testTypeAdditionalCondensedFile.get(testTypeIndex).get(rPanelIndex).get(index).getFinalStatus();
     }
 
     /**
@@ -1685,7 +1559,7 @@ public class MergeFiles {
         // System.exit(1);
         // }
 
-        return testTypeAdditionalFilteredByAllFile.get(testTypeIndex).get(rPanelIndex).get(index).getFullName();
+        return this.testTypeAdditionalFilteredByAllFile.get(testTypeIndex).get(rPanelIndex).get(index).getFullName();
     }
 
     /**
@@ -1709,7 +1583,7 @@ public class MergeFiles {
         // System.exit(1);
         // }
 
-        return testTypeAdditionalFilteredByAllFile.get(testTypeIndex).get(rPanelIndex).get(index).getFullName();
+        return this.testTypeAdditionalFilteredByAllFile.get(testTypeIndex).get(rPanelIndex).get(index).getFullName();
     }
 
     /**
@@ -1733,7 +1607,7 @@ public class MergeFiles {
         // System.exit(1);
         // }
 
-        testTypeAdditionalFilteredByAllFile.get(testTypeIndex).get(rPanelIndex).get(index).setFinalStatus(finalStatus);
+        this.testTypeAdditionalFilteredByAllFile.get(testTypeIndex).get(rPanelIndex).get(index).setFinalStatus(finalStatus);
     }
 
     /**
@@ -1757,7 +1631,7 @@ public class MergeFiles {
         // System.exit(1);
         // }
 
-        return testTypeAdditionalFilteredByAllFile.get(testTypeIndex).get(rPanelIndex).get(index).getFinalStatus();
+        return this.testTypeAdditionalFilteredByAllFile.get(testTypeIndex).get(rPanelIndex).get(index).getFinalStatus();
     }
 
     /**
@@ -1781,7 +1655,7 @@ public class MergeFiles {
         // System.exit(1);
         // }
 
-        return testTypeAdditionalFilteredByAllXFile.get(testTypeIndex).get(rPanelIndex).get(index).getFullName();
+        return this.testTypeAdditionalFilteredByAllXFile.get(testTypeIndex).get(rPanelIndex).get(index).getFullName();
     }
 
     /**
@@ -1805,7 +1679,7 @@ public class MergeFiles {
         // System.exit(1);
         // }
 
-        return testTypeAdditionalFilteredByAllXFile.get(testTypeIndex).get(rPanelIndex).get(index).getFullName();
+        return this.testTypeAdditionalFilteredByAllXFile.get(testTypeIndex).get(rPanelIndex).get(index).getFullName();
     }
 
     /**
@@ -1829,7 +1703,7 @@ public class MergeFiles {
         // System.exit(1);
         // }
 
-        testTypeAdditionalFilteredByAllXFile.get(testTypeIndex).get(rPanelIndex).get(index).setFinalStatus(finalStatus);
+        this.testTypeAdditionalFilteredByAllXFile.get(testTypeIndex).get(rPanelIndex).get(index).setFinalStatus(finalStatus);
     }
 
     /**
@@ -1853,7 +1727,7 @@ public class MergeFiles {
         // System.exit(1);
         // }
 
-        return testTypeAdditionalFilteredByAllXFile.get(testTypeIndex).get(rPanelIndex).get(index).getFinalStatus();
+        return this.testTypeAdditionalFilteredByAllXFile.get(testTypeIndex).get(rPanelIndex).get(index).getFinalStatus();
     }
 
     /**
@@ -1864,8 +1738,8 @@ public class MergeFiles {
      * @return
      */
     public String getFinalCondensedFile(int testTypeIndex, int rPanelIndex) {
-        int lastIndex = testTypeAdditionalCondensedIndex.get(testTypeIndex).get(rPanelIndex);
-        return testTypeAdditionalCondensedFile.get(testTypeIndex).get(rPanelIndex).get(lastIndex - 1).getFullName();
+        int lastIndex = this.testTypeAdditionalCondensedIndex.get(testTypeIndex).get(rPanelIndex);
+        return this.testTypeAdditionalCondensedFile.get(testTypeIndex).get(rPanelIndex).get(lastIndex - 1).getFullName();
     }
 
     /**
@@ -1876,8 +1750,8 @@ public class MergeFiles {
      * @return
      */
     public String getFinalFilteredByAllFile(int testTypeIndex, int rPanelIndex) {
-        int lastIndex = testTypeAdditionalFilteredByAllIndex.get(testTypeIndex).get(rPanelIndex);
-        return testTypeAdditionalFilteredByAllFile.get(testTypeIndex).get(rPanelIndex).get(lastIndex - 1).getFullName();
+        int lastIndex = this.testTypeAdditionalFilteredByAllIndex.get(testTypeIndex).get(rPanelIndex);
+        return this.testTypeAdditionalFilteredByAllFile.get(testTypeIndex).get(rPanelIndex).get(lastIndex - 1).getFullName();
     }
 
     private void checkChromoIndex(int chromo) {

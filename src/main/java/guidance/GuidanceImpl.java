@@ -130,7 +130,7 @@ public class GuidanceImpl {
         // Execute the command retrieving its exitValue, output and error
         int exitValue = -1;
         try {
-            exitValue = ProcessUtils.exec(cmd, newBedFile + ".stdout", newBedFile + ".stderr");
+            exitValue = ProcessUtils.execute(cmd, newBedFile + ".stdout", newBedFile + ".stderr");
         } catch (IOException ioe) {
             throw new GuidanceTaskException(ioe);
         }
@@ -254,7 +254,7 @@ public class GuidanceImpl {
         // Execute the command retrieving its exitValue, output and error
         int exitValue = -1;
         try {
-            exitValue = ProcessUtils.exec(cmd, pedFile + ".stdout", pedFile + ".stderr");
+            exitValue = ProcessUtils.execute(cmd, pedFile + ".stdout", pedFile + ".stderr");
         } catch (IOException ioe) {
             throw new GuidanceTaskException(ioe);
         }
@@ -368,7 +368,7 @@ public class GuidanceImpl {
         // Execute the command retrieving its exitValue, output and error
         int exitValue = -1;
         try {
-            exitValue = ProcessUtils.exec(cmd, genFile + ".stdout", genFile + ".stderr");
+            exitValue = ProcessUtils.execute(cmd, genFile + ".stdout", genFile + ".stderr");
         } catch (IOException ioe) {
             throw new GuidanceTaskException(ioe);
         }
@@ -396,7 +396,9 @@ public class GuidanceImpl {
 
         File changedSampleFile = new File(sampleFile + ".changed");
         try {
-            changedSampleFile.createNewFile();
+            if (!changedSampleFile.createNewFile()) {
+                throw new IOException("Error: Cannot create " + changedSampleFile + " file");
+            }
         } catch (IOException ioe) {
             throw new GuidanceTaskException(ioe);
         }
@@ -545,7 +547,9 @@ public class GuidanceImpl {
         // Create output file
         File outPairsFile = new File(pairsFile);
         try {
-            outPairsFile.createNewFile();
+            if (!outPairsFile.createNewFile()) {
+                throw new IOException("Error: Cannot create " + outPairsFile + " file");
+            }
         } catch (IOException ioe) {
             throw new GuidanceTaskException(ioe);
         }
@@ -680,7 +684,7 @@ public class GuidanceImpl {
         // Execute the command retrieving its exitValue, output and error
         int exitValue = -1;
         try {
-            exitValue = ProcessUtils.exec(cmd, gtoolGenFile + ".stdout", gtoolGenFile + ".stderr");
+            exitValue = ProcessUtils.execute(cmd, gtoolGenFile + ".stdout", gtoolGenFile + ".stderr");
         } catch (IOException ioe) {
             throw new GuidanceTaskException(ioe);
         }
@@ -852,7 +856,7 @@ public class GuidanceImpl {
         // Execute the command retrieving its exitValue, output and error
         int exitValue = -1;
         try {
-            exitValue = ProcessUtils.exec(cmd, filteredFile + ".stdout", filteredFile + ".stderr");
+            exitValue = ProcessUtils.execute(cmd, filteredFile + ".stdout", filteredFile + ".stderr");
         } catch (IOException ioe) {
             throw new GuidanceTaskException(ioe);
         }
@@ -981,7 +985,9 @@ public class GuidanceImpl {
         // We verify that a file with the same name does not exist. (It should not exist!!)
         File outputFile = new File(excludedSnpsFile);
         try {
-            outputFile.createNewFile();
+            if (!outputFile.createNewFile()) {
+                throw new IOException("Error: Cannot create " + outputFile + " file");
+            }
         } catch (IOException ioe) {
             throw new GuidanceTaskException(ioe);
         }
@@ -1076,7 +1082,7 @@ public class GuidanceImpl {
         // Ugly issue: If we run shapeit_v2, all the stdXXX is done stdout, and there is not stderr
         int exitValue = -1;
         try {
-            exitValue = ProcessUtils.exec(cmd, shapeitHapsFile + ".stdout", shapeitHapsFile + ".stderr");
+            exitValue = ProcessUtils.execute(cmd, shapeitHapsFile + ".stdout", shapeitHapsFile + ".stderr");
         } catch (IOException ioe) {
             throw new GuidanceTaskException(ioe);
         }
@@ -1093,7 +1099,10 @@ public class GuidanceImpl {
         String tmpFile = shapeitLogFile + ".log";
         File tmpShapeitLogFile = new File(tmpFile);
         if (tmpShapeitLogFile.exists()) {
-            tmpShapeitLogFile.renameTo(new File(shapeitLogFile));
+            boolean success = tmpShapeitLogFile.renameTo(new File(shapeitLogFile));
+            if (!success) {
+                throw new GuidanceTaskException("[phasingBed] Error, the file " + tmpFile + " was not succesfully renamed");
+            }
         }
 
         // Now we rename shapeitHapsFileGz to shapeitHapsFile
@@ -1200,7 +1209,7 @@ public class GuidanceImpl {
         // Execute the command retrieving its exitValue, output and error
         int exitValue = -1;
         try {
-            exitValue = ProcessUtils.exec(cmd, shapeitHapsFile + ".stdout", shapeitHapsFile + ".stderr");
+            exitValue = ProcessUtils.execute(cmd, shapeitHapsFile + ".stdout", shapeitHapsFile + ".stderr");
         } catch (IOException ioe) {
             throw new GuidanceTaskException(ioe);
         }
@@ -1217,7 +1226,10 @@ public class GuidanceImpl {
         String tmpFile = shapeitLogFile + ".log";
         File tmpShapeitLogFile = new File(tmpFile);
         if (tmpShapeitLogFile.exists()) {
-            tmpShapeitLogFile.renameTo(new File(shapeitLogFile));
+            boolean success = tmpShapeitLogFile.renameTo(new File(shapeitLogFile));
+            if (!success) {
+                throw new GuidanceTaskException("[phasing] Error, the file " + tmpFile + " was not succesfully renamed");
+            }
         }
 
         // Now we rename shapeitHapsFileGz to shapeitHapsFile
@@ -1332,7 +1344,7 @@ public class GuidanceImpl {
         // Ugly issue: If we run shapeit_v2, all the stdXXX is done stdout, and there is not stderr
         int exitValue = -1;
         try {
-            exitValue = ProcessUtils.exec(cmd, filteredHapsFile + ".stdout", filteredHapsFile + ".stderr");
+            exitValue = ProcessUtils.execute(cmd, filteredHapsFile + ".stdout", filteredHapsFile + ".stderr");
         } catch (IOException ioe) {
             throw new GuidanceTaskException(ioe);
         }
@@ -1349,7 +1361,10 @@ public class GuidanceImpl {
         String tmpFile = filteredLogFile + ".log";
         File tmpFilteredLogFile = new File(tmpFile);
         if (tmpFilteredLogFile.exists()) {
-            tmpFilteredLogFile.renameTo(new File(filteredLogFile));
+            boolean success = tmpFilteredLogFile.renameTo(new File(filteredLogFile));
+            if (!success) {
+                throw new GuidanceTaskException("[filterHaplotypes] Error, the file " + tmpFile + " was not succesfully renamed");
+            }
         }
 
         System.err.println("[filterHaplotypes] Filtering haplotypes OK. Now we create the listofSnps...");
@@ -1501,7 +1516,7 @@ public class GuidanceImpl {
         // Execute the command retrieving its exitValue, output and error
         int exitValue = -1;
         try {
-            exitValue = ProcessUtils.exec(cmd, imputeFile + ".stdout", imputeFile + ".stderr");
+            exitValue = ProcessUtils.execute(cmd, imputeFile + ".stdout", imputeFile + ".stderr");
         } catch (IOException ioe) {
             throw new GuidanceTaskException(ioe);
         }
@@ -1521,7 +1536,9 @@ public class GuidanceImpl {
             // System.out.println("[impute] The file " + imputeFile + ".gz" + "does not exist, then, we create it.. " +
             // imputeFile);
             try {
-                fImpute.createNewFile();
+                if (!fImpute.createNewFile()) {
+                    throw new IOException("Error: Cannot create " + fImpute + " file");
+                }
             } catch (IOException ioe) {
                 throw new GuidanceTaskException(ioe);
             }
@@ -1638,7 +1655,7 @@ public class GuidanceImpl {
         // Execute the command retrieving its exitValue, output and error
         int exitValue = -1;
         try {
-            exitValue = ProcessUtils.exec(cmd, imputedMMFileName + ".stdout", imputedMMFileName + ".stderr");
+            exitValue = ProcessUtils.execute(cmd, imputedMMFileName + ".stdout", imputedMMFileName + ".stderr");
         } catch (IOException ioe) {
             throw new GuidanceTaskException(ioe);
         }
@@ -1658,7 +1675,9 @@ public class GuidanceImpl {
             // System.out.println("[impute] The file " + imputeFile + ".gz" + "does not exist, then, we create it.. " +
             // imputeFile);
             try {
-                infoFile.createNewFile();
+                if (!infoFile.createNewFile()) {
+                    throw new IOException("Error: Cannot create " + infoFile + " file");
+                }
             } catch (IOException ioe) {
                 throw new GuidanceTaskException(ioe);
             }
@@ -1686,7 +1705,9 @@ public class GuidanceImpl {
             // System.out.println("[impute] The file " + imputeFile + ".gz" + "does not exist, then, we create it.. " +
             // imputeFile);
             try {
-                erateFile.createNewFile();
+                if (!erateFile.createNewFile()) {
+                    throw new IOException("Error: Cannot create " + erateFile + " file");
+                }
             } catch (IOException ioe) {
                 throw new GuidanceTaskException(ioe);
             }
@@ -1702,7 +1723,9 @@ public class GuidanceImpl {
             // System.out.println("[impute] The file " + imputeFile + ".gz" + "does not exist, then, we create it.. " +
             // imputeFile);
             try {
-                recFile.createNewFile();
+                if (!recFile.createNewFile()) {
+                    throw new IOException("Error: Cannot create " + recFile + " file");
+                }
             } catch (IOException ioe) {
                 throw new GuidanceTaskException(ioe);
             }
@@ -1718,7 +1741,9 @@ public class GuidanceImpl {
             // System.out.println("[impute] The file " + imputeFile + ".gz" + "does not exist, then, we create it.. " +
             // imputeFile);
             try {
-                doseFile.createNewFile();
+                if (!doseFile.createNewFile()) {
+                    throw new IOException("Error: Cannot create " + doseFile + " file");
+                }
             } catch (IOException ioe) {
                 throw new GuidanceTaskException(ioe);
             }
@@ -2307,7 +2332,9 @@ public class GuidanceImpl {
         // We verify that a file with the same name does not exist.
         File outputFile = new File(resultsPanelC);
         try {
-            outputFile.createNewFile();
+            if (!outputFile.createNewFile()) {
+                throw new IOException("Error: Cannot create " + outputFile + " file");
+            }
         } catch (IOException ioe) {
             throw new GuidanceTaskException(ioe);
         }
@@ -2644,9 +2671,13 @@ public class GuidanceImpl {
         FileUtils.gzipFile(plainResultsPanelC, resultsPanelC);
 
         File fA = new File(resultsPanelA + ".temp");
-        fA.delete();
+        if (!fA.delete()) {
+            System.err.println("ERROR: Cannot erase temp file " + resultsPanelA);
+        }
         File fB = new File(resultsPanelB + ".temp");
-        fB.delete();
+        if (!fB.delete()) {
+            System.err.println("ERROR: Cannot erase temp file " + resultsPanelB);
+        }
 
         System.out.println("\n[DEBUG] Finished all chromosomes");
 
@@ -3242,7 +3273,7 @@ public class GuidanceImpl {
         // Execute the command retrieving its exitValue, output and error
         int exitValue = -1;
         try {
-            exitValue = ProcessUtils.exec(cmd, lastCondensedFile + ".stdout", lastCondensedFile + ".stderr");
+            exitValue = ProcessUtils.execute(cmd, lastCondensedFile + ".stdout", lastCondensedFile + ".stderr");
         } catch (IOException ioe) {
             throw new GuidanceTaskException(ioe);
         }
@@ -3359,7 +3390,7 @@ public class GuidanceImpl {
             // Execute the command retrieving its exitValue, output and error
             int exitValue = -1;
             try {
-                exitValue = ProcessUtils.exec(cmd, snptestLogFile + ".stdout", snptestLogFile + ".stderr");
+                exitValue = ProcessUtils.execute(cmd, snptestLogFile + ".stdout", snptestLogFile + ".stderr");
             } catch (IOException ioe) {
                 throw new GuidanceTaskException(ioe);
             }
@@ -4725,22 +4756,25 @@ public class GuidanceImpl {
             int indexChrInPhenomeAFile = phenomeAHashTableIndex.get("chr");
             int indexPositionInPhenomeAFile = phenomeAHashTableIndex.get("position");
 
-            int indexRsIdInPhenomeAFile = phenomeAHashTableIndex.get(ttName + ":" + rpName + ":" + "rs_id_all");
-            int indexAlleleAInPhenomeAFile = phenomeAHashTableIndex.get(ttName + ":" + rpName + ":" + "alleleA");
-            int indexAlleleBInPhenomeAFile = phenomeAHashTableIndex.get(ttName + ":" + rpName + ":" + "alleleB");
-            int indexallMAFInPhenomeAFile = phenomeAHashTableIndex.get(ttName + ":" + rpName + ":" + "all_maf");
-            int indexFreqAddPvalueInPhenomeAFile = phenomeAHashTableIndex.get(ttName + ":" + rpName + ":" + "frequentist_add_pvalue");
-            int indexFreqAddBetaInPhenomeAFile = phenomeAHashTableIndex.get(ttName + ":" + rpName + ":" + "frequentist_add_beta_1");
-            int indexFreqAddSeInPhenomeAFile = phenomeAHashTableIndex.get(ttName + ":" + rpName + ":" + "frequentist_add_se_1");
+            // int indexRsIdInPhenomeAFile = phenomeAHashTableIndex.get(ttName + ":" + rpName + ":" + "rs_id_all");
+            // int indexAlleleAInPhenomeAFile = phenomeAHashTableIndex.get(ttName + ":" + rpName + ":" + "alleleA");
+            // int indexAlleleBInPhenomeAFile = phenomeAHashTableIndex.get(ttName + ":" + rpName + ":" + "alleleB");
+            // int indexallMAFInPhenomeAFile = phenomeAHashTableIndex.get(ttName + ":" + rpName + ":" + "all_maf");
+            // int indexFreqAddPvalueInPhenomeAFile = phenomeAHashTableIndex.get(ttName + ":" + rpName + ":" +
+            // "frequentist_add_pvalue");
+            // int indexFreqAddBetaInPhenomeAFile = phenomeAHashTableIndex.get(ttName + ":" + rpName + ":" +
+            // "frequentist_add_beta_1");
+            // int indexFreqAddSeInPhenomeAFile = phenomeAHashTableIndex.get(ttName + ":" + rpName + ":" +
+            // "frequentist_add_se_1");
 
-            int indexFreqAddBeta1Sex1InPhenomeAFile = phenomeAHashTableIndex
-                    .get(ttName + ":" + rpName + ":" + "frequentist_add_beta_1:genotype/sex=1");
-            int indexFreqAddBeta2Sex2InPhenomeAFile = phenomeAHashTableIndex
-                    .get(ttName + ":" + rpName + ":" + "frequentist_add_beta_2:genotype/sex=2");
-            int indexFreqAddSe1Sex1InPhenomeAFile = phenomeAHashTableIndex
-                    .get(ttName + ":" + rpName + ":" + "frequentist_add_se_1:genotype/sex=1");
-            int indexFreqAddSe2Sex2InPhenomeAFile = phenomeAHashTableIndex
-                    .get(ttName + ":" + rpName + ":" + "frequentist_add_se_2:genotype/sex=2");
+            // int indexFreqAddBeta1Sex1InPhenomeAFile = phenomeAHashTableIndex.get(ttName + ":" + rpName + ":" +
+            // "frequentist_add_beta_1:genotype/sex=1");
+            // int indexFreqAddBeta2Sex2InPhenomeAFile = phenomeAHashTableIndex.get(ttName + ":" + rpName + ":" +
+            // "frequentist_add_beta_2:genotype/sex=2");
+            // int indexFreqAddSe1Sex1InPhenomeAFile = phenomeAHashTableIndex.get(ttName + ":" + rpName + ":" +
+            // "frequentist_add_se_1:genotype/sex=1");
+            // int indexFreqAddSe2Sex2InPhenomeAFile = phenomeAHashTableIndex.get(ttName + ":" + rpName + ":" +
+            // "frequentist_add_se_2:genotype/sex=2");
 
             // --->
             // Then, we read the rest of the file and put the information into the phenomeATreeMap
@@ -5156,15 +5190,13 @@ public class GuidanceImpl {
             int length_entry_assoc_list, String mafThresholdS, String infoThresholdS, String hweCohortThresholdS, String hweCasesThresholdS,
             String hweControlsThresholdS) throws IOException {
 
-        Double mafThreshold = Double.parseDouble(mafThresholdS);
-        Double infoThreshold = Double.parseDouble(infoThresholdS);
-        Double hweCohortThreshold = Double.parseDouble(hweCohortThresholdS);
-        Double hweCasesThreshold = Double.parseDouble(hweCasesThresholdS);
-        Double hweControlsThreshold = Double.parseDouble(hweCohortThresholdS);
-        int real_length_assoc = 0;
-        if (chr.equals("23")) {
-            real_length_assoc = 67;
-        } else {
+        // Double mafThreshold = Double.parseDouble(mafThresholdS);
+        // Double infoThreshold = Double.parseDouble(infoThresholdS);
+        // Double hweCohortThreshold = Double.parseDouble(hweCohortThresholdS);
+        // Double hweCasesThreshold = Double.parseDouble(hweCasesThresholdS);
+        // Double hweControlsThreshold = Double.parseDouble(hweCohortThresholdS);
+        int real_length_assoc = 67;
+        if (!chr.equals("23")) {
             // real_length_assoc = 69;
             real_length_assoc = 67;
         }

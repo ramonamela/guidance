@@ -35,6 +35,7 @@ import java.util.List;
 
 import guidance.utils.ParseCmdLine;
 
+import java.io.File;
 import java.util.ArrayList;
 
 
@@ -76,25 +77,17 @@ public class CombinedPanelsFiles {
 
         int numberOfTestTypesNames = parsingArgs.getNumberOfTestTypeName();
 
-        /** We create the first directory name: the cohort directory */
+        // We create the first directory name: the cohort directory
         String mixedCohort = parsingArgs.getCohort();
 
         for (int tt = 0; tt < numberOfTestTypesNames; tt++) {
             String testTypeName = parsingArgs.getTestTypeName(tt);
-            String testTypeOutDir = baseOutDir + "/associations/" + testTypeName + "/" + mixedCohort + "_combined_panels";
+            String testTypeOutDir = baseOutDir + File.separator + "associations" + File.separator + testTypeName + File.separator
+                    + mixedCohort + "_combined_panels";
 
-            // ArrayList<String> rpanelListOutDir = new ArrayList<>();
-
-            // ArrayList<GenericFile> rpanelTopHitsFile = new ArrayList<>();
             ArrayList<GenericFile> combinedFilteredByAllFile = new ArrayList<>();
-
             ArrayList<GenericFile> combinedFilteredByAllXFile = new ArrayList<>();
 
-            // ArrayList<GenericFile> rpanelQqPlotPdfFile = new ArrayList<>();
-            // ArrayList<GenericFile> rpanelManhattanPdfFile = new ArrayList<>();
-
-            // ArrayList<GenericFile> rpanelQqPlotTiffFile = new ArrayList<>();
-            // ArrayList<GenericFile> rpanelManhattanTiffFile = new ArrayList<>();
             String rPanel = null;
             for (int j = 0; j < refPanels.size(); j++) {
                 rPanel = refPanels.get(j);
@@ -119,126 +112,96 @@ public class CombinedPanelsFiles {
                 prefixCorrectedPvaluesName = prefixCorrectedPvaluesName + "_" + rPanel;
 
                 String tmpCombinedFilteredByAllFileName = null;
-                String tmpCombinedFilteredByAllFile = null;
                 if (startChr == endChrNormal) {
                     tmpCombinedFilteredByAllFileName = prefixFilteredName + "_chr_" + startChrS + ".txt.gz";
-                    tmpCombinedFilteredByAllFile = testTypeOutDir + "/" + tmpCombinedFilteredByAllFileName;
                 } else {
                     tmpCombinedFilteredByAllFileName = prefixFilteredName + "_chr_" + startChrS + "_to_" + endChrNormalS + ".txt.gz";
-                    tmpCombinedFilteredByAllFile = testTypeOutDir + "/" + tmpCombinedFilteredByAllFileName;
                 }
                 GenericFile myCombinedFilteredByAllFile = new GenericFile(testTypeOutDir, tmpCombinedFilteredByAllFileName, "compressed",
                         "none");
                 combinedFilteredByAllFile.add(myCombinedFilteredByAllFile);
 
-                // System.out.println("[CombinedPanelsFiles] " + testTypeOutDir + "/" +
-                // tmpCombinedFilteredByAllFileName);
-
                 // If we are going to process chr 23, then prepare file names for it.
                 if (endChr == 23) {
                     String tmpCombinedFilteredByAllXFileName = prefixFilteredName + "_chr_" + endChr + ".txt.gz";
-                    String tmpCombinedFilteredByAllXFile = testTypeOutDir + "/" + tmpCombinedFilteredByAllXFileName;
                     GenericFile myCombinedFilteredByAllXFile = new GenericFile(testTypeOutDir, tmpCombinedFilteredByAllXFileName,
                             "compressed", "none");
                     combinedFilteredByAllXFile.add(myCombinedFilteredByAllXFile);
                 }
-            } // End of for(j=0; j<refPanels.size();j++)
-              // Now we have to build the list of reduced files for the type of Test. We store this list
+            } // End of for refPanels
 
-            testTypeListOutDir.add(testTypeOutDir);
-            testTypeCombinedFilteredByAllFile.add(combinedFilteredByAllFile);
-
+            // Now we have to build the list of reduced files for the type of Test. We store this list
+            this.testTypeListOutDir.add(testTypeOutDir);
+            this.testTypeCombinedFilteredByAllFile.add(combinedFilteredByAllFile);
             if (endChr == 23) {
-                testTypeCombinedFilteredByAllXFile.add(combinedFilteredByAllXFile);
+                this.testTypeCombinedFilteredByAllXFile.add(combinedFilteredByAllXFile);
             }
 
             String tmpCombinedCondensedFileName = null;
-            String tmpCombinedCondensedFile = null;
             if (startChr == endChr) {
                 tmpCombinedCondensedFileName = prefixCondensedName + "_chr_" + startChrS + ".txt.gz";
-                tmpCombinedCondensedFile = testTypeOutDir + "/" + tmpCombinedCondensedFileName;
             } else {
                 tmpCombinedCondensedFileName = prefixCondensedName + "_chr_" + startChrS + "_to_" + endChrS + ".txt.gz";
-                tmpCombinedCondensedFile = testTypeOutDir + "/" + tmpCombinedCondensedFileName;
             }
             GenericFile myCombinedCondensedFile = new GenericFile(testTypeOutDir, tmpCombinedCondensedFileName, "compressed", "none");
-            testTypeCombinedCondensedFile.add(myCombinedCondensedFile);
+            this.testTypeCombinedCondensedFile.add(myCombinedCondensedFile);
 
             String tmpTopHitsFileName = null;
-            String tmpTopHitsFile = null;
             if (startChr == endChr) {
                 tmpTopHitsFileName = prefixTopHitsName + "_chr_" + startChrS + ".txt.gz";
-                tmpTopHitsFile = testTypeOutDir + "/" + tmpTopHitsFileName;
             } else {
                 tmpTopHitsFileName = prefixTopHitsName + "_chr_" + startChrS + "_to_" + endChrS + ".txt.gz";
-                tmpTopHitsFile = testTypeOutDir + "/" + tmpTopHitsFileName;
             }
             GenericFile myTopHitsFile = new GenericFile(testTypeOutDir, tmpTopHitsFileName, "compressed", "none");
-            testTypeTopHitsFile.add(myTopHitsFile);
+            this.testTypeTopHitsFile.add(myTopHitsFile);
 
             String tmpQqPlotPdfFileName = null;
-            String tmpQqPlotPdfFile = null;
             if (startChr == endChr) {
                 tmpQqPlotPdfFileName = prefixQqPlotName + "_chr_" + startChrS + ".pdf";
-                tmpQqPlotPdfFile = testTypeOutDir + "/" + tmpQqPlotPdfFileName;
             } else {
                 tmpQqPlotPdfFileName = prefixQqPlotName + "_chr_" + startChrS + "_to_" + endChrS + ".pdf";
-                tmpQqPlotPdfFile = testTypeOutDir + "/" + tmpQqPlotPdfFileName;
             }
             GenericFile myQqPlotPdfFile = new GenericFile(testTypeOutDir, tmpQqPlotPdfFileName, "compressed", "none");
-            testTypeQqPlotPdfFile.add(myQqPlotPdfFile);
+            this.testTypeQqPlotPdfFile.add(myQqPlotPdfFile);
 
             String tmpQqPlotTiffFileName = null;
-            String tmpQqPlotTiffFile = null;
             if (startChr == endChr) {
                 tmpQqPlotTiffFileName = prefixQqPlotName + "_chr_" + startChrS + ".tiff";
-                tmpQqPlotTiffFile = testTypeOutDir + "/" + tmpQqPlotTiffFileName;
             } else {
                 tmpQqPlotTiffFileName = prefixQqPlotName + "_chr_" + startChrS + "_to_" + endChrS + ".tiff";
-                tmpQqPlotTiffFile = testTypeOutDir + "/" + tmpQqPlotTiffFileName;
             }
             GenericFile myQqPlotTiffFile = new GenericFile(testTypeOutDir, tmpQqPlotTiffFileName, "compressed", "none");
-            testTypeQqPlotTiffFile.add(myQqPlotTiffFile);
+            this.testTypeQqPlotTiffFile.add(myQqPlotTiffFile);
 
             String tmpManhattanPdfFileName = null;
-            ;
-            String tmpManhattanPdfFile = null;
             if (startChr == endChr) {
                 tmpManhattanPdfFileName = prefixManhattanName + "_chr_" + startChrS + ".pdf";
-                tmpManhattanPdfFile = testTypeOutDir + "/" + tmpManhattanPdfFileName;
             } else {
                 tmpManhattanPdfFileName = prefixManhattanName + "_chr_" + startChrS + "_to_" + endChrS + ".pdf";
-                tmpManhattanPdfFile = testTypeOutDir + "/" + tmpManhattanPdfFileName;
             }
             GenericFile myManhattanPdfFile = new GenericFile(testTypeOutDir, tmpManhattanPdfFileName, "compressed", "none");
-            testTypeManhattanPdfFile.add(myManhattanPdfFile);
+            this.testTypeManhattanPdfFile.add(myManhattanPdfFile);
 
             String tmpManhattanTiffFileName = null;
-            String tmpManhattanTiffFile = null;
             if (startChr == endChr) {
                 tmpManhattanTiffFileName = prefixManhattanName + "_chr_" + startChrS + ".tiff";
-                tmpManhattanTiffFile = testTypeOutDir + "/" + tmpManhattanTiffFileName;
             } else {
                 tmpManhattanTiffFileName = prefixManhattanName + "_chr_" + startChrS + "_to_" + endChrS + ".tiff";
-                tmpManhattanTiffFile = testTypeOutDir + "/" + tmpManhattanTiffFileName;
             }
             GenericFile myManhattanTiffFile = new GenericFile(testTypeOutDir, tmpManhattanTiffFileName, "compressed", "none");
-            testTypeManhattanTiffFile.add(myManhattanTiffFile);
+            this.testTypeManhattanTiffFile.add(myManhattanTiffFile);
 
             String tmpCorrectedPvaluesFileName = null;
-            String tmpCorrectedPvaluesFile = null;
             if (startChr == endChr) {
                 tmpCorrectedPvaluesFileName = prefixCorrectedPvaluesName + "_chr_" + startChrS + ".txt";
-                tmpCorrectedPvaluesFile = testTypeOutDir + "/" + tmpCorrectedPvaluesFileName;
             } else {
                 tmpCorrectedPvaluesFileName = prefixCorrectedPvaluesName + "_chr_" + startChrS + "_to_" + endChrS + ".txt";
-                tmpCorrectedPvaluesFile = testTypeOutDir + "/" + tmpCorrectedPvaluesFileName;
             }
 
             GenericFile myCorrectedPvaluesFile = new GenericFile(testTypeOutDir, tmpCorrectedPvaluesFileName, "compressed", "none");
-            testTypeCorrectedPvaluesFile.add(myCorrectedPvaluesFile);
+            this.testTypeCorrectedPvaluesFile.add(myCorrectedPvaluesFile);
 
-        } // end of for(int tt=0; tt< numberOfTestTypesNames; tt++)
+        } // End of for test types
     }
 
     /**
@@ -248,7 +211,7 @@ public class CombinedPanelsFiles {
      * @return
      */
     public String getCombinedOutDir(int testTypeIndex) {
-        return testTypeListOutDir.get(testTypeIndex);
+        return this.testTypeListOutDir.get(testTypeIndex);
     }
 
     /**
@@ -259,7 +222,7 @@ public class CombinedPanelsFiles {
      * @return
      */
     public String getCombinedFilteredByAllFileName(int testTypeIndex, int index) {
-        return testTypeCombinedFilteredByAllFile.get(testTypeIndex).get(index).getName();
+        return this.testTypeCombinedFilteredByAllFile.get(testTypeIndex).get(index).getName();
     }
 
     /**
@@ -270,7 +233,7 @@ public class CombinedPanelsFiles {
      * @return
      */
     public String getCombinedFilteredByAllFile(int testTypeIndex, int index) {
-        return testTypeCombinedFilteredByAllFile.get(testTypeIndex).get(index).getFullName();
+        return this.testTypeCombinedFilteredByAllFile.get(testTypeIndex).get(index).getFullName();
     }
 
     /**
@@ -281,7 +244,7 @@ public class CombinedPanelsFiles {
      * @param finalStatus
      */
     public void setCombinedFilteredByAllFileFinalStatus(int testTypeIndex, int index, String finalStatus) {
-        testTypeCombinedFilteredByAllFile.get(testTypeIndex).get(index).setFinalStatus(finalStatus);
+        this.testTypeCombinedFilteredByAllFile.get(testTypeIndex).get(index).setFinalStatus(finalStatus);
     }
 
     /**
@@ -292,7 +255,7 @@ public class CombinedPanelsFiles {
      * @return
      */
     public String getCombinedFilteredByAllFileFinalStatus(int testTypeIndex, int index) {
-        return testTypeCombinedFilteredByAllFile.get(testTypeIndex).get(index).getFinalStatus();
+        return this.testTypeCombinedFilteredByAllFile.get(testTypeIndex).get(index).getFinalStatus();
     }
 
     /**
@@ -303,7 +266,7 @@ public class CombinedPanelsFiles {
      * @return
      */
     public String getCombinedFilteredByAllXFile(int testTypeIndex, int index) {
-        return testTypeCombinedFilteredByAllXFile.get(testTypeIndex).get(index).getFullName();
+        return this.testTypeCombinedFilteredByAllXFile.get(testTypeIndex).get(index).getFullName();
     }
 
     /**
@@ -314,7 +277,7 @@ public class CombinedPanelsFiles {
      * @param finalStatus
      */
     public void setCombinedFilteredByAllXFileFinalStatus(int testTypeIndex, int index, String finalStatus) {
-        testTypeCombinedFilteredByAllXFile.get(testTypeIndex).get(index).setFinalStatus(finalStatus);
+        this.testTypeCombinedFilteredByAllXFile.get(testTypeIndex).get(index).setFinalStatus(finalStatus);
     }
 
     /**
@@ -325,7 +288,7 @@ public class CombinedPanelsFiles {
      * @return
      */
     public String getCombinedFilteredByAllXFileFinalStatus(int testTypeIndex, int index) {
-        return testTypeCombinedFilteredByAllXFile.get(testTypeIndex).get(index).getFinalStatus();
+        return this.testTypeCombinedFilteredByAllXFile.get(testTypeIndex).get(index).getFinalStatus();
     }
 
     /**
@@ -335,7 +298,7 @@ public class CombinedPanelsFiles {
      * @return
      */
     public String getCombinedCondensedFileName(int testTypeIndex) {
-        return testTypeCombinedCondensedFile.get(testTypeIndex).getName();
+        return this.testTypeCombinedCondensedFile.get(testTypeIndex).getName();
     }
 
     /**
@@ -345,7 +308,7 @@ public class CombinedPanelsFiles {
      * @return
      */
     public String getCombinedCondensedFile(int testTypeIndex) {
-        return testTypeCombinedCondensedFile.get(testTypeIndex).getFullName();
+        return this.testTypeCombinedCondensedFile.get(testTypeIndex).getFullName();
     }
 
     /**
@@ -355,7 +318,7 @@ public class CombinedPanelsFiles {
      * @param finalStatus
      */
     public void setCombinedCondensedFileFinalStatus(int testTypeIndex, String finalStatus) {
-        testTypeCombinedCondensedFile.get(testTypeIndex).setFinalStatus(finalStatus);
+        this.testTypeCombinedCondensedFile.get(testTypeIndex).setFinalStatus(finalStatus);
     }
 
     /**
@@ -365,7 +328,7 @@ public class CombinedPanelsFiles {
      * @return
      */
     public String getCombinedCondensedFileFinalStatus(int testTypeIndex) {
-        return testTypeCombinedCondensedFile.get(testTypeIndex).getFinalStatus();
+        return this.testTypeCombinedCondensedFile.get(testTypeIndex).getFinalStatus();
     }
 
     /**
@@ -375,7 +338,7 @@ public class CombinedPanelsFiles {
      * @return
      */
     public String getCombinedTopHitsFileName(int testTypeIndex) {
-        return testTypeTopHitsFile.get(testTypeIndex).getName();
+        return this.testTypeTopHitsFile.get(testTypeIndex).getName();
     }
 
     /**
@@ -385,7 +348,7 @@ public class CombinedPanelsFiles {
      * @return
      */
     public String getTopHitsFile(int testTypeIndex) {
-        return testTypeTopHitsFile.get(testTypeIndex).getFullName();
+        return this.testTypeTopHitsFile.get(testTypeIndex).getFullName();
     }
 
     /**
@@ -395,7 +358,7 @@ public class CombinedPanelsFiles {
      * @param finalStatus
      */
     public void setTopHitsFileFinalStatus(int testTypeIndex, String finalStatus) {
-        testTypeTopHitsFile.get(testTypeIndex).setFinalStatus(finalStatus);
+        this.testTypeTopHitsFile.get(testTypeIndex).setFinalStatus(finalStatus);
     }
 
     /**
@@ -405,7 +368,7 @@ public class CombinedPanelsFiles {
      * @return
      */
     public String getTopHitsFileFinalStatus(int testTypeIndex) {
-        return testTypeTopHitsFile.get(testTypeIndex).getFinalStatus();
+        return this.testTypeTopHitsFile.get(testTypeIndex).getFinalStatus();
     }
 
     /**
@@ -415,7 +378,7 @@ public class CombinedPanelsFiles {
      * @return
      */
     public String getQqPlotPdfFileName(int testTypeIndex) {
-        return testTypeQqPlotPdfFile.get(testTypeIndex).getName();
+        return this.testTypeQqPlotPdfFile.get(testTypeIndex).getName();
     }
 
     /**
@@ -425,7 +388,7 @@ public class CombinedPanelsFiles {
      * @return
      */
     public String getQqPlotPdfFile(int testTypeIndex) {
-        return testTypeQqPlotPdfFile.get(testTypeIndex).getFullName();
+        return this.testTypeQqPlotPdfFile.get(testTypeIndex).getFullName();
     }
 
     /**
@@ -435,7 +398,7 @@ public class CombinedPanelsFiles {
      * @param finalStatus
      */
     public void setQqPlotPdfFileFinalStatus(int testTypeIndex, String finalStatus) {
-        testTypeQqPlotPdfFile.get(testTypeIndex).setFinalStatus(finalStatus);
+        this.testTypeQqPlotPdfFile.get(testTypeIndex).setFinalStatus(finalStatus);
     }
 
     /**
@@ -445,7 +408,7 @@ public class CombinedPanelsFiles {
      * @return
      */
     public String getQqPlotPdfFileFinalStatus(int testTypeIndex) {
-        return testTypeQqPlotPdfFile.get(testTypeIndex).getFinalStatus();
+        return this.testTypeQqPlotPdfFile.get(testTypeIndex).getFinalStatus();
     }
 
     /**
@@ -455,7 +418,7 @@ public class CombinedPanelsFiles {
      * @return
      */
     public String getQqPlotTiffFileName(int testTypeIndex) {
-        return testTypeQqPlotTiffFile.get(testTypeIndex).getName();
+        return this.testTypeQqPlotTiffFile.get(testTypeIndex).getName();
     }
 
     /**
@@ -465,7 +428,7 @@ public class CombinedPanelsFiles {
      * @return
      */
     public String getQqPlotTiffFile(int testTypeIndex) {
-        return testTypeQqPlotTiffFile.get(testTypeIndex).getFullName();
+        return this.testTypeQqPlotTiffFile.get(testTypeIndex).getFullName();
     }
 
     /**
@@ -475,7 +438,7 @@ public class CombinedPanelsFiles {
      * @param finalStatus
      */
     public void setQqPlotTiffFileFinalStatus(int testTypeIndex, String finalStatus) {
-        testTypeQqPlotTiffFile.get(testTypeIndex).setFinalStatus(finalStatus);
+        this.testTypeQqPlotTiffFile.get(testTypeIndex).setFinalStatus(finalStatus);
     }
 
     /**
@@ -485,7 +448,7 @@ public class CombinedPanelsFiles {
      * @return
      */
     public String getQqPlotTiffFileFinalStatus(int testTypeIndex) {
-        return testTypeQqPlotTiffFile.get(testTypeIndex).getFinalStatus();
+        return this.testTypeQqPlotTiffFile.get(testTypeIndex).getFinalStatus();
     }
 
     /**
@@ -495,7 +458,7 @@ public class CombinedPanelsFiles {
      * @return
      */
     public String getManhattanPdfFileName(int testTypeIndex) {
-        return testTypeManhattanPdfFile.get(testTypeIndex).getName();
+        return this.testTypeManhattanPdfFile.get(testTypeIndex).getName();
     }
 
     /**
@@ -505,7 +468,7 @@ public class CombinedPanelsFiles {
      * @return
      */
     public String getManhattanPdfFile(int testTypeIndex) {
-        return testTypeManhattanPdfFile.get(testTypeIndex).getFullName();
+        return this.testTypeManhattanPdfFile.get(testTypeIndex).getFullName();
     }
 
     /**
@@ -515,7 +478,7 @@ public class CombinedPanelsFiles {
      * @return
      */
     public String getManhattanTiffFileName(int testTypeIndex) {
-        return testTypeManhattanTiffFile.get(testTypeIndex).getName();
+        return this.testTypeManhattanTiffFile.get(testTypeIndex).getName();
     }
 
     /**
@@ -525,7 +488,7 @@ public class CombinedPanelsFiles {
      * @return
      */
     public String getManhattanTiffFile(int testTypeIndex) {
-        return testTypeManhattanTiffFile.get(testTypeIndex).getFullName();
+        return this.testTypeManhattanTiffFile.get(testTypeIndex).getFullName();
     }
 
     /**
@@ -535,7 +498,7 @@ public class CombinedPanelsFiles {
      * @return
      */
     public String getCorrectedPvaluesFileName(int testTypeIndex) {
-        return testTypeCorrectedPvaluesFile.get(testTypeIndex).getName();
+        return this.testTypeCorrectedPvaluesFile.get(testTypeIndex).getName();
     }
 
     /**
@@ -545,7 +508,7 @@ public class CombinedPanelsFiles {
      * @return
      */
     public String getCorrectedPvaluesFile(int testTypeIndex) {
-        return testTypeCorrectedPvaluesFile.get(testTypeIndex).getFullName();
+        return this.testTypeCorrectedPvaluesFile.get(testTypeIndex).getFullName();
     }
 
     /**
@@ -555,7 +518,7 @@ public class CombinedPanelsFiles {
      * @param finalStatus
      */
     public void setCorrectedPvaluesFinalStatus(int testTypeIndex, String finalStatus) {
-        testTypeCorrectedPvaluesFile.get(testTypeIndex).setFinalStatus(finalStatus);
+        this.testTypeCorrectedPvaluesFile.get(testTypeIndex).setFinalStatus(finalStatus);
     }
 
     /**
@@ -565,7 +528,7 @@ public class CombinedPanelsFiles {
      * @return
      */
     public String getCorrectedPvaluesFileFinalStatus(int testTypeIndex) {
-        return testTypeCorrectedPvaluesFile.get(testTypeIndex).getFinalStatus();
+        return this.testTypeCorrectedPvaluesFile.get(testTypeIndex).getFinalStatus();
     }
 
 }

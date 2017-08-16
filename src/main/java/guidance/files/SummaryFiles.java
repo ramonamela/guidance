@@ -36,6 +36,7 @@ import java.util.List;
 import guidance.utils.ChromoInfo;
 import guidance.utils.ParseCmdLine;
 
+import java.io.File;
 import java.util.ArrayList;
 
 
@@ -85,16 +86,13 @@ public class SummaryFiles {
      * @param refPanels
      */
     public SummaryFiles(ParseCmdLine parsingArgs, ChromoInfo generalChromoInfo, String myOutDir, List<String> refPanels) {
-        int i;
-        int j;
         int chunkSize = parsingArgs.getChunkSize();
-
         String testTypeName = parsingArgs.getTestTypeName(0);
 
         // We create the first directory name: the cohort directory
         String mixedCohort = parsingArgs.getCohort();
 
-        for (j = 0; j < refPanels.size(); j++) {
+        for (int j = 0; j < refPanels.size(); j++) {
             String rPanel = refPanels.get(j);
             // System.out.println("[SummaryFiles]: For refPanel " + rPanel);
 
@@ -122,7 +120,7 @@ public class SummaryFiles {
             ArrayList<String> chromoFilteredByAllFileName = new ArrayList<>();
             ArrayList<String> chromoFilteredByAllFile = new ArrayList<>();
 
-            for (i = 0; i < MAX_NUMBER_OF_CHROMOSOMES; i++) {
+            for (int i = 0; i < MAX_NUMBER_OF_CHROMOSOMES; i++) {
                 int chromo = i + 1;
                 // System.out.println("\t[SummaryFiles]: For chromo " + chromo);
 
@@ -159,32 +157,32 @@ public class SummaryFiles {
                     // Now we have to create the impute files for this iteration for merged
                     String tmpGenFileName = "chr_" + chromo + "_" + lim1 + "_" + lim2 + "_merged.gen";
                     chunkListMergedGenFileName.add(tmpGenFileName);
-                    String tmpGenFile = tmpChrDir + "/" + tmpGenFileName;
+                    String tmpGenFile = tmpChrDir + File.separator + tmpGenFileName;
                     chunkListMergedGenFile.add(tmpGenFile);
 
                     String tmpSampleFileName = "chr_" + chromo + "_" + lim1 + "_" + lim2 + "_merged.sample";
                     chunkListMergedSampleFileName.add(tmpSampleFileName);
-                    String tmpSampleFile = tmpChrDir + "/" + tmpSampleFileName;
+                    String tmpSampleFile = tmpChrDir + File.separator + tmpSampleFileName;
                     chunkListMergedSampleFile.add(tmpSampleFile);
 
                     String tmpLogFileName = "chr_" + chromo + "_" + lim1 + "_" + lim2 + "_merged.log";
                     chunkListMergedLogFileName.add(tmpLogFileName);
-                    String tmpLogFile = tmpChrDir + "/" + tmpLogFileName;
+                    String tmpLogFile = tmpChrDir + File.separator + tmpLogFileName;
                     chunkListMergedLogFile.add(tmpLogFile);
 
                     String tmpSnptestOutFileName = "chr_" + chromo + "_" + lim1 + "_" + lim2 + "_snptest.out";
                     chunkListSnptestOutFileName.add(tmpSnptestOutFileName);
-                    String tmpSnptestOutFile = tmpChrDir + "/" + tmpSnptestOutFileName;
+                    String tmpSnptestOutFile = tmpChrDir + File.separator + tmpSnptestOutFileName;
                     chunkListSnptestOutFile.add(tmpSnptestOutFile);
 
                     String tmpSnptestLogFileName = "chr_" + chromo + "_" + lim1 + "_" + lim2 + "_snptest.log";
                     chunkListSnptestLogFileName.add(tmpSnptestLogFileName);
-                    String tmpSnptestLogFile = tmpChrDir + "/" + tmpSnptestLogFileName;
+                    String tmpSnptestLogFile = tmpChrDir + File.separator + tmpSnptestLogFileName;
                     chunkListSnptestLogFile.add(tmpSnptestLogFile);
 
                     String tmpSummaryFileName = "chr_" + chromo + "_" + lim1 + "_" + lim2 + "_summary.txt";
                     chunkListSummaryFileName.add(tmpSummaryFileName);
-                    String tmpSummaryFile = tmpChrDir + "/" + tmpSummaryFileName;
+                    String tmpSummaryFile = tmpChrDir + File.separator + tmpSummaryFileName;
                     chunkListSummaryFile.add(tmpSummaryFile);
 
                     listReducedFileName.add(tmpSummaryFileName);
@@ -202,7 +200,7 @@ public class SummaryFiles {
                 int counter = 0;
                 while (index2 < current_index) {
                     String tmpReducedFileName = "chr_" + chromo + "_reduce_file_" + counter + ".txt";
-                    String tmpReducedFile = tmpChrDir + "/" + tmpReducedFileName;
+                    String tmpReducedFile = tmpChrDir + File.separator + tmpReducedFileName;
 
                     // System.out.println("\t[SummaryFiles]: " + tmpReducedFileName);
                     // System.out.println("\t[SummaryFiles]: " + tmpReducedFile);
@@ -232,7 +230,7 @@ public class SummaryFiles {
                 chromoListReducedFile.add(listReducedFile);
 
                 String tmpFilteredByAllFileName = "chr_" + chromo + "_filtered_by_maf_info_hwe.txt";
-                String tmpFilteredByAllFile = tmpChrDir + "/" + tmpFilteredByAllFileName;
+                String tmpFilteredByAllFile = tmpChrDir + File.separator + tmpFilteredByAllFileName;
 
                 chromoFilteredByAllFileName.add(tmpFilteredByAllFileName);
                 chromoFilteredByAllFile.add(tmpFilteredByAllFile);
@@ -257,7 +255,6 @@ public class SummaryFiles {
 
             filteredByAllFileName.add(chromoFilteredByAllFileName);
             filteredByAllFile.add(chromoFilteredByAllFile);
-
         }
         // System.out.println("\t[SummaryFiles]: OK done for SummaryFiles");
     }

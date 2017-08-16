@@ -43,8 +43,6 @@ public class CommonFiles {
     private int startChr;
     private int endChr;
 
-    private ArrayList<String> outputCasesDir = new ArrayList<>();
-    private ArrayList<String> outputControlsDir = new ArrayList<>();
     private ArrayList<String> outputMixedDir = new ArrayList<>();
 
     private GenericFile mixedBedFile = null;
@@ -115,7 +113,6 @@ public class CommonFiles {
 
             String aTmpDir = null;
             String aTmpFileName = null;
-            String aTmpFile = null;
             String aTmpSampleFileName = null;
             // String aTmpSampleFile = null;
 

@@ -35,6 +35,7 @@ import java.util.List;
 
 import guidance.utils.ParseCmdLine;
 
+import java.io.File;
 import java.util.ArrayList;
 
 
@@ -57,15 +58,16 @@ public class PhenomeAnalysisFiles {
     public PhenomeAnalysisFiles(ParseCmdLine parsingArgs, String baseOutDir, List<String> refPanels) {
         String testTypeName = null;
         String rPanel = null;
-        int numberOfTestTypesNames = parsingArgs.getNumberOfTestTypeName();
-        int numberOfRpanels = refPanels.size();
 
-        int totalCombinations = numberOfTestTypesNames * numberOfRpanels - 1;
+        int numberOfTestTypesNames = parsingArgs.getNumberOfTestTypeName();
+        // int numberOfRpanels = refPanels.size();
+        // int totalCombinations = numberOfTestTypesNames * numberOfRpanels - 1;
 
         // We create the first directory name: the cohort directory
         String mixedCohort = parsingArgs.getCohort();
 
-        phenomeAnalysisOutDir = baseOutDir + "/associations/pheno_analysis/" + mixedCohort;
+        this.phenomeAnalysisOutDir = baseOutDir + File.separator + "associations" + File.separator + "pheno_analysis" + File.separator
+                + mixedCohort;
         // for(int tt=0; tt< numberOfTestTypesNames; tt++) {
         // testTypeName = parsingArgs.getTestTypeName(tt);
         // phenomeAnalysisOutDir = phenomeAnalysisOutDir + "_" + testTypeName;
@@ -79,14 +81,12 @@ public class PhenomeAnalysisFiles {
         int counter = 0;
         String prefixPhenomeFinalName = prefixPhenomeTmpName + "_" + counter + "_final";
         String tmpPhenomeFinalFileName = prefixPhenomeFinalName + ".txt.gz";
-        String tmpPhenomeFinalFile = phenomeAnalysisOutDir + "/" + tmpPhenomeFinalFileName;
-        GenericFile myPhenomeFinalFile = new GenericFile(phenomeAnalysisOutDir, tmpPhenomeFinalFileName, "uncompressed", "none");
-        phenomeFinalFile.add(myPhenomeFinalFile);
+        GenericFile myPhenomeFinalFile = new GenericFile(this.phenomeAnalysisOutDir, tmpPhenomeFinalFileName, "uncompressed", "none");
+        this.phenomeFinalFile.add(myPhenomeFinalFile);
 
         counter = 0;
         for (int tt = 0; tt < numberOfTestTypesNames; tt++) {
             testTypeName = parsingArgs.getTestTypeName(tt);
-            // prefixPhenomeName = basePrefixPhenomeName + "_" + testTypeName;
 
             int startj = 0;
             /*
@@ -96,30 +96,24 @@ public class PhenomeAnalysisFiles {
                 rPanel = refPanels.get(j);
 
                 String tmpPhenomeTmpFileName = prefixPhenomeTmpName + "_" + counter + ".txt.gz";
-                String tmpPhenomeTmpFile = phenomeAnalysisOutDir + "/" + tmpPhenomeTmpFileName;
-                GenericFile myPhenomeTmpFile = new GenericFile(phenomeAnalysisOutDir, tmpPhenomeTmpFileName, "uncompressed", "none");
-                phenomeTmpFile.add(myPhenomeTmpFile);
+                GenericFile myPhenomeTmpFile = new GenericFile(this.phenomeAnalysisOutDir, tmpPhenomeTmpFileName, "uncompressed", "none");
+                this.phenomeTmpFile.add(myPhenomeTmpFile);
 
                 prefixPhenomeName = basePrefixPhenomeName + "_" + testTypeName + "_" + rPanel;
                 String tmpPhenomeAnalysisFileName = prefixPhenomeName + ".txt.gz";
-                String tmpPhenomeAnalysisFile = phenomeAnalysisOutDir + "/" + tmpPhenomeAnalysisFileName;
-                GenericFile myPhenomeAnalysisFile = new GenericFile(phenomeAnalysisOutDir, tmpPhenomeAnalysisFileName, "uncompressed",
+                GenericFile myPhenomeAnalysisFile = new GenericFile(this.phenomeAnalysisOutDir, tmpPhenomeAnalysisFileName, "uncompressed",
                         "none");
-                phenomeAnalysisFile.add(myPhenomeAnalysisFile);
+                this.phenomeAnalysisFile.add(myPhenomeAnalysisFile);
 
                 prefixPhenomeFinalName = prefixPhenomeTmpName + "_" + counter + "_final";
                 tmpPhenomeFinalFileName = prefixPhenomeFinalName + ".txt.gz";
-                tmpPhenomeFinalFile = phenomeAnalysisOutDir + "/" + tmpPhenomeFinalFileName;
-                myPhenomeFinalFile = new GenericFile(phenomeAnalysisOutDir, tmpPhenomeFinalFileName, "uncompressed", "none");
-                phenomeFinalFile.add(myPhenomeFinalFile);
+                myPhenomeFinalFile = new GenericFile(this.phenomeAnalysisOutDir, tmpPhenomeFinalFileName, "uncompressed", "none");
+                this.phenomeFinalFile.add(myPhenomeFinalFile);
 
                 // System.out.println("[PhenomeAnalysis] " + phenomeAnalysisOutDir + "/" + tmpPhenomeAnalysisFileName);
                 counter++;
-
-            } // End of for(j=1; j<refPanels.size();j++)
-              // Now we have to build the list of reduced files for the type of Test. We store this list
-
-        } // end of for(int tt=0; tt< numberOfTestTypesNames; tt++)
+            } // End of for panels
+        } // End of for test types
     }
 
     /**
@@ -128,7 +122,7 @@ public class PhenomeAnalysisFiles {
      * @return
      */
     public String getPhenomeAnalysisOutDir() {
-        return phenomeAnalysisOutDir;
+        return this.phenomeAnalysisOutDir;
     }
 
     /**
@@ -138,7 +132,7 @@ public class PhenomeAnalysisFiles {
      * @return
      */
     public String getPhenotypeIntermediateFileName(int index) {
-        return phenomeTmpFile.get(index).getName();
+        return this.phenomeTmpFile.get(index).getName();
     }
 
     /**
@@ -148,7 +142,7 @@ public class PhenomeAnalysisFiles {
      * @return
      */
     public String getPhenotypeIntermediateFile(int index) {
-        return phenomeTmpFile.get(index).getFullName();
+        return this.phenomeTmpFile.get(index).getFullName();
     }
 
     /**
@@ -158,7 +152,7 @@ public class PhenomeAnalysisFiles {
      * @param finalStatus
      */
     public void setPhenotypeIntermediateFileFinalStatus(int index, String finalStatus) {
-        phenomeTmpFile.get(index).setFinalStatus(finalStatus);
+        this.phenomeTmpFile.get(index).setFinalStatus(finalStatus);
     }
 
     /**
@@ -168,7 +162,7 @@ public class PhenomeAnalysisFiles {
      * @return
      */
     public String getPhenotypeIntermediateFileFinalStatus(int index) {
-        return phenomeTmpFile.get(index).getFinalStatus();
+        return this.phenomeTmpFile.get(index).getFinalStatus();
     }
 
     /**
@@ -178,7 +172,7 @@ public class PhenomeAnalysisFiles {
      * @return
      */
     public String getPhenotypeFileName(int index) {
-        return phenomeAnalysisFile.get(index).getName();
+        return this.phenomeAnalysisFile.get(index).getName();
     }
 
     /**
@@ -188,7 +182,7 @@ public class PhenomeAnalysisFiles {
      * @return
      */
     public String getPhenotypeFile(int index) {
-        return phenomeAnalysisFile.get(index).getFullName();
+        return this.phenomeAnalysisFile.get(index).getFullName();
     }
 
     /**
@@ -198,7 +192,7 @@ public class PhenomeAnalysisFiles {
      * @param finalStatus
      */
     public void setPhenotypeFileFinalStatus(int index, String finalStatus) {
-        phenomeAnalysisFile.get(index).setFinalStatus(finalStatus);
+        this.phenomeAnalysisFile.get(index).setFinalStatus(finalStatus);
     }
 
     /**
@@ -208,7 +202,7 @@ public class PhenomeAnalysisFiles {
      * @return
      */
     public String getPhenotypeFileFinalStatus(int index) {
-        return phenomeAnalysisFile.get(index).getFinalStatus();
+        return this.phenomeAnalysisFile.get(index).getFinalStatus();
     }
 
     /**
@@ -218,7 +212,7 @@ public class PhenomeAnalysisFiles {
      * @return
      */
     public String getPhenotypeFinalFileName(int index) {
-        return phenomeFinalFile.get(index).getName();
+        return this.phenomeFinalFile.get(index).getName();
     }
 
     /**
@@ -228,7 +222,7 @@ public class PhenomeAnalysisFiles {
      * @return
      */
     public String getPhenotypeFinalFile(int index) {
-        return phenomeFinalFile.get(index).getFullName();
+        return this.phenomeFinalFile.get(index).getFullName();
     }
 
     /**
@@ -238,7 +232,7 @@ public class PhenomeAnalysisFiles {
      * @param finalStatus
      */
     public void setPhenotypeFinalFileFinalStatus(int index, String finalStatus) {
-        phenomeFinalFile.get(index).setFinalStatus(finalStatus);
+        this.phenomeFinalFile.get(index).setFinalStatus(finalStatus);
     }
 
     /**
@@ -248,7 +242,7 @@ public class PhenomeAnalysisFiles {
      * @return
      */
     public String getPhenotypeFinalFileFinalStatus(int index) {
-        return phenomeFinalFile.get(index).getFinalStatus();
+        return this.phenomeFinalFile.get(index).getFinalStatus();
     }
 
 }

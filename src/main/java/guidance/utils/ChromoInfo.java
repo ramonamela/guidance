@@ -31,6 +31,10 @@
 
 package guidance.utils;
 
+/**
+ * Representation of the Chromo Information
+ *
+ */
 public class ChromoInfo {
 
     private static final int MAX_NUMBER_OF_CHROMOSOMES = 23;
