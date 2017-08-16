@@ -65,10 +65,6 @@ public class GuidanceImpl {
     // Debug flag
     private static final boolean DEBUG = true;
 
-    // Headers
-    private static final String HEADER_MIXED = "chr position    rs_id_all   info_all    certainty_all   alleleA alleleB index   average_maximum_posterior_call  info    cohort_1_AA cohort_1_AB cohort_1_BB cohort_1_NULL   all_AA  all_AB  all_BB  all_NULL    all_total   cases_AA    cases_AB    cases_BB    cases_NULL  cases_total controls_AA controls_AB controls_BB controls_NULL   controls_total  all_maf cases_maf   controls_maf    missing_data_proportion cohort_1_hwe    cases_hwe   controls_hwe    het_OR  het_OR_lower    het_OR_upper    hom_OR  hom_OR_lower    hom_OR_upper    all_OR  all_OR_lower    all_OR_upper    frequentist_add_pvalue  frequentist_add_info    frequentist_add_beta_1  frequentist_add_se_1    frequentist_dom_pvalue  frequentist_dom_info    frequentist_dom_beta_1  frequentist_dom_se_1    frequentist_rec_pvalue  frequentist_rec_info    frequentist_rec_beta_1  frequentist_rec_se_1    frequentist_gen_pvalue  frequentist_gen_info    frequentist_gen_beta_1  frequentist_gen_se_1    frequentist_gen_beta_2  frequentist_gen_se_2    frequentist_het_pvalue  frequentist_het_info    frequentist_het_beta_1  frequentist_het_se_1    comment";
-    private static final String HEADER_MIXED_X = "chr   position    rs_id_all   info_all    certainty_all   alleleA alleleB all_A   all_B   all_AA  all_AB  all_BB  all_NULL    all_total   all_maf all_info    all_impute_info cases_A cases_B cases_AA    cases_AB    cases_BB    cases_NULL  cases_total cases_maf   cases_info  cases_impute_info   controls_A  controls_B  controls_AA controls_AB controls_BB controls_NULL   controls_total  controls_maf    controls_info   controls_impute_info    sex=1_A sex=1_B sex=1_AA    sex=1_AB    sex=1_BB    sex=1_NULL  sex=1_total sex=1_maf   sex=1_info  sex=1_impute_info   sex=2_A sex=2_B sex=2_AA    sex=2_AB    sex=2_BB    sex=2_NULL  sex=2_total sex=2_maf   sex=2_info  sex=2_impute_info   frequentist_add_null_ll frequentist_add_alternative_ll  frequentist_add_beta_1:genotype/sex=1   frequentist_add_beta_2:genotype/sex=2   frequentist_add_se_1:genotype/sex=1 frequentist_add_se_2:genotype/sex=2 frequentist_add_degrees_of_freedom  frequentist_add_pvalue  comment";
-
 
     /**
      * Method to perform the conversion from Bed to Ped Format file
@@ -3452,21 +3448,18 @@ public class GuidanceImpl {
                 Reader decoder = new InputStreamReader(reduceGz);
                 BufferedReader br = new BufferedReader(decoder)) {
 
-            // FileReader fr = new FileReader(reduceFileA);
-            // BufferedReader br = new BufferedReader(fr);
-            String line = "";
             // First: read the header and avoid it
-            line = br.readLine();
+            String line = br.readLine();
 
             // We do not use the previous line, instead, we use a predefined header
             if (type.equals("filtered")) {
                 if (chrS.equals("23")) {
-                    line = HEADER_MIXED_X;
+                    line = constructHeaderX();
                 } else {
-                    line = HEADER_MIXED;
+                    line = constructHeader();
                 }
             } else if (type.equals("condensed")) {
-                line = "chr position    alleleA alleleB pvalue  info_all";
+                line = constructCondensedHeader();
             }
 
             // By default values for indexes in the header
@@ -3532,21 +3525,12 @@ public class GuidanceImpl {
             int indexAlleleB = 0;
 
             // First: read the header and avoid it
-            String line = null;
-            String line2 = br.readLine();
-            if (line != null && !line.isEmpty()) {
-                // reduceFileBHashTableIndex = createHashWithHeader(line, "\t");
-                reduceFileBHashTableIndexReversed = createHashWithHeaderReversed(line, "\t");
+            String line = br.readLine();
 
-                indexChr = reduceFileAHashTableIndex.get("chr");
-                indexPosition = reduceFileAHashTableIndex.get("position");
-                indexAlleleA = reduceFileAHashTableIndex.get("alleleA");
-                indexAlleleB = reduceFileAHashTableIndex.get("alleleB");
-            }
-
+            // Then we process the file
             while ((line = br.readLine()) != null) {
                 ArrayList<String> fileBList = new ArrayList<>();
-                String[] splitted = line.split("\t");// delimiter I assume single space.
+                String[] splitted = line.split("\t");// delimiter I assume tab
 
                 fileBList.add(line);
                 String variantKey = splitted[indexChr] + "_" + splitted[indexPosition] + "_" + splitted[indexAlleleA] + "_"
@@ -3681,6 +3665,177 @@ public class GuidanceImpl {
             System.out.println("\n[DEBUG] mergeTwoChunks elapsedTime: " + elapsedTime + " seconds");
             System.out.println("\n[DEBUG] Finished execution of mergeTwoChunks.");
         }
+    }
+
+    /**
+     * Construct the X Header
+     * 
+     * @return
+     */
+    private static String constructHeaderX() {
+        StringBuilder headerMixedXBuilder = new StringBuilder();
+        headerMixedXBuilder.append("chr").append("\t");
+        headerMixedXBuilder.append("position").append("\t");
+        headerMixedXBuilder.append("rs_id_all").append("\t");
+        headerMixedXBuilder.append("info_all").append("\t");
+        headerMixedXBuilder.append("certainty_all").append("\t");
+        headerMixedXBuilder.append("alleleA").append("\t");
+        headerMixedXBuilder.append("alleleB").append("\t");
+        headerMixedXBuilder.append("all_A").append("\t");
+        headerMixedXBuilder.append("all_B").append("\t");
+        headerMixedXBuilder.append("all_AA").append("\t");
+        headerMixedXBuilder.append("all_AB").append("\t");
+        headerMixedXBuilder.append("all_BB").append("\t");
+        headerMixedXBuilder.append("all_NULL").append("\t");
+        headerMixedXBuilder.append("all_total").append("\t");
+        headerMixedXBuilder.append("all_maf").append("\t");
+        headerMixedXBuilder.append("all_info").append("\t");
+        headerMixedXBuilder.append("all_impute_info").append("\t");
+        headerMixedXBuilder.append("cases_A").append("\t");
+        headerMixedXBuilder.append("cases_B").append("\t");
+        headerMixedXBuilder.append("cases_AA").append("\t");
+        headerMixedXBuilder.append("cases_AB").append("\t");
+        headerMixedXBuilder.append("cases_BB").append("\t");
+        headerMixedXBuilder.append("cases_NULL").append("\t");
+        headerMixedXBuilder.append("cases_total").append("\t");
+        headerMixedXBuilder.append("cases_maf").append("\t");
+        headerMixedXBuilder.append("cases_info").append("\t");
+        headerMixedXBuilder.append("cases_impute_info").append("\t");
+        headerMixedXBuilder.append("controls_A").append("\t");
+        headerMixedXBuilder.append("controls_B").append("\t");
+        headerMixedXBuilder.append("controls_AA ").append("\t");
+        headerMixedXBuilder.append("controls_AB ").append("\t");
+        headerMixedXBuilder.append("controls_BB ").append("\t");
+        headerMixedXBuilder.append("controls_NULL").append("\t");
+        headerMixedXBuilder.append("controls_total").append("\t");
+        headerMixedXBuilder.append("controls_maf").append("\t");
+        headerMixedXBuilder.append("controls_info").append("\t");
+        headerMixedXBuilder.append("controls_impute_info").append("\t");
+        headerMixedXBuilder.append("sex=1_A ").append("\t");
+        headerMixedXBuilder.append("sex=1_B").append("\t");
+        headerMixedXBuilder.append("sex=1_AA").append("\t");
+        headerMixedXBuilder.append("sex=1_AB").append("\t");
+        headerMixedXBuilder.append("sex=1_BB").append("\t");
+        headerMixedXBuilder.append("sex=1_NULL").append("\t");
+        headerMixedXBuilder.append("sex=1_total").append("\t");
+        headerMixedXBuilder.append("sex=1_maf").append("\t");
+        headerMixedXBuilder.append("sex=1_info").append("\t");
+        headerMixedXBuilder.append("sex=1_impute_info").append("\t");
+        headerMixedXBuilder.append("sex=2_A").append("\t");
+        headerMixedXBuilder.append("sex=2_B").append("\t");
+        headerMixedXBuilder.append("sex=2_AA").append("\t");
+        headerMixedXBuilder.append("sex=2_AB").append("\t");
+        headerMixedXBuilder.append("sex=2_BB").append("\t");
+        headerMixedXBuilder.append("sex=2_NULL").append("\t");
+        headerMixedXBuilder.append("sex=2_total").append("\t");
+        headerMixedXBuilder.append("sex=2_maf").append("\t");
+        headerMixedXBuilder.append("sex=2_info").append("\t");
+        headerMixedXBuilder.append("sex=2_impute_info").append("\t");
+        headerMixedXBuilder.append("frequentist_add_null_ll").append("\t");
+        headerMixedXBuilder.append("frequentist_add_alternative_ll").append("\t");
+        headerMixedXBuilder.append("frequentist_add_beta_1:genotype/sex=1").append("\t");
+        headerMixedXBuilder.append("frequentist_add_beta_2:genotype/sex=2").append("\t");
+        headerMixedXBuilder.append("frequentist_add_se_1:genotype/sex=1").append("\t");
+        headerMixedXBuilder.append("frequentist_add_se_2:genotype/sex=2").append("\t");
+        headerMixedXBuilder.append("frequentist_add_degrees_of_freedom").append("\t");
+        headerMixedXBuilder.append("frequentist_add_pvalue").append("\t");
+        headerMixedXBuilder.append("comment");
+
+        return headerMixedXBuilder.toString();
+    }
+
+    /**
+     * Construct the header (1-22)
+     * 
+     * @return
+     */
+    private static String constructHeader() {
+        StringBuilder headerMixedBuilder = new StringBuilder();
+        headerMixedBuilder.append("chr").append("\t");
+        headerMixedBuilder.append("position").append("\t");
+        headerMixedBuilder.append("rs_id_all").append("\t");
+        headerMixedBuilder.append("info_all").append("\t");
+        headerMixedBuilder.append("certainty_all").append("\t");
+        headerMixedBuilder.append("alleleA").append("\t");
+        headerMixedBuilder.append("alleleB").append("\t");
+        headerMixedBuilder.append("index").append("\t");
+        headerMixedBuilder.append("average_maximum_posterior_call").append("\t");
+        headerMixedBuilder.append("info").append("\t");
+        headerMixedBuilder.append("cohort_1_AA").append("\t");
+        headerMixedBuilder.append("cohort_1_AB").append("\t");
+        headerMixedBuilder.append("cohort_1_BB").append("\t");
+        headerMixedBuilder.append("cohort_1_NULL").append("\t");
+        headerMixedBuilder.append("all_AA").append("\t");
+        headerMixedBuilder.append("all_AB").append("\t");
+        headerMixedBuilder.append("all_BB").append("\t");
+        headerMixedBuilder.append("all_NULL").append("\t");
+        headerMixedBuilder.append("all_total").append("\t");
+        headerMixedBuilder.append("cases_AA").append("\t");
+        headerMixedBuilder.append("cases_AB").append("\t");
+        headerMixedBuilder.append("cases_BB").append("\t");
+        headerMixedBuilder.append("cases_NULL").append("\t");
+        headerMixedBuilder.append("cases_total").append("\t");
+        headerMixedBuilder.append("controls_AA").append("\t");
+        headerMixedBuilder.append("controls_AB").append("\t");
+        headerMixedBuilder.append("controls_BB").append("\t");
+        headerMixedBuilder.append("controls_NULL").append("\t");
+        headerMixedBuilder.append("controls_total").append("\t");
+        headerMixedBuilder.append("all_maf").append("\t");
+        headerMixedBuilder.append("cases_maf").append("\t");
+        headerMixedBuilder.append("controls_maf").append("\t");
+        headerMixedBuilder.append("missing_data_proportion").append("\t");
+        headerMixedBuilder.append("cohort_1_hwe").append("\t");
+        headerMixedBuilder.append("cases_hwe").append("\t");
+        headerMixedBuilder.append("controls_hwe").append("\t");
+        headerMixedBuilder.append("het_OR").append("\t");
+        headerMixedBuilder.append("het_OR_lower").append("\t");
+        headerMixedBuilder.append("het_OR_upper").append("\t");
+        headerMixedBuilder.append("hom_OR").append("\t");
+        headerMixedBuilder.append("hom_OR_lower").append("\t");
+        headerMixedBuilder.append("hom_OR_upper").append("\t");
+        headerMixedBuilder.append("all_OR").append("\t");
+        headerMixedBuilder.append("all_OR_lower").append("\t");
+        headerMixedBuilder.append("all_OR_upper").append("\t");
+        headerMixedBuilder.append("frequentist_add_pvalue").append("\t");
+        headerMixedBuilder.append("frequentist_add_info").append("\t");
+        headerMixedBuilder.append("frequentist_add_beta_1").append("\t");
+        headerMixedBuilder.append("frequentist_add_se_1").append("\t");
+        headerMixedBuilder.append("frequentist_dom_pvalue").append("\t");
+        headerMixedBuilder.append("frequentist_dom_info").append("\t");
+        headerMixedBuilder.append("frequentist_dom_beta_1").append("\t");
+        headerMixedBuilder.append("frequentist_dom_se_1").append("\t");
+        headerMixedBuilder.append("frequentist_rec_pvalue").append("\t");
+        headerMixedBuilder.append("frequentist_rec_info").append("\t");
+        headerMixedBuilder.append("frequentist_rec_beta_1").append("\t");
+        headerMixedBuilder.append("frequentist_rec_se_1").append("\t");
+        headerMixedBuilder.append("frequentist_gen_pvalue").append("\t");
+        headerMixedBuilder.append("frequentist_gen_info").append("\t");
+        headerMixedBuilder.append("frequentist_gen_beta_1").append("\t");
+        headerMixedBuilder.append("frequentist_gen_se_1").append("\t");
+        headerMixedBuilder.append("frequentist_gen_beta_2").append("\t");
+        headerMixedBuilder.append("frequentist_gen_se_2").append("\t");
+        headerMixedBuilder.append("frequentist_het_pvalue").append("\t");
+        headerMixedBuilder.append("frequentist_het_info").append("\t");
+        headerMixedBuilder.append("frequentist_het_beta_1").append("\t");
+        headerMixedBuilder.append("frequentist_het_se_1").append("\t");
+        headerMixedBuilder.append("comment").append("\t");
+        return headerMixedBuilder.toString();
+    }
+
+    /**
+     * Construct the condensed header
+     * 
+     * @return
+     */
+    private static String constructCondensedHeader() {
+        StringBuilder condensedHeaderBuilder = new StringBuilder();
+        condensedHeaderBuilder.append("chr").append("\t");
+        condensedHeaderBuilder.append("position").append("\t");
+        condensedHeaderBuilder.append("alleleA").append("\t");
+        condensedHeaderBuilder.append("alleleB").append("\t");
+        condensedHeaderBuilder.append("pvalue").append("\t");
+        condensedHeaderBuilder.append("info_all");
+        return condensedHeaderBuilder.toString();
     }
 
     /**

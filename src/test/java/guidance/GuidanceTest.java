@@ -33,8 +33,6 @@ package guidance;
 
 import static org.junit.Assert.assertEquals;
 
-import java.util.Hashtable;
-
 import org.junit.Test;
 
 
@@ -56,11 +54,19 @@ public class GuidanceTest {
     }
 
     @Test
-    public void testHashtable() {
-        Hashtable<String, Integer> table = new Hashtable<>();
-        table.put("A", 1);
-        Integer value = table.get("B");
-        assertEquals(value, null);
+    public void testTabFormat() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("field1");
+        sb.append("\t");
+        sb.append("field1");
+        for (String field : sb.toString().split("\t")) {
+            assertEquals("field1", field);
+        }
+
+        String header = "field1\tfield1";
+        for (String field : header.split("\t")) {
+            assertEquals("field1", field);
+        }
     }
 
 }
