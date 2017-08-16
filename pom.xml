@@ -42,6 +42,9 @@
 		<versions-maven-plugin.version>2.3</versions-maven-plugin.version>
 		<maven-release-plugin.version>2.5.3</maven-release-plugin.version>
 
+                <!-- buildnumber -->
+                <buildnumber-maven-plugin.version>1.4</buildnumber-maven-plugin.version>
+
 		<!-- Maven Plugins -->
 		<maven.compiler.source>1.8</maven.compiler.source>
 		<maven.compiler.target>1.8</maven.compiler.target>
@@ -50,6 +53,7 @@
 		<maven-resources-plugin.version>3.0.1</maven-resources-plugin.version>
 		<maven-exec-plugin.version>1.4.0</maven-exec-plugin.version>
 		<maven-war-plugin.version>3.0.0</maven-war-plugin.version>
+		<maven-clean-plugin.version>3.0.0</maven-clean-plugin.version>
 
 		<!-- Project encoding -->
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -146,6 +150,12 @@
 			<artifactId>compss-api</artifactId>
 		</dependency>
 
+                <!-- Log4j -->
+                <dependency>
+                        <groupId>org.apache.logging.log4j</groupId>
+                        <artifactId>log4j-core</artifactId>
+                </dependency>
+
 		<!-- JUNIT -->
 		<dependency>
 			<groupId>junit</groupId>
@@ -158,58 +168,120 @@
 	<build>
 		<finalName>${project.artifactId}</finalName>
 		<plugins>
-			<plugin>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<version>${maven-compiler-plugin.version}</version>
-				<configuration>
-					<source>${maven.compiler.source}</source>
-					<target>${maven.compiler.target}</target>
-				</configuration>
-			</plugin>
+                        <!-- Normal Compilation -->
+                        <plugin>
+                                <artifactId>maven-compiler-plugin</artifactId>
+                                <version>${maven-compiler-plugin.version}</version>
+                                <configuration>
+                                        <source>${maven.compiler.source}</source>
+                                        <target>${maven.compiler.target}</target>
+                                </configuration>
+                        </plugin>
 
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-dependency-plugin</artifactId>
-				<executions>
-					<execution>
-						<id>copy</id>
-						<phase>validate</phase>
-						<goals>
-							<goal>copy-dependencies</goal>
-						</goals>
-						<configuration>
-							<outputDirectory>${project.build.directory}/lib</outputDirectory>
-							<silent>true</silent>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
+                        <!-- Generate build number -->
+                        <plugin>
+                                <groupId>org.codehaus.mojo</groupId>
+                                <artifactId>buildnumber-maven-plugin</artifactId>
+                                <version>${buildnumber-maven-plugin.version}</version>
+                                <executions>
+                                        <execution>
+                                                <phase>validate</phase>
+                                                <goals>
+                                                        <goal>create</goal>
+                                                </goals>
+                                        </execution>
+                                </executions>
+                                <configuration>
+                                        <doCheck>false</doCheck>
+                                        <doUpdate>false</doUpdate>
+                                        <format>{0,date,yyyyMMdd-HHmm}.r{1}</format>
+                                        <items>
+                                                <item>timestamp</item>
+                                                <item>scmVersion</item>
+                                        </items>
+                                        <revisionOnScmFailure>not-found</revisionOnScmFailure>
+                                </configuration>
+                        </plugin>
 
-			<plugin>
-				<artifactId>maven-resources-plugin</artifactId>
-				<version>2.6</version>
-				<executions>
-					<execution>
-						<id>copy-final-jar</id>
-						<phase>package</phase>
-						<goals>
-							<goal>copy-resources</goal>
-						</goals>
-						<configuration>
-							<outputDirectory>${basedir}</outputDirectory>
-							<resources>
-								<resource>
-									<directory>${project.build.directory}</directory>
-									<includes>
-										<include>${project.artifactId}.jar</include>
-									</includes>
-								</resource>
-							</resources>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
+                       <!-- Copy dependencies to lib folder -->
+                        <plugin>
+                                <groupId>org.apache.maven.plugins</groupId>
+                                <artifactId>maven-dependency-plugin</artifactId>
+                                <executions>
+                                        <execution>
+                                                <id>copy</id>
+                                                <phase>packaging</phase>
+                                                <goals>
+                                                        <goal>copy-dependencies</goal>
+                                                </goals>
+                                                <configuration>
+                                                        <outputDirectory>${project.build.directory}/lib</outputDirectory>
+                                                        <silent>true</silent>
+                                                </configuration>
+                                        </execution>
+                                </executions>
+                        </plugin>
 
+                        <!-- Create JAR file with dependencies -->
+                        <plugin>
+                                <groupId>org.apache.maven.plugins</groupId>
+                                <artifactId>maven-shade-plugin</artifactId>
+                                <version>${maven-shade-plugin.version}</version>
+                                <executions>
+                                        <execution>
+                                                <phase>package</phase>
+                                                <goals>
+                                                        <goal>shade</goal>
+                                                </goals>
+                                                <configuration>
+                                                        <finalName>${project.artifactId}</finalName>
+                                                </configuration>
+                                        </execution>
+                                </executions>
+                        </plugin>
+
+                        <!-- Copy JAR file to base dir -->
+                        <plugin>
+                                <artifactId>maven-resources-plugin</artifactId>
+                                <version>${maven-resources-plugin.version}</version>
+                                <executions>
+                                        <execution>
+                                                <id>copy-final-jar</id>
+                                                <phase>package</phase>
+                                                <goals>
+                                                        <goal>copy-resources</goal>
+                                                </goals>
+                                                <configuration>
+                                                        <outputDirectory>${basedir}</outputDirectory>
+                                                        <resources>
+                                                                <resource>
+                                                                        <directory>${project.build.directory}</directory>
+                                                                        <includes>
+                                                                                <include>${project.artifactId}.jar</include>
+                                                                        </includes>
+                                                                </resource>
+                                                        </resources>
+                                                </configuration>
+                                        </execution>
+                                </executions>
+                        </plugin>
+
+                        <!-- Clean base dir JAR file -->
+                        <plugin>
+                                <artifactId>maven-clean-plugin</artifactId>
+                                <version>${maven-clean-plugin.version}</version>
+                                <configuration>
+                                        <failOnError>false</failOnError>
+                                        <filesets>
+                                                <fileset>
+                                                        <directory>${basedir}</directory>
+                                                        <includes>
+                                                                <include>${project.artifactId}.jar</include>
+                                                        </includes>
+                                                </fileset>
+                                        </filesets>
+                                </configuration>
+                        </plugin>
 		</plugins>
 		<pluginManagement>
 			<plugins>

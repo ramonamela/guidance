@@ -34,10 +34,15 @@ package guidance;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
-
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.util.Date;
 
 import java.text.DateFormat;
@@ -64,7 +69,11 @@ import guidance.utils.ParseCmdLine;
 public class Guidance {
 
     // Package version
-    private static final String PACKAGE_VERSION = "guidance_0.9.8";
+    private static final String GUIDANCE_VERSION;
+    private static final String GUIDANCE_BUILDNUMBER;
+
+    // Logger
+    private static final Logger LOGGER = LogManager.getLogger("Console");
 
     // Debug mode
     private static final boolean DEBUG = false;
@@ -85,6 +94,23 @@ public class Guidance {
     // private static final String MINIMAC_BINARY = System.getenv("MINIMACBINARY");
     private static final String SNPTEST_BINARY = System.getenv("SNPTESTBINARY");
     private static final String JAVA_HOME = System.getenv("JAVA_HOME");
+
+    static {
+        // Load Guidance version and build number
+        String guidanceVersion = "";
+        String guidanceBuildnumber = "";
+        try {
+            Properties props = new Properties();
+            props.load(Guidance.class.getResourceAsStream("/version.properties"));
+            guidanceVersion = props.getProperty("guidance.version");
+            guidanceBuildnumber = props.getProperty("guidance.build");
+        } catch (IOException ioe) {
+            LOGGER.error("ERROR: Cannot load guidance version and buildnumber. Skip", ioe);
+        } finally {
+            GUIDANCE_VERSION = guidanceVersion;
+            GUIDANCE_BUILDNUMBER = guidanceBuildnumber;
+        }
+    }
 
 
     /**
@@ -110,7 +136,7 @@ public class Guidance {
 
         // Verify and print the status of each stage
         printStagesStatus(parsingArgs);
-        System.out.println("\n[Guidance] Verifyed stages status.");
+        LOGGER.info("\n[Guidance] Verifyed stages status.");
 
         // Get the file name where the list of commands is going to be saved (listOfStagesFile)
         String listOfStagesFileName = parsingArgs.getListOfStagesFile();
@@ -118,12 +144,12 @@ public class Guidance {
         // Verify whether the file exists or not.
         File listOfStages = new File(listOfStagesFileName);
         if (!listOfStages.exists()) {
-            System.out.println("\n[Guidance] File to store the tasks list: " + listOfStagesFileName);
+            LOGGER.info("\n[Guidance] File to store the tasks list: " + listOfStagesFileName);
         } else {
-            System.out.println("\n[Guidance] File to store the tasks list (overwritten): " + listOfStagesFileName);
+            LOGGER.info("\n[Guidance] File to store the tasks list (overwritten): " + listOfStagesFileName);
         }
         if (!listOfStages.createNewFile()) {
-            System.err.println("[Guidance] Error on main cannot create list of stages file: " + listOfStages);
+            LOGGER.error("[Guidance] Error on main cannot create list of stages file: " + listOfStages);
         }
 
         DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
@@ -141,24 +167,17 @@ public class Guidance {
         String outDir = parsingArgs.getOutDir();
         ChromoInfo generalChromoInfo = new ChromoInfo();
 
-        System.out.println("[Guidance] We print testTypes information");
+        LOGGER.info("[Guidance] We print testTypes information");
         int numberOfTestTypes = parsingArgs.getNumberOfTestTypeName();
         for (int kk = 0; kk < numberOfTestTypes; kk++) {
             String tmp_test_type = parsingArgs.getTestTypeName(kk);
             String tmp_responseVar = parsingArgs.getResponseVar(kk);
             String tmp_covariables = parsingArgs.getCovariables(kk);
-            System.out.println("[Guidance] " + tmp_test_type + " = " + tmp_responseVar + ":" + tmp_covariables);
+            LOGGER.info("[Guidance] " + tmp_test_type + " = " + tmp_responseVar + ":" + tmp_covariables);
         }
 
         // Main code of the work flow:
-        try {
-            // Now, we have to ask whether the GWAS process is mixed.
-            // printEnVariables();
-            doMixed(parsingArgs, outDir, rpanelTypes, generalChromoInfo, listOfCommands);
-        } catch (Exception e) {
-            System.err.println("[Guidance] Error on main GWAS workflow process.");
-            System.err.println(e.getMessage());
-        }
+        doMixed(parsingArgs, outDir, rpanelTypes, generalChromoInfo, listOfCommands);
 
         // Finally, we print the commands in the output file defined for this.
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(listOfStages))) {
@@ -171,8 +190,7 @@ public class Guidance {
             // Close the file with the list of commands...
             writer.flush();
         }
-        System.out.println("[Guidance] Everything is working with Guidance, just wait...");
-
+        LOGGER.info("[Guidance] Everything is working with Guidance, just wait...");
     }
 
     /**
@@ -183,17 +201,17 @@ public class Guidance {
         long totalMemory = Runtime.getRuntime().totalMemory() / 1_048_576;
         long maxMemory = Runtime.getRuntime().maxMemory() / 1_048_576;
 
-        System.out.println("JVM freeMemory: " + freeMemory);
-        System.out.println("JVM totalMemory also equals to initial heap size of JVM : " + totalMemory);
-        System.out.println("JVM maxMemory also equals to maximum heap size of JVM   : " + maxMemory);
+        LOGGER.debug("JVM freeMemory: " + freeMemory);
+        LOGGER.debug("JVM totalMemory also equals to initial heap size of JVM : " + totalMemory);
+        LOGGER.debug("JVM maxMemory also equals to maximum heap size of JVM   : " + maxMemory);
 
         Map<String, String> env = System.getenv();
-        System.out.println("--------------------------------------");
-        System.out.println("Environmental Variables in Master:");
+        LOGGER.debug("--------------------------------------");
+        LOGGER.debug("Environmental Variables in Master:");
         for (String envName : env.keySet()) {
-            System.out.format("%s=%s%n", envName, env.get(envName));
+            LOGGER.debug(envName + " = " + env.get(envName));
         }
-        System.out.println("--------------------------------------");
+        LOGGER.debug("--------------------------------------");
         ArrayList<String> objects = new ArrayList<>();
         for (int ii = 0; ii < 10000000; ii++) {
             objects.add(("" + 10 * 2710));
@@ -203,10 +221,10 @@ public class Guidance {
         totalMemory = Runtime.getRuntime().totalMemory() / 1_048_576;
         maxMemory = Runtime.getRuntime().maxMemory() / 1_048_576;
 
-        System.out.println("Used Memory in JVM: " + (maxMemory - freeMemory));
-        System.out.println("freeMemory in JVM: " + freeMemory);
-        System.out.println("totalMemory in JVM shows current size of java heap : " + totalMemory);
-        System.out.println("maxMemory in JVM: " + maxMemory);
+        LOGGER.debug("Used Memory in JVM: " + (maxMemory - freeMemory));
+        LOGGER.debug("freeMemory in JVM: " + freeMemory);
+        LOGGER.debug("totalMemory in JVM shows current size of java heap : " + totalMemory);
+        LOGGER.debug("maxMemory in JVM: " + maxMemory);
     }
 
     /**
@@ -249,7 +267,7 @@ public class Guidance {
         CommonFiles commonFilesInfo = new CommonFiles(parsingArgs, outDir);
 
         // Create the whole directory structure.
-        System.out.println("[Guidance] Creating the directory structures for the outputs...");
+        LOGGER.info("[Guidance] Creating the directory structures for the outputs...");
         FileUtils.createDirStructure(parsingArgs, outDir, rpanelTypes, startChr, endChr);
 
         // Create the names for mixed files
@@ -428,14 +446,14 @@ public class Guidance {
                 makeJointFilteredByAllFiles(parsingArgs, listOfCommands, tt, kk, rpanelName, startChr, endChr, mergeFilesInfo);
 
                 String lastCondensedFile = mergeFilesInfo.getFinalCondensedFile(tt, kk);
-                // System.out.println("\n[Guidance] The last Condensed file is " + lastCondensedFile);
+                // LOGGER.info("\n[Guidance] The last Condensed file is " + lastCondensedFile);
 
                 String lastFilteredByAllFile = mergeFilesInfo.getFinalFilteredByAllFile(tt, kk);
-                // System.out.println("\n[Guidance] The last FilteredByAll file is " + lastFilteredByAllFile);
+                // LOGGER.info("\n[Guidance] The last FilteredByAll file is " + lastFilteredByAllFile);
 
                 // Lets extract top-hits results from the lastFilteredByAllFile
                 String topHitsResults = resultsFilesInfo.getTopHitsFile(tt, kk);
-                // System.out.println("\n[Guidance] The topHitsFile is " + topHitsResults);
+                // LOGGER.info("\n[Guidance] The topHitsFile is " + topHitsResults);
 
                 String filteredByAllXFile = null;
                 if (endChr == 23) {
@@ -470,7 +488,7 @@ public class Guidance {
         if (1 < numberOfTestTypes) {
             makePhenotypeAnalysis(parsingArgs, mergeFilesInfo, resultsFilesInfo, phenomeAnalysisFilesInfo, rpanelTypes, listOfCommands);
         } else {
-            System.out.println("\n[Guidance] No cross-phenotype analysis. Only one phenotype available");
+            LOGGER.info("\n[Guidance] No cross-phenotype analysis. Only one phenotype available");
         }
 
         // makePhenotypeAnalysis(parsingArgs, mergeFilesInfo, resultsFilesInfo, phenomeAnalysisFilesInfo, rpanelTypes,
@@ -489,7 +507,7 @@ public class Guidance {
          * refPanelCombine, mafThreshold, infoThreshold, hweCohortThreshold, hweCasesThreshold, hweControlsThreshold,
          * startChr, endChr, listOfCommands);
          */
-        System.out.println("\n[Guidance] All tasks are in execution, please wait...");
+        LOGGER.info("\n[Guidance] All tasks are in execution, please wait...");
 
         /**
          * Now it is a good moment to start with the cleaning and compression of the temporal files. It should be done
@@ -500,22 +518,22 @@ public class Guidance {
          */
         /*
          * try{ compressCommonFiles(parsingArgs, commonFilesInfo); } catch (Exception e){
-         * System.err.println("[Guidance] Exception compressing commonFilesInfo."); }
+         * LOGGER.error("[Guidance] Exception compressing commonFilesInfo."); }
          * 
          * try{ compressImputationFiles(parsingArgs, generalChromoInfo, rpanelTypes, imputationFilesInfo); } catch
-         * (Exception e){ System.err.println("[Guidance] Exception compressing imputationFilesInfo."); }
+         * (Exception e){ LOGGER.error("[Guidance] Exception compressing imputationFilesInfo."); }
          * 
          * try{ compressAssocFiles(parsingArgs, generalChromoInfo, rpanelTypes, assocFilesInfo); } catch (Exception e){
-         * System.err.println("[Guidance] Exception compressing imputationFilesInfo."); }
+         * LOGGER.error("[Guidance] Exception compressing imputationFilesInfo."); }
          * 
          * // Now we delete files try{ deleteCommonFiles(parsingArgs, commonFilesInfo); } catch (Exception e){
-         * System.err.println("[Guidance] Exception deleting commonFilesInfo."); }
+         * LOGGER.error("[Guidance] Exception deleting commonFilesInfo."); }
          * 
          * try{ deleteImputationFiles(parsingArgs, generalChromoInfo, rpanelTypes, imputationFilesInfo); } catch
-         * (Exception e){ System.err.println("[Guidance] Exception deleting imputationFilesInfo."); }
+         * (Exception e){ LOGGER.error("[Guidance] Exception deleting imputationFilesInfo."); }
          * 
          * try{ deleteAssocFiles(parsingArgs, generalChromoInfo, rpanelTypes, assocFilesInfo); } catch (Exception e){
-         * System.err.println("[Guidance] Exception deleting imputationFilesInfo."); }
+         * LOGGER.error("[Guidance] Exception deleting imputationFilesInfo."); }
          */
     }
 
@@ -540,7 +558,7 @@ public class Guidance {
 
         String knownHapFileName = parsingArgs.getRpanelHapFileName(panelIndex, chrNumber);
         String rpanelDir = parsingArgs.getRpanelDir(panelIndex);
-        String knownHapFile = rpanelDir + "/" + knownHapFileName;
+        String knownHapFile = rpanelDir + File.separator + knownHapFileName;
 
         String lim1S = Integer.toString(lim1);
         String lim2S = Integer.toString(lim2);
@@ -550,7 +568,7 @@ public class Guidance {
 
         if (imputationTool.equals("impute")) {
             String legendFileName = parsingArgs.getRpanelLegFileName(panelIndex, chrNumber);
-            String legendFile = rpanelDir + "/" + legendFileName;
+            String legendFile = rpanelDir + File.separator + legendFileName;
 
             // String mixedSampleFile = commonFilesInfo.getSampleFile(chrNumber);
             String mixedShapeitHapsFile = commonFilesInfo.getShapeitHapsFile(chrNumber);
@@ -594,7 +612,7 @@ public class Guidance {
                     mixedFilteredHaplotypesSampleFile, mixedFilteredListOfSnpsFile, mixedImputedMMFileName, mixedImputedMMInfoFile,
                     mixedImputedMMErateFile, mixedImputedMMRecFile, mixedImputedMMDoseFile, mixedImputedMMLogFile, chrS, lim1S, lim2S);
         } else {
-            System.err.println("\t[makeImputationPerChunk]: Error, the imputation tool " + imputationTool + " is not allowed...");
+            LOGGER.fatal("\t[makeImputationPerChunk]: Error, the imputation tool " + imputationTool + " is not allowed...");
             System.exit(1);
         }
     }
@@ -696,8 +714,8 @@ public class Guidance {
         String filteredByAllFile = mergeFilesInfo.getFilteredByAllFile(ttIndex, rpanelIndex, chr);
         String condensedFile = mergeFilesInfo.getCondensedFile(ttIndex, rpanelIndex, chr);
 
-        if (type == "filtered") {
-            // System.out.println("Number of chunks for testType " + ttIndex + " | rpanel " + rpanelIndex + " |chr " +
+        if (type.equals("filtered")) {
+            // LOGGER.info("Number of chunks for testType " + ttIndex + " | rpanel " + rpanelIndex + " |chr " +
             // chr + " " + numberOfChunks);
             for (int processedChunks = 0; processedChunks < 2 * numberOfChunks - 2; processedChunks = processedChunks + 2) {
                 if (processedChunks < numberOfChunks) {
@@ -730,9 +748,9 @@ public class Guidance {
                 /*
                  * File fA = new File(reducedA); fA.delete(); File fB = new File(reducedB); fB.delete();
                  */
-            } // end for(processedChunks=0; processedChunks< numberOfChunks-1; processedChunks++)
+            } // End for Chunks
 
-        } else if (type == "condensed") {
+        } else if (type.equals("condensed")) {
             for (int processedChunks = 0; processedChunks < 2 * numberOfChunks - 2; processedChunks = processedChunks + 2) {
                 if (processedChunks < numberOfChunks) {
                     reducedA = assocFilesInfo.getSummaryCondensedFile(ttIndex, rpanelIndex, chr, lim1, lim2, chunkSize);
@@ -764,10 +782,8 @@ public class Guidance {
                 /*
                  * File fA = new File(reducedA); fA.delete(); File fB = new File(reducedB); fB.delete();
                  */
-            } // end for(processedChunks=0; processedChunks< numberOfChunks-1; processedChunks++)
-
+            } // End of for Chunks
         }
-
     }
 
     /**
@@ -1199,14 +1215,14 @@ public class Guidance {
             ttName = parsingArgs.getTestTypeName(ttIndex);
             for (rpIndex = startRp; rpIndex < numberOfRpanelsTypes; rpIndex++) {
                 rpName = rpanelTypes.get(rpIndex);
-                // System.out.println("i\n\n\t[makeImputationPerChunk]: ttName " + ttName + " | rpName " + rpName + " |
+                // LOGGER.info("i\n\n\t[makeImputationPerChunk]: ttName " + ttName + " | rpName " + rpName + " |
                 // phenoIndex " + phenoIndex);
-                // System.out.println("\t[makeImputationPerChunk]: phenomeFileA " + phenomeFileA);
+                // LOGGER.info("\t[makeImputationPerChunk]: phenomeFileA " + phenomeFileA);
                 phenomeFileB = phenomeAnalysisFilesInfo.getPhenotypeFile(phenoIndex);
-                // System.out.println("\t[makeImputationPerChunk]: phenomeFileB " + phenomeFileB);
+                // LOGGER.info("\t[makeImputationPerChunk]: phenomeFileB " + phenomeFileB);
 
                 phenomeFileC = phenomeAnalysisFilesInfo.getPhenotypeFinalFile(phenoIndex);
-                // System.out.println("\t[makeImputationPerChunk]: phenomeFileC " + phenomeFileC);
+                // LOGGER.info("\t[makeImputationPerChunk]: phenomeFileC " + phenomeFileC);
 
                 doFinalizePhenoMatrix(parsingArgs, listOfCommands, phenomeFileA, phenomeFileB, ttName, rpName, phenomeFileC);
 
@@ -1244,8 +1260,7 @@ public class Guidance {
                 GuidanceImpl.convertFromBedToBed(bedFile, bimFile, famFile, mixedBedFile, mixedBimFile, mixedFamFile, mixedBedToBedLogFile,
                         theChromo, cmdToStore);
             } catch (GuidanceTaskException gte) {
-                System.err.println("[Guidance] Exception trying the execution of convertFromBedToBed task");
-                System.err.println(gte.getMessage());
+                LOGGER.error("[Guidance] Exception trying the execution of convertFromBedToBed task", gte);
             }
         }
     }
@@ -1272,8 +1287,7 @@ public class Guidance {
             try {
                 GuidanceImpl.createRsIdList(mixedBimOrGenFile, exclCgatFlag, mixedPairsFile, inputFormat, cmdToStore);
             } catch (GuidanceTaskException gte) {
-                System.err.println("[Guidance] Exception trying the execution of createRsIdList task");
-                System.err.println(gte.getMessage());
+                LOGGER.error("[Guidance] Exception trying the execution of createRsIdList task", gte);
             }
         }
     }
@@ -1324,8 +1338,7 @@ public class Guidance {
                 GuidanceImpl.phasingBed(theChromo, bedFile, bimFile, famFile, gmapFile, shapeitHapsFile, shapeitSampleFile, shapeitLogFile,
                         cmdToStore);
             } catch (GuidanceTaskException gte) {
-                System.err.println("[Guidance] Exception trying the execution of phasing task");
-                System.err.println(gte.getMessage());
+                LOGGER.error("[Guidance] Exception trying the execution of phasing task", gte);
             }
         }
 
@@ -1338,8 +1351,7 @@ public class Guidance {
             try {
                 GuidanceImpl.createListOfExcludedSnps(shapeitHapsFile, excludedSnpsFile, exclCgatFlag, exclSVFlag, cmdToStore2);
             } catch (GuidanceTaskException gte) {
-                System.err.println("[Guidance] Exception trying the execution of createListOfExcludedSnps task");
-                System.err.println(gte.getMessage());
+                LOGGER.error("[Guidance] Exception trying the execution of createListOfExcludedSnps task", gte);
             }
         }
 
@@ -1354,8 +1366,7 @@ public class Guidance {
                 GuidanceImpl.filterHaplotypes(shapeitHapsFile, shapeitSampleFile, excludedSnpsFile, filteredHaplotypesFile,
                         filteredHaplotypesSampleFile, filteredHaplotypesLogFile, filteredHaplotypesVcfFile, listOfSnpsFile, cmdToStore3);
             } catch (GuidanceTaskException gte) {
-                System.err.println("[Guidance] Exception trying the execution of createListOfExcludedSnps task");
-                System.err.println(gte.getMessage());
+                LOGGER.error("[Guidance] Exception trying the execution of createListOfExcludedSnps task", gte);
             }
         }
     }
@@ -1403,8 +1414,7 @@ public class Guidance {
                 GuidanceImpl.phasing(theChromo, genFile, sampleFile, gmapFile, shapeitHapsFile, shapeitSampleFile, shapeitLogFile,
                         cmdToStore);
             } catch (GuidanceTaskException gte) {
-                System.err.println("[Guidance] Exception trying the execution of phasing task");
-                System.err.println(gte.getMessage());
+                LOGGER.error("[Guidance] Exception trying the execution of phasing task", gte);
             }
         }
 
@@ -1417,8 +1427,7 @@ public class Guidance {
             try {
                 GuidanceImpl.createListOfExcludedSnps(shapeitHapsFile, excludedSnpsFile, exclCgatFlag, exclSVFlag, cmdToStore2);
             } catch (GuidanceTaskException gte) {
-                System.err.println("[Guidance] Exception trying the execution of createListOfExcludedSnps task");
-                System.err.println(gte.getMessage());
+                LOGGER.error("[Guidance] Exception trying the execution of createListOfExcludedSnps task", gte);
             }
         }
 
@@ -1433,8 +1442,7 @@ public class Guidance {
                 GuidanceImpl.filterHaplotypes(shapeitHapsFile, shapeitSampleFile, excludedSnpsFile, filteredHaplotypesFile,
                         filteredHaplotypesSampleFile, filteredHaplotypesLogFile, filteredHaplotypesVcfFile, listOfSnpsFile, cmdToStore3);
             } catch (GuidanceTaskException gte) {
-                System.err.println("[Guidance] Exception trying the execution of createListOfExcludedSnps task");
-                System.err.println(gte.getMessage());
+                LOGGER.error("[Guidance] Exception trying the execution of createListOfExcludedSnps task", gte);
             }
         }
     }
@@ -1482,8 +1490,7 @@ public class Guidance {
                 GuidanceImpl.imputeWithImpute(gmapFile, knownHapFile, legendFile, shapeitHapsFile, shapeitSampleFile, lim1S, lim2S,
                         pairsFile, imputeFile, imputeFileInfo, imputeFileSummary, imputeFileWarnings, chrS, cmdToStore);
             } catch (GuidanceTaskException gte) {
-                System.err.println("[Guidance] Exception trying the execution of impute task");
-                System.err.println(gte.getMessage());
+                LOGGER.error("[Guidance] Exception trying the execution of impute task", gte);
             }
         }
     }
@@ -1529,8 +1536,7 @@ public class Guidance {
                         imputedMMFileName, imputedMMInfoFile, imputedMMErateFile, imputedMMRecFile, imputedMMDoseFile, imputedMMLogFile,
                         chrS, lim1S, lim2S, cmdToStore);
             } catch (GuidanceTaskException gte) {
-                System.err.println("[Guidance] Exception trying the execution of imputationWithMinimac task");
-                System.err.println(gte.getMessage());
+                LOGGER.error("[Guidance] Exception trying the execution of imputationWithMinimac task", gte);
             }
         }
     }
@@ -1555,8 +1561,7 @@ public class Guidance {
             try {
                 GuidanceImpl.filterByInfo(imputeFileInfo, filteredRsIdFile, infoThresholdS, cmdToStore);
             } catch (GuidanceTaskException gte) {
-                System.err.println("[Guidance] Exception trying the execution of filterByInfo tasks for controls");
-                System.err.println(gte.getMessage());
+                LOGGER.error("[Guidance] Exception trying the execution of filterByInfo tasks for controls", gte);
             }
         }
     }
@@ -1585,8 +1590,7 @@ public class Guidance {
             try {
                 GuidanceImpl.qctoolS(imputeFile, filteredRsIdFile, mafThresholdS, filteredFile, filteredLogFile, cmdToStore);
             } catch (GuidanceTaskException gte) {
-                System.err.println("[Guidance] Exception trying the execution of qctoolS tasks for controls");
-                System.err.println(gte.getMessage());
+                LOGGER.error("[Guidance] Exception trying the execution of qctoolS tasks for controls", gte);
             }
         }
     }
@@ -1633,8 +1637,7 @@ public class Guidance {
                 GuidanceImpl.snptest(mergedGenFile, mergedSampleFile, snptestOutFile, snptestLogFile, responseVar, covariables, chrS,
                         cmdToStore);
             } catch (GuidanceTaskException gte) {
-                System.err.println("[Guidance] Exception trying the execution of snptest task");
-                System.err.println(gte.getMessage());
+                LOGGER.error("[Guidance] Exception trying the execution of snptest task", gte);
             }
         }
     }
@@ -1671,8 +1674,7 @@ public class Guidance {
                 GuidanceImpl.collectSummary(chrS, imputeFileInfo, snptestOutFile, summaryFile, mafThresholdS, infoThresholdS,
                         hweCohortThresholdS, hweCasesThresholdS, hweControlsThresholdS, cmdToStore);
             } catch (GuidanceTaskException gte) {
-                System.err.println("[Guidance] Exception trying the execution of collectSummary task");
-                System.err.println(gte.getMessage());
+                LOGGER.error("[Guidance] Exception trying the execution of collectSummary task", gte);
             }
         }
     }
@@ -1696,8 +1698,7 @@ public class Guidance {
             try {
                 GuidanceImpl.jointCondensedFiles(condensedA, condensedB, condensedC, cmdToStore);
             } catch (GuidanceTaskException gte) {
-                System.err.println("[Guidance] Exception trying the execution of jointCondensedFiles task");
-                System.err.println(gte.getMessage());
+                LOGGER.error("[Guidance] Exception trying the execution of jointCondensedFiles task", gte);
             }
         }
     }
@@ -1723,8 +1724,7 @@ public class Guidance {
             try {
                 GuidanceImpl.jointFilteredByAllFiles(filteredByAllA, filteredByAllB, filteredByAllC, rpanelName, rpanelFlag, cmdToStore);
             } catch (GuidanceTaskException gte) {
-                System.err.println("[Guidance] Exception trying the execution of getBestSnps task");
-                System.err.println("The error message here is " + gte.getMessage());
+                LOGGER.error("[Guidance] Exception trying the execution of getBestSnps task", gte);
             }
         }
     }
@@ -1749,8 +1749,7 @@ public class Guidance {
             try {
                 GuidanceImpl.generateTopHitsAll(filteredFile, filteredXFile, topHitsResults, pvaThrS, cmdToStore);
             } catch (GuidanceTaskException gte) {
-                System.err.println("[Guidance] Exception trying the execution of generateTopHits task");
-                System.err.println(gte.getMessage());
+                LOGGER.error("[Guidance] Exception trying the execution of generateTopHits task", gte);
             }
         }
     }
@@ -1779,8 +1778,7 @@ public class Guidance {
                 GuidanceImpl.generateQQManhattanPlots(condensedFile, qqPlotFile, manhattanPlotFile, qqPlotTiffFile, manhattanPlotTiffFile,
                         correctedPvaluesFile, cmdToStore);
             } catch (GuidanceTaskException gte) {
-                System.err.println("[Guidance] Exception trying the execution of generateQQManhattanPlots task");
-                System.err.println(gte.getMessage());
+                LOGGER.error("[Guidance] Exception trying the execution of generateQQManhattanPlots task", gte);
             }
         }
     }
@@ -1809,8 +1807,7 @@ public class Guidance {
             try {
                 GuidanceImpl.combinePanelsComplex(resultsPanelA, resultsPanelB, lastResultFile, lim1, lim2, cmdToStore);
             } catch (GuidanceTaskException gte) {
-                System.err.println("[Guidance] Exception trying the execution of combinePanelsComplex task");
-                System.err.println(gte.getMessage());
+                LOGGER.error("[Guidance] Exception trying the execution of combinePanelsComplex task", gte);
             }
         }
     }
@@ -1837,8 +1834,7 @@ public class Guidance {
             try {
                 GuidanceImpl.mergeTwoChunks(reduceA, reduceB, reduceC, theChromo, type, cmdToStore);
             } catch (GuidanceTaskException gte) {
-                System.err.println("[Guidance] Exception trying the execution of mergeTwoChunks task");
-                System.err.println(gte.getMessage());
+                LOGGER.error("[Guidance] Exception trying the execution of mergeTwoChunks task", gte);
             }
         }
     }
@@ -1879,8 +1875,7 @@ public class Guidance {
                 GuidanceImpl.filterByAll(inputFile, outputFile, outputCondensedFile, mafThresholdS, infoThresholdS, hweCohortThresholdS,
                         hweCasesThresholdS, hweControlsThresholdS, cmdToStore);
             } catch (GuidanceTaskException gte) {
-                System.err.println("[Guidance] Exception trying the execution of filterByAll task");
-                System.err.println(gte.getMessage());
+                LOGGER.error("[Guidance] Exception trying the execution of filterByAll task", gte);
             }
         }
     }
@@ -1906,8 +1901,7 @@ public class Guidance {
             try {
                 GuidanceImpl.initPhenoMatrix(topHitsFile, ttName, rpName, phenomeFile, cmdToStore);
             } catch (GuidanceTaskException gte) {
-                System.err.println("[Guidance] Exception trying the execution of initPhenoMatrix task");
-                System.err.println(gte.getMessage());
+                LOGGER.error("[Guidance] Exception trying the execution of initPhenoMatrix task", gte);
             }
         }
     }
@@ -1935,8 +1929,7 @@ public class Guidance {
             try {
                 GuidanceImpl.addToPhenoMatrix(phenomeFileA, topHitsFile, ttName, rpName, phenomeFileB, cmdToStore);
             } catch (GuidanceTaskException gte) {
-                System.err.println("[Guidance] Exception trying the execution of addToPhenoMatrix task");
-                System.err.println(gte.getMessage());
+                LOGGER.error("[Guidance] Exception trying the execution of addToPhenoMatrix task", gte);
             }
         }
     }
@@ -1967,8 +1960,7 @@ public class Guidance {
                 GuidanceImpl.filloutPhenoMatrix(phenomeFileA, filteredByAllFile, filteredByAllXFile, endChrS, ttName, rpName, phenomeFileB,
                         cmdToStore);
             } catch (GuidanceTaskException gte) {
-                System.err.println("[Guidance] Exception trying the execution of filloutPhenoMatrix task");
-                System.err.println(gte.getMessage());
+                LOGGER.error("[Guidance] Exception trying the execution of filloutPhenoMatrix task", gte);
             }
         }
     }
@@ -1996,8 +1988,7 @@ public class Guidance {
             try {
                 GuidanceImpl.finalizePhenoMatrix(phenomeFileA, phenomeFileB, ttName, rpName, phenomeFileC, cmdToStore);
             } catch (GuidanceTaskException gte) {
-                System.err.println("[Guidance] Exception trying the execution of finalizePhenoMatrix task");
-                System.err.println(gte.getMessage());
+                LOGGER.error("[Guidance] Exception trying the execution of finalizePhenoMatrix task", gte);
             }
         }
     }
@@ -2179,34 +2170,34 @@ public class Guidance {
      */
     private static void printStagesStatus(ParseCmdLine parsingArgs) {
         // Verify the status of each stage:
-        System.out.println("[Guidance] Current Status of each stage of the whole workflow:");
-        System.out.println("[Guidance] convertFromBedToBed      " + parsingArgs.getStageStatus("convertFromBedToBed"));
-        System.out.println("[Guidance] createRsIdList           " + parsingArgs.getStageStatus("createRsIdList"));
-        System.out.println("[Guidance] phasingBed               " + parsingArgs.getStageStatus("phasingBed"));
-        System.out.println("[Guidance] phasing                  " + parsingArgs.getStageStatus("phasing"));
-        System.out.println("[Guidance] createListOfExcludedSnps " + parsingArgs.getStageStatus("createListOfExcludedSnps"));
-        System.out.println("[Guidance] filterHaplotypes         " + parsingArgs.getStageStatus("filterHaplotypes"));
-        System.out.println("[Guidance] imputeWithImpute         " + parsingArgs.getStageStatus("imputeWithImpute"));
-        System.out.println("[Guidance] imputeWithMinimac        " + parsingArgs.getStageStatus("imputeWithMinimac"));
-        System.out.println("[Guidance] filterByInfo             " + parsingArgs.getStageStatus("filterByInfo"));
-        System.out.println("[Guidance] qctoolS                  " + parsingArgs.getStageStatus("qctoolS"));
-        System.out.println("[Guidance] snptest                  " + parsingArgs.getStageStatus("snptest"));
-        System.out.println("[Guidance] collectSummary           " + parsingArgs.getStageStatus("collectSummary"));
-        System.out.println("[Guidance] mergeTwoChunks           " + parsingArgs.getStageStatus("mergeTwoChunks"));
-        System.out.println("[Guidance] filterByAll              " + parsingArgs.getStageStatus("filterByAll"));
-        System.out.println("[Guidance] jointCondensedFiles      " + parsingArgs.getStageStatus("jointCondensedFiles"));
-        System.out.println("[Guidance] jointFilteredByAllFiles  " + parsingArgs.getStageStatus("jointFilteredByAllFiles"));
-        System.out.println("[Guidance] generateTopHits          " + parsingArgs.getStageStatus("generateTopHits"));
-        System.out.println("[Guidance] generateQQManhattanPlots " + parsingArgs.getStageStatus("generateQQManhattanPlots"));
-        System.out.println("[Guidance] combinePanelsComplex     " + parsingArgs.getStageStatus("combinePanelsComplex"));
-        System.out.println("[Guidance] combineCondensedFiles    " + parsingArgs.getStageStatus("combineCondensedFiles"));
-        System.out.println("[Guidance] initPhenoMatrix          " + parsingArgs.getStageStatus("initPhenoMatrix"));
-        System.out.println("[Guidance] addToPhenoMatrix         " + parsingArgs.getStageStatus("addToPhenoMatrix"));
-        System.out.println("[Guidance] filloutPhenoMatrix       " + parsingArgs.getStageStatus("filloutPhenoMatrix"));
-        System.out.println("[Guidance] finalizePhenoMatrix      " + parsingArgs.getStageStatus("finalizePhenoMatrix"));
-        System.out.println("[Guidance] taskx                    " + parsingArgs.getStageStatus("taskx"));
-        System.out.println("[Guidance] tasky                    " + parsingArgs.getStageStatus("tasky"));
-        System.out.println("[Guidance] taskz                    " + parsingArgs.getStageStatus("taskz"));
+        LOGGER.info("[Guidance] Current Status of each stage of the whole workflow:");
+        LOGGER.info("[Guidance] convertFromBedToBed      " + parsingArgs.getStageStatus("convertFromBedToBed"));
+        LOGGER.info("[Guidance] createRsIdList           " + parsingArgs.getStageStatus("createRsIdList"));
+        LOGGER.info("[Guidance] phasingBed               " + parsingArgs.getStageStatus("phasingBed"));
+        LOGGER.info("[Guidance] phasing                  " + parsingArgs.getStageStatus("phasing"));
+        LOGGER.info("[Guidance] createListOfExcludedSnps " + parsingArgs.getStageStatus("createListOfExcludedSnps"));
+        LOGGER.info("[Guidance] filterHaplotypes         " + parsingArgs.getStageStatus("filterHaplotypes"));
+        LOGGER.info("[Guidance] imputeWithImpute         " + parsingArgs.getStageStatus("imputeWithImpute"));
+        LOGGER.info("[Guidance] imputeWithMinimac        " + parsingArgs.getStageStatus("imputeWithMinimac"));
+        LOGGER.info("[Guidance] filterByInfo             " + parsingArgs.getStageStatus("filterByInfo"));
+        LOGGER.info("[Guidance] qctoolS                  " + parsingArgs.getStageStatus("qctoolS"));
+        LOGGER.info("[Guidance] snptest                  " + parsingArgs.getStageStatus("snptest"));
+        LOGGER.info("[Guidance] collectSummary           " + parsingArgs.getStageStatus("collectSummary"));
+        LOGGER.info("[Guidance] mergeTwoChunks           " + parsingArgs.getStageStatus("mergeTwoChunks"));
+        LOGGER.info("[Guidance] filterByAll              " + parsingArgs.getStageStatus("filterByAll"));
+        LOGGER.info("[Guidance] jointCondensedFiles      " + parsingArgs.getStageStatus("jointCondensedFiles"));
+        LOGGER.info("[Guidance] jointFilteredByAllFiles  " + parsingArgs.getStageStatus("jointFilteredByAllFiles"));
+        LOGGER.info("[Guidance] generateTopHits          " + parsingArgs.getStageStatus("generateTopHits"));
+        LOGGER.info("[Guidance] generateQQManhattanPlots " + parsingArgs.getStageStatus("generateQQManhattanPlots"));
+        LOGGER.info("[Guidance] combinePanelsComplex     " + parsingArgs.getStageStatus("combinePanelsComplex"));
+        LOGGER.info("[Guidance] combineCondensedFiles    " + parsingArgs.getStageStatus("combineCondensedFiles"));
+        LOGGER.info("[Guidance] initPhenoMatrix          " + parsingArgs.getStageStatus("initPhenoMatrix"));
+        LOGGER.info("[Guidance] addToPhenoMatrix         " + parsingArgs.getStageStatus("addToPhenoMatrix"));
+        LOGGER.info("[Guidance] filloutPhenoMatrix       " + parsingArgs.getStageStatus("filloutPhenoMatrix"));
+        LOGGER.info("[Guidance] finalizePhenoMatrix      " + parsingArgs.getStageStatus("finalizePhenoMatrix"));
+        LOGGER.info("[Guidance] taskx                    " + parsingArgs.getStageStatus("taskx"));
+        LOGGER.info("[Guidance] tasky                    " + parsingArgs.getStageStatus("tasky"));
+        LOGGER.info("[Guidance] taskz                    " + parsingArgs.getStageStatus("taskz"));
     }
 
     /**
@@ -2214,13 +2205,13 @@ public class Guidance {
      * 
      */
     private static void printGuidancePackageVersion() {
-        System.out.println("[Guidance] *****************************************************************");
-        System.out.println("[Guidance] ** This is the Guidance framework to performing imputation,    **");
-        System.out.println("[Guidance] ** GWAS and Phenotype analysis of large scale GWAS datasets.   **");
-        System.out.println("[Guidance] ** Version: " + PACKAGE_VERSION + "                                   **");
-        System.out.println("[Guidance] ** Date release: 20-Jul-2016                                   **");
-        System.out.println("[Guidance] ** Contact: http://cg.bsc.es/guidance                          **");
-        System.out.println("[Guidance] ******************************************************************\n");
+        LOGGER.warn("[Guidance] *****************************************************************");
+        LOGGER.warn("[Guidance] ** This is the Guidance framework to performing imputation,    **");
+        LOGGER.warn("[Guidance] ** GWAS and Phenotype analysis of large scale GWAS datasets.   **");
+        LOGGER.warn("[Guidance] ** Version: Guidance " + GUIDANCE_VERSION + " build " + GUIDANCE_BUILDNUMBER + "     **");
+        LOGGER.warn("[Guidance] ** Date release: 20-Jul-2016                                   **");
+        LOGGER.warn("[Guidance] ** Contact: http://cg.bsc.es/guidance                          **");
+        LOGGER.warn("[Guidance] ******************************************************************\n");
     }
 
     /**
