@@ -31,12 +31,20 @@
 
 package guidance.utils;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+
 /**
  * Representation of the Chromo Information
  *
  */
 public class ChromoInfo {
 
+    // Logger
+    private static final Logger LOGGER = LogManager.getLogger("Console");
+
+    // Maximum number of chromosomes
     private static final int MAX_NUMBER_OF_CHROMOSOMES = 23;
 
     private static final int[] MIN_SIZE;
@@ -121,13 +129,13 @@ public class ChromoInfo {
         // Check that chromo index is within the bounds
         checkChromoIndex(chromoNumber);
 
-        System.out.println("Gen file information for the chromosome " + chromoNumber);
-        System.out.println("Max size     : " + MAX_SIZE[chromoNumber - 1]);
+        LOGGER.info("Gen file information for the chromosome " + chromoNumber);
+        LOGGER.info("Max size     : " + MAX_SIZE[chromoNumber - 1]);
     }
 
     private void checkChromoIndex(int chromo) {
         if ((chromo < 1) || (chromo > MAX_NUMBER_OF_CHROMOSOMES)) {
-            System.err.println("[chromoInfo] Errro, chromo " + chromo + "does not exist");
+            LOGGER.fatal("[chromoInfo] Errro, chromo " + chromo + "does not exist");
             System.exit(1);
         }
     }

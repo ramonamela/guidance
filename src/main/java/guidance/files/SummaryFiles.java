@@ -33,6 +33,9 @@ package guidance.files;
 
 import java.util.List;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import guidance.utils.ChromoInfo;
 import guidance.utils.ParseCmdLine;
 
@@ -46,6 +49,9 @@ import java.util.ArrayList;
  *
  */
 public class SummaryFiles {
+
+    // Logger
+    private static final Logger LOGGER = LogManager.getLogger("Console");
 
     private static final int MAX_NUMBER_OF_CHROMOSOMES = 23;
     private static final int MIN_LIMIT = 1;
@@ -94,7 +100,7 @@ public class SummaryFiles {
 
         for (int j = 0; j < refPanels.size(); j++) {
             String rPanel = refPanels.get(j);
-            // System.out.println("[SummaryFiles]: For refPanel " + rPanel);
+            // LOGGER.info("[SummaryFiles]: For refPanel " + rPanel);
 
             String assocOutDir = myOutDir + "/associations/" + testTypeName + "/" + mixedCohort + "_for_" + rPanel;
 
@@ -122,7 +128,7 @@ public class SummaryFiles {
 
             for (int i = 0; i < MAX_NUMBER_OF_CHROMOSOMES; i++) {
                 int chromo = i + 1;
-                // System.out.println("\t[SummaryFiles]: For chromo " + chromo);
+                // LOGGER.info("\t[SummaryFiles]: For chromo " + chromo);
 
                 String tmpChrDir = assocOutDir + "/" + "Chr_" + chromo;
                 chromoListOutDir.add(tmpChrDir);
@@ -194,7 +200,7 @@ public class SummaryFiles {
                 int index1 = 0;
                 int index2 = 1;
                 int current_index = listReducedFileName.size();
-                // System.out.println("\t[SummaryFiles]: index1 " + index1 + " |index2 " + index2 + " |current_index " +
+                // LOGGER.info("\t[SummaryFiles]: index1 " + index1 + " |index2 " + index2 + " |current_index " +
                 // current_index);
 
                 int counter = 0;
@@ -202,8 +208,8 @@ public class SummaryFiles {
                     String tmpReducedFileName = "chr_" + chromo + "_reduce_file_" + counter + ".txt";
                     String tmpReducedFile = tmpChrDir + File.separator + tmpReducedFileName;
 
-                    // System.out.println("\t[SummaryFiles]: " + tmpReducedFileName);
-                    // System.out.println("\t[SummaryFiles]: " + tmpReducedFile);
+                    // LOGGER.info("\t[SummaryFiles]: " + tmpReducedFileName);
+                    // LOGGER.info("\t[SummaryFiles]: " + tmpReducedFile);
 
                     listReducedFileName.add(tmpReducedFileName);
                     listReducedFile.add(tmpReducedFile);
@@ -256,7 +262,7 @@ public class SummaryFiles {
             filteredByAllFileName.add(chromoFilteredByAllFileName);
             filteredByAllFile.add(chromoFilteredByAllFile);
         }
-        // System.out.println("\t[SummaryFiles]: OK done for SummaryFiles");
+        // LOGGER.info("\t[SummaryFiles]: OK done for SummaryFiles");
     }
 
     /**
@@ -559,7 +565,7 @@ public class SummaryFiles {
      * @return
      */
     public String getReducedFileName(int rPanelIndex, int chromo, int index) {
-        // System.out.println("[SummaryFiles]: " + rPanelIndex + " |chromo " + chromo + " |index " + index);
+        // LOGGER.info("[SummaryFiles]: " + rPanelIndex + " |chromo " + chromo + " |index " + index);
 
         // Check that chromo index is within the bounds
         checkChromoIndex(chromo);
@@ -623,7 +629,7 @@ public class SummaryFiles {
 
         // REMOVE ArrayList<String> tmpList = new ArrayList<String>();
         int lastIndex = reducedListFile.get(rPanelIndex).get(i).size() - 1;
-        // System.out.println("[SummaryFiles] lastIndex size = " + lastIndex);
+        // LOGGER.info("[SummaryFiles] lastIndex size = " + lastIndex);
 
         return reducedListFile.get(rPanelIndex).get(i).get(lastIndex);
     }
@@ -678,34 +684,34 @@ public class SummaryFiles {
         int indexLow = lim1 / chunkSize;
         int indexHigh = lim2 / chunkSize;
         for (int j = indexLow; j < indexHigh; j++) {
-            System.out.println("-------------------------------------------------");
-            System.out.println("Assoc files information for the chromosome " + chromo);
-            System.out.println("outDir                  : " + outDir.get(rPanelIndex).get(i));
-            System.out.println("mergedGenFileName       : " + mergedGenFileName.get(rPanelIndex).get(i).get(indexLow));
-            System.out.println("mergedGenFile           : " + mergedGenFile.get(rPanelIndex).get(i).get(indexLow));
-            System.out.println("mergedSampleFileName    : " + mergedSampleFileName.get(rPanelIndex).get(i).get(indexLow));
-            System.out.println("mergedSampleFile        : " + mergedSampleFile.get(rPanelIndex).get(i).get(indexLow));
-            System.out.println("mergedLogFileName       : " + mergedLogFileName.get(rPanelIndex).get(i).get(indexLow));
-            System.out.println("mergedLogFile           : " + mergedLogFile.get(rPanelIndex).get(i).get(indexLow));
+            LOGGER.info("-------------------------------------------------");
+            LOGGER.info("Assoc files information for the chromosome " + chromo);
+            LOGGER.info("outDir                  : " + outDir.get(rPanelIndex).get(i));
+            LOGGER.info("mergedGenFileName       : " + mergedGenFileName.get(rPanelIndex).get(i).get(indexLow));
+            LOGGER.info("mergedGenFile           : " + mergedGenFile.get(rPanelIndex).get(i).get(indexLow));
+            LOGGER.info("mergedSampleFileName    : " + mergedSampleFileName.get(rPanelIndex).get(i).get(indexLow));
+            LOGGER.info("mergedSampleFile        : " + mergedSampleFile.get(rPanelIndex).get(i).get(indexLow));
+            LOGGER.info("mergedLogFileName       : " + mergedLogFileName.get(rPanelIndex).get(i).get(indexLow));
+            LOGGER.info("mergedLogFile           : " + mergedLogFile.get(rPanelIndex).get(i).get(indexLow));
 
-            System.out.println("mergedSnptestOutFileName: " + snptestOutFileName.get(rPanelIndex).get(i).get(indexLow));
-            System.out.println("mergedSnptestOutFile    : " + snptestOutFile.get(rPanelIndex).get(i).get(indexLow));
-            System.out.println("mergedSnptestLogFileName: " + snptestLogFileName.get(rPanelIndex).get(i).get(indexLow));
-            System.out.println("mergedSnptestLogFile    : " + snptestLogFile.get(rPanelIndex).get(i).get(indexLow));
-            System.out.println("-------------------------------------------------");
+            LOGGER.info("mergedSnptestOutFileName: " + snptestOutFileName.get(rPanelIndex).get(i).get(indexLow));
+            LOGGER.info("mergedSnptestOutFile    : " + snptestOutFile.get(rPanelIndex).get(i).get(indexLow));
+            LOGGER.info("mergedSnptestLogFileName: " + snptestLogFileName.get(rPanelIndex).get(i).get(indexLow));
+            LOGGER.info("mergedSnptestLogFile    : " + snptestLogFile.get(rPanelIndex).get(i).get(indexLow));
+            LOGGER.info("-------------------------------------------------");
         }
     }
 
     private void checkChromoIndex(int chromo) {
         if ((chromo < 1) || (chromo > MAX_NUMBER_OF_CHROMOSOMES)) {
-            System.err.println("[SummaryFiles] Error, chromosome " + chromo + "does not exist");
+            LOGGER.fatal("[SummaryFiles] Error, chromosome " + chromo + "does not exist");
             System.exit(1);
         }
     }
 
     private void checkLimits(int chromo, int lim1, int lim2) {
         if ((lim1 < MIN_LIMIT) || (lim2 > MAX_LIMIT)) {
-            System.err.println("[SummaryFiles] Error, Chunk " + lim1 + "_" + lim2 + "does not exist for chromosome " + chromo);
+            LOGGER.fatal("[SummaryFiles] Error, Chunk " + lim1 + "_" + lim2 + "does not exist for chromosome " + chromo);
             System.exit(1);
         }
     }

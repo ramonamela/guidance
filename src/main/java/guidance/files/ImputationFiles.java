@@ -33,6 +33,9 @@ package guidance.files;
 
 import java.util.List;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import guidance.utils.ChromoInfo;
 import guidance.utils.ParseCmdLine;
 
@@ -41,6 +44,9 @@ import java.util.ArrayList;
 
 
 public class ImputationFiles {
+
+    // Logger
+    private static final Logger LOGGER = LogManager.getLogger("Console");
 
     private static final int MAX_NUMBER_OF_CHROMOSOMES = 23;
     private static final int MIN_LIMIT = 1;
@@ -1106,36 +1112,36 @@ public class ImputationFiles {
         int indexChr = chromo - this.startChr;
         int indexLow = lim1 / chunkSize;
         int indexHigh = lim2 / chunkSize;
-        System.out.println("-------------------------------------------------");
-        System.out.println("Files information for the chromosome " + chromo);
-        System.out.println("OutDir[" + rPanelIndex + "][Chr_" + chromo + "]=" + this.imputedOutDir.get(rPanelIndex).get(indexChr));
+        LOGGER.info("-------------------------------------------------");
+        LOGGER.info("Files information for the chromosome " + chromo);
+        LOGGER.info("OutDir[" + rPanelIndex + "][Chr_" + chromo + "]=" + this.imputedOutDir.get(rPanelIndex).get(indexChr));
 
         for (int j = indexLow; j < indexHigh; j++) {
-            System.out.println("        ImputedFile[" + rPanelIndex + "][Chr_" + chromo + "][" + lim1 + "-" + lim2 + "]="
+            LOGGER.info("        ImputedFile[" + rPanelIndex + "][Chr_" + chromo + "][" + lim1 + "-" + lim2 + "]="
                     + imputedFile.get(rPanelIndex).get(indexChr).get(indexLow).getFullName());
-            System.out.println("    ImputedInfoFile[" + rPanelIndex + "][Chr_" + chromo + "][" + lim1 + "-" + lim2 + "]="
+            LOGGER.info("    ImputedInfoFile[" + rPanelIndex + "][Chr_" + chromo + "][" + lim1 + "-" + lim2 + "]="
                     + imputedInfoFile.get(rPanelIndex).get(indexChr).get(indexLow).getFullName());
-            System.out.println(" ImputedSummaryFile[" + rPanelIndex + "][Chr_" + chromo + "][" + lim1 + "-" + lim2 + "]="
+            LOGGER.info(" ImputedSummaryFile[" + rPanelIndex + "][Chr_" + chromo + "][" + lim1 + "-" + lim2 + "]="
                     + imputedSummaryFile.get(rPanelIndex).get(indexChr).get(indexLow).getFullName());
-            System.out.println("ImputedWarningsFile[" + rPanelIndex + "][Chr_" + chromo + "][" + lim1 + "-" + lim2 + "]="
+            LOGGER.info("ImputedWarningsFile[" + rPanelIndex + "][Chr_" + chromo + "][" + lim1 + "-" + lim2 + "]="
                     + imputedWarningsFile.get(rPanelIndex).get(indexChr).get(indexLow).getFullName());
-            System.out.println("     ImputedLogFile[" + rPanelIndex + "][Chr_" + chromo + "][" + lim1 + "-" + lim2 + "]="
+            LOGGER.info("     ImputedLogFile[" + rPanelIndex + "][Chr_" + chromo + "][" + lim1 + "-" + lim2 + "]="
                     + imputedLogFile.get(rPanelIndex).get(indexChr).get(indexLow).getFullName());
         }
 
-        System.out.println("-------------------------------------------------");
+        LOGGER.info("-------------------------------------------------");
     }
 
     private void checkChromoIndex(int chromo) {
         if ((chromo < 1) || (chromo > MAX_NUMBER_OF_CHROMOSOMES)) {
-            System.err.println("[ImputationFiles] Error, chromosomesome " + chromo + "does not exist");
+            LOGGER.fatal("[ImputationFiles] Error, chromosomesome " + chromo + "does not exist");
             System.exit(1);
         }
     }
 
     private void checkLimits(int chromo, int lim1, int lim2) {
         if ((lim1 < MIN_LIMIT) || (lim2 > MAX_LIMIT)) {
-            System.err.println("[ImputationFiles] Error, Chunk " + lim1 + "_" + lim2 + "does not exist for chromosome " + chromo);
+            LOGGER.fatal("[ImputationFiles] Error, Chunk " + lim1 + "_" + lim2 + "does not exist for chromosome " + chromo);
             System.exit(1);
         }
     }

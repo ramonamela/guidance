@@ -79,10 +79,6 @@ public class GenericFile {
         this.generatedBy = myGeneratedBy;
 
         this.finalStatus = myFinalStatus;
-
-        // System.out.println("------------------------------------");
-        // System.out.println("[GenericFile] : " + fullName);
-        // System.out.println("[GenericFile] : " + finalStatus);
     }
 
     /**

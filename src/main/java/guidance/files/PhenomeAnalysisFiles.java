@@ -110,7 +110,6 @@ public class PhenomeAnalysisFiles {
                 myPhenomeFinalFile = new GenericFile(this.phenomeAnalysisOutDir, tmpPhenomeFinalFileName, "uncompressed", "none");
                 this.phenomeFinalFile.add(myPhenomeFinalFile);
 
-                // System.out.println("[PhenomeAnalysis] " + phenomeAnalysisOutDir + "/" + tmpPhenomeAnalysisFileName);
                 counter++;
             } // End of for panels
         } // End of for test types

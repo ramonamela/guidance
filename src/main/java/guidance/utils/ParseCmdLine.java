@@ -35,12 +35,26 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.File;
-import java.util.Hashtable;
+import java.util.HashMap;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.util.ArrayList;
 
 
 public class ParseCmdLine {
 
+    // Logger
+    private static final Logger LOGGER = LogManager.getLogger("Console");
+
+    // Error messages
+    private static final String CLASS_HEADER = "[ParseCmdLine.java]";
+    private static final String ERROR_PARAM_ORDER = CLASS_HEADER + " Error in the order of parameters, in parameter: ";
+    private static final String ERROR_SYNTAX = CLASS_HEADER + " Error of sintax in ";
+    private static final String ERROR_SYNTAX_SUFFIX = ", in parameter: ";
+
+    // Chromosome sizes
     private static final int MINIMUMCHUNKSIZE = 1_000;
     private static final int MAX_NUMBER_OF_CHROMOSOMES = 23;
 
@@ -59,7 +73,7 @@ public class ParseCmdLine {
 
     private String mixedSampleDir = null;
     private String mixedSampleFileName = null;
-    private String mixedSampleFile = null;;
+    private String mixedSampleFile = null;
 
     private String gmapDir = null;
     private ArrayList<String> gmapFileName = new ArrayList<>();
@@ -83,9 +97,9 @@ public class ParseCmdLine {
     // testTypes will be organized as follows:
     // Each string will have: ["test_type_name","response_variable", "covariables"]
     // covariables will be a string like: "se,sex,bmi". That is values separated by coloms.
-    private ArrayList<String> testTypesNames = new ArrayList<String>();
-    private ArrayList<String> responseVars = new ArrayList<String>();
-    private ArrayList<String> covariables = new ArrayList<String>();
+    private ArrayList<String> testTypesNames = new ArrayList<>();
+    private ArrayList<String> responseVars = new ArrayList<>();
+    private ArrayList<String> covariables = new ArrayList<>();
 
     // String rpanelTypes = "";
     private String outDir = null;
@@ -94,8 +108,8 @@ public class ParseCmdLine {
     private int endNormal = 0;
 
     private String wfDeepRequired = null;
-    private Hashtable<String, Integer> wfPossibleDeeps = new Hashtable<>();
-    private Hashtable<String, Integer> wfAllStages = new Hashtable<>();
+    private HashMap<String, Integer> wfPossibleDeeps = new HashMap<>();
+    private HashMap<String, Integer> wfAllStages = new HashMap<>();
 
     private Double mafThreshold = 0.000;
     private Double infoThreshold = 0.000;
@@ -147,8 +161,8 @@ public class ParseCmdLine {
         // clean the lines from (spaces and comments
         // Then, we put the parameters in an array.
         if ((args.length < 1) && (args.length > 2)) {
-            System.err.println("[ParseCmdLine.java] Error in the command line parameters.");
-            System.err.println("[ParseCmdLine.java] Usage -1-: -config_file configuration_file.txt");
+            LOGGER.fatal(CLASS_HEADER + " Error in the command line parameters.");
+            LOGGER.fatal(CLASS_HEADER + " Usage -1-: -config_file configuration_file.txt");
             System.exit(1);
         }
 
@@ -168,8 +182,8 @@ public class ParseCmdLine {
                 // Process the line
             }
         } catch (IOException ioe) {
-            System.err.println("[ParseCmdLine.java] Error opening/reading " + gwasConfigFile);
-            System.err.println(ioe.getMessage());
+            LOGGER.fatal(CLASS_HEADER + " Error opening/reading " + gwasConfigFile);
+            LOGGER.fatal(ioe.getMessage());
         }
 
         // Now, we load the parameters of the execution.
@@ -181,19 +195,19 @@ public class ParseCmdLine {
         if ((myArgument.length > 0) && (myArgument.length < 3)) {
             if (myArgument[0].equals("wfDeep")) {
                 wfDeepRequired = myArgument[1];
-                boolean valid_key = wfPossibleDeeps.containsKey(wfDeepRequired);
-                if (valid_key == false) {
-                    System.err.println("[ParseCmdLine.java] Error, wfDeep parameter " + wfDeepRequired + " is not accepted");
-                    System.err.println("[ParseCmdLine.java]        The only accepted values are:");
-                    System.err.println("	until_phasing, until_imputation, until_association or whole_workflow");
+                boolean validKey = wfPossibleDeeps.containsKey(wfDeepRequired);
+                if (validKey) {
+                    LOGGER.fatal(CLASS_HEADER + " Error, wfDeep parameter " + wfDeepRequired + " is not accepted");
+                    LOGGER.fatal(CLASS_HEADER + "        The only accepted values are:");
+                    LOGGER.fatal(CLASS_HEADER + "	until_phasing, until_imputation, until_association or whole_workflow");
                     System.exit(1);
                 }
             } else {
-                System.err.println("[ParseCmdLine.java] Error in the order of parameters, in parameter " + i);
+                LOGGER.fatal(CLASS_HEADER + ERROR_PARAM_ORDER + i);
                 System.exit(1);
             }
         } else {
-            System.err.println("[ParseCmdLine.java] Error of sintax in " + gwasConfigFile + ", in parameter " + i);
+            LOGGER.fatal(CLASS_HEADER + ERROR_SYNTAX + gwasConfigFile + ERROR_SYNTAX_SUFFIX + i);
             System.exit(1);
         }
 
@@ -205,16 +219,16 @@ public class ParseCmdLine {
             if (myArgument[0].equals("init_chromosome")) {
                 tmpStart = Integer.parseInt(myArgument[1]);
                 if (tmpStart < 1 || tmpStart > MAX_NUMBER_OF_CHROMOSOMES) {
-                    System.err.println("[ParseCmdLine.java] Error, init_chromosome = " + tmpStart);
-                    System.err.println("[ParseCmdLine.java]        It should be: should be: 0<init_chromosome<=23");
+                    LOGGER.fatal(CLASS_HEADER + " Error, init_chromosome = " + tmpStart);
+                    LOGGER.fatal(CLASS_HEADER + "        It should be: should be: 0<init_chromosome<=23");
                     System.exit(1);
                 }
             } else {
-                System.err.println("[ParseCmdLine.java] Error in the order of parameters, in parameter: " + myArgument[0]);
+                LOGGER.fatal(CLASS_HEADER + ERROR_PARAM_ORDER + myArgument[0]);
                 System.exit(1);
             }
         } else {
-            System.err.println("[ParseCmdLine.java] Error of sintax in " + gwasConfigFile + ", in parameter: " + myArgument[0]);
+            LOGGER.fatal(CLASS_HEADER + ERROR_SYNTAX + gwasConfigFile + ERROR_SYNTAX_SUFFIX + myArgument[0]);
             System.exit(1);
         }
 
@@ -224,16 +238,16 @@ public class ParseCmdLine {
             if (myArgument[0].equals("end_chromosome")) {
                 tmpEnd = Integer.parseInt(myArgument[1]);
                 if (tmpEnd < 1 || tmpEnd > MAX_NUMBER_OF_CHROMOSOMES || tmpEnd < tmpStart) {
-                    System.err.println("[ParseCmdLine.java] Error, end_chromosome = " + tmpEnd);
-                    System.err.println("[ParseCmdLine.java]        It should be: should be: 0<init_chromosome<23 and >= init_chromosome");
+                    LOGGER.fatal(CLASS_HEADER + " Error, end_chromosome = " + tmpEnd);
+                    LOGGER.fatal(CLASS_HEADER + "        It should be: should be: 0<init_chromosome<23 and >= init_chromosome");
                     System.exit(1);
                 }
             } else {
-                System.err.println("[ParseCmdLine.java] Error in the order of parameters, in parameter: " + myArgument[0]);
+                LOGGER.fatal(CLASS_HEADER + ERROR_PARAM_ORDER + myArgument[0]);
                 System.exit(1);
             }
         } else {
-            System.err.println("[ParseCmdLine.java] Error of sintax in " + gwasConfigFile + ", in parameter: " + myArgument[0]);
+            LOGGER.fatal(CLASS_HEADER + ERROR_SYNTAX + gwasConfigFile + ERROR_SYNTAX_SUFFIX + myArgument[0]);
             System.exit(1);
         }
 
@@ -253,16 +267,16 @@ public class ParseCmdLine {
             if (myArgument[0].equals("maf_threshold")) {
                 mafThreshold = Double.parseDouble(myArgument[1]);
                 if (mafThreshold < 0) {
-                    System.err.println("[ParseCmdLine.java] Error, maf_threshold = " + mafThreshold);
-                    System.err.println("[ParseCmdLine.java]        It should be: should be: > 0");
+                    LOGGER.fatal(CLASS_HEADER + " Error, maf_threshold = " + mafThreshold);
+                    LOGGER.fatal(CLASS_HEADER + "        It should be: should be: > 0");
                     System.exit(1);
                 }
             } else {
-                System.err.println("[ParseCmdLine.java] Error in the order of parameters, in parameter: " + myArgument[0]);
+                LOGGER.fatal(CLASS_HEADER + ERROR_PARAM_ORDER + myArgument[0]);
                 System.exit(1);
             }
         } else {
-            System.err.println("[ParseCmdLine.java] Error of sintax in " + gwasConfigFile + ", in parameter: " + myArgument[0]);
+            LOGGER.fatal(CLASS_HEADER + ERROR_SYNTAX + gwasConfigFile + ERROR_SYNTAX_SUFFIX + myArgument[0]);
             System.exit(1);
         }
 
@@ -272,16 +286,16 @@ public class ParseCmdLine {
             if (myArgument[0].equals("info_threshold")) {
                 infoThreshold = Double.parseDouble(myArgument[1]);
                 if (infoThreshold < 0) {
-                    System.err.println("[ParseCmdLine.java] Error, info_threshold = " + infoThreshold);
-                    System.err.println("[ParseCmdLine.java]        It should be: should be: > 0");
+                    LOGGER.fatal(CLASS_HEADER + " Error, info_threshold = " + infoThreshold);
+                    LOGGER.fatal(CLASS_HEADER + "        It should be: should be: > 0");
                     System.exit(1);
                 }
             } else {
-                System.err.println("[ParseCmdLine.java] Error in the order of parameters, in parameter: " + myArgument[0]);
+                LOGGER.fatal(CLASS_HEADER + ERROR_PARAM_ORDER + myArgument[0]);
                 System.exit(1);
             }
         } else {
-            System.err.println("[ParseCmdLine.java] Error of sintax in " + gwasConfigFile + ", in parameter: " + myArgument[0]);
+            LOGGER.fatal(CLASS_HEADER + ERROR_SYNTAX + gwasConfigFile + ERROR_SYNTAX_SUFFIX + myArgument[0]);
             System.exit(1);
         }
 
@@ -291,16 +305,16 @@ public class ParseCmdLine {
             if (myArgument[0].equals("hwe_cohort_threshold")) {
                 hweCohortThreshold = Double.parseDouble(myArgument[1]);
                 // if( hweCohortThreshold < 0 ) {
-                // System.err.println("[ParseCmdLine.java] Error, hwe_cohort_threshold = " + hweCohortThreshold);
-                // System.err.println(" It should be: should be: > 0");
+                // LOGGER.fatal(CLASS_HEADER + " Error, hwe_cohort_threshold = " + hweCohortThreshold);
+                // LOGGER.fatal(" It should be: should be: > 0");
                 // System.exit(1);
                 // }
             } else {
-                System.err.println("[ParseCmdLine.java] Error in the order of parameters, in parameter: " + myArgument[0]);
+                LOGGER.fatal(CLASS_HEADER + ERROR_PARAM_ORDER + myArgument[0]);
                 System.exit(1);
             }
         } else {
-            System.err.println("[ParseCmdLine.java] Error of sintax in " + gwasConfigFile + ", in parameter: " + myArgument[0]);
+            LOGGER.fatal(CLASS_HEADER + ERROR_SYNTAX + gwasConfigFile + ERROR_SYNTAX_SUFFIX + myArgument[0]);
             System.exit(1);
         }
 
@@ -310,16 +324,16 @@ public class ParseCmdLine {
             if (myArgument[0].equals("hwe_cases_threshold")) {
                 hweCasesThreshold = Double.parseDouble(myArgument[1]);
                 // if( hweCasesThreshold < 0 ) {
-                // System.err.println("Error, hwe_cases_threshold = " + hweCasesThreshold);
-                // System.err.println(" It should be: should be: > 0");
+                // LOGGER.fatal("Error, hwe_cases_threshold = " + hweCasesThreshold);
+                // LOGGER.fatal(" It should be: should be: > 0");
                 // System.exit(1);
                 // }
             } else {
-                System.err.println("[ParseCmdLine.java] Error in the order of parameters, in parameter: " + myArgument[0]);
+                LOGGER.fatal(CLASS_HEADER + ERROR_PARAM_ORDER + myArgument[0]);
                 System.exit(1);
             }
         } else {
-            System.err.println("[ParseCmdLine.java] Error of sintax in " + gwasConfigFile + ", in parameter: " + myArgument[0]);
+            LOGGER.fatal(CLASS_HEADER + ERROR_SYNTAX + gwasConfigFile + ERROR_SYNTAX_SUFFIX + myArgument[0]);
             System.exit(1);
         }
 
@@ -329,16 +343,16 @@ public class ParseCmdLine {
             if (myArgument[0].equals("hwe_controls_threshold")) {
                 hweControlsThreshold = Double.parseDouble(myArgument[1]);
                 // if( hweControlsThreshold < 0 ) {
-                // System.err.println("Error, hwe_controls_threshold = " + hweControlsThreshold);
-                // System.err.println(" It should be: should be: > 0");
+                // LOGGER.fatal("Error, hwe_controls_threshold = " + hweControlsThreshold);
+                // LOGGER.fatal(" It should be: should be: > 0");
                 // System.exit(1);
                 // }
             } else {
-                System.err.println("[ParseCmdLine.java] Error in the order of parameters, in parameter: " + myArgument[0]);
+                LOGGER.fatal(CLASS_HEADER + ERROR_PARAM_ORDER + myArgument[0]);
                 System.exit(1);
             }
         } else {
-            System.err.println("[ParseCmdLine.java] Error of sintax in " + gwasConfigFile + ", in parameter: " + myArgument[0]);
+            LOGGER.fatal(CLASS_HEADER + ERROR_SYNTAX + gwasConfigFile + ERROR_SYNTAX_SUFFIX + myArgument[0]);
             System.exit(1);
         }
 
@@ -348,16 +362,16 @@ public class ParseCmdLine {
             if (myArgument[0].equals("exclude_cgat_snps")) {
                 exclCgatSnp = myArgument[1].toUpperCase();
                 if (!exclCgatSnp.equals("YES") && !exclCgatSnp.equals("NO")) {
-                    System.err.println("[ParseCmdLine.java] Error, exclude_cgat_snps = " + exclCgatSnp);
-                    System.err.println("[ParseCmdLine.java]        It should be: should be: YES or NOT");
+                    LOGGER.fatal(CLASS_HEADER + " Error, exclude_cgat_snps = " + exclCgatSnp);
+                    LOGGER.fatal(CLASS_HEADER + "        It should be: should be: YES or NOT");
                     System.exit(1);
                 }
             } else {
-                System.err.println("[ParseCmdLine.java] Error in the order of parameters, in parameter: " + myArgument[0]);
+                LOGGER.fatal(CLASS_HEADER + ERROR_PARAM_ORDER + myArgument[0]);
                 System.exit(1);
             }
         } else {
-            System.err.println("[ParseCmdLine.java] Error of sintax in " + gwasConfigFile + ", in parameter: " + myArgument[0]);
+            LOGGER.fatal(CLASS_HEADER + ERROR_SYNTAX + gwasConfigFile + ERROR_SYNTAX_SUFFIX + myArgument[0]);
             System.exit(1);
         }
 
@@ -367,11 +381,11 @@ public class ParseCmdLine {
             if (myArgument[0].equals("imputation_tool")) {
                 imputationTool = myArgument[1];
             } else {
-                System.err.println("[ParseCmdLine.java] Error in the order of parameters, in parameter: " + myArgument[0]);
+                LOGGER.fatal(CLASS_HEADER + ERROR_PARAM_ORDER + myArgument[0]);
                 System.exit(1);
             }
         } else {
-            System.err.println("[ParseCmdLine.java] Error of sintax in " + gwasConfigFile + ", in parameter: " + myArgument[0]);
+            LOGGER.fatal(CLASS_HEADER + ERROR_SYNTAX + gwasConfigFile + ERROR_SYNTAX_SUFFIX + myArgument[0]);
             System.exit(1);
         }
 
@@ -385,11 +399,11 @@ public class ParseCmdLine {
                     testTypesNames.add(tmpTestTypesArray[kk]);
                 }
             } else {
-                System.err.println("[ParseCmdLine.java] Error in the order of parameters, in parameter: " + myArgument[0]);
+                LOGGER.fatal(CLASS_HEADER + ERROR_PARAM_ORDER + myArgument[0]);
                 System.exit(1);
             }
         } else {
-            System.err.println("[ParseCmdLine.java] Error of sintax in " + gwasConfigFile + ", in parameter: " + myArgument[0]);
+            LOGGER.fatal(CLASS_HEADER + ERROR_SYNTAX + gwasConfigFile + ERROR_SYNTAX_SUFFIX + myArgument[0]);
             System.exit(1);
         }
 
@@ -402,11 +416,11 @@ public class ParseCmdLine {
                     responseVars.add(tmpFields[0]);
                     covariables.add(tmpFields[1]);
                 } else {
-                    System.err.println("[ParseCmdLine.java] Error in the order of parameters, in parameter: " + myArgument[0]);
+                    LOGGER.fatal(CLASS_HEADER + ERROR_PARAM_ORDER + myArgument[0]);
                     System.exit(1);
                 }
             } else {
-                System.err.println("[ParseCmdLine.java] Error of sintax in " + gwasConfigFile + ", in parameter: " + myArgument[0]);
+                LOGGER.fatal(CLASS_HEADER + ERROR_SYNTAX + gwasConfigFile + ERROR_SYNTAX_SUFFIX + myArgument[0]);
                 System.exit(1);
             }
         }
@@ -417,16 +431,16 @@ public class ParseCmdLine {
             if (myArgument[0].equals("chunk_size_analysis")) {
                 chunkSize = Integer.parseInt(myArgument[1]);
                 if (chunkSize < MINIMUMCHUNKSIZE) {
-                    System.err.println("[ParseCmdLine.java] Error, the value for chunk_size_analysis parameter should not be less than "
+                    LOGGER.fatal(CLASS_HEADER + " Error, the value for chunk_size_analysis parameter should not be less than "
                             + MINIMUMCHUNKSIZE);
                     System.exit(1);
                 }
             } else {
-                System.err.println("[ParseCmdLine.java] Error in the order of parameters, in parameter: " + myArgument[0]);
+                LOGGER.fatal(CLASS_HEADER + ERROR_PARAM_ORDER + myArgument[0]);
                 System.exit(1);
             }
         } else {
-            System.err.println("[ParseCmdLine.java] Error of sintax in " + gwasConfigFile + ", in parameter: " + myArgument[0]);
+            LOGGER.fatal(CLASS_HEADER + ERROR_SYNTAX + gwasConfigFile + ERROR_SYNTAX_SUFFIX + myArgument[0]);
             System.exit(1);
         }
 
@@ -436,11 +450,11 @@ public class ParseCmdLine {
             if (myArgument[0].equals("file_name_for_list_of_stages")) {
                 listOfStagesFile = myArgument[1];
             } else {
-                System.err.println("[ParseCmdLine.java] Error in the order of parameters, in parameter: " + myArgument[0]);
+                LOGGER.fatal(CLASS_HEADER + ERROR_PARAM_ORDER + myArgument[0]);
                 System.exit(1);
             }
         } else {
-            System.err.println("[ParseCmdLine.java] Error of sintax in " + gwasConfigFile + ", in parameter: " + myArgument[0]);
+            LOGGER.fatal(CLASS_HEADER + ERROR_SYNTAX + gwasConfigFile + ERROR_SYNTAX_SUFFIX + myArgument[0]);
             System.exit(1);
         }
 
@@ -450,11 +464,11 @@ public class ParseCmdLine {
             if (myArgument[0].equals("remove_temporal_files")) {
                 removeTemporalFiles = myArgument[1];
             } else {
-                System.err.println("[ParseCmdLine.java] Error in the order of parameters in parameter: " + myArgument[0]);
+                LOGGER.fatal(CLASS_HEADER + ERROR_PARAM_ORDER + myArgument[0]);
                 System.exit(1);
             }
         } else {
-            System.err.println("[ParseCmdLine.java] Error of sintax in " + gwasConfigFile + ", in parameter: " + myArgument[0]);
+            LOGGER.fatal(CLASS_HEADER + ERROR_SYNTAX + gwasConfigFile + ERROR_SYNTAX_SUFFIX + myArgument[0]);
             System.exit(1);
         }
 
@@ -464,11 +478,11 @@ public class ParseCmdLine {
             if (myArgument[0].equals("compress_files")) {
                 compressFiles = myArgument[1];
             } else {
-                System.err.println("[ParseCmdLine.java] Error in the order of parameters in parameter: " + myArgument[0]);
+                LOGGER.fatal(CLASS_HEADER + ERROR_PARAM_ORDER + myArgument[0]);
                 System.exit(1);
             }
         } else {
-            System.err.println("[ParseCmdLine.java] Error of sintax in " + gwasConfigFile + ", in parameter: " + myArgument[0]);
+            LOGGER.fatal(CLASS_HEADER + ERROR_SYNTAX + gwasConfigFile + ERROR_SYNTAX_SUFFIX + myArgument[0]);
             System.exit(1);
         }
 
@@ -478,16 +492,16 @@ public class ParseCmdLine {
             if (myArgument[0].equals("input_format")) {
                 inputFormat = myArgument[1].toUpperCase();
                 if (!inputFormat.equals("GEN") && !inputFormat.equals("BED")) {
-                    System.err.println("[ParseCmdLine.java] Error, input_format is incorrect = " + inputFormat);
-                    System.err.println("[ParseCmdLine.java]        It should be GEN or BED");
+                    LOGGER.fatal(CLASS_HEADER + " Error, input_format is incorrect = " + inputFormat);
+                    LOGGER.fatal(CLASS_HEADER + "        It should be GEN or BED");
                     System.exit(1);
                 }
             } else {
-                System.err.println("[ParseCmdLine.java] Error in the order of parameters in parameter: " + myArgument[0]);
+                LOGGER.fatal(CLASS_HEADER + ERROR_PARAM_ORDER + myArgument[0]);
                 System.exit(1);
             }
         } else {
-            System.err.println("[ParseCmdLine.java] Error of sintax in " + gwasConfigFile + ", in parameter: " + myArgument[0]);
+            LOGGER.fatal(CLASS_HEADER + ERROR_SYNTAX + gwasConfigFile + ERROR_SYNTAX_SUFFIX + myArgument[0]);
             System.exit(1);
         }
 
@@ -497,11 +511,11 @@ public class ParseCmdLine {
             if (myArgument[0].equals("mixed_cohort")) {
                 mixedCohort = myArgument[1];
             } else {
-                System.err.println("[ParseCmdLine.java] Error in the order of parameters in parameter: " + myArgument[0]);
+                LOGGER.fatal(CLASS_HEADER + ERROR_PARAM_ORDER + myArgument[0]);
                 System.exit(1);
             }
         } else {
-            System.err.println("[ParseCmdLine.java] Error of sintax in " + gwasConfigFile + ", in parameter: " + myArgument[0]);
+            LOGGER.fatal(CLASS_HEADER + ERROR_SYNTAX + gwasConfigFile + ERROR_SYNTAX_SUFFIX + myArgument[0]);
             System.exit(1);
         }
 
@@ -513,11 +527,11 @@ public class ParseCmdLine {
                     mixedChrDir = myArgument[1];
                     checkExistence(mixedChrDir);
                 } else {
-                    System.err.println("[ParseCmdLine.java] Error in the order of parameters in parameter: " + myArgument[0]);
+                    LOGGER.fatal(CLASS_HEADER + ERROR_PARAM_ORDER + myArgument[0]);
                     System.exit(1);
                 }
             } else {
-                System.err.println("[ParseCmdLine.java] Error of sintax in " + gwasConfigFile + ", in parameter: " + myArgument[0]);
+                LOGGER.fatal(CLASS_HEADER + ERROR_SYNTAX + gwasConfigFile + ERROR_SYNTAX_SUFFIX + myArgument[0]);
                 System.exit(1);
             }
 
@@ -529,13 +543,13 @@ public class ParseCmdLine {
                     String tmpfile = "mixed_gen_file_chr_" + chromo;
                     if (myArgument[0].equals(tmpfile)) {
                         mixedGenFileName.add(myArgument[1]);
-                        checkExistence(mixedChrDir + "/" + myArgument[1]);
+                        checkExistence(mixedChrDir + File.separator + myArgument[1]);
                     } else {
-                        System.err.println("[ParseCmdLine.java] Error in the order of parameters in parameter: " + myArgument[0]);
+                        LOGGER.fatal(CLASS_HEADER + ERROR_PARAM_ORDER + myArgument[0]);
                         System.exit(1);
                     }
                 } else {
-                    System.err.println("[ParseCmdLine.java] Error of sintax in " + gwasConfigFile + ", in parameter: " + myArgument[0]);
+                    LOGGER.fatal(CLASS_HEADER + ERROR_SYNTAX + gwasConfigFile + ERROR_SYNTAX_SUFFIX + myArgument[0]);
                     System.exit(1);
                 }
             }
@@ -547,11 +561,11 @@ public class ParseCmdLine {
                     mixedBedDir = myArgument[1];
                     checkExistence(mixedBedDir);
                 } else {
-                    System.err.println("[ParseCmdLine.java] Error in the order of parameters in parameter: " + myArgument[0]);
+                    LOGGER.fatal(CLASS_HEADER + ERROR_PARAM_ORDER + myArgument[0]);
                     System.exit(1);
                 }
             } else {
-                System.err.println("[ParseCmdLine.java] Error of sintax in " + gwasConfigFile + ", in parameter: " + myArgument[0]);
+                LOGGER.fatal(CLASS_HEADER + ERROR_SYNTAX + gwasConfigFile + ERROR_SYNTAX_SUFFIX + myArgument[0]);
                 System.exit(1);
             }
 
@@ -562,11 +576,11 @@ public class ParseCmdLine {
                     mixedBedFileName = myArgument[1];
                     checkExistence(mixedBedDir + "/" + mixedBedFileName);
                 } else {
-                    System.err.println("[ParseCmdLine.java] Error in the order of parameters in parameter: " + myArgument[0]);
+                    LOGGER.fatal(CLASS_HEADER + ERROR_PARAM_ORDER + myArgument[0]);
                     System.exit(1);
                 }
             } else {
-                System.err.println("[ParseCmdLine.java] Error of sintax in " + gwasConfigFile + ", in parameter: " + myArgument[0]);
+                LOGGER.fatal(CLASS_HEADER + ERROR_SYNTAX + gwasConfigFile + ERROR_SYNTAX_SUFFIX + myArgument[0]);
                 System.exit(1);
             }
 
@@ -577,11 +591,11 @@ public class ParseCmdLine {
                     mixedBimFileName = myArgument[1];
                     checkExistence(mixedBedDir + "/" + mixedBimFileName);
                 } else {
-                    System.err.println("[ParseCmdLine.java] Error in the order of parameters in parameter: " + myArgument[0]);
+                    LOGGER.fatal(CLASS_HEADER + ERROR_PARAM_ORDER + myArgument[0]);
                     System.exit(1);
                 }
             } else {
-                System.err.println("[ParseCmdLine.java] Error of sintax in " + gwasConfigFile + ", in parameter: " + myArgument[0]);
+                LOGGER.fatal(CLASS_HEADER + ERROR_SYNTAX + gwasConfigFile + ERROR_SYNTAX_SUFFIX + myArgument[0]);
                 System.exit(1);
             }
             tmpArg = argumentsArray.get(i++);
@@ -591,16 +605,15 @@ public class ParseCmdLine {
                     mixedFamFileName = myArgument[1];
                     checkExistence(mixedBedDir + "/" + mixedFamFileName);
                 } else {
-                    System.err.println("[ParseCmdLine.java] Error in the order of parameters in parameter: " + myArgument[0]);
+                    LOGGER.fatal(CLASS_HEADER + ERROR_PARAM_ORDER + myArgument[0]);
                     System.exit(1);
                 }
             } else {
-                System.err.println("[ParseCmdLine.java] Error of sintax in " + gwasConfigFile + ", in parameter: " + myArgument[0]);
+                LOGGER.fatal(CLASS_HEADER + ERROR_SYNTAX + gwasConfigFile + ERROR_SYNTAX_SUFFIX + myArgument[0]);
                 System.exit(1);
             }
         } else {
-            System.err.println(
-                    "[ParseCmdLine.java] Error of in " + gwasConfigFile + ", the " + inputFormat + " input format is not supported");
+            LOGGER.fatal(CLASS_HEADER + " Error of in " + gwasConfigFile + ", the " + inputFormat + " input format is not supported");
             System.exit(1);
         }
 
@@ -611,11 +624,11 @@ public class ParseCmdLine {
                 mixedSampleDir = myArgument[1];
                 checkExistence(mixedSampleDir);
             } else {
-                System.err.println("[ParseCmdLine.java] Error in the order of parameters in parameter: " + myArgument[0]);
+                LOGGER.fatal(CLASS_HEADER + ERROR_PARAM_ORDER + myArgument[0]);
                 System.exit(1);
             }
         } else {
-            System.err.println("[ParseCmdLine.java] Error of sintax in " + gwasConfigFile + ", in parameter: " + myArgument[0]);
+            LOGGER.fatal(CLASS_HEADER + ERROR_SYNTAX + gwasConfigFile + ERROR_SYNTAX_SUFFIX + myArgument[0]);
             System.exit(1);
         }
 
@@ -625,13 +638,13 @@ public class ParseCmdLine {
             String tmpfile = "mixed_sample_file";
             if (myArgument[0].equals(tmpfile)) {
                 mixedSampleFileName = myArgument[1];
-                checkExistence(mixedSampleDir + "/" + mixedSampleFileName);
+                checkExistence(mixedSampleDir + File.separator + mixedSampleFileName);
             } else {
-                System.err.println("[ParseCmdLine.java] Error in the order of parameters in parameter: " + myArgument[0]);
+                LOGGER.fatal(CLASS_HEADER + ERROR_PARAM_ORDER + myArgument[0]);
                 System.exit(1);
             }
         } else {
-            System.err.println("[ParseCmdLine.java] Error of sintax in " + gwasConfigFile + ", in parameter: " + myArgument[0]);
+            LOGGER.fatal(CLASS_HEADER + ERROR_SYNTAX + gwasConfigFile + ERROR_SYNTAX_SUFFIX + myArgument[0]);
             System.exit(1);
         }
 
@@ -642,11 +655,11 @@ public class ParseCmdLine {
                 gmapDir = myArgument[1];
                 checkExistence(gmapDir);
             } else {
-                System.err.println("[ParseCmdLine.java] Error in the order of parameters in parameter: " + myArgument[0]);
+                LOGGER.fatal(CLASS_HEADER + ERROR_PARAM_ORDER + myArgument[0]);
                 System.exit(1);
             }
         } else {
-            System.err.println("[ParseCmdLine.java] Error of sintax in " + gwasConfigFile + ", in parameter: " + myArgument[0]);
+            LOGGER.fatal(CLASS_HEADER + ERROR_SYNTAX + gwasConfigFile + ERROR_SYNTAX_SUFFIX + myArgument[0]);
             System.exit(1);
         }
 
@@ -658,13 +671,13 @@ public class ParseCmdLine {
                 String tmpfile = "genmap_file_chr_" + chromo;
                 if (myArgument[0].equals(tmpfile)) {
                     gmapFileName.add(myArgument[1]);
-                    checkExistence(gmapDir + "/" + myArgument[1]);
+                    checkExistence(gmapDir + File.separator + myArgument[1]);
                 } else {
-                    System.err.println("[ParseCmdLine.java] Error in the order of parameters in parameter: " + myArgument[0]);
+                    LOGGER.fatal(CLASS_HEADER + ERROR_PARAM_ORDER + myArgument[0]);
                     System.exit(1);
                 }
             } else {
-                System.err.println("[ParseCmdLine.java] Error of sintax in " + gwasConfigFile + ", in parameter: " + myArgument[0]);
+                LOGGER.fatal(CLASS_HEADER + ERROR_SYNTAX + gwasConfigFile + ERROR_SYNTAX_SUFFIX + myArgument[0]);
                 System.exit(1);
             }
         }
@@ -675,16 +688,16 @@ public class ParseCmdLine {
             if (myArgument[0].equals("refpanel_number")) {
                 refPanelNumber = Integer.parseInt(myArgument[1]);
                 if (refPanelNumber < 1) {
-                    System.err.println("[ParseCmdLine.java] Error, refpanel_number = " + refPanelNumber);
-                    System.err.println("[ParseCmdLine.java]        It should be: should be: >0");
+                    LOGGER.fatal(CLASS_HEADER + " Error, refpanel_number = " + refPanelNumber);
+                    LOGGER.fatal(CLASS_HEADER + "        It should be: should be: >0");
                     System.exit(1);
                 }
             } else {
-                System.err.println("[ParseCmdLine.java] Error in the order of parameters in parameter: " + myArgument[0]);
+                LOGGER.fatal(CLASS_HEADER + ERROR_PARAM_ORDER + myArgument[0]);
                 System.exit(1);
             }
         } else {
-            System.err.println("[ParseCmdLine.java] Error of sintax in " + gwasConfigFile + ", in parameter: " + myArgument[0]);
+            LOGGER.fatal(CLASS_HEADER + ERROR_SYNTAX + gwasConfigFile + ERROR_SYNTAX_SUFFIX + myArgument[0]);
             System.exit(1);
         }
 
@@ -695,8 +708,8 @@ public class ParseCmdLine {
                 String myTempCombine = myArgument[1];
                 myTempCombine = myTempCombine.toUpperCase();
                 if (!myTempCombine.equals("YES") && !myTempCombine.equals("NO")) {
-                    System.err.println("[ParseCmdLine.java] Error, refpanel_combine = " + myTempCombine);
-                    System.err.println("[ParseCmdLine.java]        It should be: YES/NO");
+                    LOGGER.fatal(CLASS_HEADER + " Error, refpanel_combine = " + myTempCombine);
+                    LOGGER.fatal(CLASS_HEADER + "        It should be: YES/NO");
                     System.exit(1);
                 }
                 // Now, if myTempCombine is "YES" and the refPanelNumber > 1, then refPanelCombine = true
@@ -706,11 +719,11 @@ public class ParseCmdLine {
                     refPanelCombine = false;
                 }
             } else {
-                System.err.println("[ParseCmdLine.java] Error in the order of parameters in parameter: " + myArgument[0]);
+                LOGGER.fatal(CLASS_HEADER + ERROR_PARAM_ORDER + myArgument[0]);
                 System.exit(1);
             }
         } else {
-            System.err.println("[ParseCmdLine.java] Error of sintax in " + gwasConfigFile + ", in parameter: " + myArgument[0]);
+            LOGGER.fatal(CLASS_HEADER + ERROR_SYNTAX + gwasConfigFile + ERROR_SYNTAX_SUFFIX + myArgument[0]);
             System.exit(1);
         }
 
@@ -721,11 +734,11 @@ public class ParseCmdLine {
                 if (myArgument[0].equals("refpanel_type")) {
                     rpanelTypes.add(myArgument[1]);
                 } else {
-                    System.err.println("[ParseCmdLine.java] Error in the order of parameters in parameter: " + myArgument[0]);
+                    LOGGER.fatal(CLASS_HEADER + ERROR_PARAM_ORDER + myArgument[0]);
                     System.exit(1);
                 }
             } else {
-                System.err.println("[ParseCmdLine.java] Error of sintax in " + gwasConfigFile + ", in parameter: " + myArgument[0]);
+                LOGGER.fatal(CLASS_HEADER + ERROR_SYNTAX + gwasConfigFile + ERROR_SYNTAX_SUFFIX + myArgument[0]);
                 System.exit(1);
             }
             tmpArg = argumentsArray.get(i++);
@@ -735,7 +748,7 @@ public class ParseCmdLine {
                     rpanelDir.add(myArgument[1]);
                     checkExistence(myArgument[1]);
                     String tmpRpanelDir = myArgument[1];
-                    ArrayList<String> chromoListRpanelHapFileName = new ArrayList<String>();
+                    ArrayList<String> chromoListRpanelHapFileName = new ArrayList<>();
                     for (int j = start; j <= end; j++) {
                         tmpArg = argumentsArray.get(i++);
                         myArgument = tmpArg.split("=");
@@ -744,14 +757,13 @@ public class ParseCmdLine {
                             String tmpfile = "refpanel_hap_file_chr_" + chromo;
                             if (myArgument[0].equals(tmpfile)) {
                                 chromoListRpanelHapFileName.add(myArgument[1]);
-                                checkExistence(tmpRpanelDir + "/" + myArgument[1]);
+                                checkExistence(tmpRpanelDir + File.separator + myArgument[1]);
                             } else {
-                                System.err.println("[ParseCmdLine.java] Error in the order of parameters in parameter: " + myArgument[0]);
+                                LOGGER.fatal(CLASS_HEADER + ERROR_PARAM_ORDER + myArgument[0]);
                                 System.exit(1);
                             }
                         } else {
-                            System.err.println(
-                                    "[ParseCmdLine.java] Error of sintax in " + gwasConfigFile + ", in parameter: " + myArgument[0]);
+                            LOGGER.fatal(CLASS_HEADER + ERROR_SYNTAX + gwasConfigFile + ERROR_SYNTAX_SUFFIX + myArgument[0]);
                             System.exit(1);
                         }
                     }
@@ -762,8 +774,8 @@ public class ParseCmdLine {
                     // if we are going to use minimac, we do not need legendfiles
                     if (imputationTool.equals("impute")) {
                         exclSVSnp = "NO";
-                        System.out.println("[ParseCmdLine] We are going to use 'impute' tool for imputation stage... ");
-                        ArrayList<String> chromoListRpanelLegFileName = new ArrayList<String>();
+                        LOGGER.info(CLASS_HEADER + " We are going to use 'impute' tool for imputation stage... ");
+                        ArrayList<String> chromoListRpanelLegFileName = new ArrayList<>();
                         for (int j = start; j <= end; j++) {
                             tmpArg = argumentsArray.get(i++);
                             myArgument = tmpArg.split("=");
@@ -772,34 +784,32 @@ public class ParseCmdLine {
                                 String tmpfile = "refpanel_leg_file_chr_" + chromo;
                                 if (myArgument[0].equals(tmpfile)) {
                                     chromoListRpanelLegFileName.add(myArgument[1]);
-                                    checkExistence(tmpRpanelDir + "/" + myArgument[1]);
+                                    checkExistence(tmpRpanelDir + File.separator + myArgument[1]);
                                 } else {
-                                    System.err
-                                            .println("[ParseCmdLine.java] Error in the order of parameters in parameter: " + myArgument[0]);
+                                    LOGGER.fatal(CLASS_HEADER + ERROR_PARAM_ORDER + myArgument[0]);
                                     System.exit(1);
                                 }
                             } else {
-                                System.err.println(
-                                        "[ParseCmdLine.java] Error of sintax in " + gwasConfigFile + ", in parameter: " + myArgument[0]);
+                                LOGGER.fatal(CLASS_HEADER + ERROR_SYNTAX + gwasConfigFile + ERROR_SYNTAX_SUFFIX + myArgument[0]);
                                 System.exit(1);
                             }
                         }
                         rpanelLegFileName.add(chromoListRpanelLegFileName);
                     } else if (imputationTool.equals("minimac")) {
                         exclSVSnp = "YES";
-                        System.out.println("[ParseCmdLine] We are going to use 'minimac' tool for imputation stage... ");
+                        LOGGER.info(CLASS_HEADER + " We are going to use 'minimac' tool for imputation stage... ");
                     } else {
-                        System.err.println(
-                                "[ParseCmdLine] Sorry, Only 'impute' or 'minimac' Tools are supported right now for the imputation process... ");
-                        System.err.println("[ParseCmdLine] Future version will support other tools... ");
+                        LOGGER.fatal(CLASS_HEADER
+                                + " Sorry, Only 'impute' or 'minimac' Tools are supported right now for the imputation process... ");
+                        LOGGER.fatal(CLASS_HEADER + " Future version will support other tools... ");
                         System.exit(1);
                     }
                 } else {
-                    System.err.println("[ParseCmdLine.java] Error in the order of parameters in parameter: " + myArgument[0]);
+                    LOGGER.fatal(CLASS_HEADER + ERROR_PARAM_ORDER + myArgument[0]);
                     System.exit(1);
                 }
             } else {
-                System.err.println("[ParseCmdLine.java] Error of sintax in " + gwasConfigFile + ", in parameter: " + myArgument[0]);
+                LOGGER.fatal(CLASS_HEADER + ERROR_SYNTAX + gwasConfigFile + ERROR_SYNTAX_SUFFIX + myArgument[0]);
                 System.exit(1);
             }
         }
@@ -810,11 +820,11 @@ public class ParseCmdLine {
                 outDir = myArgument[1];
                 checkExistence(outDir);
             } else {
-                System.err.println("[ParseCmdLine.java] Error in the order of parameters in parameter: " + myArgument[0]);
+                LOGGER.fatal(CLASS_HEADER + ERROR_PARAM_ORDER + myArgument[0]);
                 System.exit(1);
             }
         } else {
-            System.err.println("[ParseCmdLine.java] Error of sintax in " + gwasConfigFile + ", in parameter: " + myArgument[0]);
+            LOGGER.fatal(CLASS_HEADER + ERROR_SYNTAX + gwasConfigFile + ERROR_SYNTAX_SUFFIX + myArgument[0]);
             System.exit(1);
         }
 
@@ -1098,7 +1108,7 @@ public class ParseCmdLine {
     public String getGenFileName(int chromo) {
         int index = chromo - getStart();
         if (index < 0) {
-            System.err.println("[ParseCmdLine.java] Error, the chromosome number should be > " + getStart());
+            LOGGER.fatal(CLASS_HEADER + " Error, the chromosome number should be > " + getStart());
             System.exit(1);
             return "none";
         }
@@ -1116,7 +1126,7 @@ public class ParseCmdLine {
         int index = chromo - getStart();
 
         if (index < 0) {
-            System.err.println("[ParseCmdLine.java] Error, the chromosome number should be > " + getStart());
+            LOGGER.fatal(CLASS_HEADER + " Error, the chromosome number should be > " + getStart());
             System.exit(1);
             return "none";
         }
@@ -1170,7 +1180,7 @@ public class ParseCmdLine {
     public String getGmapFileName(int chromo) {
         int index = chromo - getStart();
         if (index < 0) {
-            System.err.println("[ParseCmdLine.java] Error, the chromosome number should be > " + getStart());
+            LOGGER.fatal(CLASS_HEADER + " Error, the chromosome number should be > " + getStart());
             System.exit(1);
             return "none";
         }
@@ -1235,13 +1245,13 @@ public class ParseCmdLine {
     public String getRpanelHapFileName(int indexRpanel, int chromo) {
         int index = chromo - getStart();
         if (chromo < getStart() || chromo > getEnd()) {
-            System.err.println("[ParseCmdLine.java] Error, the chromosome number should be " + getStart() + " <= chromo <= " + getEnd());
+            LOGGER.fatal(CLASS_HEADER + " Error, the chromosome number should be " + getStart() + " <= chromo <= " + getEnd());
             System.exit(1);
             return "none";
         }
 
         if ((indexRpanel < 0) || (indexRpanel > rpanelTypes.size())) {
-            System.err.println("[ParseCmdLine.java] Error, the indexRpanel should be  0<= indexRpanel<=" + rpanelTypes.size());
+            LOGGER.fatal(CLASS_HEADER + " Error, the indexRpanel should be  0<= indexRpanel<=" + rpanelTypes.size());
             System.exit(1);
             return "none";
         }
@@ -1259,13 +1269,13 @@ public class ParseCmdLine {
     public String getRpanelLegFileName(int indexRpanel, int chromo) {
         int index = chromo - getStart();
         if (chromo < getStart() || chromo > getEnd()) {
-            System.err.println("[ParseCmdLine.java] Error, the chromosome number should be " + getStart() + " <= chromo <= " + getEnd());
+            LOGGER.fatal(CLASS_HEADER + " Error, the chromosome number should be " + getStart() + " <= chromo <= " + getEnd());
             System.exit(1);
             return "none";
         }
 
         if ((indexRpanel < 0) || (indexRpanel > rpanelTypes.size())) {
-            System.err.println("[ParseCmdLine.java] Error, the indexRpanel should be  0<= indexRpanel<=" + rpanelTypes.size());
+            LOGGER.fatal(CLASS_HEADER + " Error, the indexRpanel should be  0<= indexRpanel<=" + rpanelTypes.size());
             System.exit(1);
             return "none";
         }
@@ -1283,31 +1293,31 @@ public class ParseCmdLine {
     }
 
     /*
-     * // Method for printing the help public void printHelp() { System.out.println("Usage: Guidance [options]");
-     * System.out.println("All Possible options:");
-     * System.out.println("   -gmapdir          : Directroy where the genetic map file is stored.");
-     * System.out.println("   -rpaneldir        : Directroy where the directories of the reference panels are stored");
-     * System.out.println("   -rpaneltypes      : The current reference panels supported are:");
-     * System.out.println("                       1kg, dceg, hapmap, 1kg_xxx");
-     * System.out.println("   -exclude_cgat_snps: Flag to indicate if we want to have CGAT exclusions:");
-     * System.out.println("                     : YES/NO");
-     * System.out.println("   -outdir           : Directory where the GWAS results will be stored.");
-     * System.out.println("   -start            : First chromosome to process, from 1 to 23.");
-     * System.out.println("   -end              : Last chromosome to process, from 1 to 23.");
-     * System.out.println("   -totalprocs       : Total number of processors to use in the execution.");
-     * System.out.println("   -chrdir           : Directory where the chromosomes for cases are stores");
-     * System.out.println("   -sampledir        : Directory where the sample files for cases are stored.");
-     * System.out.println("   -cohort           : The current supported cohorts for cases are:");
-     * System.out.println("                       58C, NBS, T2D");
-     * System.out.println("   -gmapdir          : Directroy where the genetic map files are stored.");
-     * System.out.println("   -gmaptype         : The current genetic maps supported are:");
-     * System.out.println("                       1kg, dceg, hapmap");
-     * System.out.println("   -exclude_cgat_snps: Flag to indicate if we want to have CGAT exclusions:");
-     * System.out.println("                     : YES/NO");
-     * System.out.println("   -outdir           : Directory where the GWAS results will be stored.");
-     * System.out.println("   -start            : First chromosome to process, from 1 to 23.");
-     * System.out.println("   -end              : Last chromosome to process, from 1 to 23.");
-     * System.out.println("---------------------------------"); }
+     * // Method for printing the help public void printHelp() { LOGGER.info("Usage: Guidance [options]");
+     * LOGGER.info("All Possible options:");
+     * LOGGER.info("   -gmapdir          : Directroy where the genetic map file is stored.");
+     * LOGGER.info("   -rpaneldir        : Directroy where the directories of the reference panels are stored");
+     * LOGGER.info("   -rpaneltypes      : The current reference panels supported are:");
+     * LOGGER.info("                       1kg, dceg, hapmap, 1kg_xxx");
+     * LOGGER.info("   -exclude_cgat_snps: Flag to indicate if we want to have CGAT exclusions:");
+     * LOGGER.info("                     : YES/NO");
+     * LOGGER.info("   -outdir           : Directory where the GWAS results will be stored.");
+     * LOGGER.info("   -start            : First chromosome to process, from 1 to 23.");
+     * LOGGER.info("   -end              : Last chromosome to process, from 1 to 23.");
+     * LOGGER.info("   -totalprocs       : Total number of processors to use in the execution.");
+     * LOGGER.info("   -chrdir           : Directory where the chromosomes for cases are stores");
+     * LOGGER.info("   -sampledir        : Directory where the sample files for cases are stored.");
+     * LOGGER.info("   -cohort           : The current supported cohorts for cases are:");
+     * LOGGER.info("                       58C, NBS, T2D");
+     * LOGGER.info("   -gmapdir          : Directroy where the genetic map files are stored.");
+     * LOGGER.info("   -gmaptype         : The current genetic maps supported are:");
+     * LOGGER.info("                       1kg, dceg, hapmap");
+     * LOGGER.info("   -exclude_cgat_snps: Flag to indicate if we want to have CGAT exclusions:");
+     * LOGGER.info("                     : YES/NO");
+     * LOGGER.info("   -outdir           : Directory where the GWAS results will be stored.");
+     * LOGGER.info("   -start            : First chromosome to process, from 1 to 23.");
+     * LOGGER.info("   -end              : Last chromosome to process, from 1 to 23.");
+     * LOGGER.info("---------------------------------"); }
      */
 
     /**
@@ -1316,67 +1326,67 @@ public class ParseCmdLine {
      * @param inputFormat
      */
     public void printInputCmd(String inputFormat) {
-        System.out.println("[ParseCmdLine] Execution will be done with the following input parameters:");
-        System.out.println("init_chromosome              = " + start);
-        System.out.println("end_chromosome               = " + end);
-        System.out.println("maf_threshold                = " + mafThreshold);
-        System.out.println("info_threshold               = " + infoThreshold);
-        System.out.println("hwe_cohort_threshold         = " + hweCohortThreshold);
-        System.out.println("hwe_cases_threshold          = " + hweCasesThreshold);
-        System.out.println("hwe_controls_threshold       = " + hweControlsThreshold);
-        System.out.println("exclude_cgat_snps            = " + exclCgatSnp);
+        LOGGER.info("[ParseCmdLine] Execution will be done with the following input parameters:");
+        LOGGER.info("init_chromosome              = " + start);
+        LOGGER.info("end_chromosome               = " + end);
+        LOGGER.info("maf_threshold                = " + mafThreshold);
+        LOGGER.info("info_threshold               = " + infoThreshold);
+        LOGGER.info("hwe_cohort_threshold         = " + hweCohortThreshold);
+        LOGGER.info("hwe_cases_threshold          = " + hweCasesThreshold);
+        LOGGER.info("hwe_controls_threshold       = " + hweControlsThreshold);
+        LOGGER.info("exclude_cgat_snps            = " + exclCgatSnp);
         int number_of_tests = testTypesNames.size();
 
         for (int kk = 0; kk < number_of_tests; kk++) {
             String tmp_test_type = testTypesNames.get(kk);
             String tmp_responseVar = responseVars.get(kk);
             String tmp_covariables = covariables.get(kk);
-            System.out.println(tmp_test_type + " = " + tmp_responseVar + ":" + tmp_covariables);
+            LOGGER.info(tmp_test_type + " = " + tmp_responseVar + ":" + tmp_covariables);
         }
-        System.out.println("imputation_tool              = " + imputationTool);
-        System.out.println("names_of_covariables         = " + covariables);
-        System.out.println("chunk_size_analysis          = " + chunkSize);
-        System.out.println("file_name_for_list_of_stages = " + listOfStagesFile);
+        LOGGER.info("imputation_tool              = " + imputationTool);
+        LOGGER.info("names_of_covariables         = " + covariables);
+        LOGGER.info("chunk_size_analysis          = " + chunkSize);
+        LOGGER.info("file_name_for_list_of_stages = " + listOfStagesFile);
 
-        System.out.println("mixed_cohort                 = " + mixedCohort);
+        LOGGER.info("mixed_cohort                 = " + mixedCohort);
 
         if (inputFormat.equals("GEN")) {
-            System.out.println("mixed_gen_file_dir           = " + mixedBedDir);
+            LOGGER.info("mixed_gen_file_dir           = " + mixedBedDir);
             for (int kk = getStart(); kk <= getEnd(); kk++) {
                 int index = kk - getStart();
-                System.out.println("\tmixed_gen_file_chr_" + kk + " = " + mixedGenFileName.get(index));
+                LOGGER.info("\tmixed_gen_file_chr_" + kk + " = " + mixedGenFileName.get(index));
             }
 
-            System.out.println("mixed_sample_file_dir = " + mixedSampleDir);
-            System.out.println("\tmixed_sample_file = " + mixedSampleFileName);
+            LOGGER.info("mixed_sample_file_dir = " + mixedSampleDir);
+            LOGGER.info("\tmixed_sample_file = " + mixedSampleFileName);
         } else if (inputFormat.equals("BED")) {
-            System.out.println("mixed_bed_file_dir           = " + mixedBedDir);
+            LOGGER.info("mixed_bed_file_dir           = " + mixedBedDir);
         } else {
-            System.err.println("[ParseCmdLine.java] Error, input format " + inputFormat + " is not supported");
+            LOGGER.fatal(CLASS_HEADER + " Error, input format " + inputFormat + " is not supported");
             System.exit(1);
         }
 
-        System.out.println("genmap_file_dir = " + gmapDir);
+        LOGGER.info("genmap_file_dir = " + gmapDir);
         for (int kk = getStart(); kk <= getEnd(); kk++) {
             int index = kk - getStart();
-            System.out.println("\tgenmap_file_chr_" + kk + " = " + gmapFileName.get(index));
+            LOGGER.info("\tgenmap_file_chr_" + kk + " = " + gmapFileName.get(index));
         }
 
-        System.out.println("refpanel_number = " + refPanelNumber);
+        LOGGER.info("refpanel_number = " + refPanelNumber);
         for (int kk = 0; kk < rpanelTypes.size(); kk++) {
-            System.out.println("\trefpanel_type = " + rpanelTypes.get(kk));
-            System.out.println("\trefpanel_file_dir = " + rpanelDir.get(kk));
+            LOGGER.info("\trefpanel_type = " + rpanelTypes.get(kk));
+            LOGGER.info("\trefpanel_file_dir = " + rpanelDir.get(kk));
             for (int jj = getStart(); jj <= getEnd(); jj++) {
                 int index = jj - getStart();
-                System.out.println("\t\trefpanel_hap_file_chr_" + jj + " = " + rpanelHapFileName.get(kk).get(index));
+                LOGGER.info("\t\trefpanel_hap_file_chr_" + jj + " = " + rpanelHapFileName.get(kk).get(index));
             }
             for (int jj = getStart(); jj <= getEnd(); jj++) {
                 int index = jj - getStart();
-                System.out.println("\t\trefpanel_leg_file_chr_" + jj + " = " + rpanelLegFileName.get(kk).get(index));
+                LOGGER.info("\t\trefpanel_leg_file_chr_" + jj + " = " + rpanelLegFileName.get(kk).get(index));
             }
         }
-        System.out.println("\toutputdir = " + outDir);
-        System.out.println("------------------------------------");
+        LOGGER.info("\toutputdir = " + outDir);
+        LOGGER.info("------------------------------------");
     }
 
     /**
@@ -1477,8 +1487,7 @@ public class ParseCmdLine {
             wfPossibleDeeps.put("from_filterByAll_to_summary", 0x0001F80);
             wfPossibleDeeps.put("from_summary", 0x0000078);
         } else {
-            System.err
-                    .println("[ParseCmdLine.java] Error, the imputation tool: " + imputationTool + " is not supported in this version...");
+            LOGGER.fatal(CLASS_HEADER + " Error, the imputation tool: " + imputationTool + " is not supported in this version...");
             System.exit(1);
         }
 
@@ -1611,8 +1620,8 @@ public class ParseCmdLine {
     public void checkExistence(String dirOrFileName) {
         File theDir = new File(dirOrFileName);
         if (!theDir.exists()) {
-            System.err.println("[ParseCmdLine.java] Error, " + dirOrFileName + " does not exist!");
-            System.err.println("                    Please verify the existence of all your input data set.");
+            LOGGER.fatal(CLASS_HEADER + " Error, " + dirOrFileName + " does not exist!");
+            LOGGER.fatal(CLASS_HEADER + "        Please verify the existence of all your input data set.");
             System.exit(1);
         }
     }

@@ -32,11 +32,11 @@
 package guidance.files;
 
 import java.util.List;
-
-import guidance.utils.ParseCmdLine;
+import java.util.ArrayList;
 
 import java.io.File;
-import java.util.ArrayList;
+
+import guidance.utils.ParseCmdLine;
 
 
 public class CombinedPanelsFiles {

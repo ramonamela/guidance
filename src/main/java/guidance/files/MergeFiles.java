@@ -33,6 +33,9 @@ package guidance.files;
 
 import java.util.List;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import guidance.utils.ChromoInfo;
 import guidance.utils.ParseCmdLine;
 
@@ -41,6 +44,9 @@ import java.util.ArrayList;
 
 
 public class MergeFiles {
+
+    // Logger
+    private static final Logger LOGGER = LogManager.getLogger("Console");
 
     private static final int MAX_NUMBER_OF_CHROMOSOMES = 23;
 
@@ -152,7 +158,7 @@ public class MergeFiles {
                     int chromo = i;
 
                     if (i != this.startChr) {
-                        System.out.println("mon :: TRUE :: i = " + i);
+                        LOGGER.info("mon :: TRUE :: i = " + i);
                         addExtraCount = true;
                     }
 
@@ -221,14 +227,14 @@ public class MergeFiles {
                     }
 
                     if (i != 23) {
-                        System.out.println("mon :: ABANS F :: chr " + chromo + " ::  size = " + listCombinedReducedFilteredFile.size());
+                        LOGGER.info("mon :: ABANS F :: chr " + chromo + " ::  size = " + listCombinedReducedFilteredFile.size());
                     } else {
-                        System.out.println("mon :: ABANS F :: chr " + chromo + " ::  size = " + listCombinedReducedFilteredXFile.size());
+                        LOGGER.info("mon :: ABANS F :: chr " + chromo + " ::  size = " + listCombinedReducedFilteredXFile.size());
                     }
-                    System.out.println("mon :: ABANS C :: chr " + chromo + " ::  size = " + listCombinedReducedCondensedFile.size());
+                    LOGGER.info("mon :: ABANS C :: chr " + chromo + " ::  size = " + listCombinedReducedCondensedFile.size());
 
                     if (addExtraCount) {
-                        System.out.println("mon :: DINS EXTRA :: chr " + chromo + " ::  counter " + counter);
+                        LOGGER.info("mon :: DINS EXTRA :: chr " + chromo + " ::  counter " + counter);
 
                         String tmpCombinedReducedFilteredFileName = "chr_" + chromo + "_" + testTypeName + REDUCE_FILTERED_FILENAME
                                 + counter + EXT_TXT_GZ;
@@ -246,13 +252,13 @@ public class MergeFiles {
                     }
 
                     if (i != 23) {
-                        System.out.println("mon :: DESPRES F :: chr " + chromo + " ::  size = " + listCombinedReducedFilteredFile.size());
+                        LOGGER.info("mon :: DESPRES F :: chr " + chromo + " ::  size = " + listCombinedReducedFilteredFile.size());
                     } else {
-                        System.out.println("mon :: DESPRES F :: chr " + chromo + " ::  size = " + listCombinedReducedFilteredXFile.size());
+                        LOGGER.info("mon :: DESPRES F :: chr " + chromo + " ::  size = " + listCombinedReducedFilteredXFile.size());
                     }
-                    System.out.println("mon :: DESPRES C :: chr " + chromo + " ::  size = " + listCombinedReducedCondensedFile.size());
+                    LOGGER.info("mon :: DESPRES C :: chr " + chromo + " ::  size = " + listCombinedReducedCondensedFile.size());
 
-                    System.out.println("\n\n");
+                    LOGGER.info("\n\n");
 
                     // Now we have built the list of reduce file for this chromosome. We store this list
                     chromoListReducedFile.add(listReducedFile);
@@ -303,7 +309,7 @@ public class MergeFiles {
                     GenericFile myAdditionalCondensedFile = new GenericFile(rpanelOutDirSummary, tmpAdditionalCondensedFileName,
                             UNCOMPRESSED_FILE, "none");
                     additionalCondensedFile.add(myAdditionalCondensedFile);
-                    // System.out.println("\t[MergeFiles.java] " + tmpAdditionalCondensedFile);
+                    // LOGGER.info("\t[MergeFiles.java] " + tmpAdditionalCondensedFile);
 
                     addCondensed++;
                 }
@@ -313,7 +319,7 @@ public class MergeFiles {
                     GenericFile myAdditionalCondensedFile = new GenericFile(rpanelOutDirSummary, tmpAdditionalCondensedFileName,
                             UNCOMPRESSED_FILE, "none");
                     additionalCondensedFile.add(myAdditionalCondensedFile);
-                    // System.out.println("\t[MergeFiles.java] only " + tmpAdditionalCondensedFile);
+                    // LOGGER.info("\t[MergeFiles.java] only " + tmpAdditionalCondensedFile);
                     addCondensed++;
                 }
 
@@ -346,7 +352,7 @@ public class MergeFiles {
                     GenericFile myAdditionalFilteredByAllFile = new GenericFile(rpanelOutDirSummary, tmpAdditionalFilteredByAllFileName,
                             UNCOMPRESSED_FILE, "none");
                     additionalFilteredByAllFile.add(myAdditionalFilteredByAllFile);
-                    // System.out.println("\t[MergeFiles.java] " + tmpAdditionalFilteredByAllFile);
+                    // LOGGER.info("\t[MergeFiles.java] " + tmpAdditionalFilteredByAllFile);
 
                     addFiltered++;
                 }
@@ -372,7 +378,7 @@ public class MergeFiles {
                             UNCOMPRESSED_FILE, "none");
 
                     additionalFilteredByAllXFile.add(myAdditionalFilteredByAllXFile);
-                    // System.out.println("\t[MergeFiles.java] " + tmpAdditionalFilteredByAllXFile);
+                    // LOGGER.info("\t[MergeFiles.java] " + tmpAdditionalFilteredByAllXFile);
 
                     rpanelAdditionalFilteredByAllXFile.add(additionalFilteredByAllXFile);
                 }
@@ -992,11 +998,11 @@ public class MergeFiles {
      * @param chromo
      */
     public void printTheLastReducedFiles(int testTypeIndex, int rPanelIndex, int chromo) {
-        System.out.println("\t[MergeFiles] theLastReducedFiles ARE:");
+        LOGGER.info("\t[MergeFiles] theLastReducedFiles ARE:");
         for (int hh = 0; hh <= testTypeIndex; hh++) {
             for (int kk = 0; kk <= rPanelIndex; kk++) {
                 for (int j = 0; j <= chromo - this.startChr; j++) {
-                    System.out.println("\t[MergeFiles] " + testTypeReducedFile.get(rPanelIndex).get(kk).get(j));
+                    LOGGER.info("\t[MergeFiles] " + testTypeReducedFile.get(rPanelIndex).get(kk).get(j));
                 }
             }
         }
@@ -1057,7 +1063,7 @@ public class MergeFiles {
         checkChromoIndex(chromo);
 
         int i = chromo - this.startChr;
-        
+
         // Check the index
         int maxIndex = this.testTypeFilteredByAllFile.get(testTypeIndex).get(rPanelIndex).size();
         checkIndex(i, maxIndex, chromo);
@@ -1078,7 +1084,7 @@ public class MergeFiles {
         checkChromoIndex(chromo);
 
         int i = chromo - this.startChr;
-        
+
         // Check the index
         int maxIndex = this.testTypeFilteredByAllFile.get(testTypeIndex).get(rPanelIndex).size();
         checkIndex(i, maxIndex, chromo);
@@ -1120,7 +1126,7 @@ public class MergeFiles {
         checkChromoIndex(chromo);
 
         int i = chromo - this.startChr;
-        
+
         // Check the index
         int maxIndex = this.testTypeCondensedFile.get(testTypeIndex).get(rPanelIndex).size();
         checkIndex(i, maxIndex, chromo);
@@ -1141,7 +1147,7 @@ public class MergeFiles {
         checkChromoIndex(chromo);
 
         int i = chromo - this.startChr;
-        
+
         // Check the index
         int maxIndex = this.testTypeCondensedFile.get(testTypeIndex).get(rPanelIndex).size();
         checkIndex(i, maxIndex, chromo);
@@ -1162,7 +1168,7 @@ public class MergeFiles {
         checkChromoIndex(chromo);
 
         int i = chromo - this.startChr;
-        
+
         // Check the index
         int maxIndex = this.testTypeCondensedFile.get(testTypeIndex).get(rPanelIndex).size();
         checkIndex(i, maxIndex, chromo);
@@ -1388,14 +1394,14 @@ public class MergeFiles {
 
     private void checkChromoIndex(int chromo) {
         if ((chromo < 1) || (chromo > MAX_NUMBER_OF_CHROMOSOMES)) {
-            System.err.println("[MergeFiles] Error, chromosome " + chromo + " does not exist");
+            LOGGER.fatal("[MergeFiles] Error, chromosome " + chromo + " does not exist");
             System.exit(1);
         }
     }
 
     private void checkIndex(int index, int maxIndex, int chromo) {
         if (index >= maxIndex) {
-            System.err.println(
+            LOGGER.fatal(
                     "[MergeFiles] Error, the index " + index + " is greater than the maximum " + maxIndex + " in chromosome " + chromo);
             System.exit(1);
         }

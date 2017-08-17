@@ -13,11 +13,17 @@ import java.util.List;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import guidance.exceptions.GuidanceTaskException;
 import guidance.utils.ParseCmdLine;
 
 
 public class FileUtils {
+
+    // Logger
+    private static final Logger LOGGER = LogManager.getLogger("Console");
 
     // Messages
     private static final String GUIDANCE_MSG_HEADER = "[Guidance]";
@@ -51,7 +57,7 @@ public class FileUtils {
         String tmpOutDir = "";
         tmpOutDir = myOutDir + File.separator + mixedCohort;
 
-        System.out.println("[Guidance] Creating " + tmpOutDir);
+        LOGGER.info("[Guidance] Creating " + tmpOutDir);
         FileUtils.createDir(tmpOutDir);
 
         // We create the second directory: the REFPANEL directory.
@@ -64,7 +70,7 @@ public class FileUtils {
 
         // Next level: Create mixed directories.
         String mixedOutDir = tmpPanelDir + File.separator + MIXED_REL_PATH;
-        System.out.println(GUIDANCE_MSG_CREATE_FILE + mixedOutDir);
+        LOGGER.info(GUIDANCE_MSG_CREATE_FILE + mixedOutDir);
         FileUtils.createDir(mixedOutDir);
         for (int i = startChr; i <= endChr; i++) {
             String tmpChrDir = mixedOutDir + File.separator + CHR_REL_PATH + i;
@@ -79,7 +85,7 @@ public class FileUtils {
 
             // Next level: Create mixed directories.
             mixedOutDir = tmpPanelDir + File.separator + MIXED_REL_PATH;
-            System.out.println(GUIDANCE_MSG_CREATE_FILE + mixedOutDir);
+            LOGGER.info(GUIDANCE_MSG_CREATE_FILE + mixedOutDir);
             FileUtils.createDir(mixedOutDir);
             for (int i = startChr; i <= endChr; i++) {
                 String tmpChrDir = mixedOutDir + File.separator + CHR_REL_PATH + i;
@@ -102,7 +108,7 @@ public class FileUtils {
                 String rPanel = refPanels.get(j);
                 String assocDir = null;
                 assocDir = tmpMyOutDir + File.separator + mixedCohort + "_for_" + rPanel;
-                System.out.println(GUIDANCE_MSG_CREATE_FILE + assocDir);
+                LOGGER.info(GUIDANCE_MSG_CREATE_FILE + assocDir);
                 FileUtils.createDir(assocDir);
 
                 for (int i = startChr; i <= endChr; i++) {
@@ -111,7 +117,7 @@ public class FileUtils {
                 }
 
                 String summaryDir = assocDir + File.separator + "summary";
-                System.out.println(GUIDANCE_MSG_CREATE_FILE + summaryDir);
+                LOGGER.info(GUIDANCE_MSG_CREATE_FILE + summaryDir);
                 FileUtils.createDir(summaryDir);
             }
 
@@ -132,7 +138,7 @@ public class FileUtils {
                 combinedAssocOutDir = myOutDir + File.separator + ASSOCIATIONS_REL_PATH + File.separator + testTypeName + File.separator
                         + mixedCohort + "_combined_panels_" + combinedRefPanel;
 
-                System.out.println(GUIDANCE_MSG_CREATE_FILE + combinedAssocOutDir);
+                LOGGER.info(GUIDANCE_MSG_CREATE_FILE + combinedAssocOutDir);
                 FileUtils.createDir(combinedAssocOutDir);
 
             } // End if
@@ -141,7 +147,7 @@ public class FileUtils {
         // Now create the structure for the phenotype analysis results
         String phenomeAnalysisOutDir = myOutDir + File.separator + ASSOCIATIONS_REL_PATH + File.separator + "pheno_analysis"
                 + File.separator;
-        System.out.println(GUIDANCE_MSG_CREATE_FILE + phenomeAnalysisOutDir);
+        LOGGER.info(GUIDANCE_MSG_CREATE_FILE + phenomeAnalysisOutDir);
         FileUtils.createDir(phenomeAnalysisOutDir);
 
         phenomeAnalysisOutDir = phenomeAnalysisOutDir + mixedCohort;
@@ -149,7 +155,7 @@ public class FileUtils {
         // testTypeName = parsingArgs.getTestTypeName(tt);
         // phenomeAnalysisOutDir = phenomeAnalysisOutDir + "_" + testTypeName;
         // }
-        System.out.println(GUIDANCE_MSG_CREATE_FILE + phenomeAnalysisOutDir);
+        LOGGER.info(GUIDANCE_MSG_CREATE_FILE + phenomeAnalysisOutDir);
         FileUtils.createDir(phenomeAnalysisOutDir);
     }
 
@@ -164,7 +170,7 @@ public class FileUtils {
         if (!existOutDir) {
             boolean successExistOutDir = (new File(outputDir)).mkdir();
             if (!successExistOutDir) {
-                System.err.println("[createDir] Error, cannot create " + tmpOutDir + " directory");
+                LOGGER.fatal("[createDir] Error, cannot create " + tmpOutDir + " directory");
                 System.exit(1);
             }
         }
@@ -194,11 +200,6 @@ public class FileUtils {
      * @throws Exception
      */
     public static void deleteFile(String sourceFile) throws GuidanceTaskException {
-
-        // We cannot delete the file
-        // File tmpFile = new File(sourceFile);
-        // tmpFile.delete();
-
         try (FileOutputStream fis = new FileOutputStream(new File(sourceFile))) {
             FileChannel destination = fis.getChannel();
             String newData = "This file has been compressed. See the .gz version";
@@ -220,13 +221,13 @@ public class FileUtils {
      * 
      * @param fileName
      * @param moduleName
-     * @return true if the file was created or already existant, false otherwise
+     * @return true if the file was created or already existent, false otherwise
      * @throws IOException
      */
     public static boolean createEmptyFile(String fileName, String moduleName) throws IOException {
         File fa = new File(fileName);
         if (!fa.exists()) {
-            System.out.println(moduleName + " The file " + fileName + " does not exist, then we create an empty file");
+            LOGGER.info(moduleName + " The file " + fileName + " does not exist, then we create an empty file");
             return fa.createNewFile();
         }
 
@@ -252,15 +253,13 @@ public class FileUtils {
             }
 
             gzipOuputStream.finish();
-            // System.out.println("The file was compressed successfully!");
-        } catch (IOException ex) {
-            System.err.println(ex.getMessage());
-            ex.printStackTrace();
+        } catch (IOException ioe) {
+            LOGGER.error("ERROR: Cannot zip file", ioe);
         }
     }
 
     /**
-     * Method to unzip a file
+     * Method to uncompress a file
      * 
      * @param compressedFile
      * @param decompressedFile
@@ -276,11 +275,8 @@ public class FileUtils {
             while ((bytesRead = gZIPInputStream.read(buffer)) > 0) {
                 fileOutputStream.write(buffer, 0, bytesRead);
             }
-
-            // System.out.println("The file was decompressed successfully!");
-        } catch (IOException ex) {
-            System.err.println(ex.getMessage());
-            ex.printStackTrace();
+        } catch (IOException ioe) {
+            LOGGER.error("ERROR: Cannot unzip file", ioe);
         }
     }
 

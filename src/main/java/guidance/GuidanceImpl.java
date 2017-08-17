@@ -54,17 +54,20 @@ import java.util.Iterator;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.zip.GZIPInputStream;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.util.Scanner;
 
 
 public class GuidanceImpl {
 
+    // Logger
+    private static final Logger LOGGER = LogManager.getLogger("Console");
+
     // Debug flag
     private static final boolean DEBUG = true;
-
-    // File extensions
-    private static final String STDOUT_EXTENSION = ".stdout";
-    private static final String STDERR_EXTENSION = ".stderr";
 
     // Environment variable names
     private static final String PLINKBINARY = "PLINKBINARY";
@@ -77,7 +80,7 @@ public class GuidanceImpl {
     private static final String RSCRIPTDIR = "RSCRIPTDIR";
     private static final String SNPTESTBINARY = "SNPTESTBINARY";
 
-    // Error headers
+    // Method headers
     private static final String HEADER_CONVERT_FROM_BED_TO_BED = "[convertFromBedToBed]";
     private static final String HEADER_CONVERT_FROM_BED_TO_PED = "[convertFromBedToPed]";
     private static final String HEADER_CONVERT_FROM_PED_TO_GEN = "[convertFromPedToGen]";
@@ -92,6 +95,15 @@ public class GuidanceImpl {
     private static final String HEADER_IMPUTE = "[impute]";
     private static final String HEADER_GENERATE_QQ_MANHATTAN_PLOTS = "generateQQManhattanPlots";
     private static final String HEADER_SNPTEST = "[snptest]";
+
+    // Commonly used characters
+    private static final String NEW_LINE = "\n";
+    private static final String TAB = "\t";
+    private static final String CHR_23 = "23";
+
+    // File extensions
+    private static final String STDOUT_EXTENSION = ".stdout";
+    private static final String STDERR_EXTENSION = ".stderr";
 
     // Debug messages
     private static final String MSG_CMD = "Command: ";
@@ -142,25 +154,18 @@ public class GuidanceImpl {
         String plinkBinary = loadFromEnvironment(PLINKBINARY, HEADER_CONVERT_FROM_BED_TO_BED);
 
         if (DEBUG) {
-            System.out.println("\n[DEBUG] Running convertFromBedToBed with parameters:");
-            System.out.println("[DEBUG] \t- Input bedFile   : " + bedFile);
-            System.out.println("[DEBUG] \t- Input bimFile   : " + bimFile);
-            System.out.println("[DEBUG] \t- Input famFile   : " + famFile);
-            System.out.println("[DEBUG] \t- Output newBedFile  : " + newBedFile);
-            System.out.println("[DEBUG] \t- Output newBimFile  : " + newBimFile);
-            System.out.println("[DEBUG] \t- Output newFamFile  : " + newFamFile);
-            System.out.println("[DEBUG] \t- Output logFile  : " + logFile);
-            System.out.println("[DEBUG] \t- Chromosome      : " + chromo);
-            System.out.println("\n");
-            System.out.println("[DEBUG] \t- Command: " + cmdToStore);
-
-            // Map<String, String> env = System.getenv();
-            // System.out.println("--------------------------------------");
-            // System.out.println("Environmental Variables in Workers:");
-            // for (String envName : env.keySet()) {
-            // System.out.format("%s=%s%n",envName,env.get(envName));
-            // }
-            System.out.println("--------------------------------------");
+            LOGGER.debug("\n[DEBUG] Running convertFromBedToBed with parameters:");
+            LOGGER.debug("[DEBUG] \t- Input bedFile   : " + bedFile);
+            LOGGER.debug("[DEBUG] \t- Input bimFile   : " + bimFile);
+            LOGGER.debug("[DEBUG] \t- Input famFile   : " + famFile);
+            LOGGER.debug("[DEBUG] \t- Output newBedFile  : " + newBedFile);
+            LOGGER.debug("[DEBUG] \t- Output newBimFile  : " + newBimFile);
+            LOGGER.debug("[DEBUG] \t- Output newFamFile  : " + newFamFile);
+            LOGGER.debug("[DEBUG] \t- Output logFile  : " + logFile);
+            LOGGER.debug("[DEBUG] \t- Chromosome      : " + chromo);
+            LOGGER.debug(NEW_LINE);
+            LOGGER.debug("[DEBUG] \t- Command: " + cmdToStore);
+            LOGGER.debug("--------------------------------------");
         }
 
         long startTime = System.currentTimeMillis();
@@ -169,7 +174,7 @@ public class GuidanceImpl {
                 + " --recode --out " + newBedFile + " --make-bed";
 
         if (DEBUG) {
-            System.out.println(HEADER_CONVERT_FROM_BED_TO_BED + MSG_CMD + cmd);
+            LOGGER.debug(HEADER_CONVERT_FROM_BED_TO_BED + MSG_CMD + cmd);
         }
 
         // Execute the command retrieving its exitValue, output and error
@@ -235,10 +240,10 @@ public class GuidanceImpl {
         long stopTime = System.currentTimeMillis();
         long elapsedTime = (stopTime - startTime) / 1_000;
         if (DEBUG) {
-            System.out.println("\n[DEBUG] convertFromBedToBed startTime: " + startTime);
-            System.out.println("\n[DEBUG] convertFromBedToBed endTime: " + stopTime);
-            System.out.println("\n[DEBUG] convertFromBedToBed elapsedTime: " + elapsedTime + " seconds");
-            System.out.println("\n[DEBUG] Finished execution of convertFromBedToBed.");
+            LOGGER.debug("\n[DEBUG] convertFromBedToBed startTime: " + startTime);
+            LOGGER.debug("\n[DEBUG] convertFromBedToBed endTime: " + stopTime);
+            LOGGER.debug("\n[DEBUG] convertFromBedToBed elapsedTime: " + elapsedTime + " seconds");
+            LOGGER.debug("\n[DEBUG] Finished execution of convertFromBedToBed.");
         }
     }
 
@@ -264,25 +269,18 @@ public class GuidanceImpl {
         String plinkBinary = loadFromEnvironment(PLINKBINARY, HEADER_CONVERT_FROM_BED_TO_PED);
 
         if (DEBUG) {
-            System.out.println("\n[DEBUG] Running convertFromBedToPed with parameters:");
-            System.out.println("[DEBUG] \t- Input bedPrefix : " + bedPrefix);
-            System.out.println("[DEBUG] \t- Input bedFile   : " + bedFile);
-            System.out.println("[DEBUG] \t- Input bimFile   : " + bimFile);
-            System.out.println("[DEBUG] \t- Input famFile   : " + famFile);
-            System.out.println("[DEBUG] \t- Output pedFile  : " + pedFile);
-            System.out.println("[DEBUG] \t- Output mapFile  : " + mapFile);
-            System.out.println("[DEBUG] \t- Output logFile  : " + logFile);
-            System.out.println("[DEBUG] \t- Chromosome      : " + chromo);
-            System.out.println("\n");
-            System.out.println("[DEBUG] \t- command : " + cmdToStore);
-
-            // Map<String, String> env = System.getenv();
-            // System.out.println("--------------------------------------");
-            // System.out.println("Environmental Variables in Workers:");
-            // for (String envName : env.keySet()) {
-            // System.out.format("%s=%s%n",envName,env.get(envName));
-            // }
-            System.out.println("--------------------------------------");
+            LOGGER.debug("\n[DEBUG] Running convertFromBedToPed with parameters:");
+            LOGGER.debug("[DEBUG] \t- Input bedPrefix : " + bedPrefix);
+            LOGGER.debug("[DEBUG] \t- Input bedFile   : " + bedFile);
+            LOGGER.debug("[DEBUG] \t- Input bimFile   : " + bimFile);
+            LOGGER.debug("[DEBUG] \t- Input famFile   : " + famFile);
+            LOGGER.debug("[DEBUG] \t- Output pedFile  : " + pedFile);
+            LOGGER.debug("[DEBUG] \t- Output mapFile  : " + mapFile);
+            LOGGER.debug("[DEBUG] \t- Output logFile  : " + logFile);
+            LOGGER.debug("[DEBUG] \t- Chromosome      : " + chromo);
+            LOGGER.debug(NEW_LINE);
+            LOGGER.debug("[DEBUG] \t- Command: " + cmdToStore);
+            LOGGER.debug("--------------------------------------");
         }
 
         long startTime = System.currentTimeMillis();
@@ -290,7 +288,7 @@ public class GuidanceImpl {
         String cmd = plinkBinary + " --noweb --bfile " + bedPrefix + " --chr " + chromo + " --recode --out " + pedFile;
 
         if (DEBUG) {
-            System.out.println(HEADER_CONVERT_FROM_BED_TO_PED + MSG_CMD + cmd);
+            LOGGER.debug(HEADER_CONVERT_FROM_BED_TO_PED + MSG_CMD + cmd);
         }
 
         // Execute the command retrieving its exitValue, output and error
@@ -349,10 +347,10 @@ public class GuidanceImpl {
         long stopTime = System.currentTimeMillis();
         long elapsedTime = (stopTime - startTime) / 1_000;
         if (DEBUG) {
-            System.out.println("\n[DEBUG] convertFromBedToPed startTime: " + startTime);
-            System.out.println("\n[DEBUG] convertFromBedToPed endTime: " + stopTime);
-            System.out.println("\n[DEBUG] convertFromBedToPed elapsedTime: " + elapsedTime + " seconds");
-            System.out.println("\n[DEBUG] Finished execution of convertFromBedToPed.");
+            LOGGER.debug("\n[DEBUG] convertFromBedToPed startTime: " + startTime);
+            LOGGER.debug("\n[DEBUG] convertFromBedToPed endTime: " + stopTime);
+            LOGGER.debug("\n[DEBUG] convertFromBedToPed elapsedTime: " + elapsedTime + " seconds");
+            LOGGER.debug("\n[DEBUG] Finished execution of convertFromBedToPed.");
         }
 
     }
@@ -376,22 +374,15 @@ public class GuidanceImpl {
         String gtoolBinary = loadFromEnvironment(GTOOLBINARY, HEADER_CONVERT_FROM_PED_TO_GEN);
 
         if (DEBUG) {
-            System.out.println("\n[DEBUG] Running convertFromPedToGen with parameters:");
-            System.out.println("[DEBUG] \t- Input pedFile      : " + pedFile);
-            System.out.println("[DEBUG] \t- Input mapFile      : " + mapFile);
-            System.out.println("[DEBUG] \t- Output genFile     : " + genFile);
-            System.out.println("[DEBUG] \t- Output sampleFile  : " + sampleFile);
-            System.out.println("[DEBUG] \t- Output logFile     : " + logFile);
-            System.out.println("\n");
-            System.out.println("[DEBUG] \t- Command: " + cmdToStore);
-
-            // Map<String, String> env = System.getenv();
-            // System.out.println("--------------------------------------");
-            // System.out.println("Environmental Variables in Master:");
-            // for (String envName : env.keySet()) {
-            // System.out.format("%s=%s%n",envName,env.get(envName));
-            // }
-            System.out.println("--------------------------------------");
+            LOGGER.debug("\n[DEBUG] Running convertFromPedToGen with parameters:");
+            LOGGER.debug("[DEBUG] \t- Input pedFile      : " + pedFile);
+            LOGGER.debug("[DEBUG] \t- Input mapFile      : " + mapFile);
+            LOGGER.debug("[DEBUG] \t- Output genFile     : " + genFile);
+            LOGGER.debug("[DEBUG] \t- Output sampleFile  : " + sampleFile);
+            LOGGER.debug("[DEBUG] \t- Output logFile     : " + logFile);
+            LOGGER.debug(NEW_LINE);
+            LOGGER.debug("[DEBUG] \t- Command: " + cmdToStore);
+            LOGGER.debug("--------------------------------------");
         }
 
         long startTime = System.currentTimeMillis();
@@ -400,7 +391,7 @@ public class GuidanceImpl {
                 + " --binary_phenotype --order --log " + logFile;
 
         if (DEBUG) {
-            System.out.println(HEADER_CONVERT_FROM_PED_TO_GEN + MSG_CMD + cmd);
+            LOGGER.debug(HEADER_CONVERT_FROM_PED_TO_GEN + MSG_CMD + cmd);
         }
 
         // Execute the command retrieving its exitValue, output and error
@@ -426,12 +417,6 @@ public class GuidanceImpl {
 
         // Now we have to change the missing/unaffection/affection coding in the sample file from -9/1/2 to NA/0/1
         // Then, we go to the sample file and change the last column.
-
-        // File changedSampleFile = new File(sampleFile + ".changed");
-        // File changedSampleFile = new File("sample_file.changed");
-
-        // changedSampleFile.createNewFile();
-
         File changedSampleFile = new File(sampleFile + ".changed");
         try {
             if (!changedSampleFile.createNewFile()) {
@@ -441,7 +426,7 @@ public class GuidanceImpl {
             throw new GuidanceTaskException(ioe);
         }
 
-        // We read each line of th genFile and look for the rsID into the newPosMap
+        // We read each line of the genFile and look for the rsID into the newPosMap
         try (FileReader fr = new FileReader(sampleFile);
                 BufferedReader br = new BufferedReader(fr);
                 BufferedWriter writerPos = new BufferedWriter(new FileWriter(changedSampleFile))) {
@@ -458,21 +443,21 @@ public class GuidanceImpl {
 
             while ((line = br.readLine()) != null) {
                 int length = line.length();
-                // System.out.println("[DEBUG]: Original line: " + line);
+                // LOGGER.debug("[DEBUG]: Original line: " + line);
                 String subline = line.substring(length - 1, length);
-                // System.out.println("[DEBUG]: El substring es: |" + subline + "|");
+                // LOGGER.debug("[DEBUG]: El substring es: |" + subline + "|");
                 String myNewLine = null;
                 if (subline.equals("0")) {
                     myNewLine = line.substring(0, length - 2) + " NA";
-                    // System.out.println("[DEBUG]: NA New line : " + myNewLine);
+                    // LOGGER.debug("[DEBUG]: NA New line : " + myNewLine);
                 } else if (subline.equals("1")) {
                     myNewLine = line.substring(0, length - 2) + " 0";
-                    // System.out.println("[DEBUG]: 0 New line : " + myNewLine);
+                    // LOGGER.debug("[DEBUG]: 0 New line : " + myNewLine);
                 } else if (subline.equals("2")) {
                     myNewLine = line.substring(0, length - 2) + " 1";
-                    // System.out.println("[DEBUG]: 1 New line : " + myNewLine);
+                    // LOGGER.debug("[DEBUG]: 1 New line : " + myNewLine);
                 } else {
-                    System.out.println(HEADER_CONVERT_FROM_PED_TO_GEN + "Error changing the sample file. Invalid affection coding in line "
+                    LOGGER.debug(HEADER_CONVERT_FROM_PED_TO_GEN + "Error changing the sample file. Invalid affection coding in line "
                             + myNewLine);
                     // throw new Exception("Error changing the sample file. Invalid affection coding in line " +
                     // counter);
@@ -488,13 +473,11 @@ public class GuidanceImpl {
 
         File file = new File(sampleFile + ".changed");
         File file2 = new File(sampleFile);
-        // if(file2.exists()) throw new java.io.IOException("file exists");
 
         // Rename file (or directory)
         boolean success = file.renameTo(file2);
         if (!success) {
             throw new GuidanceTaskException(HEADER_CONVERT_FROM_PED_TO_GEN + ERROR_ON_FILE + sampleFile + ERROR_SUFFIX_RENAMED_FILE);
-            // File was not successfully renamed
         }
 
         try {
@@ -506,10 +489,10 @@ public class GuidanceImpl {
         long stopTime = System.currentTimeMillis();
         long elapsedTime = (stopTime - startTime) / 1_000;
         if (DEBUG) {
-            System.out.println("\n[DEBUG] convertFromPedToGen startTime: " + startTime);
-            System.out.println("\n[DEBUG] convertFromPedToGen endTime: " + stopTime);
-            System.out.println("\n[DEBUG] convertFromPedToGen elapsedTime: " + elapsedTime + " seconds");
-            System.out.println("\n[DEBUG] Finished execution of convertFromPedToGen.");
+            LOGGER.debug("\n[DEBUG] convertFromPedToGen startTime: " + startTime);
+            LOGGER.debug("\n[DEBUG] convertFromPedToGen endTime: " + stopTime);
+            LOGGER.debug("\n[DEBUG] convertFromPedToGen elapsedTime: " + elapsedTime + " seconds");
+            LOGGER.debug("\n[DEBUG] Finished execution of convertFromPedToGen.");
         }
 
     }
@@ -530,29 +513,14 @@ public class GuidanceImpl {
             throws GuidanceTaskException {
 
         if (DEBUG) {
-            System.out.println("\n[DEBUG] Running createRsIdList with parameters:");
-            System.out.println("[DEBUG] \t- Input genOrBimFile : " + genOrBimFile);
-            System.out.println("[DEBUG] \t- Input exclCgatFlag : " + exclCgatFlag);
-            System.out.println("[DEBUG] \t- Output pairsFile   : " + pairsFile);
-            System.out.println("[DEBUG] \t- InputFormat        : " + inputFormat);
-            System.out.println("\n");
-            System.out.println("[DEBUG] \t- Command: " + cmdToStore);
-
-            // long freeMemory = Runtime.getRuntime().freeMemory()/1048576;
-            // long totalMemory = Runtime.getRuntime().totalMemory()/1048576;
-            // long maxMemory = Runtime.getRuntime().maxMemory()/1048576;
-
-            // System.out.println("JVM freeMemory: " + freeMemory);
-            // System.out.println("JVM totalMemory also equals to initial heap size of JVM : " + totalMemory);
-            // System.out.println("JVM maxMemory also equals to maximum heap size of JVM : " + maxMemory);
-
-            // Map<String, String> env = System.getenv();
-            // System.out.println("--------------------------------------");
-            // System.out.println("Environmental Variables in Worker:");
-            // for (String envName : env.keySet()) {
-            // System.out.format("%s=%s%n",envName,env.get(envName));
-            // }
-            System.out.println("--------------------------------------");
+            LOGGER.debug("\n[DEBUG] Running createRsIdList with parameters:");
+            LOGGER.debug("[DEBUG] \t- Input genOrBimFile : " + genOrBimFile);
+            LOGGER.debug("[DEBUG] \t- Input exclCgatFlag : " + exclCgatFlag);
+            LOGGER.debug("[DEBUG] \t- Output pairsFile   : " + pairsFile);
+            LOGGER.debug("[DEBUG] \t- InputFormat        : " + inputFormat);
+            LOGGER.debug(NEW_LINE);
+            LOGGER.debug("[DEBUG] \t- Command: " + cmdToStore);
+            LOGGER.debug("--------------------------------------");
         }
 
         long startTime = System.currentTimeMillis();
@@ -581,7 +549,7 @@ public class GuidanceImpl {
         boolean thisIsGz = (n == 0x1f8b0000);
 
         if (thisIsGz) {
-            System.out.println(HEADER_CREATE_RSID_LIST + "It seems the file " + genOrBimFile + " is a gzip file. Magic Number is "
+            LOGGER.info(HEADER_CREATE_RSID_LIST + "It seems the file " + genOrBimFile + " is a gzip file. Magic Number is "
                     + String.format("%x", n));
 
             try (GZIPInputStream inputGz = new GZIPInputStream(new FileInputStream(genOrBimFile));
@@ -601,12 +569,12 @@ public class GuidanceImpl {
         }
 
         long stopTime = System.currentTimeMillis();
-        long elapsedTime = (stopTime - startTime) / 1000;
+        long elapsedTime = (stopTime - startTime) / 1_000;
         if (DEBUG) {
-            System.out.println("\n[DEBUG] createRsIdList StartTime: " + startTime);
-            System.out.println("\n[DEBUG] createRsIdList endTime: " + stopTime);
-            System.out.println("\n[DEBUG] createRsIdList elapsedTime: " + elapsedTime + " seconds");
-            System.out.println("\n[DEBUG] Finished execution of createRsIdList.");
+            LOGGER.debug("\n[DEBUG] createRsIdList StartTime: " + startTime);
+            LOGGER.debug("\n[DEBUG] createRsIdList endTime: " + stopTime);
+            LOGGER.debug("\n[DEBUG] createRsIdList elapsedTime: " + elapsedTime + " seconds");
+            LOGGER.debug("\n[DEBUG] Finished execution of createRsIdList.");
         }
 
     }
@@ -618,7 +586,7 @@ public class GuidanceImpl {
             if (inputFormat.equals("BED")) {
                 String line = null;
                 while ((line = br.readLine()) != null) {
-                    String[] splittedLine = line.split("\t");// delimiter I assume single space.
+                    String[] splittedLine = line.split(TAB);// delimiter I assume single space.
                     String allele = splittedLine[4] + splittedLine[5]; // store Allele (AC,GC,AG, GT,..., etc.)
 
                     // Store rsID of the SNP which its allele is AT or TA or GC or CG into the .pairs file
@@ -677,18 +645,18 @@ public class GuidanceImpl {
         String gtoolBinary = loadFromEnvironment(GTOOLBINARY, HEADER_GTOOLS);
 
         if (DEBUG) {
-            System.out.println("\n[DEBUG] Running gtoolS with parameters:");
-            System.out.println("[DEBUG] \t- gtoolBinary            : " + gtoolBinary);
-            System.out.println("[DEBUG] \t- Input newGenFile       : " + newGenFile);
-            System.out.println("[DEBUG] \t- Input modSampleFile    : " + modSampleFile);
-            System.out.println("[DEBUG] \t- Output gtoolGenFile    : " + gtoolGenFile);
-            System.out.println("[DEBUG] \t- Output gtoolSampleFile : " + gtoolSampleFile);
-            System.out.println("[DEBUG] \t- Input sampleExclFile   : " + sampleExclFile);
-            System.out.println("[DEBUG] \t- Input snpWtccFile      : " + snpWtccFile);
-            System.out.println("[DEBUG] \t- Output gtoolLogFile    : " + gtoolLogFile);
-            System.out.println("\n");
-            System.out.println("[DEBUG] \t- COMMAND            : " + cmdToStore);
-            System.out.println("--------------------------------------");
+            LOGGER.debug("\n[DEBUG] Running gtoolS with parameters:");
+            LOGGER.debug("[DEBUG] \t- gtoolBinary            : " + gtoolBinary);
+            LOGGER.debug("[DEBUG] \t- Input newGenFile       : " + newGenFile);
+            LOGGER.debug("[DEBUG] \t- Input modSampleFile    : " + modSampleFile);
+            LOGGER.debug("[DEBUG] \t- Output gtoolGenFile    : " + gtoolGenFile);
+            LOGGER.debug("[DEBUG] \t- Output gtoolSampleFile : " + gtoolSampleFile);
+            LOGGER.debug("[DEBUG] \t- Input sampleExclFile   : " + sampleExclFile);
+            LOGGER.debug("[DEBUG] \t- Input snpWtccFile      : " + snpWtccFile);
+            LOGGER.debug("[DEBUG] \t- Output gtoolLogFile    : " + gtoolLogFile);
+            LOGGER.debug(NEW_LINE);
+            LOGGER.debug("[DEBUG] \t- Command: " + cmdToStore);
+            LOGGER.debug("--------------------------------------");
         }
 
         long startTime = System.currentTimeMillis();
@@ -697,8 +665,7 @@ public class GuidanceImpl {
                 + " --sample_excl " + sampleExclFile + " --exclusion " + snpWtccFile + " --log " + gtoolLogFile;
 
         if (DEBUG) {
-            System.out.println("\n[DEBUG] Cmd -> " + cmd);
-            System.out.println(" ");
+            LOGGER.debug(HEADER_GTOOLS + MSG_CMD + cmd);
         }
 
         // Execute the command retrieving its exitValue, output and error
@@ -717,10 +684,10 @@ public class GuidanceImpl {
         long stopTime = System.currentTimeMillis();
         long elapsedTime = (stopTime - startTime) / 1_000;
         if (DEBUG) {
-            System.out.println("\n[DEBUG] gtoolS startTime: " + startTime);
-            System.out.println("\n[DEBUG] gtoolS endTime: " + stopTime);
-            System.out.println("\n[DEBUG] gtoolS elapsedTime: " + elapsedTime + " seconds");
-            System.out.println("\n[DEBUG] Finished execution of gtoolS.");
+            LOGGER.debug("\n[DEBUG] gtoolS startTime: " + startTime);
+            LOGGER.debug("\n[DEBUG] gtoolS endTime: " + stopTime);
+            LOGGER.debug("\n[DEBUG] gtoolS elapsedTime: " + elapsedTime + " seconds");
+            LOGGER.debug("\n[DEBUG] Finished execution of gtoolS.");
         }
 
     }
@@ -744,14 +711,15 @@ public class GuidanceImpl {
         String qctoolBinary = loadFromEnvironment(QCTOOLBINARY, HEADER_QCTOOL);
 
         if (DEBUG) {
-            System.out.println("\n[DEBUG] Running qctool with parameters:");
-            System.out.println("[DEBUG] \t- Input genFile          : " + genFile);
-            System.out.println("[DEBUG] \t- Input sampleFile       : " + sampleFile);
-            System.out.println("[DEBUG] \t- Output qctoolGenFile   : " + qctoolGenFile);
-            System.out.println("[DEBUG] \t- Output qctoolSampleFile: " + qctoolSampleFile);
-            System.out.println("[DEBUG] \t- Output qctoolLogFile   : " + qctoolLogFile);
-            System.out.println("\n");
-            System.out.println("[DEBUG] \t- COMMAND            : " + cmdToStore);
+            LOGGER.debug("\n[DEBUG] Running qctool with parameters:");
+            LOGGER.debug("[DEBUG] \t- Input genFile          : " + genFile);
+            LOGGER.debug("[DEBUG] \t- Input sampleFile       : " + sampleFile);
+            LOGGER.debug("[DEBUG] \t- Output qctoolGenFile   : " + qctoolGenFile);
+            LOGGER.debug("[DEBUG] \t- Output qctoolSampleFile: " + qctoolSampleFile);
+            LOGGER.debug("[DEBUG] \t- Output qctoolLogFile   : " + qctoolLogFile);
+            LOGGER.debug(NEW_LINE);
+            LOGGER.debug("[DEBUG] \t- Command: " + cmdToStore);
+            LOGGER.debug("--------------------------------------");
         }
 
         long startTime = System.currentTimeMillis();
@@ -760,8 +728,8 @@ public class GuidanceImpl {
                 + " -omit-chromosome -sort -log " + qctoolLogFile;
 
         if (DEBUG) {
-            System.out.println("\n[DEBUG] Cmd -> " + cmd);
-            System.out.println(" ");
+            LOGGER.debug("\n[DEBUG] Cmd -> " + cmd);
+            LOGGER.debug(" ");
         }
 
         // Execute the command retrieving its exitValue, output and error
@@ -780,10 +748,10 @@ public class GuidanceImpl {
         long stopTime = System.currentTimeMillis();
         long elapsedTime = (stopTime - startTime) / 1_000;
         if (DEBUG) {
-            System.out.println("\n[DEBUG] qctool startTime: " + startTime);
-            System.out.println("\n[DEBUG] qctool endTime: " + stopTime);
-            System.out.println("\n[DEBUG] qctool elapsedTime: " + elapsedTime + " seconds");
-            System.out.println("\n[DEBUG] Finished execution of qctool.");
+            LOGGER.debug("\n[DEBUG] qctool startTime: " + startTime);
+            LOGGER.debug("\n[DEBUG] qctool endTime: " + stopTime);
+            LOGGER.debug("\n[DEBUG] qctool elapsedTime: " + elapsedTime + " seconds");
+            LOGGER.debug("\n[DEBUG] Finished execution of qctool.");
         }
     }
 
@@ -806,30 +774,22 @@ public class GuidanceImpl {
         String qctoolBinary = loadFromEnvironment(QCTOOLBINARY, HEADER_QCTOOLS);
 
         if (DEBUG) {
-            System.out.println("\nRunning qctoolS for generation a subset of rsids with parameters:");
-            System.out.println("\t- qctoolBinary               : " + qctoolBinary);
-            System.out.println("\t- Input imputeFile           : " + imputeFile);
-            System.out.println("\t- Input inclusionRsIdFile    : " + inclusionRsIdFile);
-            System.out.println("\t- Input mafThreshold         : " + mafThresholdS);
-            System.out.println("\t- Output filteredFile        : " + filteredFileGz);
-            System.out.println("\t- Output filteredLogFile     : " + filteredLogFile);
-            System.out.println("\n");
-            System.out.println("[DEBUG] \t- COMMAND            : " + cmdToStore);
-
-            // Map<String, String> env = System.getenv();
-            // System.out.println("--------------------------------------");
-            // System.out.println("Environmental Variables in Master:");
-            // for (String envName : env.keySet()) {
-            // System.out.format("%s=%s%n",envName,env.get(envName));
-            // }
-            System.out.println("--------------------------------------");
+            LOGGER.debug("\nRunning qctoolS for generation a subset of rsids with parameters:");
+            LOGGER.debug("\t- qctoolBinary               : " + qctoolBinary);
+            LOGGER.debug("\t- Input imputeFile           : " + imputeFile);
+            LOGGER.debug("\t- Input inclusionRsIdFile    : " + inclusionRsIdFile);
+            LOGGER.debug("\t- Input mafThreshold         : " + mafThresholdS);
+            LOGGER.debug("\t- Output filteredFile        : " + filteredFileGz);
+            LOGGER.debug("\t- Output filteredLogFile     : " + filteredLogFile);
+            LOGGER.debug(NEW_LINE);
+            LOGGER.debug("[DEBUG] \t- Command: " + cmdToStore);
+            LOGGER.debug("--------------------------------------");
         }
         long startTime = System.currentTimeMillis();
 
         // We have to make sure whether we are using renamed files of the original gz files.
         // We detect this situation by scanning the last three characters:
         String extension = imputeFile.substring(Math.max(0, imputeFile.length() - 3));
-        // System.out.println("DEBUG \t The file extension is: " + extension + " and the file is " + imputeFile);
 
         String imputeFileGz = null;
         if (extension.equals(".gz")) {
@@ -838,7 +798,6 @@ public class GuidanceImpl {
             // If imputeFile exists, then imputeFileGz exists also.
             // We reused the imputFileGz
             imputeFileGz = imputeFile + ".gz";
-            // String imputeFileGz = imputeFile + ".gz";
         }
 
         // Now we create filteredFileGz
@@ -848,8 +807,7 @@ public class GuidanceImpl {
                 + " -omit-chromosome -force -log " + filteredLogFile + " -maf " + mafThresholdS + " 1";
 
         if (DEBUG) {
-            System.out.println("\n[DEBUG] Command: " + cmd);
-            System.out.println(" ");
+            LOGGER.debug(HEADER_QCTOOLS + MSG_CMD + cmd);
         }
 
         // Execute the command retrieving its exitValue, output and error
@@ -872,10 +830,10 @@ public class GuidanceImpl {
         long stopTime = System.currentTimeMillis();
         long elapsedTime = (stopTime - startTime) / 1_000;
         if (DEBUG) {
-            System.out.println("\n[DEBUG] qctoolS startTime: " + startTime);
-            System.out.println("\n[DEBUG] qctoolS endTime: " + stopTime);
-            System.out.println("\n[DEBUG] qctoolS elapsedTime: " + elapsedTime + " seconds");
-            System.out.println("\n[DEBUG] Finished execution of qctoolS.");
+            LOGGER.debug("\n[DEBUG] qctoolS startTime: " + startTime);
+            LOGGER.debug("\n[DEBUG] qctoolS endTime: " + stopTime);
+            LOGGER.debug("\n[DEBUG] qctoolS elapsedTime: " + elapsedTime + " seconds");
+            LOGGER.debug("\n[DEBUG] Finished execution of qctoolS.");
         }
     }
 
@@ -895,13 +853,14 @@ public class GuidanceImpl {
             String cmdToStore) throws GuidanceTaskException {
 
         if (DEBUG) {
-            System.out.println("\n[DEBUG] Running createListOfExcludedSnps method:");
-            System.out.println("[DEBUG] \t- Input shapeitHapsFile   : " + shapeitHapsFile);
-            System.out.println("[DEBUG] \t- Output excludedSnpsFile : " + excludedSnpsFile);
-            System.out.println("[DEBUG] \t- Input exclCgatFlag      : " + exclCgatFlag);
-            System.out.println("[DEBUG] \t- Input exclSVFlag        : " + exclSVFlag);
-            System.out.println("\n");
-            System.out.println("[DEBUG] \t- Command: " + cmdToStore);
+            LOGGER.debug("\n[DEBUG] Running createListOfExcludedSnps method:");
+            LOGGER.debug("[DEBUG] \t- Input shapeitHapsFile   : " + shapeitHapsFile);
+            LOGGER.debug("[DEBUG] \t- Output excludedSnpsFile : " + excludedSnpsFile);
+            LOGGER.debug("[DEBUG] \t- Input exclCgatFlag      : " + exclCgatFlag);
+            LOGGER.debug("[DEBUG] \t- Input exclSVFlag        : " + exclSVFlag);
+            LOGGER.debug(NEW_LINE);
+            LOGGER.debug("[DEBUG] \t- Command: " + cmdToStore);
+            LOGGER.debug("--------------------------------------");
         }
 
         long startTime = System.currentTimeMillis();
@@ -919,9 +878,8 @@ public class GuidanceImpl {
         // We have to make sure whether we are using renamed files of the original gz files.
         // We detect this situation by scanning the last three characters of the file name:
         String extension = shapeitHapsFile.substring(Math.max(0, shapeitHapsFile.length() - 3));
-        // System.out.println("DEBUG \t The file extension is: " + extension + " and the file is " + shapeitHapsFile);
-        String shapeitHapsFileGz = null;
 
+        String shapeitHapsFileGz = null;
         if (extension.equals(".gz")) {
             shapeitHapsFileGz = shapeitHapsFile;
         } else {
@@ -993,7 +951,7 @@ public class GuidanceImpl {
 
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(outputFile))) {
             for (int i = 0; i < excludeList.size(); i++) {
-                writer.write(excludeList.get(i) + "\n");
+                writer.write(excludeList.get(i) + NEW_LINE);
             }
             writer.flush();
         } catch (IOException ioe) {
@@ -1001,12 +959,12 @@ public class GuidanceImpl {
         }
 
         long stopTime = System.currentTimeMillis();
-        long elapsedTime = (stopTime - startTime) / 1000;
+        long elapsedTime = (stopTime - startTime) / 1_000;
         if (DEBUG) {
-            System.out.println("\n[DEBUG] createListOfExcludedSnps startTime: " + startTime);
-            System.out.println("\n[DEBUG] createListOfExcludedSnps endTime: " + stopTime);
-            System.out.println("\n[DEBUG] createListOfExcludedSnps elapsedTime: " + elapsedTime + " seconds");
-            System.out.println("\n[DEBUG] Finished execution of createListOfExcludedSnps.");
+            LOGGER.debug("\n[DEBUG] createListOfExcludedSnps startTime: " + startTime);
+            LOGGER.debug("\n[DEBUG] createListOfExcludedSnps endTime: " + stopTime);
+            LOGGER.debug("\n[DEBUG] createListOfExcludedSnps elapsedTime: " + elapsedTime + " seconds");
+            LOGGER.debug("\n[DEBUG] Finished execution of createListOfExcludedSnps.");
         }
     }
 
@@ -1032,25 +990,18 @@ public class GuidanceImpl {
         String shapeitBinary = loadFromEnvironment(SHAPEITBINARY, HEADER_PHASING_BED);
 
         if (DEBUG) {
-            System.out.println("\n[DEBUG] Running phasing with parameters:");
-            System.out.println("[DEBUG] \t- shapeitBinary            : " + shapeitBinary);
-            System.out.println("[DEBUG] \t- Input bedFile            : " + bedFile);
-            System.out.println("[DEBUG] \t- Input bimFile            : " + bimFile);
-            System.out.println("[DEBUG] \t- Input famFile            : " + famFile);
-            System.out.println("[DEBUG] \t- Input gmapFile           : " + gmapFile);
-            System.out.println("[DEBUG] \t- Output shapeitHapsFile   : " + shapeitHapsFile);
-            System.out.println("[DEBUG] \t- Output shapeitSampleFile : " + shapeitSampleFile);
-            System.out.println("[DEBUG] \t- Output shapeitLogFile    : " + shapeitLogFile);
-            System.out.println("\n");
-            System.out.println("[DEBUG] \t- Command: " + cmdToStore);
-
-            // Map<String, String> env = System.getenv();
-            // System.out.println("--------------------------------------");
-            // System.out.println("Environmental Variables in Master:");
-            // for (String envName : env.keySet()) {
-            // System.out.format("%s=%s%n",envName,env.get(envName));
-            // }
-            // System.out.println("--------------------------------------");
+            LOGGER.debug("\n[DEBUG] Running phasing with parameters:");
+            LOGGER.debug("[DEBUG] \t- shapeitBinary            : " + shapeitBinary);
+            LOGGER.debug("[DEBUG] \t- Input bedFile            : " + bedFile);
+            LOGGER.debug("[DEBUG] \t- Input bimFile            : " + bimFile);
+            LOGGER.debug("[DEBUG] \t- Input famFile            : " + famFile);
+            LOGGER.debug("[DEBUG] \t- Input gmapFile           : " + gmapFile);
+            LOGGER.debug("[DEBUG] \t- Output shapeitHapsFile   : " + shapeitHapsFile);
+            LOGGER.debug("[DEBUG] \t- Output shapeitSampleFile : " + shapeitSampleFile);
+            LOGGER.debug("[DEBUG] \t- Output shapeitLogFile    : " + shapeitLogFile);
+            LOGGER.debug(NEW_LINE);
+            LOGGER.debug("[DEBUG] \t- Command: " + cmdToStore);
+            LOGGER.debug("--------------------------------------");
         }
 
         long startTime = System.currentTimeMillis();
@@ -1059,7 +1010,7 @@ public class GuidanceImpl {
         String shapeitHapsFileGz = shapeitHapsFile + ".gz";
 
         String cmd = null;
-        if (chromo.equals("23")) {
+        if (chromo.equals(CHR_23)) {
             cmd = shapeitBinary + " --input-bed " + bedFile + " " + bimFile + " " + famFile + " --input-map " + gmapFile
                     + " --chrX --output-max " + shapeitHapsFileGz + " " + shapeitSampleFile
                     + " --thread 47 --effective-size 20000 --output-log " + shapeitLogFile;
@@ -1069,8 +1020,7 @@ public class GuidanceImpl {
         }
 
         if (DEBUG) {
-            System.out.println("\n[DEBUG] Command: " + cmd);
-            System.out.println(" ");
+            LOGGER.debug(HEADER_PHASING_BED + MSG_CMD + cmd);
         }
 
         // Execute the command retrieving its exitValue, output and error
@@ -1085,9 +1035,8 @@ public class GuidanceImpl {
 
         // Check process exit value
         if (exitValue != 0) {
-            System.err.println(HEADER_PHASING_BED + "Warning executing shapeitProc job, exit value is: " + exitValue);
-            System.err.println(HEADER_PHASING_BED + "                         (This warning is not fatal).");
-            // throw new Exception("Error executing shapeitProc job, exit value is: " + exitValue);
+            LOGGER.error(HEADER_PHASING_BED + "Warning executing shapeitProc job, exit value is: " + exitValue);
+            LOGGER.error(HEADER_PHASING_BED + "                         (This warning is not fatal).");
         }
 
         // Ugly, because shapeit_v2 automatically puts the .log to the file.
@@ -1109,10 +1058,10 @@ public class GuidanceImpl {
         long stopTime = System.currentTimeMillis();
         long elapsedTime = (stopTime - startTime) / 1_000;
         if (DEBUG) {
-            System.out.println("\n[DEBUG] phasing startTime: " + startTime);
-            System.out.println("\n[DEBUG] phasing endTime: " + stopTime);
-            System.out.println("\n[DEBUG] phasing elapsedTime: " + elapsedTime + " seconds");
-            System.out.println("\n[DEBUG] Finished execution of phasing.");
+            LOGGER.debug("\n[DEBUG] phasing startTime: " + startTime);
+            LOGGER.debug("\n[DEBUG] phasing endTime: " + stopTime);
+            LOGGER.debug("\n[DEBUG] phasing elapsedTime: " + elapsedTime + " seconds");
+            LOGGER.debug("\n[DEBUG] Finished execution of phasing.");
         }
     }
 
@@ -1137,24 +1086,17 @@ public class GuidanceImpl {
         String shapeitBinary = loadFromEnvironment(SHAPEITBINARY, HEADER_PHASING);
 
         if (DEBUG) {
-            System.out.println("\n[DEBUG] Running phasing with parameters:");
-            System.out.println("[DEBUG] \t- shapeitBinary            : " + shapeitBinary);
-            System.out.println("[DEBUG] \t- Input inputGenFile       : " + inputGenFile);
-            System.out.println("[DEBUG] \t- Input inputSampleFile    : " + inputSampleFile);
-            System.out.println("[DEBUG] \t- Input gmapFile           : " + gmapFile);
-            System.out.println("[DEBUG] \t- Output shapeitHapsFile   : " + shapeitHapsFile);
-            System.out.println("[DEBUG] \t- Output shapeitSampleFile : " + shapeitSampleFile);
-            System.out.println("[DEBUG] \t- Output shapeitLogFile    : " + shapeitLogFile);
-            System.out.println("\n");
-            System.out.println("[DEBUG] \t- Command: " + cmdToStore);
-
-            // Map<String, String> env = System.getenv();
-            // System.out.println("--------------------------------------");
-            // System.out.println("Environmental Variables in Master:");
-            // for (String envName : env.keySet()) {
-            // System.out.format("%s=%s%n",envName,env.get(envName));
-            // }
-            // System.out.println("--------------------------------------");
+            LOGGER.debug("\n[DEBUG] Running phasing with parameters:");
+            LOGGER.debug("[DEBUG] \t- shapeitBinary            : " + shapeitBinary);
+            LOGGER.debug("[DEBUG] \t- Input inputGenFile       : " + inputGenFile);
+            LOGGER.debug("[DEBUG] \t- Input inputSampleFile    : " + inputSampleFile);
+            LOGGER.debug("[DEBUG] \t- Input gmapFile           : " + gmapFile);
+            LOGGER.debug("[DEBUG] \t- Output shapeitHapsFile   : " + shapeitHapsFile);
+            LOGGER.debug("[DEBUG] \t- Output shapeitSampleFile : " + shapeitSampleFile);
+            LOGGER.debug("[DEBUG] \t- Output shapeitLogFile    : " + shapeitLogFile);
+            LOGGER.debug(NEW_LINE);
+            LOGGER.debug("[DEBUG] \t- Command: " + cmdToStore);
+            LOGGER.debug("--------------------------------------");
         }
 
         long startTime = System.currentTimeMillis();
@@ -1163,7 +1105,7 @@ public class GuidanceImpl {
         String shapeitHapsFileGz = shapeitHapsFile + ".gz";
 
         String cmd = null;
-        if (chromo.equals("23")) {
+        if (chromo.equals(CHR_23)) {
             cmd = shapeitBinary + " --input-gen " + inputGenFile + " " + inputSampleFile + " --input-map " + gmapFile
                     + " --chrX --output-max " + shapeitHapsFileGz + " " + shapeitSampleFile
                     + " --thread 47 --effective-size 20000 --output-log " + shapeitLogFile;
@@ -1173,8 +1115,7 @@ public class GuidanceImpl {
         }
 
         if (DEBUG) {
-            System.out.println("\n[DEBUG] Command: " + cmd);
-            System.out.println(" ");
+            LOGGER.debug(HEADER_PHASING + MSG_CMD + cmd);
         }
 
         // Execute the command retrieving its exitValue, output and error
@@ -1187,9 +1128,8 @@ public class GuidanceImpl {
 
         // Check process exit value
         if (exitValue != 0) {
-            System.err.println(HEADER_PHASING + "Warning executing shapeitProc job, exit value is: " + exitValue);
-            System.err.println(HEADER_PHASING + "                         (This warning is not fatal).");
-            // throw new Exception("Error executing shapeitProc job, exit value is: " + exitValue);
+            LOGGER.error(HEADER_PHASING + "Warning executing shapeitProc job, exit value is: " + exitValue);
+            LOGGER.error(HEADER_PHASING + "                         (This warning is not fatal).");
         }
 
         // Ugly, because shapeit_v2 automatically puts the .log to the file.
@@ -1211,10 +1151,10 @@ public class GuidanceImpl {
         long stopTime = System.currentTimeMillis();
         long elapsedTime = (stopTime - startTime) / 1_000;
         if (DEBUG) {
-            System.out.println("\n[DEBUG] phasing startTime: " + startTime);
-            System.out.println("\n[DEBUG] phasing endTime: " + stopTime);
-            System.out.println("\n[DEBUG] phasing elapsedTime: " + elapsedTime + " seconds");
-            System.out.println("\n[DEBUG] Finished execution of phasing.");
+            LOGGER.debug("\n[DEBUG] phasing startTime: " + startTime);
+            LOGGER.debug("\n[DEBUG] phasing endTime: " + stopTime);
+            LOGGER.debug("\n[DEBUG] phasing elapsedTime: " + elapsedTime + " seconds");
+            LOGGER.debug("\n[DEBUG] Finished execution of phasing.");
         }
     }
 
@@ -1241,33 +1181,25 @@ public class GuidanceImpl {
         String shapeitBinary = loadFromEnvironment(SHAPEITBINARY, HEADER_FILTER_HAPLOTYPES);
 
         if (DEBUG) {
-            System.out.println("\n[DEBUG] Running filterHaplotypes with parameters:");
-            System.out.println("[DEBUG] \t- shapeitBinary             : " + shapeitBinary);
-            System.out.println("[DEBUG] \t- Input hapsFile            : " + hapsFile);
-            System.out.println("[DEBUG] \t- Input sampleFile          : " + sampleFile);
-            System.out.println("[DEBUG] \t- Input excludedSnpsFile    : " + excludedSnpsFile);
-            System.out.println("[DEBUG] \t- Output filteredHapsFile   : " + filteredHapsFile);
-            System.out.println("[DEBUG] \t- Output filteredSampleFile : " + filteredSampleFile);
-            System.out.println("[DEBUG] \t- Output filteredLogFile     : " + filteredLogFile);
-            System.out.println("[DEBUG] \t- Output filteredHapsVcfFile : " + filteredHapsVcfFile);
-            System.out.println("[DEBUG] \t- Output lisfOfSnpsFile     : " + listOfSnpsFile);
-            System.out.println("\n");
-            System.out.println("[DEBUG] \t- Command: " + cmdToStore);
-
-            // Map<String, String> env = System.getenv();
-            // System.out.println("--------------------------------------");
-            // System.out.println("Environmental Variables in Master:");
-            // for (String envName : env.keySet()) {
-            // System.out.format("%s=%s%n",envName,env.get(envName));
-            // }
-            // System.out.println("--------------------------------------");
+            LOGGER.debug("\n[DEBUG] Running filterHaplotypes with parameters:");
+            LOGGER.debug("[DEBUG] \t- shapeitBinary             : " + shapeitBinary);
+            LOGGER.debug("[DEBUG] \t- Input hapsFile            : " + hapsFile);
+            LOGGER.debug("[DEBUG] \t- Input sampleFile          : " + sampleFile);
+            LOGGER.debug("[DEBUG] \t- Input excludedSnpsFile    : " + excludedSnpsFile);
+            LOGGER.debug("[DEBUG] \t- Output filteredHapsFile   : " + filteredHapsFile);
+            LOGGER.debug("[DEBUG] \t- Output filteredSampleFile : " + filteredSampleFile);
+            LOGGER.debug("[DEBUG] \t- Output filteredLogFile     : " + filteredLogFile);
+            LOGGER.debug("[DEBUG] \t- Output filteredHapsVcfFile : " + filteredHapsVcfFile);
+            LOGGER.debug("[DEBUG] \t- Output lisfOfSnpsFile     : " + listOfSnpsFile);
+            LOGGER.debug(NEW_LINE);
+            LOGGER.debug("[DEBUG] \t- Command: " + cmdToStore);
+            LOGGER.debug("--------------------------------------");
         }
         long startTime = System.currentTimeMillis();
 
         // We have to make sure whether we are using renamed files of the original gz files.
         // We detect this situation by scanning the last three characters:
         String extension = hapsFile.substring(Math.max(0, hapsFile.length() - 3));
-        // System.out.println("DEBUG \t The file extension is: " + extension + " and the file is " + shapeitHapsFile);
 
         String hapsFileGz = null;
         if (extension.equals(".gz")) {
@@ -1287,8 +1219,7 @@ public class GuidanceImpl {
                 + filteredHapsVcfFileGz;
 
         if (DEBUG) {
-            System.out.println("\n[DEBUG] Command: " + cmd);
-            System.out.println(" ");
+            LOGGER.debug(HEADER_FILTER_HAPLOTYPES + MSG_CMD + cmd);
         }
 
         // Execute the command retrieving its exitValue, output and error
@@ -1303,10 +1234,8 @@ public class GuidanceImpl {
 
         // Check process exit value
         if (exitValue != 0) {
-            System.err
-                    .println(HEADER_FILTER_HAPLOTYPES + "Warning executing shapeitProc job in mode -convert, exit value is: " + exitValue);
-            System.err.println(HEADER_FILTER_HAPLOTYPES + "                         (This warning is not fatal).");
-            // throw new Exception("Error executing shapeitProc job, exit value is: " + exitValue);
+            LOGGER.error(HEADER_FILTER_HAPLOTYPES + "Warning executing shapeitProc job in mode -convert, exit value is: " + exitValue);
+            LOGGER.error(HEADER_FILTER_HAPLOTYPES + "                         (This warning is not fatal).");
         }
 
         // Ugly, because shapeit_v2 automatically puts the .log to the file.
@@ -1320,7 +1249,7 @@ public class GuidanceImpl {
             }
         }
 
-        System.err.println(HEADER_FILTER_HAPLOTYPES + "Filtering haplotypes OK. Now we create the listofSnps...");
+        LOGGER.info(HEADER_FILTER_HAPLOTYPES + "Filtering haplotypes OK. Now we create the listofSnps...");
 
         // Now we have to create the list of snps and write them into the output file.
         // Taking into account that shapeit had generated a gziped file, then we have to use GZIPInputStream.
@@ -1333,8 +1262,9 @@ public class GuidanceImpl {
         } catch (IOException ioe) {
             throw new GuidanceTaskException(ioe);
         }
-        // Print information about de existence of the file
-        System.out.println("\n[DEBUG] \t- Output file " + listOfSnpsFile + " was succesfuly created? " + bool);
+
+        // Print information about the existence of the file
+        LOGGER.info("\n[DEBUG] \t- Output file " + listOfSnpsFile + " was succesfuly created? " + bool);
 
         try (GZIPInputStream inputGz = new GZIPInputStream(new FileInputStream(filteredHapsFileGz));
                 Reader decoder = new InputStreamReader(inputGz);
@@ -1367,10 +1297,10 @@ public class GuidanceImpl {
         long stopTime = System.currentTimeMillis();
         long elapsedTime = (stopTime - startTime) / 1_000;
         if (DEBUG) {
-            System.out.println("\n[DEBUG] filterHaplotypes startTime: " + startTime);
-            System.out.println("\n[DEBUG] filterHaplotypes endTime: " + stopTime);
-            System.out.println("\n[DEBUG] filterHaplotypes elapsedTime: " + elapsedTime + " seconds");
-            System.out.println("\n[DEBUG] Finished execution of filterHaplotypes.");
+            LOGGER.debug("\n[DEBUG] filterHaplotypes startTime: " + startTime);
+            LOGGER.debug("\n[DEBUG] filterHaplotypes endTime: " + stopTime);
+            LOGGER.debug("\n[DEBUG] filterHaplotypes elapsedTime: " + elapsedTime + " seconds");
+            LOGGER.debug("\n[DEBUG] Finished execution of filterHaplotypes.");
         }
     }
 
@@ -1402,31 +1332,24 @@ public class GuidanceImpl {
         String impute2Binary = loadFromEnvironment(IMPUTE2BINARY, HEADER_IMPUTE);
 
         if (DEBUG) {
-            System.out.println("\n[DEBUG] Running impute with parameters:");
-            System.out.println("[DEBUG] \t- impute2Binary             : " + impute2Binary);
-            System.out.println("[DEBUG] \t- Input gmapFile            : " + gmapFile);
-            System.out.println("[DEBUG] \t- Input knownHapFile        : " + knownHapFile);
-            System.out.println("[DEBUG] \t- Input legendHapFile       : " + legendFile);
-            System.out.println("[DEBUG] \t- Input shapeitHapsFile     : " + shapeitHapsFile);
-            System.out.println("[DEBUG] \t- Input shapeitSampleFile   : " + shapeitSampleFile);
-            System.out.println("[DEBUG] \t- Input lim1S               : " + lim1S);
-            System.out.println("[DEBUG] \t- Input lim2S               : " + lim2S);
-            System.out.println("[DEBUG] \t- Input pairsFile           : " + pairsFile);
-            System.out.println("[DEBUG] \t- Output imputeFile         : " + imputeFile);
-            System.out.println("[DEBUG] \t- Output imputeFileInfo     : " + imputeFileInfo);
-            System.out.println("[DEBUG] \t- Output imputeFileSummary  : " + imputeFileSummary);
-            System.out.println("[DEBUG] \t- Output imputeFileWarnings : " + imputeFileWarnings);
-            System.out.println("[DEBUG] \t- Input  theChromo          : " + theChromo);
-            System.out.println("\n");
-            System.out.println("[DEBUG] \t- Command: " + cmdToStore);
-
-            // Map<String, String> env = System.getenv();
-            // System.out.println("--------------------------------------");
-            // System.out.println("Environmental Variables in Master:");
-            // for (String envName : env.keySet()) {
-            // System.out.format("%s=%s%n",envName,env.get(envName));
-            // }
-            // System.out.println("--------------------------------------");
+            LOGGER.debug("\n[DEBUG] Running impute with parameters:");
+            LOGGER.debug("[DEBUG] \t- impute2Binary             : " + impute2Binary);
+            LOGGER.debug("[DEBUG] \t- Input gmapFile            : " + gmapFile);
+            LOGGER.debug("[DEBUG] \t- Input knownHapFile        : " + knownHapFile);
+            LOGGER.debug("[DEBUG] \t- Input legendHapFile       : " + legendFile);
+            LOGGER.debug("[DEBUG] \t- Input shapeitHapsFile     : " + shapeitHapsFile);
+            LOGGER.debug("[DEBUG] \t- Input shapeitSampleFile   : " + shapeitSampleFile);
+            LOGGER.debug("[DEBUG] \t- Input lim1S               : " + lim1S);
+            LOGGER.debug("[DEBUG] \t- Input lim2S               : " + lim2S);
+            LOGGER.debug("[DEBUG] \t- Input pairsFile           : " + pairsFile);
+            LOGGER.debug("[DEBUG] \t- Output imputeFile         : " + imputeFile);
+            LOGGER.debug("[DEBUG] \t- Output imputeFileInfo     : " + imputeFileInfo);
+            LOGGER.debug("[DEBUG] \t- Output imputeFileSummary  : " + imputeFileSummary);
+            LOGGER.debug("[DEBUG] \t- Output imputeFileWarnings : " + imputeFileWarnings);
+            LOGGER.debug("[DEBUG] \t- Input  theChromo          : " + theChromo);
+            LOGGER.debug(NEW_LINE);
+            LOGGER.debug("[DEBUG] \t- Command: " + cmdToStore);
+            LOGGER.debug("--------------------------------------");
         }
 
         long startTime = System.currentTimeMillis();
@@ -1434,7 +1357,6 @@ public class GuidanceImpl {
         // We have to make sure whether we are using renamed files of the original gz files.
         // We detect this situation by scanning the last three characters:
         String extension = shapeitHapsFile.substring(Math.max(0, shapeitHapsFile.length() - 3));
-        // System.out.println("DEBUG \t The file extension is: " + extension + " and the file is " + shapeitHapsFile);
 
         String shapeitHapsFileGz = null;
         if (extension.equals(".gz")) {
@@ -1442,11 +1364,10 @@ public class GuidanceImpl {
         } else {
             // If shapeitHapsFile exists, then shapeitHapsFileGz exists also.
             shapeitHapsFileGz = shapeitHapsFile + ".gz";
-            // String imputeFileGz = imputeFile + ".gz";
         }
 
         String cmd = null;
-        if (theChromo.equals("23")) {
+        if (theChromo.equals(CHR_23)) {
             cmd = impute2Binary + " -use_prephased_g -m " + gmapFile + " -h " + knownHapFile + " -l " + legendFile + " -known_haps_g "
                     + shapeitHapsFileGz + " -sample_g " + shapeitSampleFile + " -int " + lim1S + " " + lim2S + "  -chrX -exclude_snps_g "
                     + pairsFile + " -impute_excluded -Ne 20000 -o " + imputeFile + " -i " + imputeFileInfo + " -r " + imputeFileSummary
@@ -1459,8 +1380,7 @@ public class GuidanceImpl {
         }
 
         if (DEBUG) {
-            System.out.println("\n[DEBUG] Command: " + cmd);
-            System.out.println(" ");
+            LOGGER.debug(HEADER_IMPUTE + MSG_CMD + cmd);
         }
 
         // Execute the command retrieving its exitValue, output and error
@@ -1473,9 +1393,8 @@ public class GuidanceImpl {
 
         // Check process exit value
         if (exitValue != 0) {
-            System.err.println(HEADER_IMPUTE + " Warning executing imputeProc job, exit value is: " + exitValue);
-            System.err.println(HEADER_IMPUTE + "                        (This warning is not fatal).");
-            // throw new Exception("Error executing imputeProc job, exit value is: " + exitValue);
+            LOGGER.error(HEADER_IMPUTE + " Warning executing imputeProc job, exit value is: " + exitValue);
+            LOGGER.error(HEADER_IMPUTE + "                        (This warning is not fatal).");
         }
 
         // With the -o_gz option in the comand, the outputs are imputeFile.gz
@@ -1483,8 +1402,6 @@ public class GuidanceImpl {
         File fImputeGz = new File(imputeFile + ".gz");
         File fImpute = new File(imputeFile);
         if (!fImputeGz.exists()) {
-            // System.out.println("[impute] The file " + imputeFile + ".gz" + "does not exist, then, we create it.. " +
-            // imputeFile);
             try {
                 if (!fImpute.createNewFile()) {
                     throw new IOException(HEADER_IMPUTE + ERROR_FILE_CREATION + fImpute + FILE_SUFFIX);
@@ -1509,10 +1426,10 @@ public class GuidanceImpl {
         long stopTime = System.currentTimeMillis();
         long elapsedTime = (stopTime - startTime) / 1_000;
         if (DEBUG) {
-            System.out.println("\n[DEBUG] imputeWithImpute startTime: " + startTime);
-            System.out.println("\n[DEBUG] imputeWithImpute endTime: " + stopTime);
-            System.out.println("\n[DEBUG] imputeWithImpute elapsedTime: " + elapsedTime + " seconds");
-            System.out.println("\n[DEBUG] Finished execution of imputeWithImpute with parameters:");
+            LOGGER.debug("\n[DEBUG] imputeWithImpute startTime: " + startTime);
+            LOGGER.debug("\n[DEBUG] imputeWithImpute endTime: " + stopTime);
+            LOGGER.debug("\n[DEBUG] imputeWithImpute elapsedTime: " + elapsedTime + " seconds");
+            LOGGER.debug("\n[DEBUG] Finished execution of imputeWithImpute with parameters:");
         }
 
     }
@@ -1547,32 +1464,25 @@ public class GuidanceImpl {
         String minimacBinary = loadFromEnvironment(MINIMACBINARY, HEADER_IMPUTE);
 
         if (DEBUG) {
-            System.out.println("\n[DEBUG] Running imputation with parameters:");
-            System.out.println("[DEBUG] \t- minimacBinary                : " + minimacBinary);
-            System.out.println("[DEBUG] \t- Input knownHapFile           : " + knownHapFile);
-            System.out.println("[DEBUG] \t- Input filteredHapsFile       : " + filteredHapsFile);
-            System.out.println("[DEBUG] \t- Input filteredSampleFile     : " + filteredSampleFile);
-            System.out.println("[DEBUG] \t- Input filteredListOfSnpsFile : " + filteredListOfSnpsFile);
-            System.out.println("[DEBUG] \t- Output imputedMMFileName     : " + imputedMMFileName);
-            System.out.println("[DEBUG] \t- Output imputedMMInfoFile     : " + imputedMMInfoFile);
-            // System.out.println("[DEBUG] \t- Output imputedMMDraftFile : " + imputedMMDraftFile);
-            System.out.println("[DEBUG] \t- Output imputedMMErateFile    : " + imputedMMErateFile);
-            System.out.println("[DEBUG] \t- Output imputedMMRecFile      : " + imputedMMRecFile);
-            System.out.println("[DEBUG] \t- Output imputedMMDoseFile     : " + imputedMMDoseFile);
-            System.out.println("[DEBUG] \t- Output imputedMMLogFile      : " + imputedMMLogFile);
-            System.out.println("[DEBUG] \t- Input  theChromo             : " + theChromo);
-            System.out.println("[DEBUG] \t- Input lim1S                  : " + lim1S);
-            System.out.println("[DEBUG] \t- Input lim2S                  : " + lim2S);
-            System.out.println("\n");
-            System.out.println("[DEBUG] \t- Command: " + cmdToStore);
-
-            // Map<String, String> env = System.getenv();
-            // System.out.println("--------------------------------------");
-            // System.out.println("Environmental Variables in Master:");
-            // for (String envName : env.keySet()) {
-            // System.out.format("%s=%s%n",envName,env.get(envName));
-            // }
-            // System.out.println("--------------------------------------");
+            LOGGER.debug("\n[DEBUG] Running imputation with parameters:");
+            LOGGER.debug("[DEBUG] \t- minimacBinary                : " + minimacBinary);
+            LOGGER.debug("[DEBUG] \t- Input knownHapFile           : " + knownHapFile);
+            LOGGER.debug("[DEBUG] \t- Input filteredHapsFile       : " + filteredHapsFile);
+            LOGGER.debug("[DEBUG] \t- Input filteredSampleFile     : " + filteredSampleFile);
+            LOGGER.debug("[DEBUG] \t- Input filteredListOfSnpsFile : " + filteredListOfSnpsFile);
+            LOGGER.debug("[DEBUG] \t- Output imputedMMFileName     : " + imputedMMFileName);
+            LOGGER.debug("[DEBUG] \t- Output imputedMMInfoFile     : " + imputedMMInfoFile);
+            // LOGGER.debug("[DEBUG] \t- Output imputedMMDraftFile : " + imputedMMDraftFile);
+            LOGGER.debug("[DEBUG] \t- Output imputedMMErateFile    : " + imputedMMErateFile);
+            LOGGER.debug("[DEBUG] \t- Output imputedMMRecFile      : " + imputedMMRecFile);
+            LOGGER.debug("[DEBUG] \t- Output imputedMMDoseFile     : " + imputedMMDoseFile);
+            LOGGER.debug("[DEBUG] \t- Output imputedMMLogFile      : " + imputedMMLogFile);
+            LOGGER.debug("[DEBUG] \t- Input  theChromo             : " + theChromo);
+            LOGGER.debug("[DEBUG] \t- Input lim1S                  : " + lim1S);
+            LOGGER.debug("[DEBUG] \t- Input lim2S                  : " + lim2S);
+            LOGGER.debug(NEW_LINE);
+            LOGGER.debug("[DEBUG] \t- Command: " + cmdToStore);
+            LOGGER.debug("--------------------------------------");
         }
 
         long startTime = System.currentTimeMillis();
@@ -1580,7 +1490,7 @@ public class GuidanceImpl {
         // We have to make sure whether we are using renamed files of the original gz files.
         // We detect this situation by scanning the last three characters:
         String extension = filteredHapsFile.substring(Math.max(0, filteredHapsFile.length() - 3));
-        System.out.println("DEBUG \t The file extension is: " + extension + " and the file is " + filteredHapsFile);
+        LOGGER.info("DEBUG \t The file extension is: " + extension + " and the file is " + filteredHapsFile);
 
         String filteredHapsFileGz = null;
         if (extension.equals(".gz")) {
@@ -1596,8 +1506,7 @@ public class GuidanceImpl {
                 + theChromo + " --vcfwindow 250000 --rounds 5 --states 200 --prefix " + imputedMMFileName + " --gzip";
 
         if (DEBUG) {
-            System.out.println("\n[DEBUG] Command: " + cmd);
-            System.out.println(" ");
+            LOGGER.debug(HEADER_IMPUTE + MSG_CMD + cmd);
         }
 
         // Execute the command retrieving its exitValue, output and error
@@ -1610,18 +1519,15 @@ public class GuidanceImpl {
 
         // Check process exit value
         if (exitValue != 0) {
-            System.err.println(HEADER_IMPUTE + " Warning executing minimacProc job, exit value is: " + exitValue);
-            System.err.println(HEADER_IMPUTE + "                        (This warning is not fatal).");
-            // throw new Exception("Error executing imputeProc job, exit value is: " + exitValue);
+            LOGGER.error(HEADER_IMPUTE + " Warning executing minimacProc job, exit value is: " + exitValue);
+            LOGGER.error(HEADER_IMPUTE + "                        (This warning is not fatal).");
         }
 
-        // With the -o_gz option in the comand, the outputs are imputeFile.gz
+        // With the -o_gz option in the command, the outputs are imputeFile.gz
         // If there is not output in the impute process. Then we have to create some empty outputs.
         File infoFileGz = new File(imputedMMFileName + ".info.gz");
         File infoFile = new File(imputedMMInfoFile);
         if (!infoFileGz.exists()) {
-            // System.out.println("[impute] The file " + imputeFile + ".gz" + "does not exist, then, we create it.. " +
-            // imputeFile);
             try {
                 if (!infoFile.createNewFile()) {
                     throw new IOException(HEADER_IMPUTE + ERROR_FILE_CREATION + infoFile + FILE_SUFFIX);
@@ -1631,27 +1537,14 @@ public class GuidanceImpl {
             }
             FileUtils.gzipFile(imputedMMInfoFile, imputedMMInfoFile + ".info.gz");
         }
+
         File source = new File(imputedMMFileName + ".info.gz");
         File dest = new File(imputedMMInfoFile);
         FileUtils.copyFile(source, dest);
 
-        // File draftFileGz = new File(imputedMMFileName + ".info.draft.gz");
-        // File draftFile = new File(imputedMMDraftFile);
-        // if(!draftFileGz.exists()) {
-        // //System.out.println("[impute] The file " + imputeFile + ".gz" + "does not exist, then, we create it.. " +
-        // imputeFile);
-        // draftFile.createNewFile();
-        // gzipFile(imputedMMDraftFile, imputedMMDraftFile + ".info.draft.gz");
-        // }
-        // source = new File(imputedMMFileName + ".info.draft.gz");
-        // dest = new File(imputedMMDraftFile);
-        // copyFile(source, dest);
-
         File erateFileGz = new File(imputedMMFileName + ".erate.gz");
         File erateFile = new File(imputedMMErateFile);
         if (!erateFileGz.exists()) {
-            // System.out.println("[impute] The file " + imputeFile + ".gz" + "does not exist, then, we create it.. " +
-            // imputeFile);
             try {
                 if (!erateFile.createNewFile()) {
                     throw new IOException(HEADER_IMPUTE + ERROR_FILE_CREATION + erateFile + FILE_SUFFIX);
@@ -1668,8 +1561,6 @@ public class GuidanceImpl {
         File recFileGz = new File(imputedMMFileName + ".rec.gz");
         File recFile = new File(imputedMMRecFile);
         if (!recFileGz.exists()) {
-            // System.out.println("[impute] The file " + imputeFile + ".gz" + "does not exist, then, we create it.. " +
-            // imputeFile);
             try {
                 if (!recFile.createNewFile()) {
                     throw new IOException(HEADER_IMPUTE + ERROR_FILE_CREATION + recFile + FILE_SUFFIX);
@@ -1686,8 +1577,6 @@ public class GuidanceImpl {
         File doseFileGz = new File(imputedMMFileName + ".dose.gz");
         File doseFile = new File(imputedMMDoseFile);
         if (!doseFileGz.exists()) {
-            // System.out.println("[impute] The file " + imputeFile + ".gz" + "does not exist, then, we create it.. " +
-            // imputeFile);
             try {
                 if (!doseFile.createNewFile()) {
                     throw new IOException(HEADER_IMPUTE + ERROR_FILE_CREATION + doseFile + FILE_SUFFIX);
@@ -1708,10 +1597,10 @@ public class GuidanceImpl {
         long stopTime = System.currentTimeMillis();
         long elapsedTime = (stopTime - startTime) / 1_000;
         if (DEBUG) {
-            System.out.println("\n[DEBUG] imputeWithMinimac startTime: " + startTime);
-            System.out.println("\n[DEBUG] imputeWithMinimac endTime: " + stopTime);
-            System.out.println("\n[DEBUG] imputeWithMinimac elapsedTime: " + elapsedTime + " seconds");
-            System.out.println("\n[DEBUG] Finished execution of imputeWithMinimac with parameters:");
+            LOGGER.debug("\n[DEBUG] imputeWithMinimac startTime: " + startTime);
+            LOGGER.debug("\n[DEBUG] imputeWithMinimac endTime: " + stopTime);
+            LOGGER.debug("\n[DEBUG] imputeWithMinimac elapsedTime: " + elapsedTime + " seconds");
+            LOGGER.debug("\n[DEBUG] Finished execution of imputeWithMinimac with parameters:");
         }
 
     }
@@ -1731,12 +1620,13 @@ public class GuidanceImpl {
             throws GuidanceTaskException {
 
         if (DEBUG) {
-            System.out.println("\n[DEBUG] Running filterByInfo with parameters:");
-            System.out.println("[DEBUG] \t- Input inputeFileInfo   : " + imputeFileInfo);
-            System.out.println("[DEBUG] \t- Output filteredFile    : " + filteredFile);
-            System.out.println("[DEBUG] \t- Input threshold        : " + threshold);
-            System.out.println("\n");
-            System.out.println("[DEBUG] \t- Command: " + cmdToStore);
+            LOGGER.debug("\n[DEBUG] Running filterByInfo with parameters:");
+            LOGGER.debug("[DEBUG] \t- Input inputeFileInfo   : " + imputeFileInfo);
+            LOGGER.debug("[DEBUG] \t- Output filteredFile    : " + filteredFile);
+            LOGGER.debug("[DEBUG] \t- Input threshold        : " + threshold);
+            LOGGER.debug(NEW_LINE);
+            LOGGER.debug("[DEBUG] \t- Command: " + cmdToStore);
+            LOGGER.debug("--------------------------------------");
         }
         long startTime = System.currentTimeMillis();
 
@@ -1748,15 +1638,15 @@ public class GuidanceImpl {
         Double thresholdDouble = Double.parseDouble(threshold); // store info value in Double format
 
         File outFilteredFile = new File(filteredFile);
-        // Trys to create the file
+        // Tries to create the file
         boolean bool = false;
         try {
             bool = outFilteredFile.createNewFile();
         } catch (IOException ioe) {
             throw new GuidanceTaskException(ioe);
         }
-        // Print information about de existence of the file
-        System.out.println("\n[DEBUG] \t- Output file " + filteredFile + " was succesfuly created? " + bool);
+        // Print information about the existence of the file
+        LOGGER.info("\n[DEBUG] \t- Output file " + filteredFile + " was succesfuly created? " + bool);
 
         try (FileReader fr = new FileReader(imputeFileInfo);
                 BufferedReader br = new BufferedReader(fr);
@@ -1786,10 +1676,10 @@ public class GuidanceImpl {
         long stopTime = System.currentTimeMillis();
         long elapsedTime = (stopTime - startTime) / 1_000;
         if (DEBUG) {
-            System.out.println("\n[DEBUG] filterByInfo startTime: " + startTime);
-            System.out.println("\n[DEBUG] filterByInfo endTime: " + stopTime);
-            System.out.println("\n[DEBUG] filterByInfo elapsedTime: " + elapsedTime + " seconds");
-            System.out.println("\n[DEBUG] Finished execution of filterByInfo");
+            LOGGER.debug("\n[DEBUG] filterByInfo startTime: " + startTime);
+            LOGGER.debug("\n[DEBUG] filterByInfo endTime: " + stopTime);
+            LOGGER.debug("\n[DEBUG] filterByInfo elapsedTime: " + elapsedTime + " seconds");
+            LOGGER.debug("\n[DEBUG] Finished execution of filterByInfo");
         }
 
     }
@@ -1815,17 +1705,18 @@ public class GuidanceImpl {
             throws GuidanceTaskException {
 
         if (DEBUG) {
-            System.out.println("\n[DEBUG] Running filterByAll with parameters:");
-            System.out.println("[DEBUG] \t- Input summaryFile             : " + inputFile);
-            System.out.println("[DEBUG] \t- Output outputFile             : " + outputFile);
-            System.out.println("[DEBUG] \t- Output outputCondensedFile    : " + outputCondensedFile);
-            System.out.println("[DEBUG] \t- Input maf threshold           : " + mafThresholdS);
-            System.out.println("[DEBUG] \t- Input info threshold          : " + infoThresholdS);
-            System.out.println("[DEBUG] \t- Input hwe cohort threshold    : " + hweCohortThresholdS);
-            System.out.println("[DEBUG] \t- Input hwe controls threshold  : " + hweCasesThresholdS);
-            System.out.println("[DEBUG] \t- Input hwe cases threshold     : " + hweControlsThresholdS);
-            System.out.println("\n");
-            System.out.println("[DEBUG] \t- Command: " + cmdToStore);
+            LOGGER.debug("\n[DEBUG] Running filterByAll with parameters:");
+            LOGGER.debug("[DEBUG] \t- Input summaryFile             : " + inputFile);
+            LOGGER.debug("[DEBUG] \t- Output outputFile             : " + outputFile);
+            LOGGER.debug("[DEBUG] \t- Output outputCondensedFile    : " + outputCondensedFile);
+            LOGGER.debug("[DEBUG] \t- Input maf threshold           : " + mafThresholdS);
+            LOGGER.debug("[DEBUG] \t- Input info threshold          : " + infoThresholdS);
+            LOGGER.debug("[DEBUG] \t- Input hwe cohort threshold    : " + hweCohortThresholdS);
+            LOGGER.debug("[DEBUG] \t- Input hwe controls threshold  : " + hweCasesThresholdS);
+            LOGGER.debug("[DEBUG] \t- Input hwe cases threshold     : " + hweControlsThresholdS);
+            LOGGER.debug(NEW_LINE);
+            LOGGER.debug("[DEBUG] \t- Command: " + cmdToStore);
+            LOGGER.debug("--------------------------------------");
         }
         long startTime = System.currentTimeMillis();
 
@@ -1855,15 +1746,15 @@ public class GuidanceImpl {
             writerFiltered.write(line);
             writerFiltered.newLine();
 
-            inputFileHashTableIndex = Headers.createHashWithHeader(line, "\t");
-            // inputFileHashTableIndexReversed = createHashWithHeaderReversed(line, "\t");
+            inputFileHashTableIndex = Headers.createHashWithHeader(line, TAB);
+            // inputFileHashTableIndexReversed = createHashWithHeaderReversed(line, TAB);
 
             String headerCondensed = "chr\tposition\talleleA\talleleB\tpvalue\tinfo_all";
             writerCondensed.write(headerCondensed);
             writerCondensed.newLine();
 
             while ((line = br.readLine()) != null) {
-                String[] splittedLine = line.split("\t");// delimiter I assume single space.
+                String[] splittedLine = line.split(TAB);// delimiter I assume single space.
 
                 String chromo = splittedLine[inputFileHashTableIndex.get("chr")];
                 String infoS = splittedLine[inputFileHashTableIndex.get("info_all")];
@@ -1878,7 +1769,7 @@ public class GuidanceImpl {
                 String hwe_casesS = "1.0";
                 String hwe_controlsS = "1.0";
 
-                if (!chromo.equals("23")) {
+                if (!chromo.equals(CHR_23)) {
                     hwe_cohortS = splittedLine[inputFileHashTableIndex.get("cohort_1_hwe")];
                     hwe_casesS = splittedLine[inputFileHashTableIndex.get("cases_hwe")];
                     hwe_controlsS = splittedLine[inputFileHashTableIndex.get("controls_hwe")];
@@ -1892,7 +1783,7 @@ public class GuidanceImpl {
                 // String se = splittedLine[inputFileHashTableIndex.get("frequentist_add_se_1")];
                 String pva = splittedLine[inputFileHashTableIndex.get("frequentist_add_pvalue")];
 
-                String chrbpb = chromo + "\t" + position + "\t" + alleleA + "\t" + alleleB + "\t" + pva + "\t" + infoS;
+                String chrbpb = chromo + TAB + position + TAB + alleleA + TAB + alleleB + TAB + pva + TAB + infoS;
 
                 if (!cases_mafS.equals("NA") && !controls_mafS.equals("NA") && !infoS.equals("NA") && !hwe_cohortS.equals("NA")
                         && !hwe_casesS.equals("NA") && !hwe_controlsS.equals("NA") && !pva.equals("NA")) {
@@ -1903,16 +1794,15 @@ public class GuidanceImpl {
                     Double hweCases = 1.0;
                     Double hweControls = 1.0;
 
-                    if (!chromo.equals("23")) {
+                    if (!chromo.equals(CHR_23)) {
                         hweCohort = Double.parseDouble(hwe_cohortS);
                         hweCases = Double.parseDouble(hwe_casesS);
                         hweControls = Double.parseDouble(hwe_controlsS);
                     }
 
-                    if (cases_maf >= mafThreshold && controls_maf >= mafThreshold && info >= infoThreshold && // VERIFICAR
-                                                                                                              // LA
-                                                                                                              // CONDICION
-                            hweCohort >= hweCohortThreshold && hweCases >= hweCasesThreshold && hweControls >= hweControlsThreshold) {
+                    // TODO: This condition must be verified
+                    if (cases_maf >= mafThreshold && controls_maf >= mafThreshold && info >= infoThreshold
+                            && hweCohort >= hweCohortThreshold && hweCases >= hweCasesThreshold && hweControls >= hweControlsThreshold) {
 
                         writerFiltered.write(line);
                         writerFiltered.newLine();
@@ -1944,10 +1834,10 @@ public class GuidanceImpl {
         long stopTime = System.currentTimeMillis();
         long elapsedTime = (stopTime - startTime) / 1_000;
         if (DEBUG) {
-            System.out.println("\n[DEBUG] filterByAll startTime: " + startTime);
-            System.out.println("\n[DEBUG] filterByAll endTime: " + stopTime);
-            System.out.println("\n[DEBUG] filterByAll elapsedTime: " + elapsedTime + " seconds");
-            System.out.println("\n[DEBUG] Finished execution of filterByAll");
+            LOGGER.debug("\n[DEBUG] filterByAll startTime: " + startTime);
+            LOGGER.debug("\n[DEBUG] filterByAll endTime: " + stopTime);
+            LOGGER.debug("\n[DEBUG] filterByAll elapsedTime: " + elapsedTime + " seconds");
+            LOGGER.debug("\n[DEBUG] Finished execution of filterByAll");
         }
 
     }
@@ -1969,14 +1859,15 @@ public class GuidanceImpl {
             String rpanelFlag, String cmdToStore) throws GuidanceTaskException {
 
         if (DEBUG) {
-            System.out.println("\n[DEBUG] Running jointFilteredByAllFiles with parameters:");
-            System.out.println("[DEBUG] \t- Input filteredByAllA          : " + filteredByAllA);
-            System.out.println("[DEBUG] \t- Input filteredByAllB          : " + filteredByAllB);
-            System.out.println("[DEBUG] \t- Output filteredByAllC         : " + filteredByAllC);
-            System.out.println("\n");
-            System.out.println("[DEBUG] \t- Command: " + cmdToStore);
-
+            LOGGER.debug("\n[DEBUG] Running jointFilteredByAllFiles with parameters:");
+            LOGGER.debug("[DEBUG] \t- Input filteredByAllA          : " + filteredByAllA);
+            LOGGER.debug("[DEBUG] \t- Input filteredByAllB          : " + filteredByAllB);
+            LOGGER.debug("[DEBUG] \t- Output filteredByAllC         : " + filteredByAllC);
+            LOGGER.debug(NEW_LINE);
+            LOGGER.debug("[DEBUG] \t- Command: " + cmdToStore);
+            LOGGER.debug("--------------------------------------");
         }
+
         long startTime = System.currentTimeMillis();
 
         // First we generate the plain file, then we will compress it
@@ -1991,24 +1882,20 @@ public class GuidanceImpl {
                 // I read the header
                 String line = br.readLine();
                 // I put the refpanel column in the header:
-                // if( rpanelFlag.equals("YES") ) {
-                String[] splittedHeader = line.split("\t");
+                String[] splittedHeader = line.split(TAB);
                 if (!splittedHeader[splittedHeader.length - 1].equals("refpanel")) {
                     line = line + "\trefpanel";
                     putRefpanel = true;
                 }
-                // }
 
                 // Put the header in the output file.
                 writerFiltered.write(line);
                 writerFiltered.newLine();
 
                 while ((line = br.readLine()) != null) {
-                    // if( rpanelFlag.equals("YES") ) {
-                    if (putRefpanel == true) {
-                        line = line + "\t" + rpanelName;
+                    if (putRefpanel) {
+                        line = line + TAB + rpanelName;
                     }
-                    // }
                     writerFiltered.write(line);
                     writerFiltered.newLine();
                 }
@@ -2026,18 +1913,16 @@ public class GuidanceImpl {
                     boolean putRefpanel = false;
                     // I read the header and skip it.
                     String line = br.readLine();
-                    // if( rpanelFlag.equals("YES") ) {
-                    String[] splittedHeader = line.split("\t");
+                    String[] splittedHeader = line.split(TAB);
                     if (!splittedHeader[splittedHeader.length - 1].equals("refpanel")) {
                         putRefpanel = true;
                     }
 
                     while ((line = br.readLine()) != null) {
-                        // if( rpanelFlag.equals("YES") ) {
-                        if (putRefpanel == true) {
-                            line = line + "\t" + rpanelName;
+                        if (putRefpanel) {
+                            line = line + TAB + rpanelName;
                         }
-                        // }
+
                         writerFiltered.write(line);
                         writerFiltered.newLine();
                     }
@@ -2062,10 +1947,10 @@ public class GuidanceImpl {
         long stopTime = System.currentTimeMillis();
         long elapsedTime = (stopTime - startTime) / 1_000;
         if (DEBUG) {
-            System.out.println("\n[DEBUG] jointFilteredByAllFiles startTime: " + startTime);
-            System.out.println("\n[DEBUG] jointFilteredByAllFiles endTime: " + stopTime);
-            System.out.println("\n[DEBUG] jointFilteredByAllFiles elapsedTime: " + elapsedTime + " seconds");
-            System.out.println("\n[DEBUG] Finished execution of jointFilteredByAllFiles");
+            LOGGER.debug("\n[DEBUG] jointFilteredByAllFiles startTime: " + startTime);
+            LOGGER.debug("\n[DEBUG] jointFilteredByAllFiles endTime: " + stopTime);
+            LOGGER.debug("\n[DEBUG] jointFilteredByAllFiles elapsedTime: " + elapsedTime + " seconds");
+            LOGGER.debug("\n[DEBUG] Finished execution of jointFilteredByAllFiles");
         }
 
     }
@@ -2085,12 +1970,13 @@ public class GuidanceImpl {
             throws GuidanceTaskException {
 
         if (DEBUG) {
-            System.out.println("\n[DEBUG] Running jointCondensedFiles with parameters:");
-            System.out.println("[DEBUG] \t- InputAFile                    : " + inputAFile);
-            System.out.println("[DEBUG] \t- InputBFile                    : " + inputBFile);
-            System.out.println("[DEBUG] \t- Output outputCondensedFile    : " + outputFile);
-            System.out.println("\n");
-            System.out.println("[DEBUG] \t- Command: " + cmdToStore);
+            LOGGER.debug("\n[DEBUG] Running jointCondensedFiles with parameters:");
+            LOGGER.debug("[DEBUG] \t- InputAFile                    : " + inputAFile);
+            LOGGER.debug("[DEBUG] \t- InputBFile                    : " + inputBFile);
+            LOGGER.debug("[DEBUG] \t- Output outputCondensedFile    : " + outputFile);
+            LOGGER.debug(NEW_LINE);
+            LOGGER.debug("[DEBUG] \t- Command: " + cmdToStore);
+            LOGGER.debug("--------------------------------------");
         }
 
         long startTime = System.currentTimeMillis();
@@ -2150,12 +2036,12 @@ public class GuidanceImpl {
         FileUtils.gzipFile(plainOutCondensed, outputFile);
 
         long stopTime = System.currentTimeMillis();
-        long elapsedTime = (stopTime - startTime) / 1000;
+        long elapsedTime = (stopTime - startTime) / 1_000;
         if (DEBUG) {
-            System.out.println("\n[DEBUG] jointCondensedFiles startTime: " + startTime);
-            System.out.println("\n[DEBUG] jointCondensedFiles endTime: " + stopTime);
-            System.out.println("\n[DEBUG] jointCondensedFiles elapsedTime: " + elapsedTime + " seconds");
-            System.out.println("\n[DEBUG] Finished execution of jointCondensedFiles");
+            LOGGER.debug("\n[DEBUG] jointCondensedFiles startTime: " + startTime);
+            LOGGER.debug("\n[DEBUG] jointCondensedFiles endTime: " + stopTime);
+            LOGGER.debug("\n[DEBUG] jointCondensedFiles elapsedTime: " + elapsedTime + " seconds");
+            LOGGER.debug("\n[DEBUG] Finished execution of jointCondensedFiles");
         }
     }
 
@@ -2174,12 +2060,13 @@ public class GuidanceImpl {
             throws GuidanceTaskException {
 
         if (DEBUG) {
-            System.out.println("\n[DEBUG] Running combinePanels with parameters:");
-            System.out.println("[DEBUG] \t- resultsPanelA             : " + resultsPanelA);
-            System.out.println("[DEBUG] \t- resultsPanelB             : " + resultsPanelB);
-            System.out.println("[DEBUG] \t- resultsPanelC             : " + resultsPanelC);
-            System.out.println("\n");
-            System.out.println("[DEBUG] \t- Command: " + cmdToStore);
+            LOGGER.debug("\n[DEBUG] Running combinePanels with parameters:");
+            LOGGER.debug("[DEBUG] \t- resultsPanelA             : " + resultsPanelA);
+            LOGGER.debug("[DEBUG] \t- resultsPanelB             : " + resultsPanelB);
+            LOGGER.debug("[DEBUG] \t- resultsPanelC             : " + resultsPanelC);
+            LOGGER.debug(NEW_LINE);
+            LOGGER.debug("[DEBUG] \t- Command: " + cmdToStore);
+            LOGGER.debug("--------------------------------------");
         }
         long startTime = System.currentTimeMillis();
 
@@ -2194,7 +2081,7 @@ public class GuidanceImpl {
             header = brA.readLine();
 
             while ((line = brA.readLine()) != null) {
-                String[] splitted = line.split("\t");
+                String[] splitted = line.split(TAB);
                 int position = Integer.parseInt(splitted[0]);
 
                 // Now, we put this String into the treemap with the key positionAndRsId
@@ -2211,7 +2098,7 @@ public class GuidanceImpl {
             String line = brB.readLine();
 
             while ((line = brB.readLine()) != null) {
-                String[] splitted = line.split("\t");
+                String[] splitted = line.split(TAB);
                 int position = Integer.parseInt(splitted[0]);
 
                 // Now, we put this String into the treemap with the key positionAndRsId
@@ -2228,21 +2115,18 @@ public class GuidanceImpl {
         // Move next key and value of Map by iterator
         Iterator<Entry<Integer, String>> iter = mySet.iterator();
         while (iter.hasNext()) {
-            // key=value separator this by Map.Entry to get key and value
             Entry<Integer, String> m = iter.next();
-            // getKey is used to get key of Map
-            // position=(Integer)m.getKey();
-            int position = (Integer) m.getKey();
-            String lineA = (String) m.getValue();
+            int position = m.getKey();
+            String lineA = m.getValue();
 
             if (fileTreeMapB.containsKey(position)) {
                 // If the fileTreeMapB contains this key, then we have to choose
                 // the ones that have a better info (greater info).
-                String[] lineASplitted = lineA.split("\t");
+                String[] lineASplitted = lineA.split(TAB);
                 Double infoA = Double.parseDouble(lineASplitted[2]);
 
                 String lineB = fileTreeMapB.get(position);
-                String[] lineBSplitted = lineB.split("\t");
+                String[] lineBSplitted = lineB.split(TAB);
                 Double infoB = Double.parseDouble(lineBSplitted[2]);
 
                 // Then we have to choose between A o B.
@@ -2266,11 +2150,9 @@ public class GuidanceImpl {
         // Move next key and value of Map by iterator
         iter = mySet.iterator();
         while (iter.hasNext()) {
-            // key=value separator this by Map.Entry to get key and value
             Entry<Integer, String> m = iter.next();
-            // getKey is used to get key of Map
-            int position = (Integer) m.getKey();
-            String lineB = (String) m.getValue();
+            int position = m.getKey();
+            String lineB = m.getValue();
             // Then we have to choose the value in fileTreeMapC
             fileTreeMapC.put(position, lineB);
         }
@@ -2296,10 +2178,8 @@ public class GuidanceImpl {
             // Move next key and value of Map by iterator
             iter = mySet.iterator();
             while (iter.hasNext()) {
-                // key=value separator this by Map.Entry to get key and value
                 Entry<Integer, String> m = iter.next();
-                // getKey is used to get key of Map
-                String myLine = (String) m.getValue();
+                String myLine = m.getValue();
 
                 writer.write(myLine);
                 writer.newLine();
@@ -2311,12 +2191,12 @@ public class GuidanceImpl {
         }
 
         long stopTime = System.currentTimeMillis();
-        long elapsedTime = (stopTime - startTime) / 1000;
+        long elapsedTime = (stopTime - startTime) / 1_000;
         if (DEBUG) {
-            System.out.println("\n[DEBUG] combinePanels startTime: " + startTime);
-            System.out.println("\n[DEBUG] combinePanels endTime: " + stopTime);
-            System.out.println("\n[DEBUG] combinePanels elapsedTime: " + elapsedTime + " seconds");
-            System.out.println("\n[DEBUG] Finished execution of combinePanels");
+            LOGGER.debug("\n[DEBUG] combinePanels startTime: " + startTime);
+            LOGGER.debug("\n[DEBUG] combinePanels endTime: " + stopTime);
+            LOGGER.debug("\n[DEBUG] combinePanels elapsedTime: " + elapsedTime + " seconds");
+            LOGGER.debug("\n[DEBUG] Finished execution of combinePanels");
         }
     }
 
@@ -2337,14 +2217,15 @@ public class GuidanceImpl {
             String cmdToStore) throws GuidanceTaskException {
 
         if (DEBUG) {
-            System.out.println("\n[DEBUG] Running combinePanelsComplex with parameters:");
-            System.out.println("[DEBUG] \t- resultsPanelA             : " + resultsPanelA);
-            System.out.println("[DEBUG] \t- resultsPanelB             : " + resultsPanelB);
-            System.out.println("[DEBUG] \t- resultsPanelC             : " + resultsPanelC);
-            System.out.println("[DEBUG] \t- lim1               : " + lim1);
-            System.out.println("[DEBUG] \t- lim2                 : " + lim2);
-            System.out.println("\n");
-            System.out.println("[DEBUG] \t- Command: " + cmdToStore);
+            LOGGER.debug("\n[DEBUG] Running combinePanelsComplex with parameters:");
+            LOGGER.debug("[DEBUG] \t- resultsPanelA             : " + resultsPanelA);
+            LOGGER.debug("[DEBUG] \t- resultsPanelB             : " + resultsPanelB);
+            LOGGER.debug("[DEBUG] \t- resultsPanelC             : " + resultsPanelC);
+            LOGGER.debug("[DEBUG] \t- lim1               : " + lim1);
+            LOGGER.debug("[DEBUG] \t- lim2                 : " + lim2);
+            LOGGER.debug(NEW_LINE);
+            LOGGER.debug("[DEBUG] \t- Command: " + cmdToStore);
+            LOGGER.debug("--------------------------------------");
         }
         long startTime = System.currentTimeMillis();
 
@@ -2382,7 +2263,7 @@ public class GuidanceImpl {
             header = sc1.nextLine();
 
             if (!header.equals("chr\tposition\trs_id_all\tinfo_all\tcertainty_all\t")) {
-                resultsHashTableIndex = Headers.createHashWithHeader(header, "\t");
+                resultsHashTableIndex = Headers.createHashWithHeader(header, TAB);
                 chrIdx = resultsHashTableIndex.get("chr");
                 posIdx = resultsHashTableIndex.get("position");
                 a1Idx = resultsHashTableIndex.get("alleleA");
@@ -2391,7 +2272,7 @@ public class GuidanceImpl {
 
                 while (sc1.hasNextLine()) {
                     String line = sc1.nextLine();
-                    String[] splitted = line.split("\t");
+                    String[] splitted = line.split(TAB);
 
                     // if(splitted[chrIdx].equals(chromoS)) {
                     positionA1A2Chr = splitted[posIdx] + "_" + splitted[a1Idx] + "_" + splitted[a2Idx] + "_" + splitted[chrIdx];
@@ -2409,7 +2290,7 @@ public class GuidanceImpl {
             throw new GuidanceTaskException(ioe);
         }
 
-        // System.out.println("i\n[DEBUG] We have read the chromo " + chromoS + " from first File. contador = " +
+        // LOGGER.debug("i\n[DEBUG] We have read the chromo " + chromoS + " from first File. contador = " +
         // contador);
 
         // Create the second treeMap for the chromo
@@ -2428,7 +2309,7 @@ public class GuidanceImpl {
 
                 while (sc.hasNextLine()) {
                     String line = sc.nextLine();
-                    String[] splitted = line.split("\t");
+                    String[] splitted = line.split(TAB);
 
                     // if(splitted[chrIdx].equals(chromoS)) {
                     positionA1A2Chr = splitted[posIdx] + "_" + splitted[a1Idx] + "_" + splitted[a2Idx] + "_" + splitted[chrIdx];
@@ -2445,7 +2326,7 @@ public class GuidanceImpl {
         } catch (IOException ioe) {
             throw new GuidanceTaskException(ioe);
         }
-        // System.out.println("\n[DEBUG] We have read the chromo " + chromoS + " from second File. contador = " +
+        // LOGGER.debug("\n[DEBUG] We have read the chromo " + chromoS + " from second File. contador = " +
         // contador);
 
         // A place to store the results of this combining
@@ -2473,9 +2354,9 @@ public class GuidanceImpl {
         while (iter.hasNext()) {
             // key=value separator this by Map.Entry to get key and value
             Entry<String, String> m = iter.next();
-            positionA1A2Chr = (String) m.getKey();
-            lineA = (String) m.getValue();
-            splittedA = lineA.split("\t");
+            positionA1A2Chr = m.getKey();
+            lineA = m.getValue();
+            splittedA = lineA.split(TAB);
             infoA = Double.parseDouble(splittedA[infoIdx]);
 
             // posAllelesEqual = positionA1A2Chr;
@@ -2486,7 +2367,7 @@ public class GuidanceImpl {
             posAllelesComplementAndReverse = splittedA[posIdx] + "_" + getAllele(splittedA[a1Idx], splittedA[a2Idx], "complementAndReverse")
                     + "_" + splittedA[chrIdx];
 
-            // System.out.println("[combinePanelsComplex] " + positionA1A2Chr + " " + posAllelesEqual + " " +
+            // LOGGER.debug("[combinePanelsComplex] " + positionA1A2Chr + " " + posAllelesEqual + " " +
             // posAllelesReverse + " " + posAllelesComplement + " " + posAllelesComplementAndReverse);
 
             // The same: position, a1 and a2?
@@ -2494,7 +2375,7 @@ public class GuidanceImpl {
                 // If the fileTreeMapB contains this positionA1A2Chr combination, then we have to choose
                 // the ones that has a better info (that is the ones with greater info).
                 lineB = fileTreeMapB.get(positionA1A2Chr);
-                splittedB = lineB.split("\t");
+                splittedB = lineB.split(TAB);
                 infoB = Double.parseDouble(splittedB[infoIdx]);
                 // Then we have to choose between A o B.
                 if (infoA >= infoB) {
@@ -2502,7 +2383,7 @@ public class GuidanceImpl {
                 } else {
                     fileTreeMapC.put(positionA1A2Chr, lineB);
                 }
-                // System.out.println("WOW alelos iguales: " + positionA1A2Chr);
+                // LOGGER.debug("WOW alelos iguales: " + positionA1A2Chr);
 
                 // Now we remove this value from the fileTreeMapB
                 fileTreeMapB.remove(positionA1A2Chr);
@@ -2510,7 +2391,7 @@ public class GuidanceImpl {
                 // If the fileTreeMapB contains this posAllelesReverse, then we have to choose
                 // the ones that has a better info (that is the ones with greater info).
                 lineB = fileTreeMapB.get(posAllelesReverse);
-                splittedB = lineB.split("\t");
+                splittedB = lineB.split(TAB);
                 infoB = Double.parseDouble(splittedB[infoIdx]);
                 // Then we have to choose between A and B.
                 if (infoA >= infoB) {
@@ -2520,12 +2401,12 @@ public class GuidanceImpl {
                 }
                 // Now we remove this value from the fileTreeMapB
                 fileTreeMapB.remove(posAllelesReverse);
-                // System.out.println("WOW alelos reversos: " + positionA1A2Chr + " " + posAllelesReverse);
+                // LOGGER.debug("WOW alelos reversos: " + positionA1A2Chr + " " + posAllelesReverse);
             } else if (fileTreeMapB.containsKey(posAllelesComplement)) {
                 // If the fileTreeMapB contains this posAllelesComplement, then we have to choose
                 // the ones that has a better info (that is the ones with greater info).
                 lineB = fileTreeMapB.get(posAllelesComplement);
-                splittedB = lineB.split("\t");
+                splittedB = lineB.split(TAB);
                 infoB = Double.parseDouble(splittedB[infoIdx]);
                 // Then we have to choose between A o B.
                 if (infoA >= infoB) {
@@ -2535,13 +2416,13 @@ public class GuidanceImpl {
                 }
                 // Now we remove this value from the fileTreeMapB
                 fileTreeMapB.remove(posAllelesComplement);
-                // System.out.println("WOW alelos complementarios: " + positionA1A2Chr + " " +
+                // LOGGER.debug("WOW alelos complementarios: " + positionA1A2Chr + " " +
                 // posAllelesComplement);
             } else if (fileTreeMapB.containsKey(posAllelesComplementAndReverse)) {
                 // If the fileTreeMapB contains this posAllelesComplement, then we have to choose
                 // the ones that has a better info (that is the ones with greater info).
                 lineB = fileTreeMapB.get(posAllelesComplementAndReverse);
-                splittedB = lineB.split("\t");
+                splittedB = lineB.split(TAB);
                 infoB = Double.parseDouble(splittedB[infoIdx]);
                 // Then we have to choose between A o B.
                 if (infoA >= infoB) {
@@ -2551,13 +2432,13 @@ public class GuidanceImpl {
                 }
                 // Now we remove this value from the fileTreeMapB
                 fileTreeMapB.remove(posAllelesComplementAndReverse);
-                // System.out.println("WOW alelos complementariosYreversos: " + positionA1A2Chr + " " +
+                // LOGGER.debug("WOW alelos complementariosYreversos: " + positionA1A2Chr + " " +
                 // posAllelesComplementAndReverse);
             } else {
                 // Else means that fileTreeMapB does not contain this SNP or any of its variants.
                 // Therefore, we keep the one in fileTreeMapA
                 fileTreeMapC.put(positionA1A2Chr, lineA);
-                // System.out.println("WOW fileTreeMapB does not contain this SNP: " + positionA1A2Chr);
+                // LOGGER.debug("WOW fileTreeMapB does not contain this SNP: " + positionA1A2Chr);
             }
             // contador++;
         }
@@ -2570,18 +2451,16 @@ public class GuidanceImpl {
         // Move next key and value of Map by iterator
         iter = mySet.iterator();
         while (iter.hasNext()) {
-            // key=value separator this by Map.Entry to get key and value
             Entry<String, String> m = iter.next();
-            // getKey is used to get key of Map
-            positionA1A2Chr = (String) m.getKey();
-            lineB = (String) m.getValue();
+            positionA1A2Chr = m.getKey();
+            lineB = m.getValue();
             // Then we have to store the value in fileTreeMapC
             fileTreeMapC.put(positionA1A2Chr, lineB);
             // contador++;
         }
 
         fileTreeMapB.clear();
-        // System.out.println("\n[DEBUG] We have processed the chromosome " + chromoS + ". contador " + contador);
+        // LOGGER.debug("\n[DEBUG] We have processed the chromosome " + chromoS + ". contador " + contador);
 
         // Finally we put the fileTreeMapC into the plain output file and then compress it
         String plainResultsPanelC = resultsPanelC.substring(0, resultsPanelC.length() - 3);
@@ -2613,29 +2492,29 @@ public class GuidanceImpl {
         }
 
         fileTreeMapC.clear();
-        // System.out.println("\n[DEBUG] We have stored snps from chromosome " + chromoS + " in the output file");
+        // LOGGER.debug("\n[DEBUG] We have stored snps from chromosome " + chromoS + " in the output file");
 
         // Then, we create the gz file and rename it
         FileUtils.gzipFile(plainResultsPanelC, resultsPanelC);
 
         File fA = new File(resultsPanelA + ".temp");
         if (!fA.delete()) {
-            System.err.println("ERROR: Cannot erase temp file " + resultsPanelA);
+            LOGGER.error("ERROR: Cannot erase temp file " + resultsPanelA);
         }
         File fB = new File(resultsPanelB + ".temp");
         if (!fB.delete()) {
-            System.err.println("ERROR: Cannot erase temp file " + resultsPanelB);
+            LOGGER.error("ERROR: Cannot erase temp file " + resultsPanelB);
         }
 
-        System.out.println("\n[DEBUG] Finished all chromosomes");
+        LOGGER.info("\n[DEBUG] Finished all chromosomes");
 
         long stopTime = System.currentTimeMillis();
         long elapsedTime = (stopTime - startTime) / 1_000;
         if (DEBUG) {
-            System.out.println("\n[DEBUG] combinePanelsComplex startTime: " + startTime);
-            System.out.println("\n[DEBUG] combinePanelsComplex endTime: " + stopTime);
-            System.out.println("\n[DEBUG] combinePanelsComplex elapsedTime: " + elapsedTime + " seconds");
-            System.out.println("\n[DEBUG] Finished execution of combinePanelsComplex");
+            LOGGER.debug("\n[DEBUG] combinePanelsComplex startTime: " + startTime);
+            LOGGER.debug("\n[DEBUG] combinePanelsComplex endTime: " + stopTime);
+            LOGGER.debug("\n[DEBUG] combinePanelsComplex elapsedTime: " + elapsedTime + " seconds");
+            LOGGER.debug("\n[DEBUG] Finished execution of combinePanelsComplex");
         }
 
     }
@@ -2661,19 +2540,18 @@ public class GuidanceImpl {
             throws GuidanceTaskException {
 
         if (DEBUG) {
-            System.out.println("\n[DEBUG] Running combineCondensedFiles with parameters:");
-            System.out.println("[DEBUG] \t- Input filteredA             : " + filteredA);
-            System.out.println("[DEBUG] \t- Input filteredX             : " + filteredX);
-            System.out.println("[DEBUG] \t- Output combinedCondensedFile : " + combinedCondensedFile);
-            System.out.println("[DEBUG] \t- Input maf threshold           : " + mafThresholdS);
-            System.out.println("[DEBUG] \t- Input info threshold          : " + infoThresholdS);
-            System.out.println("[DEBUG] \t- Input hwe cohort threshold    : " + hweCohortThresholdS);
-            System.out.println("[DEBUG] \t- Input hwe controls threshold  : " + hweCasesThresholdS);
-            System.out.println("[DEBUG] \t- Input hwe cases threshold     : " + hweControlsThresholdS);
-            System.out.println("\n");
-
-            System.out.println("\n");
-            System.out.println("[DEBUG] \t- Command: " + cmdToStore);
+            LOGGER.debug("\n[DEBUG] Running combineCondensedFiles with parameters:");
+            LOGGER.debug("[DEBUG] \t- Input filteredA             : " + filteredA);
+            LOGGER.debug("[DEBUG] \t- Input filteredX             : " + filteredX);
+            LOGGER.debug("[DEBUG] \t- Output combinedCondensedFile : " + combinedCondensedFile);
+            LOGGER.debug("[DEBUG] \t- Input maf threshold           : " + mafThresholdS);
+            LOGGER.debug("[DEBUG] \t- Input info threshold          : " + infoThresholdS);
+            LOGGER.debug("[DEBUG] \t- Input hwe cohort threshold    : " + hweCohortThresholdS);
+            LOGGER.debug("[DEBUG] \t- Input hwe controls threshold  : " + hweCasesThresholdS);
+            LOGGER.debug("[DEBUG] \t- Input hwe cases threshold     : " + hweControlsThresholdS);
+            LOGGER.debug(NEW_LINE);
+            LOGGER.debug("[DEBUG] \t- Command: " + cmdToStore);
+            LOGGER.debug("--------------------------------------");
         }
         long startTime = System.currentTimeMillis();
 
@@ -2687,11 +2565,6 @@ public class GuidanceImpl {
         // Plain output
         String plainCombinedCondensedFile = combinedCondensedFile.substring(0, combinedCondensedFile.length() - 3);
 
-        // Tries to create the file
-        // Print information about the existence of the file
-        // System.out.println("\n[DEBUG] \t- Output file " + combinedCondensedFile + " was succesfuly created? " +
-        // bool);
-
         HashMap<String, Integer> inputFileHashTableIndex = new HashMap<>();
         // HashMap<Integer, String> inputFileHashTableIndexReversed = new HashMap<>();
 
@@ -2699,33 +2572,32 @@ public class GuidanceImpl {
             try (GZIPInputStream inputGz = new GZIPInputStream(new FileInputStream(filteredA));
                     Reader decoder = new InputStreamReader(inputGz);
                     BufferedReader br = new BufferedReader(decoder)) {
+
                 // I read the header
                 String line = br.readLine();
 
-                inputFileHashTableIndex = Headers.createHashWithHeader(line, "\t");
-                // inputFileHashTableIndexReversed = createHashWithHeaderReversed(line, "\t");
+                inputFileHashTableIndex = Headers.createHashWithHeader(line, TAB);
+                // inputFileHashTableIndexReversed = createHashWithHeaderReversed(line, TAB);
 
                 String headerCondensed = "CHR\tBP\tP";
                 writerCondensed.write(headerCondensed);
                 writerCondensed.newLine();
 
                 while ((line = br.readLine()) != null) {
-                    String[] splittedLine = line.split("\t");// delimiter I assume single space.
+                    String[] splittedLine = line.split(TAB);// delimiter I assume single space.
 
                     String chromo = splittedLine[inputFileHashTableIndex.get("chr")];
 
                     String infoS = splittedLine[inputFileHashTableIndex.get("info_all")];
 
                     // We start with these values for hwe values just to allows the X chromosome to pass the if
-                    // statement of
-                    // the
-                    // next lines
+                    // statement of the next lines
                     // Just remember that hwe filtering when chromo X is being processed does not make sense.
                     String hwe_cohortS = "1.0";
                     String hwe_casesS = "1.0";
                     String hwe_controlsS = "1.0";
 
-                    if (!chromo.equals("23")) {
+                    if (!chromo.equals(CHR_23)) {
                         hwe_cohortS = splittedLine[inputFileHashTableIndex.get("cohort_1_hwe")];
                         hwe_casesS = splittedLine[inputFileHashTableIndex.get("cases_hwe")];
                         hwe_controlsS = splittedLine[inputFileHashTableIndex.get("controls_hwe")];
@@ -2737,7 +2609,7 @@ public class GuidanceImpl {
                     String position = splittedLine[inputFileHashTableIndex.get("position")];
                     String pva = splittedLine[inputFileHashTableIndex.get("frequentist_add_pvalue")];
 
-                    String chrbpb = chromo + "\t" + position + "\t" + pva;
+                    String chrbpb = chromo + TAB + position + TAB + pva;
 
                     if (!cases_mafS.equals("NA") && !controls_mafS.equals("NA") && !infoS.equals("NA") && !hwe_cohortS.equals("NA")
                             && !hwe_casesS.equals("NA") && !hwe_controlsS.equals("NA") && !pva.equals("NA")) {
@@ -2748,7 +2620,7 @@ public class GuidanceImpl {
                         Double hweCases = 1.0;
                         Double hweControls = 1.0;
 
-                        if (!chromo.equals("23")) {
+                        if (!chromo.equals(CHR_23)) {
                             hweCohort = Double.parseDouble(hwe_cohortS);
                             hweCases = Double.parseDouble(hwe_casesS);
                             hweControls = Double.parseDouble(hwe_controlsS);
@@ -2770,8 +2642,7 @@ public class GuidanceImpl {
 
             // Now with crh 23
             // If filteredA != filteredX then there is chr23 file (filteredX, therefore we have to include it in the
-            // results.
-            // Other wise, there is nothing to do.
+            // results. Otherwise, there is nothing to do.
             if (!filteredA.equals(filteredX)) {
                 try (GZIPInputStream inputGz = new GZIPInputStream(new FileInputStream(filteredX));
                         Reader decoder = new InputStreamReader(inputGz);
@@ -2783,25 +2654,24 @@ public class GuidanceImpl {
                     // I read the header
                     String line = br.readLine();
 
-                    inputFileHashTableIndex = Headers.createHashWithHeader(line, "\t");
-                    // inputFileHashTableIndexReversed = createHashWithHeaderReversed(line, "\t");
+                    inputFileHashTableIndex = Headers.createHashWithHeader(line, TAB);
+                    // inputFileHashTableIndexReversed = createHashWithHeaderReversed(line, TAB);
 
                     while ((line = br.readLine()) != null) {
-                        String[] splittedLine = line.split("\t");// delimiter I assume single space.
+                        String[] splittedLine = line.split(TAB);// delimiter I assume single space.
 
                         String chromo = splittedLine[inputFileHashTableIndex.get("chr")];
 
                         String infoS = splittedLine[inputFileHashTableIndex.get("info_all")];
 
                         // We start with these values for hwe values just to allows the X chromosome to pass the if
-                        // statement of
-                        // the next lines
+                        // statement of the next lines
                         // Just remember that hwe filtering when chromo X is being processed does not make sense.
                         String hwe_cohortS = "1.0";
                         String hwe_casesS = "1.0";
                         String hwe_controlsS = "1.0";
 
-                        if (!chromo.equals("23")) {
+                        if (!chromo.equals(CHR_23)) {
                             hwe_cohortS = splittedLine[inputFileHashTableIndex.get("cohort_1_hwe")];
                             hwe_casesS = splittedLine[inputFileHashTableIndex.get("cases_hwe")];
                             hwe_controlsS = splittedLine[inputFileHashTableIndex.get("controls_hwe")];
@@ -2813,7 +2683,7 @@ public class GuidanceImpl {
                         String position = splittedLine[inputFileHashTableIndex.get("position")];
                         String pva = splittedLine[inputFileHashTableIndex.get("frequentist_add_pvalue")];
 
-                        String chrbpb = chromo + "\t" + position + "\t" + pva;
+                        String chrbpb = chromo + TAB + position + TAB + pva;
 
                         if (!cases_mafS.equals("NA") && !controls_mafS.equals("NA") && !infoS.equals("NA") && !hwe_cohortS.equals("NA")
                                 && !hwe_casesS.equals("NA") && !hwe_controlsS.equals("NA") && !pva.equals("NA")) {
@@ -2824,7 +2694,7 @@ public class GuidanceImpl {
                             Double hweCases = 1.0;
                             Double hweControls = 1.0;
 
-                            if (!chromo.equals("23")) {
+                            if (!chromo.equals(CHR_23)) {
                                 hweCohort = Double.parseDouble(hwe_cohortS);
                                 hweCases = Double.parseDouble(hwe_casesS);
                                 hweControls = Double.parseDouble(hwe_controlsS);
@@ -2864,10 +2734,10 @@ public class GuidanceImpl {
         long stopTime = System.currentTimeMillis();
         long elapsedTime = (stopTime - startTime) / 1_000;
         if (DEBUG) {
-            System.out.println("\n[DEBUG] combineCondensedFiles startTime: " + startTime);
-            System.out.println("\n[DEBUG] combineCondensedFiles endTime: " + stopTime);
-            System.out.println("\n[DEBUG] combineCondensedFiles elapsedTime: " + elapsedTime + " seconds");
-            System.out.println("\n[DEBUG] Finished execution of combinedCondensedFiles");
+            LOGGER.debug("\n[DEBUG] combineCondensedFiles startTime: " + startTime);
+            LOGGER.debug("\n[DEBUG] combineCondensedFiles endTime: " + stopTime);
+            LOGGER.debug("\n[DEBUG] combineCondensedFiles elapsedTime: " + elapsedTime + " seconds");
+            LOGGER.debug("\n[DEBUG] Finished execution of combinedCondensedFiles");
         }
     }
 
@@ -2884,14 +2754,17 @@ public class GuidanceImpl {
      */
     public static void generateTopHits(String resultsFile, String outputTopHitFile, String pvaThreshold, String cmdToStore)
             throws GuidanceTaskException {
+
         if (DEBUG) {
-            System.out.println("\n[DEBUG] Running generateTopHits with parameters:");
-            System.out.println("[DEBUG] \t- resultsFile                : " + resultsFile);
-            System.out.println("[DEBUG] \t- outputTopHitFile           : " + outputTopHitFile);
-            System.out.println("[DEBUG] \t- pvaThreshold               : " + pvaThreshold);
-            System.out.println("\n");
-            System.out.println("[DEBUG] \t- Command: " + cmdToStore);
+            LOGGER.debug("\n[DEBUG] Running generateTopHits with parameters:");
+            LOGGER.debug("[DEBUG] \t- resultsFile                : " + resultsFile);
+            LOGGER.debug("[DEBUG] \t- outputTopHitFile           : " + outputTopHitFile);
+            LOGGER.debug("[DEBUG] \t- pvaThreshold               : " + pvaThreshold);
+            LOGGER.debug(NEW_LINE);
+            LOGGER.debug("[DEBUG] \t- Command: " + cmdToStore);
+            LOGGER.debug("--------------------------------------");
         }
+
         long startTime = System.currentTimeMillis();
         double pvaThres = Double.parseDouble(pvaThreshold);
         // double pvaThres = Double.parseDouble(splitted[17]);
@@ -2908,12 +2781,12 @@ public class GuidanceImpl {
                 BufferedReader br = new BufferedReader(decoder)) {
 
             header = br.readLine();
-            resultsFileHashTableIndex = Headers.createHashWithHeader(header, "\t");
+            resultsFileHashTableIndex = Headers.createHashWithHeader(header, TAB);
 
             int indexPosition = resultsFileHashTableIndex.get("position");
             int indexRsId = resultsFileHashTableIndex.get("rs_id_all");
 
-            System.out.println("ANTES 3");
+            LOGGER.info("ANTES 3");
 
             int indexPvalue = resultsFileHashTableIndex.get("frequentist_add_pvalue");
             int indexChromo = resultsFileHashTableIndex.get("chr");
@@ -2924,15 +2797,15 @@ public class GuidanceImpl {
             newHeader = "chr\tposition\trsid\tMAF\ta1\ta2\tpval_add";
             String line = null;
             while ((line = br.readLine()) != null) {
-                String[] splitted = line.split("\t");
+                String[] splitted = line.split(TAB);
                 String positionAndRsId = splitted[indexPosition] + "_" + splitted[indexRsId];
                 double myPva = Double.parseDouble(splitted[indexPvalue]);
 
                 if (myPva <= pvaThres && myPva > 0.0) {
                     // Now, we put this String into the treemap with the key positionAndRsId
                     // reducedLine is chr;position;RSID_ALL;MAF;a1;a2;pval
-                    String reducedLine = splitted[indexChromo] + "\t" + splitted[indexPosition] + "\t" + splitted[indexRsId] + "\t"
-                            + splitted[indexAllMaf] + "\t" + splitted[indexAlleleA] + "\t" + splitted[indexAlleleB] + "\t"
+                    String reducedLine = splitted[indexChromo] + TAB + splitted[indexPosition] + TAB + splitted[indexRsId] + TAB
+                            + splitted[indexAllMaf] + TAB + splitted[indexAlleleA] + TAB + splitted[indexAlleleB] + TAB
                             + splitted[indexPvalue];
                     fileTreeMap.put(positionAndRsId, reducedLine);
                 }
@@ -2953,10 +2826,8 @@ public class GuidanceImpl {
             // Move next key and value of Map by iterator
             Iterator<Entry<String, String>> iter = mySet.iterator();
             while (iter.hasNext()) {
-                // key=value separator this by Map.Entry to get key and value
                 Entry<String, String> m = iter.next();
-                // getKey is used to get key of Map
-                String myLine = (String) m.getValue();
+                String myLine = m.getValue();
 
                 writer.newLine();
                 writer.write(myLine);
@@ -2973,10 +2844,10 @@ public class GuidanceImpl {
         long stopTime = System.currentTimeMillis();
         long elapsedTime = (stopTime - startTime) / 1_000;
         if (DEBUG) {
-            System.out.println("\n[DEBUG] generateTopHits startTime:  " + startTime);
-            System.out.println("\n[DEBUG] generateTopHits endTime:    " + stopTime);
-            System.out.println("\n[DEBUG] generateTopHits elapsedTime: " + elapsedTime + " seconds");
-            System.out.println("\n[DEBUG] Finished execution of generateTopHits");
+            LOGGER.debug("\n[DEBUG] generateTopHits startTime:  " + startTime);
+            LOGGER.debug("\n[DEBUG] generateTopHits endTime:    " + stopTime);
+            LOGGER.debug("\n[DEBUG] generateTopHits elapsedTime: " + elapsedTime + " seconds");
+            LOGGER.debug("\n[DEBUG] Finished execution of generateTopHits");
         }
     }
 
@@ -2996,14 +2867,16 @@ public class GuidanceImpl {
             String cmdToStore) throws GuidanceTaskException {
 
         if (DEBUG) {
-            System.out.println("\n[DEBUG] Running generateTopHits with parameters:");
-            System.out.println("[DEBUG] \t- resultsAFile                : " + resultsAFile);
-            System.out.println("[DEBUG] \t- resultsBFile                : " + resultsBFile);
-            System.out.println("[DEBUG] \t- outputTopHitFile           : " + outputTopHitFile);
-            System.out.println("[DEBUG] \t- pvaThreshold               : " + pvaThreshold);
-            System.out.println("\n");
-            System.out.println("[DEBUG] \t- Command: " + cmdToStore);
+            LOGGER.debug("\n[DEBUG] Running generateTopHits with parameters:");
+            LOGGER.debug("[DEBUG] \t- resultsAFile                : " + resultsAFile);
+            LOGGER.debug("[DEBUG] \t- resultsBFile                : " + resultsBFile);
+            LOGGER.debug("[DEBUG] \t- outputTopHitFile           : " + outputTopHitFile);
+            LOGGER.debug("[DEBUG] \t- pvaThreshold               : " + pvaThreshold);
+            LOGGER.debug(NEW_LINE);
+            LOGGER.debug("[DEBUG] \t- Command: " + cmdToStore);
+            LOGGER.debug("--------------------------------------");
         }
+
         long startTime = System.currentTimeMillis();
         double pvaThres = Double.parseDouble(pvaThreshold);
 
@@ -3024,7 +2897,7 @@ public class GuidanceImpl {
                 BufferedReader br = new BufferedReader(decoder)) {
 
             header = br.readLine();
-            resultsAFileHashTableIndex = Headers.createHashWithHeader(header, "\t");
+            resultsAFileHashTableIndex = Headers.createHashWithHeader(header, TAB);
 
             int indexPosition = resultsAFileHashTableIndex.get("position");
             int indexRsId = resultsAFileHashTableIndex.get("rs_id_all");
@@ -3038,15 +2911,15 @@ public class GuidanceImpl {
             newHeader = "chr\tposition\trsid\tMAF\ta1\ta2\tpval_add";
             String line = null;
             while ((line = br.readLine()) != null) {
-                String[] splitted = line.split("\t");
+                String[] splitted = line.split(TAB);
                 String positionAndRsId = splitted[indexPosition] + "_" + splitted[indexRsId];
                 double myPva = Double.parseDouble(splitted[indexPvalue]);
 
                 if (myPva <= pvaThres && myPva > 0.0) {
                     // Now, we put this String into the treemap with the key positionAndRsId
                     // reducedLine is chr;position;RSID_ALL;MAF;a1;a2;pval
-                    String reducedLine = splitted[indexChromo] + "\t" + splitted[indexPosition] + "\t" + splitted[indexRsId] + "\t"
-                            + splitted[indexAllMaf] + "\t" + splitted[indexAlleleA] + "\t" + splitted[indexAlleleB] + "\t"
+                    String reducedLine = splitted[indexChromo] + TAB + splitted[indexPosition] + TAB + splitted[indexRsId] + TAB
+                            + splitted[indexAllMaf] + TAB + splitted[indexAlleleA] + TAB + splitted[indexAlleleB] + TAB
                             + splitted[indexPvalue];
                     fileATreeMap.put(positionAndRsId, reducedLine);
                 }
@@ -3058,8 +2931,7 @@ public class GuidanceImpl {
         // Now we have to see if we have to include results for Chr23 that come in the second input file (resultsBFile)
         // The way to know whether we have results for chr23 is by checking that resultsAFile is equal to resultsBFile.
         // If they are equal, the we do not have chr23. Other wise we have to results for chr23 y resultsBFile and we
-        // have
-        // to include it in the outputTopHitFile
+        // have to include it in the outputTopHitFile
         if (!resultsAFile.equals(resultsBFile)) {
             try (GZIPInputStream inputGz = new GZIPInputStream(new FileInputStream(resultsBFile));
                     Reader decoder = new InputStreamReader(inputGz);
@@ -3069,12 +2941,12 @@ public class GuidanceImpl {
 
                 // First: read the header and avoid it
                 header = br.readLine();
-                resultsBFileHashTableIndex = Headers.createHashWithHeader(header, "\t");
+                resultsBFileHashTableIndex = Headers.createHashWithHeader(header, TAB);
 
                 int indexPosition = resultsBFileHashTableIndex.get("position");
                 int indexRsId = resultsBFileHashTableIndex.get("rs_id_all");
 
-                System.out.println("ANTES X");
+                LOGGER.debug("ANTES X");
 
                 int indexPvalue = resultsBFileHashTableIndex.get("frequentist_add_pvalue");
                 int indexChromo = resultsBFileHashTableIndex.get("chr");
@@ -3084,15 +2956,15 @@ public class GuidanceImpl {
 
                 String line = null;
                 while ((line = br.readLine()) != null) {
-                    String[] splitted = line.split("\t");
+                    String[] splitted = line.split(TAB);
                     String positionAndRsId = splitted[indexPosition] + "_" + splitted[indexRsId];
                     double myPva = Double.parseDouble(splitted[indexPvalue]);
 
                     if (myPva <= pvaThres && myPva > 0.0) {
                         // Now, we put this String into the treemap with the key positionAndRsId
                         // reducedLine is chr;position;RSID_ALL;MAF;a1;a2;pval
-                        String reducedLine = splitted[indexChromo] + "\t" + splitted[indexPosition] + "\t" + splitted[indexRsId] + "\t"
-                                + splitted[indexAllMaf] + "\t" + splitted[indexAlleleA] + "\t" + splitted[indexAlleleB] + "\t"
+                        String reducedLine = splitted[indexChromo] + TAB + splitted[indexPosition] + TAB + splitted[indexRsId] + TAB
+                                + splitted[indexAllMaf] + TAB + splitted[indexAlleleA] + TAB + splitted[indexAlleleB] + TAB
                                 + splitted[indexPvalue];
                         fileBTreeMap.put(positionAndRsId, reducedLine);
                     }
@@ -3106,7 +2978,7 @@ public class GuidanceImpl {
         // We create the plain file, then we will compress it
         String plainOutputTopHitFile = outputTopHitFile.substring(0, outputTopHitFile.length() - 3);
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(plainOutputTopHitFile))) {
-            // We print the header which is the same always!.
+            // We print the header which is the same always!
             writer.write(newHeader);
             // writer.newLine();
 
@@ -3114,10 +2986,8 @@ public class GuidanceImpl {
             // Move next key and value of Map by iterator
             Iterator<Entry<String, String>> iter = mySet.iterator();
             while (iter.hasNext()) {
-                // key=value separator this by Map.Entry to get key and value
                 Entry<String, String> m = iter.next();
-                // getKey is used to get key of Map
-                String myLine = (String) m.getValue();
+                String myLine = m.getValue();
 
                 writer.newLine();
                 writer.write(myLine);
@@ -3130,10 +3000,8 @@ public class GuidanceImpl {
                 // Move next key and value of Map by iterator
                 iter = mySet.iterator();
                 while (iter.hasNext()) {
-                    // key=value separator this by Map.Entry to get key and value
                     Entry<String, String> m = iter.next();
-                    // getKey is used to get key of Map
-                    String myLine = (String) m.getValue();
+                    String myLine = m.getValue();
 
                     writer.newLine();
                     writer.write(myLine);
@@ -3152,10 +3020,10 @@ public class GuidanceImpl {
         long stopTime = System.currentTimeMillis();
         long elapsedTime = (stopTime - startTime) / 1_000;
         if (DEBUG) {
-            System.out.println("\n[DEBUG] generateTopHits startTime:  " + startTime);
-            System.out.println("\n[DEBUG] generateTopHits endTime:    " + stopTime);
-            System.out.println("\n[DEBUG] generateTopHits elapsedTime: " + elapsedTime + " seconds");
-            System.out.println("\n[DEBUG] Finished execution of generateTopHits");
+            LOGGER.debug("\n[DEBUG] generateTopHits startTime:  " + startTime);
+            LOGGER.debug("\n[DEBUG] generateTopHits endTime:    " + stopTime);
+            LOGGER.debug("\n[DEBUG] generateTopHits elapsedTime: " + elapsedTime + " seconds");
+            LOGGER.debug("\n[DEBUG] Finished execution of generateTopHits");
         }
     }
 
@@ -3181,22 +3049,21 @@ public class GuidanceImpl {
         String rScriptDir = loadFromEnvironment(RSCRIPTDIR, HEADER_GENERATE_QQ_MANHATTAN_PLOTS);
 
         if (DEBUG) {
-            System.out.println("\n[DEBUG] Running generateQQManhattanPlots with parameters:");
-            System.out.println("[DEBUG] \t- lastCondensedFile             : " + lastCondensedFile);
-            System.out.println("[DEBUG] \t- qqPlotFile                    : " + qqPlotFile);
-            System.out.println("[DEBUG] \t- manhattanPlotFile             : " + manhattanPlotFile);
-            System.out.println("[DEBUG] \t- qqPlotTiffFile                : " + qqPlotTiffFile);
-            System.out.println("[DEBUG] \t- manhattanPlotTiffFile         : " + manhattanPlotTiffFile);
-            System.out.println("[DEBUG] \t- Output outputCondensedFile    : " + correctedPvaluesFile);
-
-            System.out.println("\n");
-            System.out.println("[DEBUG] \t- COMMAND            : " + cmdToStore);
-
+            LOGGER.debug("\n[DEBUG] Running generateQQManhattanPlots with parameters:");
+            LOGGER.debug("[DEBUG] \t- lastCondensedFile             : " + lastCondensedFile);
+            LOGGER.debug("[DEBUG] \t- qqPlotFile                    : " + qqPlotFile);
+            LOGGER.debug("[DEBUG] \t- manhattanPlotFile             : " + manhattanPlotFile);
+            LOGGER.debug("[DEBUG] \t- qqPlotTiffFile                : " + qqPlotTiffFile);
+            LOGGER.debug("[DEBUG] \t- manhattanPlotTiffFile         : " + manhattanPlotTiffFile);
+            LOGGER.debug("[DEBUG] \t- Output outputCondensedFile    : " + correctedPvaluesFile);
+            LOGGER.debug(NEW_LINE);
+            LOGGER.debug("[DEBUG] \t- Command: " + cmdToStore);
+            LOGGER.debug("--------------------------------------");
         }
 
         long startTime = System.currentTimeMillis();
 
-        // First, we have to decompress the input file
+        // First, we have to uncompress the input file
         String theInputFile = lastCondensedFile + ".temp1";
         FileUtils.gunzipFile(lastCondensedFile, theInputFile);
 
@@ -3205,8 +3072,8 @@ public class GuidanceImpl {
                 + " " + qqPlotTiffFile + " " + manhattanPlotTiffFile + " " + correctedPvaluesFile;
 
         if (DEBUG) {
-            System.out.println("\n[DEBUG] Cmd -> " + cmd);
-            System.out.println(" ");
+            LOGGER.debug("\n[DEBUG] Cmd -> " + cmd);
+            LOGGER.debug(" ");
         }
 
         // Execute the command retrieving its exitValue, output and error
@@ -3224,12 +3091,12 @@ public class GuidanceImpl {
         }
 
         long stopTime = System.currentTimeMillis();
-        long elapsedTime = (stopTime - startTime) / 1000;
+        long elapsedTime = (stopTime - startTime) / 1_000;
         if (DEBUG) {
-            System.out.println("\n[DEBUG] generateQQManhattanPlots startTime: " + startTime);
-            System.out.println("\n[DEBUG] generateQQManhattanPlots endTime: " + stopTime);
-            System.out.println("\n[DEBUG] generateQQManhattanPlots elapsedTime: " + elapsedTime + " seconds");
-            System.out.println("\n[DEBUG] Finished execution of generate generateQQManhattanPlots.");
+            LOGGER.debug("\n[DEBUG] generateQQManhattanPlots startTime: " + startTime);
+            LOGGER.debug("\n[DEBUG] generateQQManhattanPlots endTime: " + stopTime);
+            LOGGER.debug("\n[DEBUG] generateQQManhattanPlots elapsedTime: " + elapsedTime + " seconds");
+            LOGGER.debug("\n[DEBUG] Finished execution of generate generateQQManhattanPlots.");
         }
 
     }
@@ -3255,21 +3122,23 @@ public class GuidanceImpl {
         String snptestBinary = loadFromEnvironment(SNPTESTBINARY, HEADER_SNPTEST);
 
         if (DEBUG) {
-            System.out.println("\n[DEBUG] Running snptest with parameters:");
-            System.out.println("[DEBUG] \t- snptestBinary                    : " + snptestBinary);
-            System.out.println("[DEBUG] \t- Input mergedGenFile              : " + mergedGenFile);
-            System.out.println("[DEBUG] \t- Input mergedSampleFile           : " + mergedSampleFile);
-            System.out.println("[DEBUG] \t- Output snptestOutFile            : " + snptestOutFileGz);
-            System.out.println("[DEBUG] \t- Output snptestLogFile            : " + snptestLogFile);
-            System.out.println("[DEBUG] \t- Input responseVar               : " + responseVar);
-            System.out.println("[DEBUG] \t- Input covariables                : " + covariables);
-            System.out.println("\n");
-            System.out.println("[DEBUG] \t- COMMAND            : " + cmdToStore);
+            LOGGER.debug("\n[DEBUG] Running snptest with parameters:");
+            LOGGER.debug("[DEBUG] \t- snptestBinary                    : " + snptestBinary);
+            LOGGER.debug("[DEBUG] \t- Input mergedGenFile              : " + mergedGenFile);
+            LOGGER.debug("[DEBUG] \t- Input mergedSampleFile           : " + mergedSampleFile);
+            LOGGER.debug("[DEBUG] \t- Output snptestOutFile            : " + snptestOutFileGz);
+            LOGGER.debug("[DEBUG] \t- Output snptestLogFile            : " + snptestLogFile);
+            LOGGER.debug("[DEBUG] \t- Input responseVar               : " + responseVar);
+            LOGGER.debug("[DEBUG] \t- Input covariables                : " + covariables);
+            LOGGER.debug(NEW_LINE);
+            LOGGER.debug("[DEBUG] \t- Command: " + cmdToStore);
+            LOGGER.debug("--------------------------------------");
         }
-        // replace commas in the string covariables
+
+        // Replace commas in the string covariables
         String newStr = covariables.replace(',', ' ');
         if (DEBUG) {
-            System.out.println("[DEBUG] \t- Changing covariable format. New covariables : " + newStr);
+            LOGGER.debug("[DEBUG] \t- Changing covariable format. New covariables : " + newStr);
         }
 
         long startTime = System.currentTimeMillis();
@@ -3277,7 +3146,6 @@ public class GuidanceImpl {
         // We have to make sure whether we are using renamed files of the original gz files.
         // We detect this situation by scanning the last three characters:
         String extension = mergedGenFile.substring(Math.max(0, mergedGenFile.length() - 3));
-        // System.out.println("DEBUG \t The file extension is: " + extension + " and the file is " + mergedGenFile);
 
         String mergedGenFileGz = null;
         if (extension.equals(".gz")) {
@@ -3292,8 +3160,6 @@ public class GuidanceImpl {
         // later
         String snptestOutFile = snptestOutFileGz.substring(0, snptestOutFileGz.length() - 3);
 
-        String cmd = null;
-
         // Before executing snptest, I have to verify that the input mergedGenFile is not empty
         int nBytes = -1;
         try (FileInputStream fis = new FileInputStream(new File(mergedGenFile))) {
@@ -3303,6 +3169,7 @@ public class GuidanceImpl {
         }
 
         if (nBytes != -1) {
+            String cmd = null;
             if (covariables.equals("none")) {
                 cmd = snptestBinary + " -data " + mergedGenFileGz + " " + mergedSampleFile + " -o " + snptestOutFile + " -pheno "
                         + responseVar + " -hwe -log " + snptestLogFile;
@@ -3312,15 +3179,14 @@ public class GuidanceImpl {
             }
 
             // Different parameters for chromo 23 (X) and the rest.
-            if (theChromo.equals("23")) {
+            if (theChromo.equals(CHR_23)) {
                 cmd = cmd + " -method newml -assume_chromosome X -stratify_on sex -frequentist 1 ";
             } else {
                 cmd = cmd + " -method em -frequentist 1 2 3 4 5 ";
             }
 
             if (DEBUG) {
-                System.out.println("\n[DEBUG] Cmd -> " + cmd);
-                System.out.println(" ");
+                LOGGER.debug(HEADER_SNPTEST + MSG_CMD + cmd);
             }
 
             // Execute the command retrieving its exitValue, output and error
@@ -3333,9 +3199,8 @@ public class GuidanceImpl {
 
             // Check process exit value
             if (exitValue != 0) {
-                System.err.println(HEADER_SNPTEST + "Warning executing snptestProc job, exit value is: " + exitValue);
-                System.err.println(HEADER_SNPTEST + "                         (This error is not fatal).");
-                // throw new Exception("Error executing snptestProc job, exit value is: " + exitValue);
+                LOGGER.error(HEADER_SNPTEST + "Warning executing snptestProc job, exit value is: " + exitValue);
+                LOGGER.error(HEADER_SNPTEST + "                         (This error is not fatal).");
             }
         }
 
@@ -3353,10 +3218,10 @@ public class GuidanceImpl {
         long stopTime = System.currentTimeMillis();
         long elapsedTime = (stopTime - startTime) / 1_000;
         if (DEBUG) {
-            System.out.println("\n[DEBUG] snptest startTime: " + startTime);
-            System.out.println("\n[DEBUG] snptest endTime: " + stopTime);
-            System.out.println("\n[DEBUG] snptest elapsedTime: " + elapsedTime + " seconds");
-            System.out.println("\n[DEBUG] Finished execution of snptest.");
+            LOGGER.debug("\n[DEBUG] snptest startTime: " + startTime);
+            LOGGER.debug("\n[DEBUG] snptest endTime: " + stopTime);
+            LOGGER.debug("\n[DEBUG] snptest elapsedTime: " + elapsedTime + " seconds");
+            LOGGER.debug("\n[DEBUG] Finished execution of snptest.");
         }
     }
 
@@ -3377,21 +3242,15 @@ public class GuidanceImpl {
             String cmdToStore) throws GuidanceTaskException {
 
         if (DEBUG) {
-            System.out.println("\n[DEBUG] Running mergeTwoChunks with parameters:");
-            System.out.println("[DEBUG] \t- Input reduceFileA            : " + reduceFileA);
-            System.out.println("[DEBUG] \t- Input reduceFileB            : " + reduceFileB);
-            System.out.println("[DEBUG] \t- Output reduceFileC           : " + reduceFileC);
-            System.out.println("\n");
-            System.out.println("[DEBUG] \t- COMMAND         : " + cmdToStore);
-
-            // Map<String, String> env = System.getenv();
-            // System.out.println("--------------------------------------");
-            // System.out.println("Environmental Variables in Master:");
-            // for (String envName : env.keySet()) {
-            // System.out.format("%s=%s%n",envName,env.get(envName));
-            // }
-            // System.out.println("--------------------------------------");
+            LOGGER.debug("\n[DEBUG] Running mergeTwoChunks with parameters:");
+            LOGGER.debug("[DEBUG] \t- Input reduceFileA            : " + reduceFileA);
+            LOGGER.debug("[DEBUG] \t- Input reduceFileB            : " + reduceFileB);
+            LOGGER.debug("[DEBUG] \t- Output reduceFileC           : " + reduceFileC);
+            LOGGER.debug(NEW_LINE);
+            LOGGER.debug("[DEBUG] \t- Command: " + cmdToStore);
+            LOGGER.debug("--------------------------------------");
         }
+
         long startTime = System.currentTimeMillis();
 
         // We read each line of th reducedFileA and put them into fileAList array of Strings
@@ -3412,7 +3271,7 @@ public class GuidanceImpl {
 
             // We do not use the previous line, instead, we use a predefined header
             if (type.equals("filtered")) {
-                if (chrS.equals("23")) {
+                if (chrS.equals(CHR_23)) {
                     line = Headers.constructHeaderX();
                 } else {
                     line = Headers.constructHeader();
@@ -3429,8 +3288,8 @@ public class GuidanceImpl {
             int indexAlleleB = 0;
 
             if (line != null && !line.isEmpty()) {
-                reduceFileAHashTableIndex = Headers.createHashWithHeader(line, "\t");
-                reduceFileAHashTableIndexReversed = Headers.createHashWithHeaderReversed(line, "\t");
+                reduceFileAHashTableIndex = Headers.createHashWithHeader(line, TAB);
+                reduceFileAHashTableIndexReversed = Headers.createHashWithHeaderReversed(line, TAB);
 
                 indexChr = reduceFileAHashTableIndex.get("chr");
                 indexPosition = reduceFileAHashTableIndex.get("position");
@@ -3440,8 +3299,8 @@ public class GuidanceImpl {
 
             while ((line = br.readLine()) != null) {
                 ArrayList<String> fileAList = new ArrayList<>();
-                // delimiter I assume a tap.
-                String[] splitted = line.split("\t");
+                // delimiter I assume a tab
+                String[] splitted = line.split(TAB);
 
                 // Store Position:Store rsIDCases:Store infoCases:Store certCases
                 fileAList.add(line);
@@ -3461,7 +3320,7 @@ public class GuidanceImpl {
             throw new GuidanceTaskException(ioe);
         }
 
-        // We read each line of th reducedFileB and put them into fileBList array of Strings
+        // We read each line of the reducedFileB and put them into fileBList array of Strings
         TreeMap<String, ArrayList<String>> fileBTreeMap = new TreeMap<>();
 
         try (GZIPInputStream reduceGz = new GZIPInputStream(new FileInputStream(reduceFileB));
@@ -3479,7 +3338,7 @@ public class GuidanceImpl {
             // Then we process the file
             while ((line = br.readLine()) != null) {
                 ArrayList<String> fileBList = new ArrayList<>();
-                String[] splitted = line.split("\t");// delimiter I assume tab
+                String[] splitted = line.split(TAB);// delimiter I assume tab
 
                 fileBList.add(line);
                 String variantKey = splitted[indexChr] + "_" + splitted[indexPosition] + "_" + splitted[indexAlleleA] + "_"
@@ -3505,33 +3364,22 @@ public class GuidanceImpl {
         Iterator<Entry<String, ArrayList<String>>> iter = mySet.iterator();
 
         while (iter.hasNext()) {
-            // key=value separator this by Map.Entry to get key and value
             Entry<String, ArrayList<String>> m = iter.next();
-            // getKey is used to get key of Map
-            // position=(Integer)m.getKey();
-            String variantKey = (String) m.getKey();
+            String variantKey = m.getKey();
+            ArrayList<String> fileTmp = m.getValue();
 
-            // getValue is used to get value of key in Map
-            ArrayList<String> fileTmp = new ArrayList<>();
-            fileTmp = (ArrayList<String>) m.getValue();
             // We look for the casesPosition key in the controlsTreeMap.
             // If found, we get the value, otherwise we get null
-
             fileCTreeMap.put(variantKey, fileTmp);
         }
         mySet = fileBTreeMap.entrySet();
         // Move next key and value of Map by iterator
         iter = mySet.iterator();
         while (iter.hasNext()) {
-            // key=value separator this by Map.Entry to get key and value
             Entry<String, ArrayList<String>> m = iter.next();
-            // getKey is used to get key of Map
-            // position=(Integer)m.getKey();
-            String variantKey = (String) m.getKey();
+            String variantKey = m.getKey();
+            ArrayList<String> fileTmp = m.getValue();
 
-            // getValue is used to get value of key in Map
-            ArrayList<String> fileTmp = new ArrayList<String>();
-            fileTmp = (ArrayList<String>) m.getValue();
             // We look for the casesPosition key in the controlsTreeMap.
             // If found, we get the value, otherwise we get null
             fileCTreeMap.put(variantKey, fileTmp);
@@ -3548,7 +3396,7 @@ public class GuidanceImpl {
             if (reduceFileAHashTableIndexReversed.size() >= reduceFileBHashTableIndexReversed.size()) {
                 for (index = 0; index < reduceFileAHashTableIndexReversed.size() - 1; index++) {
                     valueReversed = reduceFileAHashTableIndexReversed.get(index);
-                    writer.write(valueReversed + "\t");
+                    writer.write(valueReversed + TAB);
                 }
                 valueReversed = reduceFileAHashTableIndexReversed.get(index);
                 writer.write(valueReversed);
@@ -3556,7 +3404,7 @@ public class GuidanceImpl {
             } else {
                 for (index = 0; index < reduceFileBHashTableIndexReversed.size() - 1; index++) {
                     valueReversed = reduceFileBHashTableIndexReversed.get(index);
-                    writer.write(valueReversed + "\t");
+                    writer.write(valueReversed + TAB);
                 }
                 valueReversed = reduceFileBHashTableIndexReversed.get(index);
                 writer.write(valueReversed);
@@ -3567,30 +3415,15 @@ public class GuidanceImpl {
             // Move next key and value of Map by iterator
             iter = mySet.iterator();
             while (iter.hasNext()) {
-                // key=value separator this by Map.Entry to get key and value
                 Entry<String, ArrayList<String>> m = iter.next();
-                // getKey is used to get key of Map
-                // int pos=(Integer)m.getKey();
+                ArrayList<String> lineTmp = m.getValue();
 
-                ArrayList<String> lineTmp = new ArrayList<>();
-                lineTmp = (ArrayList<String>) m.getValue();
                 writer.write(lineTmp.get(0));
                 for (int j = 1; j < lineTmp.size(); j++) {
-                    writer.write("\t" + lineTmp.get(j));
+                    writer.write(TAB + lineTmp.get(j));
                 }
                 writer.newLine();
             }
-
-            // if (debug) {
-            // long freeMemory = Runtime.getRuntime().freeMemory()/1048576;
-            // long totalMemory = Runtime.getRuntime().totalMemory()/1048576;
-            // long maxMemory = Runtime.getRuntime().maxMemory()/1048576;
-
-            // System.out.println("JVM freeMemory: " + freeMemory);
-            // System.out.println("JVM totalMemory also equals to initial heap size of JVM : " + totalMemory);
-            // System.out.println("JVM maxMemory also equals to maximum heap size of JVM : " + maxMemory);
-            // }
-
             writer.flush();
         } catch (IOException ioe) {
             throw new GuidanceTaskException(ioe);
@@ -3607,12 +3440,12 @@ public class GuidanceImpl {
         FileUtils.gzipFile(plainReduceFileC, reduceFileC);
 
         long stopTime = System.currentTimeMillis();
-        long elapsedTime = (stopTime - startTime) / 1000;
+        long elapsedTime = (stopTime - startTime) / 1_000;
         if (DEBUG) {
-            System.out.println("\n[DEBUG] mergeTwoChunks startTime: " + startTime);
-            System.out.println("\n[DEBUG] mergeTwoChunks endTime: " + stopTime);
-            System.out.println("\n[DEBUG] mergeTwoChunks elapsedTime: " + elapsedTime + " seconds");
-            System.out.println("\n[DEBUG] Finished execution of mergeTwoChunks.");
+            LOGGER.debug("\n[DEBUG] mergeTwoChunks startTime: " + startTime);
+            LOGGER.debug("\n[DEBUG] mergeTwoChunks endTime: " + stopTime);
+            LOGGER.debug("\n[DEBUG] mergeTwoChunks elapsedTime: " + elapsedTime + " seconds");
+            LOGGER.debug("\n[DEBUG] Finished execution of mergeTwoChunks.");
         }
     }
 
@@ -3638,25 +3471,19 @@ public class GuidanceImpl {
             String hweControlsThresholdS, String cmdToStore) throws GuidanceTaskException {
 
         if (DEBUG) {
-            System.out.println("\n[DEBUG] Running collectSummary with parameters:");
-            System.out.println("[DEBUG] \t- Input chromosome             : " + chr);
-            System.out.println("[DEBUG] \t- Input casesImputeFileInfo    : " + firstImputeFileInfo);
-            System.out.println("[DEBUG] \t- Input snptestOutFile         : " + snptestOutFile);
-            System.out.println("[DEBUG] \t- Output reduceFile            : " + reduceFile);
-            System.out.println("[DEBUG] \t- Input mafThresholdS          : " + mafThresholdS);
-            System.out.println("[DEBUG] \t- Input infoThresholdS         : " + infoThresholdS);
-            System.out.println("[DEBUG] \t- Input hweCohortThresholdS    : " + hweCohortThresholdS);
-            System.out.println("[DEBUG] \t- Input hweCasesThresholdS     : " + hweCasesThresholdS);
-            System.out.println("[DEBUG] \t- Input hweControlsThresholdS  : " + hweControlsThresholdS);
-            System.out.println("\n");
-            System.out.println("[DEBUG] \t- COMMAND         : " + cmdToStore);
-
-            // Map<String, String> env = System.getenv();
-            // System.out.println("--------------------------------------");
-            // System.out.println("Environmental Variables in Master:");
-            // for (String envName : env.keySet()) {
-            // System.out.format("%s=%s%n",envName,env.get(envName));
-            // }
+            LOGGER.debug("\n[DEBUG] Running collectSummary with parameters:");
+            LOGGER.debug("[DEBUG] \t- Input chromosome             : " + chr);
+            LOGGER.debug("[DEBUG] \t- Input casesImputeFileInfo    : " + firstImputeFileInfo);
+            LOGGER.debug("[DEBUG] \t- Input snptestOutFile         : " + snptestOutFile);
+            LOGGER.debug("[DEBUG] \t- Output reduceFile            : " + reduceFile);
+            LOGGER.debug("[DEBUG] \t- Input mafThresholdS          : " + mafThresholdS);
+            LOGGER.debug("[DEBUG] \t- Input infoThresholdS         : " + infoThresholdS);
+            LOGGER.debug("[DEBUG] \t- Input hweCohortThresholdS    : " + hweCohortThresholdS);
+            LOGGER.debug("[DEBUG] \t- Input hweCasesThresholdS     : " + hweCasesThresholdS);
+            LOGGER.debug("[DEBUG] \t- Input hweControlsThresholdS  : " + hweControlsThresholdS);
+            LOGGER.debug(NEW_LINE);
+            LOGGER.debug("[DEBUG] \t- Command: " + cmdToStore);
+            LOGGER.debug("--------------------------------------");
         }
 
         long startTime = System.currentTimeMillis();
@@ -3672,8 +3499,7 @@ public class GuidanceImpl {
 
         int length_entry_assoc_list = 0;
 
-        // genOrBimFile is the mixedGenFile and
-        // is not necessary to process it.
+        // genOrBimFile is the mixedGenFile and is not necessary to process it.
 
         // A place to store the results of the merge
         TreeMap<String, ArrayList<String>> summaryTotal = new TreeMap<>();
@@ -3691,7 +3517,6 @@ public class GuidanceImpl {
             // ---->
             HashMap<String, Integer> imputeHashTableIndex = new HashMap<>();
             if (line != null && !line.isEmpty()) {
-                // System.err.println("[collectSummary] IMPRIMO line: " + line);
                 // If we are here, the file is not empty.
                 imputeHashTableIndex = Headers.createHashWithHeader(line, " ");
 
@@ -3700,10 +3525,10 @@ public class GuidanceImpl {
                 indexInfo = imputeHashTableIndex.get("info");
                 indexCertainty = imputeHashTableIndex.get("certainty");
 
-                // System.out.println("indexPosition: "+indexPosition);
-                // System.out.println("indexRsId: " + indexRsId);
-                // System.out.println("indexInfo: " + indexInfo);
-                // System.out.println("indexCertainty: " + indexCertainty);
+                // LOGGER.debug("indexPosition: "+indexPosition);
+                // LOGGER.debug("indexRsId: " + indexRsId);
+                // LOGGER.debug("indexInfo: " + indexInfo);
+                // LOGGER.debug("indexCertainty: " + indexCertainty);
             }
 
             while ((line = br.readLine()) != null) {
@@ -3722,7 +3547,8 @@ public class GuidanceImpl {
                 if (!firstTreeMap.containsKey(positionAndRsId)) {
                     // We, put this in the firstTreeMap
                     firstTreeMap.put(positionAndRsId, firstList);
-                } else { // If there is a snp with this combination we should remove it.
+                } else {
+                    // If there is a snp with this combination we should remove it.
                     firstTreeMap.remove(positionAndRsId);
                 }
             }
@@ -3739,9 +3565,7 @@ public class GuidanceImpl {
             String line = null;
             while ((line = br.readLine()) != null) {
                 // We have to avoid reading all the comment lines that start with "#" character, and one more that is
-                // the
-                // header and start with "alternate".
-                // System.err.println("[DEBUGING1]: " + line);
+                // the header and start with "alternate".
                 String[] splitted = line.split(" ");
                 String firstHeader = splitted[0];
                 char firstChar = line.charAt(0);
@@ -3755,7 +3579,6 @@ public class GuidanceImpl {
                 if ((firstChar != '#') && (firstChar != 'a')) {
                     ArrayList<String> assocList = new ArrayList<String>();
                     // delimiter I assume single space.
-                    // System.err.println("[DEBUGING1]: " + line);
                     // String[] splitted = line.split(" ");
 
                     // REVIEW: Should we store position?
@@ -3775,7 +3598,8 @@ public class GuidanceImpl {
                     } else {
                         assocTreeMap.remove(positionAndRsId);
                     }
-                } // The line does not start with "#" niether "alternate"
+                }
+                // The line does not start nor with "#" neither "alternate"
             }
         } catch (IOException ioe) {
             throw new GuidanceTaskException(ioe);
@@ -3787,13 +3611,10 @@ public class GuidanceImpl {
         // Move next key and value of Map by iterator
         Iterator<Entry<String, ArrayList<String>>> iter = mySet.iterator();
         while (iter.hasNext()) {
-            // key=value separator this by Map.Entry to get key and value
             Entry<String, ArrayList<String>> m = iter.next();
-            // getKey is used to get key of Map
-            String firstPositionAndRsId = (String) m.getKey();
-
-            // getValue is used to get value of key in Map
+            String firstPositionAndRsId = m.getKey();
             ArrayList<String> firstTmp = m.getValue();
+
             // The same for assocTreeMap. If found, we get the value, otherwise we get null
             ArrayList<String> assocTmp = new ArrayList<>();
             assocTmp = assocTreeMap.get(firstPositionAndRsId);
@@ -3821,9 +3642,9 @@ public class GuidanceImpl {
             // alternative_ids, rsid, chromosome, position
             for (int index = 4; index < snptestHashTableIndexReversed.size(); index++) {
                 String valueReversed = snptestHashTableIndexReversed.get(index);
-                writer.write(valueReversed + "\t");
+                writer.write(valueReversed + TAB);
             }
-            writer.write("\n");
+            writer.write(NEW_LINE);
 
             mySet = summaryTotal.entrySet();
             // Move next key and value of Map by iterator
@@ -3832,11 +3653,11 @@ public class GuidanceImpl {
                 // key=value separator this by Map.Entry to get key and value
                 Entry<String, ArrayList<String>> m = iter.next();
                 ArrayList<String> lineTmp = m.getValue();
-                // System.out.println("VALUE = " + lineTmp);
+                // LOGGER.debug("VALUE = " + lineTmp);
 
                 writer.write(lineTmp.get(0));
                 for (int j = 1; j < lineTmp.size(); j++) {
-                    writer.write("\t" + lineTmp.get(j));
+                    writer.write(TAB + lineTmp.get(j));
                 }
                 writer.newLine();
             }
@@ -3859,10 +3680,10 @@ public class GuidanceImpl {
         long stopTime = System.currentTimeMillis();
         long elapsedTime = (stopTime - startTime) / 1_000;
         if (DEBUG) {
-            System.out.println("\n[DEBUG] collectSummary startTime: " + startTime);
-            System.out.println("\n[DEBUG] collectSummary endTime: " + stopTime);
-            System.out.println("\n[DEBUG] collectSummary elapsedTime: " + elapsedTime + " seconds");
-            System.out.println("\n[DEBUG] Finished execution of collectSummary.");
+            LOGGER.debug("\n[DEBUG] collectSummary startTime: " + startTime);
+            LOGGER.debug("\n[DEBUG] collectSummary endTime: " + stopTime);
+            LOGGER.debug("\n[DEBUG] collectSummary elapsedTime: " + elapsedTime + " seconds");
+            LOGGER.debug("\n[DEBUG] Finished execution of collectSummary.");
         }
     }
 
@@ -3882,35 +3703,34 @@ public class GuidanceImpl {
             throws GuidanceTaskException {
 
         if (DEBUG) {
-            System.out.println("\n[DEBUG] Running initPhenoMatrix with parameters:");
-            System.out.println("[DEBUG] \t- Input topHitsFile       : " + topHitsFile);
-            System.out.println("[DEBUG] \t- Input ttName            : " + ttName);
-            System.out.println("[DEBUG] \t- Input rpName            : " + rpName);
-            System.out.println("[DEBUG] \t- Output phenomeFile      : " + phenomeFile);
-            System.out.println("\n");
-
-            System.out.println("\n");
-            System.out.println("[DEBUG] \t- Command: " + cmdToStore);
+            LOGGER.debug("\n[DEBUG] Running initPhenoMatrix with parameters:");
+            LOGGER.debug("[DEBUG] \t- Input topHitsFile       : " + topHitsFile);
+            LOGGER.debug("[DEBUG] \t- Input ttName            : " + ttName);
+            LOGGER.debug("[DEBUG] \t- Input rpName            : " + rpName);
+            LOGGER.debug("[DEBUG] \t- Output phenomeFile      : " + phenomeFile);
+            LOGGER.debug(NEW_LINE);
+            LOGGER.debug("[DEBUG] \t- Command: " + cmdToStore);
+            LOGGER.debug("--------------------------------------");
         }
+
         long startTime = System.currentTimeMillis();
 
         // First, let's create the header for this file
-
         String headerPhenomeFile = "chr\tposition";
-        // headerPhenomeFile = headerPhenomeFile + "\t" + ttName + ":" + rpName + ":" + "rs_id_all";
-        // headerPhenomeFile = headerPhenomeFile + "\t" + ttName + ":" + rpName + ":" + "alleleA";
-        // headerPhenomeFile = headerPhenomeFile + "\t" + ttName + ":" + rpName + ":" + "alleleB";
-        // headerPhenomeFile = headerPhenomeFile + "\t" + ttName + ":" + rpName + ":" + "all_maf";
-        // headerPhenomeFile = headerPhenomeFile + "\t" + ttName + ":" + rpName + ":" + "frequentist_add_pvalue";
-        // headerPhenomeFile = headerPhenomeFile + "\t" + ttName + ":" + rpName + ":" + "frequentist_add_beta_1";
-        // headerPhenomeFile = headerPhenomeFile + "\t" + ttName + ":" + rpName + ":" +
+        // headerPhenomeFile = headerPhenomeFile + TAB + ttName + ":" + rpName + ":" + "rs_id_all";
+        // headerPhenomeFile = headerPhenomeFile + TAB + ttName + ":" + rpName + ":" + "alleleA";
+        // headerPhenomeFile = headerPhenomeFile + TAB + ttName + ":" + rpName + ":" + "alleleB";
+        // headerPhenomeFile = headerPhenomeFile + TAB + ttName + ":" + rpName + ":" + "all_maf";
+        // headerPhenomeFile = headerPhenomeFile + TAB + ttName + ":" + rpName + ":" + "frequentist_add_pvalue";
+        // headerPhenomeFile = headerPhenomeFile + TAB + ttName + ":" + rpName + ":" + "frequentist_add_beta_1";
+        // headerPhenomeFile = headerPhenomeFile + TAB + ttName + ":" + rpName + ":" +
         // "frequentist_add_beta_1:genotype/sex=1";
-        // headerPhenomeFile = headerPhenomeFile + "\t" + ttName + ":" + rpName + ":" +
+        // headerPhenomeFile = headerPhenomeFile + TAB + ttName + ":" + rpName + ":" +
         // "frequentist_add_beta_2:genotype/sex=2";
-        // headerPhenomeFile = headerPhenomeFile + "\t" + ttName + ":" + rpName + ":" + "frequentist_add_se_1";
-        // headerPhenomeFile = headerPhenomeFile + "\t" + ttName + ":" + rpName + ":" +
+        // headerPhenomeFile = headerPhenomeFile + TAB + ttName + ":" + rpName + ":" + "frequentist_add_se_1";
+        // headerPhenomeFile = headerPhenomeFile + TAB + ttName + ":" + rpName + ":" +
         // "frequentist_add_se_1:genotype/sex=1";
-        // headerPhenomeFile = headerPhenomeFile + "\t" + ttName + ":" + rpName + ":" +
+        // headerPhenomeFile = headerPhenomeFile + TAB + ttName + ":" + rpName + ":" +
         // "frequentist_add_se_2:genotype/sex=2";
 
         // Then, read the input file
@@ -3918,7 +3738,7 @@ public class GuidanceImpl {
         String chrAndPosition = null;
         String newHeader = headerPhenomeFile;
         if (DEBUG) {
-            System.out.println("[DEBUG] \t- The new header will be : [" + newHeader + "]");
+            LOGGER.debug("[DEBUG] \t- The new header will be : [" + newHeader + "]");
         }
 
         // First, we load the whole topHitsFile into a TreeMap
@@ -3939,11 +3759,6 @@ public class GuidanceImpl {
         // K : number of panels.
         // pa_[j]: name of panel j.
 
-        // HashMap<String, Integer> phenomeHashTableIndex = new HashMap<>();
-        // HashMap<Integer, String> phenomeHashTableIndexReversed = new HashMap<>();
-
-        // phenomeHashTableIndex = createHashWithHeader(newHeader, "\t");
-
         // We start reading the topHits File
         try (GZIPInputStream topHitsFileGz = new GZIPInputStream(new FileInputStream(topHitsFile));
                 Reader decoder = new InputStreamReader(topHitsFileGz);
@@ -3951,7 +3766,7 @@ public class GuidanceImpl {
 
             String line = br.readLine();
             HashMap<String, Integer> topHitsHashTableIndex = new HashMap<>();
-            topHitsHashTableIndex = Headers.createHashWithHeader(line, "\t");
+            topHitsHashTableIndex = Headers.createHashWithHeader(line, TAB);
 
             int indexChrInTopHitsFile = topHitsHashTableIndex.get("chr");
             int indexPositionInTopHitsFile = topHitsHashTableIndex.get("position");
@@ -3960,7 +3775,7 @@ public class GuidanceImpl {
             while ((line = br.readLine()) != null) {
                 ArrayList<String> firstList = new ArrayList<>();
                 // delimiter I assume TAP space.
-                String[] splitted = line.split("\t");
+                String[] splitted = line.split(TAB);
 
                 chrAndPosition = splitted[indexChrInTopHitsFile] + "_" + splitted[indexPositionInTopHitsFile];
 
@@ -3969,7 +3784,7 @@ public class GuidanceImpl {
                 firstList.add(splitted[indexChrInTopHitsFile]);
                 firstList.add(splitted[indexPositionInTopHitsFile]);
 
-                // System.out.println("\n[DEBUG] phenomeHashTableIndex.size() " + phenomeHashTableIndex.size());
+                // LOGGER.debug("\n[DEBUG] phenomeHashTableIndex.size() " + phenomeHashTableIndex.size());
 
                 // Finally, we put this data into the firstTreeMap, using chrPosition as key and the firstList as value.
                 phenomeTreeMap.put(chrAndPosition, firstList);
@@ -3991,14 +3806,12 @@ public class GuidanceImpl {
             // Move next key and value of Map by iterator
             Iterator<Entry<String, ArrayList<String>>> iter = mySet.iterator();
             while (iter.hasNext()) {
-                // key=value separator this by Map.Entry to get key and value
                 Entry<String, ArrayList<String>> m = iter.next();
-                // getKey is used to get key of Map
                 ArrayList<String> firstTmp = m.getValue();
 
                 writer.write(firstTmp.get(0));
                 for (int j = 1; j < firstTmp.size(); j++) {
-                    writer.write("\t" + firstTmp.get(j));
+                    writer.write(TAB + firstTmp.get(j));
                 }
                 // writer.write(myLine);
                 writer.newLine();
@@ -4013,12 +3826,12 @@ public class GuidanceImpl {
         FileUtils.gzipFile(plainPhenomeFile, phenomeFile);
 
         long stopTime = System.currentTimeMillis();
-        long elapsedTime = (stopTime - startTime) / 1000;
+        long elapsedTime = (stopTime - startTime) / 1_000;
         if (DEBUG) {
-            System.out.println("\n[DEBUG] initPhenoMatrix startTime: " + startTime);
-            System.out.println("\n[DEBUG] initPhenoMatrix endTime: " + stopTime);
-            System.out.println("\n[DEBUG] initPhenoMatrix elapsedTime: " + elapsedTime + " seconds");
-            System.out.println("\n[DEBUG] Finished execution of initPhenoMatrix.");
+            LOGGER.debug("\n[DEBUG] initPhenoMatrix startTime: " + startTime);
+            LOGGER.debug("\n[DEBUG] initPhenoMatrix endTime: " + stopTime);
+            LOGGER.debug("\n[DEBUG] initPhenoMatrix elapsedTime: " + elapsedTime + " seconds");
+            LOGGER.debug("\n[DEBUG] Finished execution of initPhenoMatrix.");
         }
     }
 
@@ -4039,16 +3852,15 @@ public class GuidanceImpl {
             String cmdToStore) throws GuidanceTaskException {
 
         if (DEBUG) {
-            System.out.println("\n[DEBUG] Running addToPhenoMatrix with parameters:");
-            System.out.println("[DEBUG] \t- Input phenomeFileA      : " + phenomeAFile);
-            System.out.println("[DEBUG] \t- Input topHitsFile       : " + topHitsFile);
-            System.out.println("[DEBUG] \t- Input ttName            : " + ttName);
-            System.out.println("[DEBUG] \t- Input rpName            : " + rpName);
-            System.out.println("[DEBUG] \t- Output phenomeFileB     : " + phenomeBFile);
-            System.out.println("\n");
-
-            System.out.println("\n");
-            System.out.println("[DEBUG] \t- Command: " + cmdToStore);
+            LOGGER.debug("\n[DEBUG] Running addToPhenoMatrix with parameters:");
+            LOGGER.debug("[DEBUG] \t- Input phenomeFileA      : " + phenomeAFile);
+            LOGGER.debug("[DEBUG] \t- Input topHitsFile       : " + topHitsFile);
+            LOGGER.debug("[DEBUG] \t- Input ttName            : " + ttName);
+            LOGGER.debug("[DEBUG] \t- Input rpName            : " + rpName);
+            LOGGER.debug("[DEBUG] \t- Output phenomeFileB     : " + phenomeBFile);
+            LOGGER.debug(NEW_LINE);
+            LOGGER.debug("[DEBUG] \t- Command: " + cmdToStore);
+            LOGGER.debug("--------------------------------------");
         }
 
         long startTime = System.currentTimeMillis();
@@ -4068,6 +3880,7 @@ public class GuidanceImpl {
         // phe_[i]: name of phenotype i.
         // K : number of panels.
         // pa_[j]: name of panel j.
+
         HashMap<String, Integer> phenomeAHashTableIndex = new HashMap<>();
 
         // We start reading the phenomeFileA
@@ -4075,27 +3888,28 @@ public class GuidanceImpl {
         try (GZIPInputStream phenomeAFileGz = new GZIPInputStream(new FileInputStream(phenomeAFile));
                 Reader decoder = new InputStreamReader(phenomeAFileGz);
                 BufferedReader br = new BufferedReader(decoder)) {
+
             // First of all, the header
             phenomeAHeader = br.readLine();
 
             phenomeAHeader = "chr\tposition";
-            // phenomeAHeader = phenomeAHeader + "\t" + ttName + ":" + rpName + ":" + "rs_id_all";
-            // phenomeAHeader = phenomeAHeader + "\t" + ttName + ":" + rpName + ":" + "alleleA";
-            // phenomeAHeader = phenomeAHeader + "\t" + ttName + ":" + rpName + ":" + "alleleB";
-            // phenomeAHeader = phenomeAHeader + "\t" + ttName + ":" + rpName + ":" + "all_maf";
-            // phenomeAHeader = phenomeAHeader + "\t" + ttName + ":" + rpName + ":" + "frequentist_add_pvalue";
-            // phenomeAHeader = phenomeAHeader + "\t" + ttName + ":" + rpName + ":" + "frequentist_add_beta_1";
-            // headerPhenomeFile = headerPhenomeFile + "\t" + ttName + ":" + rpName + ":" +
+            // phenomeAHeader = phenomeAHeader + TAB + ttName + ":" + rpName + ":" + "rs_id_all";
+            // phenomeAHeader = phenomeAHeader + TAB + ttName + ":" + rpName + ":" + "alleleA";
+            // phenomeAHeader = phenomeAHeader + TAB + ttName + ":" + rpName + ":" + "alleleB";
+            // phenomeAHeader = phenomeAHeader + TAB + ttName + ":" + rpName + ":" + "all_maf";
+            // phenomeAHeader = phenomeAHeader + TAB + ttName + ":" + rpName + ":" + "frequentist_add_pvalue";
+            // phenomeAHeader = phenomeAHeader + TAB + ttName + ":" + rpName + ":" + "frequentist_add_beta_1";
+            // headerPhenomeFile = headerPhenomeFile + TAB + ttName + ":" + rpName + ":" +
             // "frequentist_add_beta_1:genotype/sex=1";
-            // headerPhenomeFile = headerPhenomeFile + "\t" + ttName + ":" + rpName + ":" +
+            // headerPhenomeFile = headerPhenomeFile + TAB + ttName + ":" + rpName + ":" +
             // "frequentist_add_beta_2:genotype/sex=2";
-            // phenomeAHeader = phenomeAHeader + "\t" + ttName + ":" + rpName + ":" + "frequentist_add_se_1";
-            // headerPhenomeFile = headerPhenomeFile + "\t" + ttName + ":" + rpName + ":" +
+            // phenomeAHeader = phenomeAHeader + TAB + ttName + ":" + rpName + ":" + "frequentist_add_se_1";
+            // headerPhenomeFile = headerPhenomeFile + TAB + ttName + ":" + rpName + ":" +
             // "frequentist_add_se_1:genotype/sex=1";
-            // headerPhenomeFile = headerPhenomeFile + "\t" + ttName + ":" + rpName + ":" +
+            // headerPhenomeFile = headerPhenomeFile + TAB + ttName + ":" + rpName + ":" +
             // "frequentist_add_se_2:genotype/sex=2";
 
-            phenomeAHashTableIndex = Headers.createHashWithHeader(phenomeAHeader, "\t");
+            phenomeAHashTableIndex = Headers.createHashWithHeader(phenomeAHeader, TAB);
 
             int indexChrInPhenomeAFile = phenomeAHashTableIndex.get("chr");
             int indexPositionInPhenomeAFile = phenomeAHashTableIndex.get("position");
@@ -4106,8 +3920,8 @@ public class GuidanceImpl {
 
             while ((line = br.readLine()) != null) {
                 ArrayList<String> firstList = new ArrayList<>();
-                // delimiter,I assume TAP space.
-                String[] splitted = line.split("\t");
+                // Delimiter,I assume tab space.
+                String[] splitted = line.split(TAB);
 
                 chrAndPosition = splitted[indexChrInPhenomeAFile] + "_" + splitted[indexPositionInPhenomeAFile];
 
@@ -4131,7 +3945,7 @@ public class GuidanceImpl {
             // We start reading the topHits File
             String line = br.readLine();
             HashMap<String, Integer> topHitsHashTableIndex = new HashMap<>();
-            topHitsHashTableIndex = Headers.createHashWithHeader(line, "\t");
+            topHitsHashTableIndex = Headers.createHashWithHeader(line, TAB);
 
             int indexChrInTopHitsFile = topHitsHashTableIndex.get("chr");
             int indexPositionInTopHitsFile = topHitsHashTableIndex.get("position");
@@ -4139,8 +3953,8 @@ public class GuidanceImpl {
             String chrAndPosition = null;
             while ((line = br.readLine()) != null) {
                 ArrayList<String> firstList = new ArrayList<>();
-                // delimiter I assume TAP space.
-                String[] splitted = line.split("\t");
+                // delimiter I assume tab space.
+                String[] splitted = line.split(TAB);
 
                 chrAndPosition = splitted[indexChrInTopHitsFile] + "_" + splitted[indexPositionInTopHitsFile];
 
@@ -4168,14 +3982,12 @@ public class GuidanceImpl {
             // Move next key and value of Map by iterator
             Iterator<Entry<String, ArrayList<String>>> iter = mySet.iterator();
             while (iter.hasNext()) {
-                // key=value separator this by Map.Entry to get key and value
                 Entry<String, ArrayList<String>> m = iter.next();
-                // getKey is used to get key of Map
                 ArrayList<String> firstTmp = m.getValue();
 
                 writer.write(firstTmp.get(0));
                 for (int j = 1; j < firstTmp.size(); j++) {
-                    writer.write("\t" + firstTmp.get(j));
+                    writer.write(TAB + firstTmp.get(j));
                 }
                 writer.newLine();
             }
@@ -4191,10 +4003,10 @@ public class GuidanceImpl {
         long stopTime = System.currentTimeMillis();
         long elapsedTime = (stopTime - startTime) / 1_000;
         if (DEBUG) {
-            System.out.println("\n[DEBUG] addToPhenoMatrix startTime: " + startTime);
-            System.out.println("\n[DEBUG] addToPhenoMatrix endTime: " + stopTime);
-            System.out.println("\n[DEBUG] addToPhenoMatrix elapsedTime: " + elapsedTime + " seconds");
-            System.out.println("\n[DEBUG] Finished execution of addToPhenoMatrix.");
+            LOGGER.debug("\n[DEBUG] addToPhenoMatrix startTime: " + startTime);
+            LOGGER.debug("\n[DEBUG] addToPhenoMatrix endTime: " + stopTime);
+            LOGGER.debug("\n[DEBUG] addToPhenoMatrix elapsedTime: " + elapsedTime + " seconds");
+            LOGGER.debug("\n[DEBUG] Finished execution of addToPhenoMatrix.");
         }
     }
 
@@ -4215,17 +4027,17 @@ public class GuidanceImpl {
             String cmdToStore) throws GuidanceTaskException {
 
         if (DEBUG) {
-            System.out.println("\n[DEBUG] Running addToPhenoMatrixX with parameters:");
-            System.out.println("[DEBUG] \t- Input phenomeFileA      : " + phenomeAFile);
-            System.out.println("[DEBUG] \t- Input filteredByAllFile : " + filteredByAllFile);
-            System.out.println("[DEBUG] \t- Input ttName            : " + ttName);
-            System.out.println("[DEBUG] \t- Input rpName            : " + rpName);
-            System.out.println("[DEBUG] \t- Output phenomeFileB     : " + phenomeBFile);
-            System.out.println("\n");
-
-            System.out.println("\n");
-            System.out.println("[DEBUG] \t- Command: " + cmdToStore);
+            LOGGER.debug("\n[DEBUG] Running addToPhenoMatrixX with parameters:");
+            LOGGER.debug("[DEBUG] \t- Input phenomeFileA      : " + phenomeAFile);
+            LOGGER.debug("[DEBUG] \t- Input filteredByAllFile : " + filteredByAllFile);
+            LOGGER.debug("[DEBUG] \t- Input ttName            : " + ttName);
+            LOGGER.debug("[DEBUG] \t- Input rpName            : " + rpName);
+            LOGGER.debug("[DEBUG] \t- Output phenomeFileB     : " + phenomeBFile);
+            LOGGER.debug(NEW_LINE);
+            LOGGER.debug("[DEBUG] \t- Command: " + cmdToStore);
+            LOGGER.debug("--------------------------------------");
         }
+
         long startTime = System.currentTimeMillis();
 
         // A place to store the results
@@ -4243,18 +4055,19 @@ public class GuidanceImpl {
         // phe_[i]: name of phenotype i.
         // K : number of panels.
         // pa_[j]: name of panel j.
+
         HashMap<String, Integer> phenomeAHashTableIndex = new HashMap<>();
         // HashMap<Integer, String> phenomeAHashTableIndexReversed = new HashMap<>();
 
         // We start reading the phenomeFileA
-        // First of all, the header
         String phenomeAHeader = null;
         try (GZIPInputStream phenomeAFileGz = new GZIPInputStream(new FileInputStream(phenomeAFile));
                 Reader decoder = new InputStreamReader(phenomeAFileGz);
                 BufferedReader br = new BufferedReader(decoder)) {
 
+            // First of all, the header
             phenomeAHeader = br.readLine();
-            phenomeAHashTableIndex = Headers.createHashWithHeader(phenomeAHeader, "\t");
+            phenomeAHashTableIndex = Headers.createHashWithHeader(phenomeAHeader, TAB);
 
             int indexChrInPhenomeAFile = phenomeAHashTableIndex.get("chr");
             int indexPositionInPhenomeAFile = phenomeAHashTableIndex.get("position");
@@ -4264,8 +4077,8 @@ public class GuidanceImpl {
             String line = null;
             while ((line = br.readLine()) != null) {
                 ArrayList<String> firstList = new ArrayList<>();
-                // delimiter,I assume TAP space.
-                String[] splitted = line.split("\t");
+                // Delimiter,I assume tab space.
+                String[] splitted = line.split(TAB);
 
                 chrAndPosition = splitted[indexChrInPhenomeAFile] + "_" + splitted[indexPositionInPhenomeAFile];
 
@@ -4281,8 +4094,6 @@ public class GuidanceImpl {
             throw new GuidanceTaskException(ioe);
         }
 
-        // ------------->>>
-
         // Now we load the whole filteredByAllFile into a TreeMap
         TreeMap<String, ArrayList<String>> filteredTreeMap = new TreeMap<>();
         try (GZIPInputStream filteredByAllGz = new GZIPInputStream(new FileInputStream(filteredByAllFile));
@@ -4295,7 +4106,7 @@ public class GuidanceImpl {
             // We start reading the filteredByAllFile
             // First of all, the header
             String filteredHeader = br.readLine();
-            filteredByAllHashTableIndex = Headers.createHashWithHeader(filteredHeader, "\t");
+            filteredByAllHashTableIndex = Headers.createHashWithHeader(filteredHeader, TAB);
 
             int indexChrInFiltered = filteredByAllHashTableIndex.get("chr");
             int indexPositionInFiltered = filteredByAllHashTableIndex.get("position");
@@ -4319,7 +4130,7 @@ public class GuidanceImpl {
 
             String line = null;
             while ((line = br.readLine()) != null) {
-                String[] splitted = line.split("\t");
+                String[] splitted = line.split(TAB);
                 String chrAndPosition = splitted[indexChrInFiltered] + "_" + splitted[indexPositionInFiltered];
 
                 ArrayList<String> reducedList = new ArrayList<>();
@@ -4344,23 +4155,17 @@ public class GuidanceImpl {
         }
 
         // Finally, we print the phenomeThreeMap into the output file.
-        // We start with the header:
-
         Set<Entry<String, ArrayList<String>>> mySet = phenomeATreeMap.entrySet();
         // Move next key and value of Map by iterator
         Iterator<Entry<String, ArrayList<String>>> iter = mySet.iterator();
         while (iter.hasNext()) {
-            // key=value separator this by Map.Entry to get key and value
             Entry<String, ArrayList<String>> m = iter.next();
-            // getKey is used to get key of Map
-            String chrAndPosition = (String) m.getKey();
-
+            String chrAndPosition = m.getKey();
             ArrayList<String> currentList = (ArrayList<String>) m.getValue();
             ArrayList<String> reducedList = null;
 
             if (filteredTreeMap.containsKey(chrAndPosition)) {
                 reducedList = filteredTreeMap.get(chrAndPosition);
-
                 for (int i = 0; i < reducedList.size(); i++) {
                     currentList.add(reducedList.get(i));
                 }
@@ -4384,14 +4189,12 @@ public class GuidanceImpl {
             // Move next key and value of Map by iterator
             iter = mySet.iterator();
             while (iter.hasNext()) {
-                // key=value separator this by Map.Entry to get key and value
                 Entry<String, ArrayList<String>> m = iter.next();
-                // getKey is used to get key of Map
                 ArrayList<String> firstTmp = m.getValue();
 
                 writer.write(firstTmp.get(0));
                 for (int j = 1; j < firstTmp.size(); j++) {
-                    writer.write("\t" + firstTmp.get(j));
+                    writer.write(TAB + firstTmp.get(j));
                 }
                 writer.newLine();
             }
@@ -4407,10 +4210,10 @@ public class GuidanceImpl {
         long stopTime = System.currentTimeMillis();
         long elapsedTime = (stopTime - startTime) / 1_000;
         if (DEBUG) {
-            System.out.println("\n[DEBUG] addToPhenoMatrix startTime: " + startTime);
-            System.out.println("\n[DEBUG] addToPhenoMatrix endTime: " + stopTime);
-            System.out.println("\n[DEBUG] addToPhenoMatrix elapsedTime: " + elapsedTime + " seconds");
-            System.out.println("\n[DEBUG] Finished execution of addToPhenoMatrixX");
+            LOGGER.debug("\n[DEBUG] addToPhenoMatrix startTime: " + startTime);
+            LOGGER.debug("\n[DEBUG] addToPhenoMatrix endTime: " + stopTime);
+            LOGGER.debug("\n[DEBUG] addToPhenoMatrix elapsedTime: " + elapsedTime + " seconds");
+            LOGGER.debug("\n[DEBUG] Finished execution of addToPhenoMatrixX");
         }
     }
 
@@ -4433,19 +4236,19 @@ public class GuidanceImpl {
             String ttName, String rpName, String phenomeBFile, String cmdToStore) throws GuidanceTaskException {
 
         if (DEBUG) {
-            System.out.println("\n[DEBUG] Running filloutPhenoMatrix with parameters:");
-            System.out.println("[DEBUG] \t- Input phenomeFileA       : " + phenomeAFile);
-            System.out.println("[DEBUG] \t- Input filteredByAllFile  : " + filteredByAllFile);
-            System.out.println("[DEBUG] \t- Input filteredByAllXFile : " + filteredByAllXFile);
-            System.out.println("[DEBUG] \t- Input endChrS            : " + endChrS);
-            System.out.println("[DEBUG] \t- Input ttName             : " + ttName);
-            System.out.println("[DEBUG] \t- Input rpName             : " + rpName);
-            System.out.println("[DEBUG] \t- Output phenomeFileB      : " + phenomeBFile);
-            System.out.println("\n");
-
-            System.out.println("\n");
-            System.out.println("[DEBUG] \t- Command: " + cmdToStore);
+            LOGGER.debug("\n[DEBUG] Running filloutPhenoMatrix with parameters:");
+            LOGGER.debug("[DEBUG] \t- Input phenomeFileA       : " + phenomeAFile);
+            LOGGER.debug("[DEBUG] \t- Input filteredByAllFile  : " + filteredByAllFile);
+            LOGGER.debug("[DEBUG] \t- Input filteredByAllXFile : " + filteredByAllXFile);
+            LOGGER.debug("[DEBUG] \t- Input endChrS            : " + endChrS);
+            LOGGER.debug("[DEBUG] \t- Input ttName             : " + ttName);
+            LOGGER.debug("[DEBUG] \t- Input rpName             : " + rpName);
+            LOGGER.debug("[DEBUG] \t- Output phenomeFileB      : " + phenomeBFile);
+            LOGGER.debug(NEW_LINE);
+            LOGGER.debug("[DEBUG] \t- Command: " + cmdToStore);
+            LOGGER.debug("--------------------------------------");
         }
+
         long startTime = System.currentTimeMillis();
 
         // A place to store the data
@@ -4464,20 +4267,20 @@ public class GuidanceImpl {
             phenomeAHeader = br.readLine();
 
             // phenomeAHeader = "chr\tposition";
-            phenomeAHeader = phenomeAHeader + "\t" + ttName + ":" + rpName + ":" + "rs_id_all";
-            phenomeAHeader = phenomeAHeader + "\t" + ttName + ":" + rpName + ":" + "alleleA";
-            phenomeAHeader = phenomeAHeader + "\t" + ttName + ":" + rpName + ":" + "alleleB";
-            phenomeAHeader = phenomeAHeader + "\t" + ttName + ":" + rpName + ":" + "all_maf";
-            phenomeAHeader = phenomeAHeader + "\t" + ttName + ":" + rpName + ":" + "frequentist_add_pvalue";
-            phenomeAHeader = phenomeAHeader + "\t" + ttName + ":" + rpName + ":" + "frequentist_add_beta_1";
-            phenomeAHeader = phenomeAHeader + "\t" + ttName + ":" + rpName + ":" + "frequentist_add_se_1";
+            phenomeAHeader = phenomeAHeader + TAB + ttName + ":" + rpName + ":" + "rs_id_all";
+            phenomeAHeader = phenomeAHeader + TAB + ttName + ":" + rpName + ":" + "alleleA";
+            phenomeAHeader = phenomeAHeader + TAB + ttName + ":" + rpName + ":" + "alleleB";
+            phenomeAHeader = phenomeAHeader + TAB + ttName + ":" + rpName + ":" + "all_maf";
+            phenomeAHeader = phenomeAHeader + TAB + ttName + ":" + rpName + ":" + "frequentist_add_pvalue";
+            phenomeAHeader = phenomeAHeader + TAB + ttName + ":" + rpName + ":" + "frequentist_add_beta_1";
+            phenomeAHeader = phenomeAHeader + TAB + ttName + ":" + rpName + ":" + "frequentist_add_se_1";
 
-            phenomeAHeader = phenomeAHeader + "\t" + ttName + ":" + rpName + ":" + "frequentist_add_beta_1:genotype/sex=1";
-            phenomeAHeader = phenomeAHeader + "\t" + ttName + ":" + rpName + ":" + "frequentist_add_beta_2:genotype/sex=2";
-            phenomeAHeader = phenomeAHeader + "\t" + ttName + ":" + rpName + ":" + "frequentist_add_se_1:genotype/sex=1";
-            phenomeAHeader = phenomeAHeader + "\t" + ttName + ":" + rpName + ":" + "frequentist_add_se_2:genotype/sex=2";
+            phenomeAHeader = phenomeAHeader + TAB + ttName + ":" + rpName + ":" + "frequentist_add_beta_1:genotype/sex=1";
+            phenomeAHeader = phenomeAHeader + TAB + ttName + ":" + rpName + ":" + "frequentist_add_beta_2:genotype/sex=2";
+            phenomeAHeader = phenomeAHeader + TAB + ttName + ":" + rpName + ":" + "frequentist_add_se_1:genotype/sex=1";
+            phenomeAHeader = phenomeAHeader + TAB + ttName + ":" + rpName + ":" + "frequentist_add_se_2:genotype/sex=2";
 
-            phenomeAHashTableIndex = Headers.createHashWithHeader(phenomeAHeader, "\t");
+            phenomeAHashTableIndex = Headers.createHashWithHeader(phenomeAHeader, TAB);
 
             int indexChrInPhenomeAFile = phenomeAHashTableIndex.get("chr");
             int indexPositionInPhenomeAFile = phenomeAHashTableIndex.get("position");
@@ -4508,8 +4311,8 @@ public class GuidanceImpl {
             String line = null;
             while ((line = br.readLine()) != null) {
                 ArrayList<String> currentList = new ArrayList<>();
-                // delimiter,I assume TAP space.
-                String[] splitted = line.split("\t");
+                // delimiter,I assume tab space.
+                String[] splitted = line.split(TAB);
 
                 chrAndPosition = splitted[indexChrInPhenomeAFile] + "_" + splitted[indexPositionInPhenomeAFile];
 
@@ -4539,7 +4342,7 @@ public class GuidanceImpl {
             // We start reading the filteredByAllFile
             // First of all, the header
             String filteredHeader = br.readLine();
-            filteredByAllHashTableIndex = Headers.createHashWithHeader(filteredHeader, "\t");
+            filteredByAllHashTableIndex = Headers.createHashWithHeader(filteredHeader, TAB);
 
             int indexChrInFiltered = filteredByAllHashTableIndex.get("chr");
             int indexPositionInFiltered = filteredByAllHashTableIndex.get("position");
@@ -4561,7 +4364,7 @@ public class GuidanceImpl {
 
             String line = null;
             while ((line = br.readLine()) != null) {
-                String[] splitted = line.split("\t");
+                String[] splitted = line.split(TAB);
                 String chrAndPosition = splitted[indexChrInFiltered] + "_" + splitted[indexPositionInFiltered];
 
                 ArrayList<String> reducedList = new ArrayList<>();
@@ -4590,7 +4393,7 @@ public class GuidanceImpl {
         HashMap<String, Integer> filteredByAllXHashTableIndex = new HashMap<>();
         // HashMap<Integer, String> filteredByAllXHashTableIndexReversed = new HashMap<>();
 
-        if (endChrS.equals("23")) {
+        if (endChrS.equals(CHR_23)) {
             // Then, we need to extract the information of each snp from the filteredByAllFile
             // Now we load the whole filteredByAllFile into a TreeMap
             try (GZIPInputStream filteredByAllXGz = new GZIPInputStream(new FileInputStream(filteredByAllXFile));
@@ -4600,7 +4403,7 @@ public class GuidanceImpl {
                 // We start reading the filteredByAllXFile
                 // First of all, the header
                 String filteredXHeader = br.readLine();
-                filteredByAllXHashTableIndex = Headers.createHashWithHeader(filteredXHeader, "\t");
+                filteredByAllXHashTableIndex = Headers.createHashWithHeader(filteredXHeader, TAB);
 
                 int indexChrInFilteredX = filteredByAllXHashTableIndex.get("chr");
                 int indexPositionInFilteredX = filteredByAllXHashTableIndex.get("position");
@@ -4619,7 +4422,7 @@ public class GuidanceImpl {
 
                 String line = null;
                 while ((line = br.readLine()) != null) {
-                    String[] splitted = line.split("\t");
+                    String[] splitted = line.split(TAB);
                     String chrAndPosition = splitted[indexChrInFilteredX] + "_" + splitted[indexPositionInFilteredX];
 
                     ArrayList<String> reducedList = new ArrayList<>();
@@ -4652,19 +4455,15 @@ public class GuidanceImpl {
         // Move next key and value of Map by iterator
         Iterator<Entry<String, ArrayList<String>>> iter = mySet.iterator();
         while (iter.hasNext()) {
-            // key=value separator this by Map.Entry to get key and value
             Entry<String, ArrayList<String>> m = iter.next();
-
+            String chrAndPosition = m.getKey();
             ArrayList<String> currentList = m.getValue();
             ArrayList<String> reducedList = null;
-
-            // getKey is used to get key of Map
-            String chrAndPosition = (String) m.getKey();
 
             String[] divideKey = chrAndPosition.split("_");
             String Chr = divideKey[0];
 
-            if (!Chr.equals("23")) {
+            if (!Chr.equals(CHR_23)) {
                 if (filteredTreeMap.containsKey(chrAndPosition)) {
                     reducedList = filteredTreeMap.get(chrAndPosition);
 
@@ -4704,14 +4503,12 @@ public class GuidanceImpl {
             // Move next key and value of Map by iterator
             iter = mySet.iterator();
             while (iter.hasNext()) {
-                // key=value separator this by Map.Entry to get key and value
                 Entry<String, ArrayList<String>> m = iter.next();
-                // getKey is used to get key of Map
                 ArrayList<String> firstTmp = m.getValue();
 
                 writer.write(firstTmp.get(0));
                 for (int j = 1; j < firstTmp.size(); j++) {
-                    writer.write("\t" + firstTmp.get(j));
+                    writer.write(TAB + firstTmp.get(j));
                 }
 
                 writer.newLine();
@@ -4726,12 +4523,12 @@ public class GuidanceImpl {
         FileUtils.gzipFile(plainPhenomeBFile, phenomeBFile);
 
         long stopTime = System.currentTimeMillis();
-        long elapsedTime = (stopTime - startTime) / 1000;
+        long elapsedTime = (stopTime - startTime) / 1_000;
         if (DEBUG) {
-            System.out.println("\n[DEBUG] filloutPhenoMatrix startTime: " + startTime);
-            System.out.println("\n[DEBUG] filloutPhenoMatrix endTime: " + stopTime);
-            System.out.println("\n[DEBUG] filloutPhenoMatrix elapsedTime: " + elapsedTime + " seconds");
-            System.out.println("\n[DEBUG] Finished execution of filloutPhenoMatrix.");
+            LOGGER.debug("\n[DEBUG] filloutPhenoMatrix startTime: " + startTime);
+            LOGGER.debug("\n[DEBUG] filloutPhenoMatrix endTime: " + stopTime);
+            LOGGER.debug("\n[DEBUG] filloutPhenoMatrix elapsedTime: " + elapsedTime + " seconds");
+            LOGGER.debug("\n[DEBUG] Finished execution of filloutPhenoMatrix.");
         }
 
     }
@@ -4753,16 +4550,15 @@ public class GuidanceImpl {
             String cmdToStore) throws GuidanceTaskException {
 
         if (DEBUG) {
-            System.out.println("\n[DEBUG] Running finalizePhenoMatrix with parameters:");
-            System.out.println("[DEBUG] \t- Input phenomeAFile  : " + phenomeAFile);
-            System.out.println("[DEBUG] \t- Input phenomeBFile  : " + phenomeBFile);
-            System.out.println("[DEBUG] \t- Input ttName        : " + ttName);
-            System.out.println("[DEBUG] \t- Input rpName        : " + rpName);
-            System.out.println("[DEBUG] \t- Output phenomeCFile : " + phenomeCFile);
-            System.out.println("\n");
-
-            System.out.println("\n");
-            System.out.println("[DEBUG] \t- Command: " + cmdToStore);
+            LOGGER.debug("\n[DEBUG] Running finalizePhenoMatrix with parameters:");
+            LOGGER.debug("[DEBUG] \t- Input phenomeAFile  : " + phenomeAFile);
+            LOGGER.debug("[DEBUG] \t- Input phenomeBFile  : " + phenomeBFile);
+            LOGGER.debug("[DEBUG] \t- Input ttName        : " + ttName);
+            LOGGER.debug("[DEBUG] \t- Input rpName        : " + rpName);
+            LOGGER.debug("[DEBUG] \t- Output phenomeCFile : " + phenomeCFile);
+            LOGGER.debug(NEW_LINE);
+            LOGGER.debug("[DEBUG] \t- Command: " + cmdToStore);
+            LOGGER.debug("--------------------------------------");
         }
         long startTime = System.currentTimeMillis();
 
@@ -4776,9 +4572,10 @@ public class GuidanceImpl {
         try (GZIPInputStream phenomeAFileGz = new GZIPInputStream(new FileInputStream(phenomeAFile));
                 Reader decoder = new InputStreamReader(phenomeAFileGz);
                 BufferedReader br = new BufferedReader(decoder)) {
+
             // First of all, the header
             phenomeAHeader = br.readLine();
-            phenomeAHashTableIndex = Headers.createHashWithHeader(phenomeAHeader, "\t");
+            phenomeAHashTableIndex = Headers.createHashWithHeader(phenomeAHeader, TAB);
 
             int indexChrInPhenomeAFile = phenomeAHashTableIndex.get("chr");
             int indexPositionInPhenomeAFile = phenomeAHashTableIndex.get("position");
@@ -4789,7 +4586,7 @@ public class GuidanceImpl {
             while ((line = br.readLine()) != null) {
                 ArrayList<String> firstList = new ArrayList<>();
                 // delimiter,I assume TAP space.
-                String[] splitted = line.split("\t");
+                String[] splitted = line.split(TAB);
 
                 chrAndPosition = splitted[indexChrInPhenomeAFile] + "_" + splitted[indexPositionInPhenomeAFile];
 
@@ -4816,8 +4613,8 @@ public class GuidanceImpl {
             // We start reading the phenomeFileA
             // First of all, the header
             phenomeBHeader = br.readLine();
-            phenomeBHashTableIndex = Headers.createHashWithHeader(phenomeBHeader, "\t");
-            phenomeBHashTableIndexReversed = Headers.createHashWithHeaderReversed(phenomeBHeader, "\t");
+            phenomeBHashTableIndex = Headers.createHashWithHeader(phenomeBHeader, TAB);
+            phenomeBHashTableIndexReversed = Headers.createHashWithHeaderReversed(phenomeBHeader, TAB);
 
             int indexChrInPhenomeBFile = phenomeBHashTableIndex.get("chr");
             int indexPositionInPhenomeBFile = phenomeBHashTableIndex.get("position");
@@ -4827,8 +4624,8 @@ public class GuidanceImpl {
             String line = null;
             while ((line = br.readLine()) != null) {
                 ArrayList<String> firstList = new ArrayList<>();
-                // delimiter,I assume TAP space.
-                String[] splitted = line.split("\t");
+                // delimiter,I assume tab space.
+                String[] splitted = line.split(TAB);
 
                 chrAndPosition = splitted[indexChrInPhenomeBFile] + "_" + splitted[indexPositionInPhenomeBFile];
 
@@ -4850,7 +4647,7 @@ public class GuidanceImpl {
 
         String finalHeader = phenomeAHeader;
         for (int i = 2; i < phenomeBHashTableIndex.size(); i++) {
-            finalHeader = finalHeader + "\t" + phenomeBHashTableIndexReversed.get(i);
+            finalHeader = finalHeader + TAB + phenomeBHashTableIndexReversed.get(i);
         }
 
         // Finally, we print the phenomeAThreeMap into the output plain file and we will compress it
@@ -4864,14 +4661,12 @@ public class GuidanceImpl {
             // Move next key and value of Map by iterator
             Iterator<Entry<String, ArrayList<String>>> iter = mySet.iterator();
             while (iter.hasNext()) {
-                // key=value separator this by Map.Entry to get key and value
                 Entry<String, ArrayList<String>> m = iter.next();
-                // getKey is used to get key of Map
                 ArrayList<String> firstTmp = m.getValue();
 
                 writer.write(firstTmp.get(0));
                 for (int j = 1; j < firstTmp.size(); j++) {
-                    writer.write("\t" + firstTmp.get(j));
+                    writer.write(TAB + firstTmp.get(j));
                 }
 
                 writer.newLine();
@@ -4889,10 +4684,10 @@ public class GuidanceImpl {
         long stopTime = System.currentTimeMillis();
         long elapsedTime = (stopTime - startTime) / 1_000;
         if (DEBUG) {
-            System.out.println("\n[DEBUG] finalizePhenoMatrix startTime: " + startTime);
-            System.out.println("\n[DEBUG] finalizePhenoMatrix endTime: " + stopTime);
-            System.out.println("\n[DEBUG] finalizePhenoMatrix elapsedTime: " + elapsedTime + " seconds");
-            System.out.println("\n[DEBUG] Finished execution of finalizePhenoMatrix.");
+            LOGGER.debug("\n[DEBUG] finalizePhenoMatrix startTime: " + startTime);
+            LOGGER.debug("\n[DEBUG] finalizePhenoMatrix endTime: " + stopTime);
+            LOGGER.debug("\n[DEBUG] finalizePhenoMatrix elapsedTime: " + elapsedTime + " seconds");
+            LOGGER.debug("\n[DEBUG] Finished execution of finalizePhenoMatrix.");
         }
 
     }
@@ -4922,13 +4717,13 @@ public class GuidanceImpl {
         // Double hweCasesThreshold = Double.parseDouble(hweCasesThresholdS);
         // Double hweControlsThreshold = Double.parseDouble(hweCohortThresholdS);
         int real_length_assoc = 67;
-        if (!chr.equals("23")) {
+        if (!chr.equals(CHR_23)) {
             // real_length_assoc = 69;
             real_length_assoc = 67;
         }
 
         ArrayList<String> summaryTmp = new ArrayList<>();
-        // We just need to put the information of the differente arraysList into the returned arrayList
+        // We just need to put the information of the different arraysList into the returned arrayList
         // First the position (as string):
 
         // We put the chromosome number
@@ -4939,7 +4734,7 @@ public class GuidanceImpl {
                 summaryTmp.add(caseArray.get(i));
             }
         } else {
-            System.out.println("\n[DEBUG] Extranisimo, este caso no deberia darse.");
+            LOGGER.info("\n[DEBUG] Extranisimo, este caso no deberia darse.");
         }
 
         if (assocArray != null) {

@@ -33,10 +33,16 @@ package guidance.files;
 
 import java.util.ArrayList;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import guidance.utils.ParseCmdLine;
 
 
 public class CommonFiles {
+
+    // Logger
+    private static final Logger LOGGER = LogManager.getLogger("Console");
 
     private final int MAX_NUMBER_OF_CHROMOSOMES = 23;
 
@@ -304,8 +310,6 @@ public class CommonFiles {
         checkChromoIndex(chromo);
 
         int index = chromo - startChr;
-        // System.out.println("\t[CommonFiles] chromo " + chromo + " index " + index + " startChr " + startChr);
-        // System.out.println("\t[CommonFiles] mixedGenFileName " + mixedGenFileName.get(index));
         return mixedGenFile.get(index).getName();
     }
 
@@ -879,26 +883,26 @@ public class CommonFiles {
         checkChromoIndex(chromo);
 
         int index = chromo - startChr;
-        System.out.println("-------------------------------------------------");
-        System.out.println("Mixed files information for the chromosome " + chromo + "(" + index + ")");
-        System.out.println("mixedGenFile         : " + mixedGenFile.get(index).getFullName());
+        LOGGER.info("-------------------------------------------------");
+        LOGGER.info("Mixed files information for the chromosome " + chromo + "(" + index + ")");
+        LOGGER.info("mixedGenFile         : " + mixedGenFile.get(index).getFullName());
 
-        System.out.println("mixedPairsFile       : " + mixedPairsFile.get(index).getFullName());
-        System.out.println("mixedSampleFileName  : " + mixedSampleFile.get(index).getName());
-        System.out.println("mixedSampleFile      : " + mixedSampleFile.get(index));
-        System.out.println("mixedTypeSample      : " + mixedTypeSample.get(index));
+        LOGGER.info("mixedPairsFile       : " + mixedPairsFile.get(index).getFullName());
+        LOGGER.info("mixedSampleFileName  : " + mixedSampleFile.get(index).getName());
+        LOGGER.info("mixedSampleFile      : " + mixedSampleFile.get(index));
+        LOGGER.info("mixedTypeSample      : " + mixedTypeSample.get(index));
 
-        System.out.println("mixedShapeitHapsFile   : " + mixedShapeitHapsFile.get(index).getFullName());
-        System.out.println("mixedShapeitSampleFile : " + mixedShapeitSampleFile.get(index).getFullName());
-        System.out.println("mixedShapeitLogFile    : " + mixedShapeitLogFile.get(index).getFullName());
-        System.out.println("mixedExcludedSnpsFile :  " + mixedExcludedSnpsFile.get(index).getFullName());
+        LOGGER.info("mixedShapeitHapsFile   : " + mixedShapeitHapsFile.get(index).getFullName());
+        LOGGER.info("mixedShapeitSampleFile : " + mixedShapeitSampleFile.get(index).getFullName());
+        LOGGER.info("mixedShapeitLogFile    : " + mixedShapeitLogFile.get(index).getFullName());
+        LOGGER.info("mixedExcludedSnpsFile :  " + mixedExcludedSnpsFile.get(index).getFullName());
 
-        System.out.println("-------------------------------------------------");
+        LOGGER.info("-------------------------------------------------");
     }
 
     private void checkChromoIndex(int chromo) {
         if ((chromo < 1) || (chromo > MAX_NUMBER_OF_CHROMOSOMES)) {
-            System.err.println("[CommonFiles] Error, chromosome " + chromo + "does not exist");
+            LOGGER.fatal("[CommonFiles] Error, chromosome " + chromo + "does not exist");
             System.exit(1);
         }
     }

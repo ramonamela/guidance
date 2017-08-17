@@ -33,6 +33,9 @@ package guidance.files;
 
 import java.util.List;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import guidance.utils.ChromoInfo;
 import guidance.utils.ParseCmdLine;
 
@@ -42,9 +45,14 @@ import java.util.ArrayList;
 
 public class AssocFiles {
 
+    // Logger
+    private static final Logger LOGGER = LogManager.getLogger("Console");
+
+    // Constants
     private static final int MAX_NUMBER_OF_CHROMOSOMES = 23;
     private static final int MIN_LIMIT = 1;
     private static final int MAX_LIMIT = 252_000_000;
+    private static final String UNCOMPRESSED = "uncompressed";
 
     private ArrayList<ArrayList<ArrayList<String>>> outDir = new ArrayList<>();
 
@@ -118,10 +126,10 @@ public class AssocFiles {
                 for (int i = this.startChr; i <= this.endChr; i++) {
                     int chromo = i;
                     int maxSize = generalChromoInfo.getMaxSize(chromo);
-                    int total_chunks = maxSize / chunkSize;
+                    int totalChunks = maxSize / chunkSize;
                     int module = maxSize % chunkSize;
                     if (module != 0) {
-                        total_chunks++;
+                        totalChunks++;
                     }
                     int lim1 = 1;
                     int lim2 = lim1 + chunkSize - 1;
@@ -129,17 +137,17 @@ public class AssocFiles {
                     ArrayList<GenericFile> chunkListCombinedFilteredFile = new ArrayList<>();
                     ArrayList<GenericFile> chunkListCombinedCondensedFile = new ArrayList<>();
 
-                    for (int k = 0; k < total_chunks; k++) {
+                    for (int k = 0; k < totalChunks; k++) {
                         String tmpCombinedFilteredFileName = prefixFilteredName + "_chr_" + chromo + "_" + lim1 + "_" + lim2
                                 + "_combined.txt.gz";
                         GenericFile myChunkListCombinedFilteredFile = new GenericFile(testTypeOutDir2, tmpCombinedFilteredFileName,
-                                "uncompressed", "none");
+                                UNCOMPRESSED, "none");
                         chunkListCombinedFilteredFile.add(myChunkListCombinedFilteredFile);
 
                         String tmpCombinedCondensedFileName = prefixCondensedName + "_chr_" + chromo + "_" + lim1 + "_" + lim2
                                 + "_combined.txt.gz";
                         GenericFile myChunkListCombinedCondensedFile = new GenericFile(testTypeOutDir2, tmpCombinedCondensedFileName,
-                                "uncompressed", "none");
+                                UNCOMPRESSED, "none");
                         chunkListCombinedCondensedFile.add(myChunkListCombinedCondensedFile);
 
                         lim1 = lim1 + chunkSize;
@@ -178,10 +186,10 @@ public class AssocFiles {
                     chromoListOutDir.add(tmpChrDir);
 
                     int maxSize = generalChromoInfo.getMaxSize(chromo);
-                    int total_chunks = maxSize / chunkSize;
+                    int totalChunks = maxSize / chunkSize;
                     int module = maxSize % chunkSize;
                     if (module != 0)
-                        total_chunks++;
+                        totalChunks++;
                     int lim1 = 1;
                     int lim2 = lim1 + chunkSize - 1;
 
@@ -191,33 +199,33 @@ public class AssocFiles {
 
                     ArrayList<GenericFile> chunkListSummaryFilteredFile = new ArrayList<>();
                     ArrayList<GenericFile> chunkListSummaryCondensedFile = new ArrayList<>();
-                    for (int k = 0; k < total_chunks; k++) {
+                    for (int k = 0; k < totalChunks; k++) {
                         // Now we have to create the impute files for this iteration
                         String tmpSnptestOutFileName = "chr_" + chromo + "_" + testTypeName + "_" + rPanel + "_" + lim1 + "_" + lim2
                                 + "_snptest.out.gz";
-                        GenericFile myChunkListSnptestOutFile = new GenericFile(tmpChrDir, tmpSnptestOutFileName, "uncompressed", "none");
+                        GenericFile myChunkListSnptestOutFile = new GenericFile(tmpChrDir, tmpSnptestOutFileName, UNCOMPRESSED, "none");
                         chunkListSnptestOutFile.add(myChunkListSnptestOutFile);
 
                         String tmpSnptestLogFileName = "chr_" + chromo + "_" + testTypeName + "_" + rPanel + "_" + lim1 + "_" + lim2
                                 + "_snptest.log";
-                        GenericFile myChunkListSnptestLogFile = new GenericFile(tmpChrDir, tmpSnptestLogFileName, "uncompressed", "none");
+                        GenericFile myChunkListSnptestLogFile = new GenericFile(tmpChrDir, tmpSnptestLogFileName, UNCOMPRESSED, "none");
                         chunkListSnptestLogFile.add(myChunkListSnptestLogFile);
 
                         String tmpSummaryFileName = "chr_" + chromo + "_" + testTypeName + "_" + rPanel + "_" + lim1 + "_" + lim2
                                 + "_summary.txt.gz";
-                        GenericFile myChunkListSummaryFile = new GenericFile(tmpChrDir, tmpSummaryFileName, "uncompressed", "none");
+                        GenericFile myChunkListSummaryFile = new GenericFile(tmpChrDir, tmpSummaryFileName, UNCOMPRESSED, "none");
                         chunkListSummaryFile.add(myChunkListSummaryFile);
 
                         String tmpSummaryFilteredFileName = "chr_" + chromo + "_" + testTypeName + "_" + rPanel + "_" + lim1 + "_" + lim2
                                 + "_summary_filtered.txt.gz";
-                        GenericFile myChunkListSummaryFilteredFile = new GenericFile(tmpChrDir, tmpSummaryFilteredFileName, "uncompressed",
+                        GenericFile myChunkListSummaryFilteredFile = new GenericFile(tmpChrDir, tmpSummaryFilteredFileName, UNCOMPRESSED,
                                 "none");
                         chunkListSummaryFilteredFile.add(myChunkListSummaryFilteredFile);
 
                         String tmpSummaryCondensedFileName = "chr_" + chromo + "_" + testTypeName + "_" + rPanel + "_" + lim1 + "_" + lim2
                                 + "_summary_condensed.txt.gz";
-                        GenericFile myChunkListSummaryCondensedFile = new GenericFile(tmpChrDir, tmpSummaryCondensedFileName,
-                                "uncompressed", "none");
+                        GenericFile myChunkListSummaryCondensedFile = new GenericFile(tmpChrDir, tmpSummaryCondensedFileName, UNCOMPRESSED,
+                                "none");
                         chunkListSummaryCondensedFile.add(myChunkListSummaryCondensedFile);
 
                         lim1 = lim1 + chunkSize;
@@ -268,7 +276,6 @@ public class AssocFiles {
         checkChromoIndex(chromo);
 
         int i = chromo - this.startChr;
-        // int i= chromo - 1 ;
         return this.outDir.get(testTypeIndex).get(rPanelIndex).get(i);
     }
 
@@ -291,7 +298,6 @@ public class AssocFiles {
         checkLimits(chromo, lim1, lim2);
 
         // The offset is because the array start in position 0
-        // int i = chromo -1;
         int i = chromo - this.startChr;
         int index = lim1 / chunkSize;
         return this.snptestOutFile.get(testTypeIndex).get(rPanelIndex).get(i).get(index).getName();
@@ -316,7 +322,6 @@ public class AssocFiles {
         checkLimits(chromo, lim1, lim2);
 
         // The offset is because the array start in position 0
-        // int i = chromo -1;
         int i = chromo - this.startChr;
         int index = lim1 / chunkSize;
         return this.snptestOutFile.get(testTypeIndex).get(rPanelIndex).get(i).get(index).getFullName();
@@ -343,7 +348,6 @@ public class AssocFiles {
         checkLimits(chromo, lim1, lim2);
 
         // The offset is because the array start in position 0
-        // int i = chromo -1;
         int i = chromo - this.startChr;
         int index = lim1 / chunkSize;
         this.snptestOutFile.get(testTypeIndex).get(rPanelIndex).get(i).get(index).setFinalStatus(finalStatus);
@@ -368,7 +372,6 @@ public class AssocFiles {
         checkLimits(chromo, lim1, lim2);
 
         // The offset is because the array start in position 0
-        // int i = chromo -1;
         int i = chromo - this.startChr;
         int index = lim1 / chunkSize;
         return this.snptestOutFile.get(testTypeIndex).get(rPanelIndex).get(i).get(index).getFinalStatus();
@@ -394,7 +397,6 @@ public class AssocFiles {
         checkLimits(chromo, lim1, lim2);
 
         // The offset is because the array start in position 0
-        // int i = chromo -1;
         int i = chromo - this.startChr;
         int index = lim1 / chunkSize;
         return this.summaryFilteredFile.get(testTypeIndex).get(rPanelIndex).get(i).get(index).getName();
@@ -419,7 +421,6 @@ public class AssocFiles {
         checkLimits(chromo, lim1, lim2);
 
         // The offset is because the array start in position 0
-        // int i = chromo -1;
         int i = chromo - this.startChr;
         int index = lim1 / chunkSize;
         return this.summaryFilteredFile.get(testTypeIndex).get(rPanelIndex).get(i).get(index).getFullName();
@@ -446,7 +447,6 @@ public class AssocFiles {
         checkLimits(chromo, lim1, lim2);
 
         // The offset is because the array start in position 0
-        // int i = chromo -1;
         int i = chromo - this.startChr;
         int index = lim1 / chunkSize;
         this.summaryFilteredFile.get(testTypeIndex).get(rPanelIndex).get(i).get(index).setFinalStatus(finalStatus);
@@ -471,7 +471,6 @@ public class AssocFiles {
         checkLimits(chromo, lim1, lim2);
 
         // The offset is because the array start in position 0
-        // int i = chromo -1;
         int i = chromo - this.startChr;
         int index = lim1 / chunkSize;
         return this.summaryFilteredFile.get(testTypeIndex).get(rPanelIndex).get(i).get(index).getFinalStatus();
@@ -496,7 +495,6 @@ public class AssocFiles {
         checkLimits(chromo, lim1, lim2);
 
         // The offset is because the array start in position 0
-        // int i = chromo -1;
         int i = chromo - this.startChr;
         int index = lim1 / chunkSize;
         return this.combinedFilteredFile.get(testTypeIndex).get(rPanelIndex).get(i).get(index).getName();
@@ -521,7 +519,6 @@ public class AssocFiles {
         checkLimits(chromo, lim1, lim2);
 
         // The offset is because the array start in position 0
-        // int i = chromo -1;
         int i = chromo - this.startChr;
         int index = lim1 / chunkSize;
         return this.combinedFilteredFile.get(testTypeIndex).get(rPanelIndex).get(i).get(index).getFullName();
@@ -548,7 +545,6 @@ public class AssocFiles {
         checkLimits(chromo, lim1, lim2);
 
         // The offset is because the array start in position 0
-        // int i = chromo -1;
         int i = chromo - this.startChr;
         int index = lim1 / chunkSize;
         this.combinedFilteredFile.get(testTypeIndex).get(rPanelIndex).get(i).get(index).setFinalStatus(finalStatus);
@@ -573,7 +569,6 @@ public class AssocFiles {
         checkLimits(chromo, lim1, lim2);
 
         // The offset is because the array start in position 0
-        // int i = chromo -1;
         int i = chromo - this.startChr;
         int index = lim1 / chunkSize;
         return this.combinedFilteredFile.get(testTypeIndex).get(rPanelIndex).get(i).get(index).getFinalStatus();
@@ -600,7 +595,6 @@ public class AssocFiles {
         checkLimits(chromo, lim1, lim2);
 
         // The offset is because the array start in position 0
-        // int i = chromo -1;
         int i = chromo - this.startChr;
         int index = lim1 / chunkSize;
         return this.summaryCondensedFile.get(testTypeIndex).get(rPanelIndex).get(i).get(index).getName();
@@ -625,7 +619,6 @@ public class AssocFiles {
         checkLimits(chromo, lim1, lim2);
 
         // The offset is because the array start in position 0
-        // int i = chromo -1;
         int i = chromo - this.startChr;
         int index = lim1 / chunkSize;
         return this.summaryCondensedFile.get(testTypeIndex).get(rPanelIndex).get(i).get(index).getFullName();
@@ -652,7 +645,6 @@ public class AssocFiles {
         checkLimits(chromo, lim1, lim2);
 
         // The offset is because the array start in position 0
-        // int i = chromo -1;
         int i = chromo - this.startChr;
         int index = lim1 / chunkSize;
         this.summaryCondensedFile.get(testTypeIndex).get(rPanelIndex).get(i).get(index).setFinalStatus(finalStatus);
@@ -677,7 +669,6 @@ public class AssocFiles {
         checkLimits(chromo, lim1, lim2);
 
         // The offset is because the array start in position 0
-        // int i = chromo -1;
         int i = chromo - this.startChr;
         int index = lim1 / chunkSize;
         return this.summaryCondensedFile.get(testTypeIndex).get(rPanelIndex).get(i).get(index).getFinalStatus();
@@ -702,7 +693,6 @@ public class AssocFiles {
         checkLimits(chromo, lim1, lim2);
 
         // The offset is because the array start in position 0
-        // int i = chromo -1;
         int i = chromo - this.startChr;
         int index = lim1 / chunkSize;
         return this.combinedCondensedFile.get(testTypeIndex).get(rPanelIndex).get(i).get(index).getName();
@@ -727,7 +717,6 @@ public class AssocFiles {
         checkLimits(chromo, lim1, lim2);
 
         // The offset is because the array start in position 0
-        // int i = chromo -1;
         int i = chromo - this.startChr;
         int index = lim1 / chunkSize;
         return this.combinedCondensedFile.get(testTypeIndex).get(rPanelIndex).get(i).get(index).getFullName();
@@ -754,7 +743,6 @@ public class AssocFiles {
         checkLimits(chromo, lim1, lim2);
 
         // The offset is because the array start in position 0
-        // int i = chromo -1;
         int i = chromo - this.startChr;
         int index = lim1 / chunkSize;
         this.combinedCondensedFile.get(testTypeIndex).get(rPanelIndex).get(i).get(index).setFinalStatus(finalStatus);
@@ -779,7 +767,6 @@ public class AssocFiles {
         checkLimits(chromo, lim1, lim2);
 
         // The offset is because the array start in position 0
-        // int i = chromo -1;
         int i = chromo - this.startChr;
         int index = lim1 / chunkSize;
         return this.combinedCondensedFile.get(testTypeIndex).get(rPanelIndex).get(i).get(index).getFinalStatus();
@@ -804,7 +791,6 @@ public class AssocFiles {
         checkLimits(chromo, lim1, lim2);
 
         // The offset is because the array start in position 0
-        // int i = chromo -1;
         int i = chromo - this.startChr;
         int index = lim1 / chunkSize;
         return this.snptestLogFileName.get(testTypeIndex).get(rPanelIndex).get(i).get(index).getName();
@@ -829,7 +815,6 @@ public class AssocFiles {
         checkLimits(chromo, lim1, lim2);
 
         // The offset is because the array start in position 0
-        // int i = chromo -1;
         int i = chromo - this.startChr;
         int index = lim1 / chunkSize;
         return this.snptestLogFile.get(testTypeIndex).get(rPanelIndex).get(i).get(index).getFullName();
@@ -854,7 +839,6 @@ public class AssocFiles {
         checkLimits(chromo, lim1, lim2);
 
         // The offset is because the array start in position 0
-        // int i = chromo -1;
         int i = chromo - this.startChr;
         int index = lim1 / chunkSize;
         return this.summaryFile.get(testTypeIndex).get(rPanelIndex).get(i).get(index).getName();
@@ -879,7 +863,6 @@ public class AssocFiles {
         checkLimits(chromo, lim1, lim2);
 
         // The offset is because the array start in position 0
-        // int i = chromo -1;
         int i = chromo - this.startChr;
         int index = lim1 / chunkSize;
         return this.summaryFile.get(testTypeIndex).get(rPanelIndex).get(i).get(index).getFullName();
@@ -906,7 +889,6 @@ public class AssocFiles {
         checkLimits(chromo, lim1, lim2);
 
         // The offset is because the array start in position 0
-        // int i = chromo -1;
         int i = chromo - this.startChr;
         int index = lim1 / chunkSize;
         this.summaryFile.get(testTypeIndex).get(rPanelIndex).get(i).get(index).setFinalStatus(finalStatus);
@@ -931,7 +913,6 @@ public class AssocFiles {
         checkLimits(chromo, lim1, lim2);
 
         // The offset is because the array start in position 0
-        // int i = chromo -1;
         int i = chromo - this.startChr;
         int index = lim1 / chunkSize;
         return this.summaryFile.get(testTypeIndex).get(rPanelIndex).get(i).get(index).getFinalStatus();
@@ -959,25 +940,25 @@ public class AssocFiles {
         int indexHigh = lim2 / chunkSize;
 
         for (int j = indexLow; j < indexHigh; j++) {
-            System.out.println("-------------------------------------------------");
-            System.out.println("Assoc files information for the chromosome " + chromo);
-            System.out.println("outDir                  : " + outDir.get(testTypeIndex).get(rPanelIndex).get(i));
-            System.out.println("snptestOutFile    : " + snptestOutFile.get(testTypeIndex).get(rPanelIndex).get(i).get(indexLow));
-            System.out.println("snptestLogFile    : " + snptestLogFile.get(testTypeIndex).get(rPanelIndex).get(i).get(indexLow));
-            System.out.println("-------------------------------------------------");
+            LOGGER.info("-------------------------------------------------");
+            LOGGER.info("Assoc files information for the chromosome " + chromo);
+            LOGGER.info("outDir                  : " + outDir.get(testTypeIndex).get(rPanelIndex).get(i));
+            LOGGER.info("snptestOutFile    : " + snptestOutFile.get(testTypeIndex).get(rPanelIndex).get(i).get(indexLow));
+            LOGGER.info("snptestLogFile    : " + snptestLogFile.get(testTypeIndex).get(rPanelIndex).get(i).get(indexLow));
+            LOGGER.info("-------------------------------------------------");
         }
     }
 
     private void checkChromoIndex(int chromo) {
         if ((chromo < 1) || (chromo > MAX_NUMBER_OF_CHROMOSOMES)) {
-            System.err.println("[AssocFiles] Error, chromosome " + chromo + "does not exist");
+            LOGGER.fatal("[AssocFiles] Error, chromosome " + chromo + "does not exist");
             System.exit(1);
         }
     }
 
     private void checkLimits(int chromo, int lim1, int lim2) {
         if ((lim1 < MIN_LIMIT) || (lim2 > MAX_LIMIT)) {
-            System.err.println("[AssocFiles] Error, Chunk " + lim1 + "_" + lim2 + "does not exist for chromosome " + chromo);
+            LOGGER.fatal("[AssocFiles] Error, Chunk " + lim1 + "_" + lim2 + "does not exist for chromosome " + chromo);
             System.exit(1);
         }
     }
