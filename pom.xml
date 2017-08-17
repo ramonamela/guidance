@@ -6,7 +6,7 @@
 	<groupId>es.bsc</groupId>
 	<artifactId>guidance</artifactId>
 	<packaging>jar</packaging>
-	<version>0.9.8</version>
+	<version>0.9.9</version>
 
 	<!-- PROJECT INFORMATION -->
 	<name>Guidance Official Release</name>
