@@ -45,7 +45,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.util.Date;
-
+import java.util.LinkedList;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 
@@ -946,159 +946,165 @@ public class Guidance {
      * @param ttIndex
      * @param listOfCommands
      * @param generalChromoInfo
+     * @throws GuidanceTaskException
      */
     private static void makeCombinePanels(ParseCmdLine parsingArgs, AssocFiles assocFilesInfo, MergeFiles mergeFilesInfo,
             CombinedPanelsFiles combinedPanelsFilesInfo, List<String> rpanelTypes, int ttIndex, ArrayList<String> listOfCommands,
             ChromoInfo generalChromoInfo) {
 
-        ArrayList<String> listDeleteFiles = new ArrayList<>();
+        boolean refPanelCombine = parsingArgs.getRefPanelCombine();
+        if (!refPanelCombine) {
+            // We are not asked to combine the panels. End
+            return;
+        }
 
+        // Places to store the final combined chromosome information
+        String filteredCombineAll = combinedPanelsFilesInfo.getCombinedFilteredByAllFile(ttIndex);
+        String filteredCombineAllX = combinedPanelsFilesInfo.getCombinedFilteredByAllXFile(ttIndex);
+        String condensedCombineAll = combinedPanelsFilesInfo.getCombinedCondensedFile(ttIndex);
+
+        // We combine the panels per chromosome
         int startChr = parsingArgs.getStart();
         int endChr = parsingArgs.getEnd();
-
-        String filteredPanelA = null;
-        String filteredPanelB = null;
-        String filteredPanelC = null;
-
-        String condensedPanelA = null;
-        String condensedPanelB = null;
-        String condensedPanelC = null;
-
-        boolean refPanelCombine = parsingArgs.getRefPanelCombine();
-
-        String filteredCombineA = null;
-        String filteredCombineB = null;
-        String filteredCombineC = null;
-
-        String condensedCombineA = null;
-        String condensedCombineB = null;
-        String condensedCombineC = null;
-
-        String filteredCombineXA = null;
-        String filteredCombineXB = null;
-        String filteredCombineXC = null;
-
         int chunkSize = parsingArgs.getChunkSize();
 
-        // We have to ask if we have to combine results from different panels or not.
-        if (refPanelCombine) {
-            boolean elemA = false;
-            for (int chr = startChr; chr <= endChr; chr++) {
-                int maxSize = generalChromoInfo.getMaxSize(chr);
-                int minSize = generalChromoInfo.getMinSize(chr);
-                int lim1 = minSize;
-                int lim2 = lim1 + chunkSize - 1;
-                int indexFC = 0;
-                int indexCC = 0;
-                int indexXFC = 0;
+        for (int chr = startChr; chr <= endChr; chr++) {
+            int maxSize = generalChromoInfo.getMaxSize(chr);
+            int minSize = generalChromoInfo.getMinSize(chr);
 
-                for (int j = minSize; j < maxSize; j = j + chunkSize) {
-                    for (int kk = 1; kk < rpanelTypes.size(); kk++) {
-                        if (kk == 1) {
-                            filteredPanelA = assocFilesInfo.getSummaryFilteredFile(ttIndex, 0, chr, lim1, lim2, chunkSize);
-                            condensedPanelA = assocFilesInfo.getSummaryCondensedFile(ttIndex, 0, chr, lim1, lim2, chunkSize);
+            int lim1 = minSize;
+            int lim2 = lim1 + chunkSize - 1;
+            int indexFC = 0;
+            int indexCC = 0;
+            int indexXFC = 0;
+
+            for (int j = minSize; j < maxSize; j = j + chunkSize) {
+                // -- FILTERED PART --
+                // Construct a queue with all the filtered panels to combine
+                LinkedList<String> filteredPanelsToCombine = new LinkedList<>();
+                for (int k = 0; k < rpanelTypes.size(); ++k) {
+                    String filteredPanel = assocFilesInfo.getSummaryFilteredFile(ttIndex, k, chr, lim1, lim2, chunkSize);
+                    filteredPanelsToCombine.add(filteredPanel);
+                }
+                // Combine all the filtered panels 2 by 2 until there are no remaining panels
+                while (!filteredPanelsToCombine.isEmpty()) {
+                    String filteredPanelA = filteredPanelsToCombine.poll();
+                    if (!filteredPanelsToCombine.isEmpty()) {
+                        String filteredPanelB = filteredPanelsToCombine.poll();
+                        // Filtered part: combines A and B into A
+                        doCombinePanelsComplex(parsingArgs, listOfCommands, filteredPanelA, filteredPanelB, filteredPanelA, lim1, lim2);
+                        // Adds A to the queue again
+                        filteredPanelsToCombine.add(filteredPanelA);
+                        // Deletes B since it is no longer needed
+                        try {
+                            FileUtils.deleteFile(filteredPanelB);
+                        } catch (GuidanceTaskException gte) {
+                            LOGGER.fatal("ERROR: Cannot erase file: " + filteredPanelB, gte);
+                            System.exit(1);
                         }
-
-                        // Filtered part
-                        filteredPanelB = assocFilesInfo.getSummaryFilteredFile(ttIndex, kk, chr, lim1, lim2, chunkSize);
-                        filteredPanelC = assocFilesInfo.getCombinedFilteredFile(ttIndex, kk - 1, chr, lim1, lim2, chunkSize);
-
-                        doCombinePanelsComplex(parsingArgs, listOfCommands, filteredPanelA, filteredPanelB, filteredPanelC, lim1, lim2);
-                        filteredPanelA = filteredPanelC;
-
-                        // Condensed part
-                        condensedPanelB = assocFilesInfo.getSummaryCondensedFile(ttIndex, kk, chr, lim1, lim2, chunkSize);
-                        condensedPanelC = assocFilesInfo.getCombinedCondensedFile(ttIndex, kk - 1, chr, lim1, lim2, chunkSize);
-
-                        doCombinePanelsComplex(parsingArgs, listOfCommands, condensedPanelA, condensedPanelB, condensedPanelC, lim1, lim2);
-                        condensedPanelA = condensedPanelC;
                     }
+                }
 
-                    if (!elemA) {
-                        filteredCombineA = filteredPanelC;
-                        condensedCombineA = condensedPanelC;
-                        elemA = true;
-                    } else {
-                        if (chr != 23) {
-                            filteredCombineB = filteredPanelC;
-                            filteredCombineC = mergeFilesInfo.getCombinedReducedFilteredFile(ttIndex, 0, chr, indexFC);
-                            doMergeTwoChunks(parsingArgs, listOfCommands, filteredCombineA, filteredCombineB, filteredCombineC,
-                                    Integer.toString(chr), FILTERED);
-                            filteredCombineA = filteredCombineC;
-
-                            // Saving files to remove
-                            // listDeleteFiles.add(filteredCombineB);
-                            // listDeleteFiles.add(filteredCombineA);
-
-                            indexFC++;
-                        } else {
-                            if (j == minSize) {
-                                filteredCombineXA = filteredPanelC;
-                            } else {
-                                filteredCombineXB = filteredPanelC;
-                                filteredCombineXC = mergeFilesInfo.getCombinedReducedFilteredXFile(ttIndex, 0, chr, indexXFC);
-                                doMergeTwoChunks(parsingArgs, listOfCommands, filteredCombineXA, filteredCombineXB, filteredCombineXC,
-                                        Integer.toString(chr), FILTERED);
-                                filteredCombineXA = filteredCombineXC;
-
-                                // Saving files to remove
-                                // listDeleteFiles.add(filteredCombineXB);
-                                // listDeleteFiles.add(filteredCombineXA);
-
-                                indexXFC++;
-                            }
+                // -- CONDENSED PART --
+                // Construct a queue with all the condensed panels to combine
+                LinkedList<String> condensedPanelsToCombine = new LinkedList<>();
+                for (int k = 0; k < rpanelTypes.size(); ++k) {
+                    String condensedPanel = assocFilesInfo.getSummaryCondensedFile(ttIndex, k, chr, lim1, lim2, chunkSize);
+                    condensedPanelsToCombine.add(condensedPanel);
+                }
+                // Combine all the filtered panels 2 by 2 until there are no remaining panels
+                while (!condensedPanelsToCombine.isEmpty()) {
+                    String condensedPanelA = condensedPanelsToCombine.poll();
+                    if (!condensedPanelsToCombine.isEmpty()) {
+                        String condensedPanelB = condensedPanelsToCombine.poll();
+                        // Filtered part: combines A and B into A
+                        doCombinePanelsComplex(parsingArgs, listOfCommands, condensedPanelA, condensedPanelB, condensedPanelA, lim1, lim2);
+                        // Adds A to the queue again
+                        condensedPanelsToCombine.add(condensedPanelA);
+                        // Deletes B since it is no longer needed
+                        try {
+                            FileUtils.deleteFile(condensedPanelB);
+                        } catch (GuidanceTaskException gte) {
+                            LOGGER.fatal("ERROR: Cannot erase file: " + condensedPanelB, gte);
+                            System.exit(1);
                         }
-
-                        condensedCombineB = condensedPanelC;
-                        condensedCombineC = mergeFilesInfo.getCombinedReducedCondensedFile(ttIndex, 0, chr, indexCC);
-                        doMergeTwoChunks(parsingArgs, listOfCommands, condensedCombineA, condensedCombineB, condensedCombineC,
-                                Integer.toString(chr), CONDENSED);
-                        condensedCombineA = condensedCombineC;
-                        indexCC++;
-
-                        /*
-                         * File fA = new File(condensedCombineA); fA.delete(); File fB = new File(condensedCombineB);
-                         * fB.delete();
-                         */
-                        // Saving files to remove
-                        listDeleteFiles.add(condensedCombineB);
-                        listDeleteFiles.add(condensedCombineA);
-
                     }
+                }
 
-                    lim1 = lim1 + chunkSize;
-                    lim2 = lim2 + chunkSize;
+                // -- COMBINE FILTERED TO FINAL CHROMOSOME FILE
+                // Files are merged to the first file because of queue
 
-                } // END for size
+                String filteredPanel = assocFilesInfo.getSummaryFilteredFile(ttIndex, 0, chr, lim1, lim2, chunkSize);
+                String condensedPanel = assocFilesInfo.getSummaryCondensedFile(ttIndex, 0, chr, lim1, lim2, chunkSize);
+                if (chr != 23) {
+                    // We merge into the final combine file directly
+                    String filteredCombine = combinedPanelsFilesInfo.getCombinedFilteredByAllChromoFile(ttIndex, chr);
+                    doMergeTwoChunks(parsingArgs, listOfCommands, filteredCombine, filteredPanel, filteredCombine, Integer.toString(chr),
+                            FILTERED);
+                    ++indexFC;
+                } else {
+                    // We merge into the final combine file directly
+                    String filteredCombineX = combinedPanelsFilesInfo.getCombinedFilteredByAllXChromoFile(ttIndex, chr);
+                    doMergeTwoChunks(parsingArgs, listOfCommands, filteredCombineX, filteredPanel, filteredCombineX, Integer.toString(chr),
+                            FILTERED);
+                    ++indexXFC;
+                }
+                // Deletes filteredPanel since it is no longer needed
+                try {
+                    FileUtils.deleteFile(filteredPanel);
+                } catch (GuidanceTaskException gte) {
+                    LOGGER.fatal("ERROR: Cannot erase file: " + filteredPanel, gte);
+                    System.exit(1);
+                }
 
-            } // END for chromo
+                // -- COMBINE CONDENSED TO FINAL CHROMOSOME FILE
+                String condensedCombine = combinedPanelsFilesInfo.getCombinedCondensedChromoFile(ttIndex, chr);
+                doMergeTwoChunks(parsingArgs, listOfCommands, condensedCombine, condensedPanel, condensedCombine, Integer.toString(chr),
+                        CONDENSED);
+                ++indexCC;
+                // Deletes condensedPanel since it is no longer needed
+                try {
+                    FileUtils.deleteFile(condensedPanel);
+                } catch (GuidanceTaskException gte) {
+                    LOGGER.fatal("ERROR: Cannot erase file: " + condensedPanel, gte);
+                    System.exit(1);
+                }
 
-            // Remove intermediate files
-            /*
-             * for(int i=0;i<listDeleteFiles.size(); i++) {
-             * 
-             * String fileName = listDeleteFiles.get(i);
-             * 
-             * // Remove file different from last "C" files if((fileName != condensedPanelC) && (fileName !=
-             * condensedCombineC)) { //&& (fileName != filteredCombineC) && (fileName != filteredCombineXC)) { File f =
-             * new File(fileName); f.delete(); } }
-             * 
-             */
+            } // End for chunk
 
-            // Finally, we create topHits, QQ and Manhattan plots.
-            String topHitsCombinedResults = combinedPanelsFilesInfo.getTopHitsFile(ttIndex);
+            // Merge the chromosome information into the global one
+            String filteredCombineChromo = mergeFilesInfo.getCombinedReducedFilteredFile(ttIndex, 0, chr, indexFC - 1);
+            doMergeTwoChunks(parsingArgs, listOfCommands, filteredCombineAll, filteredCombineChromo, filteredCombineAll,
+                    Integer.toString(chr), FILTERED);
 
-            doGenerateTopHits(parsingArgs, listOfCommands, filteredCombineC, filteredCombineXC, topHitsCombinedResults, PVA_THRESHOLD_STR);
+            // Merge the chromosome information into the global one
+            String filteredCombineChromoX = mergeFilesInfo.getCombinedReducedFilteredXFile(ttIndex, 0, chr, indexXFC - 1);
+            doMergeTwoChunks(parsingArgs, listOfCommands, filteredCombineAllX, filteredCombineChromoX, filteredCombineAllX,
+                    Integer.toString(chr), FILTERED);
 
-            String combinedQqPlotPdfFile = combinedPanelsFilesInfo.getQqPlotPdfFile(ttIndex);
-            String combinedQqPlotTiffFile = combinedPanelsFilesInfo.getQqPlotTiffFile(ttIndex);
-            String combinedManhattanPlotPdfFile = combinedPanelsFilesInfo.getManhattanPdfFile(ttIndex);
-            String combinedManhattanPlotTiffFile = combinedPanelsFilesInfo.getManhattanTiffFile(ttIndex);
-            String combinedCorrectedPvaluesFile = combinedPanelsFilesInfo.getCorrectedPvaluesFile(ttIndex);
+            // Merge the chromosome information into the global one
+            String condensedCombineChromo = mergeFilesInfo.getCombinedReducedCondensedFile(ttIndex, 0, chr, indexCC - 1);
+            doMergeTwoChunks(parsingArgs, listOfCommands, condensedCombineAll, condensedCombineChromo, condensedCombineAll,
+                    Integer.toString(chr), CONDENSED);
 
-            doGenerateQQManhattanPlots(parsingArgs, listOfCommands, condensedCombineC, combinedQqPlotPdfFile, combinedManhattanPlotPdfFile,
-                    combinedQqPlotTiffFile, combinedManhattanPlotTiffFile, combinedCorrectedPvaluesFile);
-        }
+            // Increase loop variables
+            lim1 = lim1 + chunkSize;
+            lim2 = lim2 + chunkSize;
+
+        } // End for chromosomes
+
+        // Finally, we create topHits from filteredCombined, and QQ and Manhattan plots from condensedCombined
+        String topHitsCombinedResults = combinedPanelsFilesInfo.getTopHitsFile(ttIndex);
+        doGenerateTopHits(parsingArgs, listOfCommands, filteredCombineAll, filteredCombineAllX, topHitsCombinedResults, PVA_THRESHOLD_STR);
+
+        String combinedQqPlotPdfFile = combinedPanelsFilesInfo.getQqPlotPdfFile(ttIndex);
+        String combinedQqPlotTiffFile = combinedPanelsFilesInfo.getQqPlotTiffFile(ttIndex);
+        String combinedManhattanPlotPdfFile = combinedPanelsFilesInfo.getManhattanPdfFile(ttIndex);
+        String combinedManhattanPlotTiffFile = combinedPanelsFilesInfo.getManhattanTiffFile(ttIndex);
+        String combinedCorrectedPvaluesFile = combinedPanelsFilesInfo.getCorrectedPvaluesFile(ttIndex);
+
+        doGenerateQQManhattanPlots(parsingArgs, listOfCommands, condensedCombineAll, combinedQqPlotPdfFile, combinedManhattanPlotPdfFile,
+                combinedQqPlotTiffFile, combinedManhattanPlotTiffFile, combinedCorrectedPvaluesFile);
     }
 
     /**
@@ -1929,8 +1935,8 @@ public class Guidance {
             String filteredByAllFile, String filteredByAllXFile, String endChrS, String ttName, String rpName, String phenomeFileB) {
 
         if (parsingArgs.getStageStatus("filloutPhenoMatrix") == 1) {
-            String cmdToStore = JAVA_HOME + "/java filloutPhenoMatrix " + phenomeFileA + " " + filteredByAllFile + " " + filteredByAllXFile + " "
-                    + endChrS + " " + ttName + " " + rpName + " " + phenomeFileB;
+            String cmdToStore = JAVA_HOME + "/java filloutPhenoMatrix " + phenomeFileA + " " + filteredByAllFile + " " + filteredByAllXFile
+                    + " " + endChrS + " " + ttName + " " + rpName + " " + phenomeFileB;
             listOfCommands.add(cmdToStore);
 
             try {
@@ -1957,8 +1963,8 @@ public class Guidance {
             String phenomeFileB, String ttName, String rpName, String phenomeFileC) {
 
         if (parsingArgs.getStageStatus("finalizePhenoMatrix") == 1) {
-            String cmdToStore = JAVA_HOME + "/java finalizePhenoMatrix " + phenomeFileA + " " + phenomeFileB + " " + ttName + " " + rpName + " "
-                    + phenomeFileC;
+            String cmdToStore = JAVA_HOME + "/java finalizePhenoMatrix " + phenomeFileA + " " + phenomeFileB + " " + ttName + " " + rpName
+                    + " " + phenomeFileC;
             listOfCommands.add(cmdToStore);
 
             try {
