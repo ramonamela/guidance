@@ -54,17 +54,10 @@ import java.util.Iterator;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.zip.GZIPInputStream;
-
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import java.util.Scanner;
 
 
 public class GuidanceImpl {
-
-    // Logger
-    private static final Logger LOGGER = LogManager.getLogger("Console");
 
     // Debug flag
     private static final boolean DEBUG = true;
@@ -154,18 +147,18 @@ public class GuidanceImpl {
         String plinkBinary = loadFromEnvironment(PLINKBINARY, HEADER_CONVERT_FROM_BED_TO_BED);
 
         if (DEBUG) {
-            LOGGER.debug("\n[DEBUG] Running convertFromBedToBed with parameters:");
-            LOGGER.debug("[DEBUG] \t- Input bedFile   : " + bedFile);
-            LOGGER.debug("[DEBUG] \t- Input bimFile   : " + bimFile);
-            LOGGER.debug("[DEBUG] \t- Input famFile   : " + famFile);
-            LOGGER.debug("[DEBUG] \t- Output newBedFile  : " + newBedFile);
-            LOGGER.debug("[DEBUG] \t- Output newBimFile  : " + newBimFile);
-            LOGGER.debug("[DEBUG] \t- Output newFamFile  : " + newFamFile);
-            LOGGER.debug("[DEBUG] \t- Output logFile  : " + logFile);
-            LOGGER.debug("[DEBUG] \t- Chromosome      : " + chromo);
-            LOGGER.debug(NEW_LINE);
-            LOGGER.debug("[DEBUG] \t- Command: " + cmdToStore);
-            LOGGER.debug("--------------------------------------");
+            System.out.println("\n[DEBUG] Running convertFromBedToBed with parameters:");
+            System.out.println("[DEBUG] \t- Input bedFile   : " + bedFile);
+            System.out.println("[DEBUG] \t- Input bimFile   : " + bimFile);
+            System.out.println("[DEBUG] \t- Input famFile   : " + famFile);
+            System.out.println("[DEBUG] \t- Output newBedFile  : " + newBedFile);
+            System.out.println("[DEBUG] \t- Output newBimFile  : " + newBimFile);
+            System.out.println("[DEBUG] \t- Output newFamFile  : " + newFamFile);
+            System.out.println("[DEBUG] \t- Output logFile  : " + logFile);
+            System.out.println("[DEBUG] \t- Chromosome      : " + chromo);
+            System.out.println(NEW_LINE);
+            System.out.println("[DEBUG] \t- Command: " + cmdToStore);
+            System.out.println("--------------------------------------");
         }
 
         long startTime = System.currentTimeMillis();
@@ -174,7 +167,7 @@ public class GuidanceImpl {
                 + " --recode --out " + newBedFile + " --make-bed";
 
         if (DEBUG) {
-            LOGGER.debug(HEADER_CONVERT_FROM_BED_TO_BED + MSG_CMD + cmd);
+            System.out.println(HEADER_CONVERT_FROM_BED_TO_BED + MSG_CMD + cmd);
         }
 
         // Execute the command retrieving its exitValue, output and error
@@ -240,10 +233,10 @@ public class GuidanceImpl {
         long stopTime = System.currentTimeMillis();
         long elapsedTime = (stopTime - startTime) / 1_000;
         if (DEBUG) {
-            LOGGER.debug("\n[DEBUG] convertFromBedToBed startTime: " + startTime);
-            LOGGER.debug("\n[DEBUG] convertFromBedToBed endTime: " + stopTime);
-            LOGGER.debug("\n[DEBUG] convertFromBedToBed elapsedTime: " + elapsedTime + " seconds");
-            LOGGER.debug("\n[DEBUG] Finished execution of convertFromBedToBed.");
+            System.out.println("\n[DEBUG] convertFromBedToBed startTime: " + startTime);
+            System.out.println("\n[DEBUG] convertFromBedToBed endTime: " + stopTime);
+            System.out.println("\n[DEBUG] convertFromBedToBed elapsedTime: " + elapsedTime + " seconds");
+            System.out.println("\n[DEBUG] Finished execution of convertFromBedToBed.");
         }
     }
 
@@ -269,18 +262,18 @@ public class GuidanceImpl {
         String plinkBinary = loadFromEnvironment(PLINKBINARY, HEADER_CONVERT_FROM_BED_TO_PED);
 
         if (DEBUG) {
-            LOGGER.debug("\n[DEBUG] Running convertFromBedToPed with parameters:");
-            LOGGER.debug("[DEBUG] \t- Input bedPrefix : " + bedPrefix);
-            LOGGER.debug("[DEBUG] \t- Input bedFile   : " + bedFile);
-            LOGGER.debug("[DEBUG] \t- Input bimFile   : " + bimFile);
-            LOGGER.debug("[DEBUG] \t- Input famFile   : " + famFile);
-            LOGGER.debug("[DEBUG] \t- Output pedFile  : " + pedFile);
-            LOGGER.debug("[DEBUG] \t- Output mapFile  : " + mapFile);
-            LOGGER.debug("[DEBUG] \t- Output logFile  : " + logFile);
-            LOGGER.debug("[DEBUG] \t- Chromosome      : " + chromo);
-            LOGGER.debug(NEW_LINE);
-            LOGGER.debug("[DEBUG] \t- Command: " + cmdToStore);
-            LOGGER.debug("--------------------------------------");
+            System.out.println("\n[DEBUG] Running convertFromBedToPed with parameters:");
+            System.out.println("[DEBUG] \t- Input bedPrefix : " + bedPrefix);
+            System.out.println("[DEBUG] \t- Input bedFile   : " + bedFile);
+            System.out.println("[DEBUG] \t- Input bimFile   : " + bimFile);
+            System.out.println("[DEBUG] \t- Input famFile   : " + famFile);
+            System.out.println("[DEBUG] \t- Output pedFile  : " + pedFile);
+            System.out.println("[DEBUG] \t- Output mapFile  : " + mapFile);
+            System.out.println("[DEBUG] \t- Output logFile  : " + logFile);
+            System.out.println("[DEBUG] \t- Chromosome      : " + chromo);
+            System.out.println(NEW_LINE);
+            System.out.println("[DEBUG] \t- Command: " + cmdToStore);
+            System.out.println("--------------------------------------");
         }
 
         long startTime = System.currentTimeMillis();
@@ -288,7 +281,7 @@ public class GuidanceImpl {
         String cmd = plinkBinary + " --noweb --bfile " + bedPrefix + " --chr " + chromo + " --recode --out " + pedFile;
 
         if (DEBUG) {
-            LOGGER.debug(HEADER_CONVERT_FROM_BED_TO_PED + MSG_CMD + cmd);
+            System.out.println(HEADER_CONVERT_FROM_BED_TO_PED + MSG_CMD + cmd);
         }
 
         // Execute the command retrieving its exitValue, output and error
@@ -347,10 +340,10 @@ public class GuidanceImpl {
         long stopTime = System.currentTimeMillis();
         long elapsedTime = (stopTime - startTime) / 1_000;
         if (DEBUG) {
-            LOGGER.debug("\n[DEBUG] convertFromBedToPed startTime: " + startTime);
-            LOGGER.debug("\n[DEBUG] convertFromBedToPed endTime: " + stopTime);
-            LOGGER.debug("\n[DEBUG] convertFromBedToPed elapsedTime: " + elapsedTime + " seconds");
-            LOGGER.debug("\n[DEBUG] Finished execution of convertFromBedToPed.");
+            System.out.println("\n[DEBUG] convertFromBedToPed startTime: " + startTime);
+            System.out.println("\n[DEBUG] convertFromBedToPed endTime: " + stopTime);
+            System.out.println("\n[DEBUG] convertFromBedToPed elapsedTime: " + elapsedTime + " seconds");
+            System.out.println("\n[DEBUG] Finished execution of convertFromBedToPed.");
         }
 
     }
@@ -374,15 +367,15 @@ public class GuidanceImpl {
         String gtoolBinary = loadFromEnvironment(GTOOLBINARY, HEADER_CONVERT_FROM_PED_TO_GEN);
 
         if (DEBUG) {
-            LOGGER.debug("\n[DEBUG] Running convertFromPedToGen with parameters:");
-            LOGGER.debug("[DEBUG] \t- Input pedFile      : " + pedFile);
-            LOGGER.debug("[DEBUG] \t- Input mapFile      : " + mapFile);
-            LOGGER.debug("[DEBUG] \t- Output genFile     : " + genFile);
-            LOGGER.debug("[DEBUG] \t- Output sampleFile  : " + sampleFile);
-            LOGGER.debug("[DEBUG] \t- Output logFile     : " + logFile);
-            LOGGER.debug(NEW_LINE);
-            LOGGER.debug("[DEBUG] \t- Command: " + cmdToStore);
-            LOGGER.debug("--------------------------------------");
+            System.out.println("\n[DEBUG] Running convertFromPedToGen with parameters:");
+            System.out.println("[DEBUG] \t- Input pedFile      : " + pedFile);
+            System.out.println("[DEBUG] \t- Input mapFile      : " + mapFile);
+            System.out.println("[DEBUG] \t- Output genFile     : " + genFile);
+            System.out.println("[DEBUG] \t- Output sampleFile  : " + sampleFile);
+            System.out.println("[DEBUG] \t- Output logFile     : " + logFile);
+            System.out.println(NEW_LINE);
+            System.out.println("[DEBUG] \t- Command: " + cmdToStore);
+            System.out.println("--------------------------------------");
         }
 
         long startTime = System.currentTimeMillis();
@@ -391,7 +384,7 @@ public class GuidanceImpl {
                 + " --binary_phenotype --order --log " + logFile;
 
         if (DEBUG) {
-            LOGGER.debug(HEADER_CONVERT_FROM_PED_TO_GEN + MSG_CMD + cmd);
+            System.out.println(HEADER_CONVERT_FROM_PED_TO_GEN + MSG_CMD + cmd);
         }
 
         // Execute the command retrieving its exitValue, output and error
@@ -443,21 +436,21 @@ public class GuidanceImpl {
 
             while ((line = br.readLine()) != null) {
                 int length = line.length();
-                // LOGGER.debug("[DEBUG]: Original line: " + line);
+                // System.out.println("[DEBUG]: Original line: " + line);
                 String subline = line.substring(length - 1, length);
-                // LOGGER.debug("[DEBUG]: El substring es: |" + subline + "|");
+                // System.out.println("[DEBUG]: El substring es: |" + subline + "|");
                 String myNewLine = null;
                 if (subline.equals("0")) {
                     myNewLine = line.substring(0, length - 2) + " NA";
-                    // LOGGER.debug("[DEBUG]: NA New line : " + myNewLine);
+                    // System.out.println("[DEBUG]: NA New line : " + myNewLine);
                 } else if (subline.equals("1")) {
                     myNewLine = line.substring(0, length - 2) + " 0";
-                    // LOGGER.debug("[DEBUG]: 0 New line : " + myNewLine);
+                    // System.out.println("[DEBUG]: 0 New line : " + myNewLine);
                 } else if (subline.equals("2")) {
                     myNewLine = line.substring(0, length - 2) + " 1";
-                    // LOGGER.debug("[DEBUG]: 1 New line : " + myNewLine);
+                    // System.out.println("[DEBUG]: 1 New line : " + myNewLine);
                 } else {
-                    LOGGER.debug(HEADER_CONVERT_FROM_PED_TO_GEN + "Error changing the sample file. Invalid affection coding in line "
+                    System.out.println(HEADER_CONVERT_FROM_PED_TO_GEN + "Error changing the sample file. Invalid affection coding in line "
                             + myNewLine);
                     // throw new Exception("Error changing the sample file. Invalid affection coding in line " +
                     // counter);
@@ -489,10 +482,10 @@ public class GuidanceImpl {
         long stopTime = System.currentTimeMillis();
         long elapsedTime = (stopTime - startTime) / 1_000;
         if (DEBUG) {
-            LOGGER.debug("\n[DEBUG] convertFromPedToGen startTime: " + startTime);
-            LOGGER.debug("\n[DEBUG] convertFromPedToGen endTime: " + stopTime);
-            LOGGER.debug("\n[DEBUG] convertFromPedToGen elapsedTime: " + elapsedTime + " seconds");
-            LOGGER.debug("\n[DEBUG] Finished execution of convertFromPedToGen.");
+            System.out.println("\n[DEBUG] convertFromPedToGen startTime: " + startTime);
+            System.out.println("\n[DEBUG] convertFromPedToGen endTime: " + stopTime);
+            System.out.println("\n[DEBUG] convertFromPedToGen elapsedTime: " + elapsedTime + " seconds");
+            System.out.println("\n[DEBUG] Finished execution of convertFromPedToGen.");
         }
 
     }
@@ -513,14 +506,14 @@ public class GuidanceImpl {
             throws GuidanceTaskException {
 
         if (DEBUG) {
-            LOGGER.debug("\n[DEBUG] Running createRsIdList with parameters:");
-            LOGGER.debug("[DEBUG] \t- Input genOrBimFile : " + genOrBimFile);
-            LOGGER.debug("[DEBUG] \t- Input exclCgatFlag : " + exclCgatFlag);
-            LOGGER.debug("[DEBUG] \t- Output pairsFile   : " + pairsFile);
-            LOGGER.debug("[DEBUG] \t- InputFormat        : " + inputFormat);
-            LOGGER.debug(NEW_LINE);
-            LOGGER.debug("[DEBUG] \t- Command: " + cmdToStore);
-            LOGGER.debug("--------------------------------------");
+            System.out.println("\n[DEBUG] Running createRsIdList with parameters:");
+            System.out.println("[DEBUG] \t- Input genOrBimFile : " + genOrBimFile);
+            System.out.println("[DEBUG] \t- Input exclCgatFlag : " + exclCgatFlag);
+            System.out.println("[DEBUG] \t- Output pairsFile   : " + pairsFile);
+            System.out.println("[DEBUG] \t- InputFormat        : " + inputFormat);
+            System.out.println(NEW_LINE);
+            System.out.println("[DEBUG] \t- Command: " + cmdToStore);
+            System.out.println("--------------------------------------");
         }
 
         long startTime = System.currentTimeMillis();
@@ -549,7 +542,7 @@ public class GuidanceImpl {
         boolean thisIsGz = (n == 0x1f8b0000);
 
         if (thisIsGz) {
-            LOGGER.info(HEADER_CREATE_RSID_LIST + "It seems the file " + genOrBimFile + " is a gzip file. Magic Number is "
+            System.out.println(HEADER_CREATE_RSID_LIST + "It seems the file " + genOrBimFile + " is a gzip file. Magic Number is "
                     + String.format("%x", n));
 
             try (GZIPInputStream inputGz = new GZIPInputStream(new FileInputStream(genOrBimFile));
@@ -571,10 +564,10 @@ public class GuidanceImpl {
         long stopTime = System.currentTimeMillis();
         long elapsedTime = (stopTime - startTime) / 1_000;
         if (DEBUG) {
-            LOGGER.debug("\n[DEBUG] createRsIdList StartTime: " + startTime);
-            LOGGER.debug("\n[DEBUG] createRsIdList endTime: " + stopTime);
-            LOGGER.debug("\n[DEBUG] createRsIdList elapsedTime: " + elapsedTime + " seconds");
-            LOGGER.debug("\n[DEBUG] Finished execution of createRsIdList.");
+            System.out.println("\n[DEBUG] createRsIdList StartTime: " + startTime);
+            System.out.println("\n[DEBUG] createRsIdList endTime: " + stopTime);
+            System.out.println("\n[DEBUG] createRsIdList elapsedTime: " + elapsedTime + " seconds");
+            System.out.println("\n[DEBUG] Finished execution of createRsIdList.");
         }
 
     }
@@ -645,18 +638,18 @@ public class GuidanceImpl {
         String gtoolBinary = loadFromEnvironment(GTOOLBINARY, HEADER_GTOOLS);
 
         if (DEBUG) {
-            LOGGER.debug("\n[DEBUG] Running gtoolS with parameters:");
-            LOGGER.debug("[DEBUG] \t- gtoolBinary            : " + gtoolBinary);
-            LOGGER.debug("[DEBUG] \t- Input newGenFile       : " + newGenFile);
-            LOGGER.debug("[DEBUG] \t- Input modSampleFile    : " + modSampleFile);
-            LOGGER.debug("[DEBUG] \t- Output gtoolGenFile    : " + gtoolGenFile);
-            LOGGER.debug("[DEBUG] \t- Output gtoolSampleFile : " + gtoolSampleFile);
-            LOGGER.debug("[DEBUG] \t- Input sampleExclFile   : " + sampleExclFile);
-            LOGGER.debug("[DEBUG] \t- Input snpWtccFile      : " + snpWtccFile);
-            LOGGER.debug("[DEBUG] \t- Output gtoolLogFile    : " + gtoolLogFile);
-            LOGGER.debug(NEW_LINE);
-            LOGGER.debug("[DEBUG] \t- Command: " + cmdToStore);
-            LOGGER.debug("--------------------------------------");
+            System.out.println("\n[DEBUG] Running gtoolS with parameters:");
+            System.out.println("[DEBUG] \t- gtoolBinary            : " + gtoolBinary);
+            System.out.println("[DEBUG] \t- Input newGenFile       : " + newGenFile);
+            System.out.println("[DEBUG] \t- Input modSampleFile    : " + modSampleFile);
+            System.out.println("[DEBUG] \t- Output gtoolGenFile    : " + gtoolGenFile);
+            System.out.println("[DEBUG] \t- Output gtoolSampleFile : " + gtoolSampleFile);
+            System.out.println("[DEBUG] \t- Input sampleExclFile   : " + sampleExclFile);
+            System.out.println("[DEBUG] \t- Input snpWtccFile      : " + snpWtccFile);
+            System.out.println("[DEBUG] \t- Output gtoolLogFile    : " + gtoolLogFile);
+            System.out.println(NEW_LINE);
+            System.out.println("[DEBUG] \t- Command: " + cmdToStore);
+            System.out.println("--------------------------------------");
         }
 
         long startTime = System.currentTimeMillis();
@@ -665,7 +658,7 @@ public class GuidanceImpl {
                 + " --sample_excl " + sampleExclFile + " --exclusion " + snpWtccFile + " --log " + gtoolLogFile;
 
         if (DEBUG) {
-            LOGGER.debug(HEADER_GTOOLS + MSG_CMD + cmd);
+            System.out.println(HEADER_GTOOLS + MSG_CMD + cmd);
         }
 
         // Execute the command retrieving its exitValue, output and error
@@ -684,10 +677,10 @@ public class GuidanceImpl {
         long stopTime = System.currentTimeMillis();
         long elapsedTime = (stopTime - startTime) / 1_000;
         if (DEBUG) {
-            LOGGER.debug("\n[DEBUG] gtoolS startTime: " + startTime);
-            LOGGER.debug("\n[DEBUG] gtoolS endTime: " + stopTime);
-            LOGGER.debug("\n[DEBUG] gtoolS elapsedTime: " + elapsedTime + " seconds");
-            LOGGER.debug("\n[DEBUG] Finished execution of gtoolS.");
+            System.out.println("\n[DEBUG] gtoolS startTime: " + startTime);
+            System.out.println("\n[DEBUG] gtoolS endTime: " + stopTime);
+            System.out.println("\n[DEBUG] gtoolS elapsedTime: " + elapsedTime + " seconds");
+            System.out.println("\n[DEBUG] Finished execution of gtoolS.");
         }
 
     }
@@ -711,15 +704,15 @@ public class GuidanceImpl {
         String qctoolBinary = loadFromEnvironment(QCTOOLBINARY, HEADER_QCTOOL);
 
         if (DEBUG) {
-            LOGGER.debug("\n[DEBUG] Running qctool with parameters:");
-            LOGGER.debug("[DEBUG] \t- Input genFile          : " + genFile);
-            LOGGER.debug("[DEBUG] \t- Input sampleFile       : " + sampleFile);
-            LOGGER.debug("[DEBUG] \t- Output qctoolGenFile   : " + qctoolGenFile);
-            LOGGER.debug("[DEBUG] \t- Output qctoolSampleFile: " + qctoolSampleFile);
-            LOGGER.debug("[DEBUG] \t- Output qctoolLogFile   : " + qctoolLogFile);
-            LOGGER.debug(NEW_LINE);
-            LOGGER.debug("[DEBUG] \t- Command: " + cmdToStore);
-            LOGGER.debug("--------------------------------------");
+            System.out.println("\n[DEBUG] Running qctool with parameters:");
+            System.out.println("[DEBUG] \t- Input genFile          : " + genFile);
+            System.out.println("[DEBUG] \t- Input sampleFile       : " + sampleFile);
+            System.out.println("[DEBUG] \t- Output qctoolGenFile   : " + qctoolGenFile);
+            System.out.println("[DEBUG] \t- Output qctoolSampleFile: " + qctoolSampleFile);
+            System.out.println("[DEBUG] \t- Output qctoolLogFile   : " + qctoolLogFile);
+            System.out.println(NEW_LINE);
+            System.out.println("[DEBUG] \t- Command: " + cmdToStore);
+            System.out.println("--------------------------------------");
         }
 
         long startTime = System.currentTimeMillis();
@@ -728,8 +721,8 @@ public class GuidanceImpl {
                 + " -omit-chromosome -sort -log " + qctoolLogFile;
 
         if (DEBUG) {
-            LOGGER.debug("\n[DEBUG] Cmd -> " + cmd);
-            LOGGER.debug(" ");
+            System.out.println("\n[DEBUG] Cmd -> " + cmd);
+            System.out.println(" ");
         }
 
         // Execute the command retrieving its exitValue, output and error
@@ -748,10 +741,10 @@ public class GuidanceImpl {
         long stopTime = System.currentTimeMillis();
         long elapsedTime = (stopTime - startTime) / 1_000;
         if (DEBUG) {
-            LOGGER.debug("\n[DEBUG] qctool startTime: " + startTime);
-            LOGGER.debug("\n[DEBUG] qctool endTime: " + stopTime);
-            LOGGER.debug("\n[DEBUG] qctool elapsedTime: " + elapsedTime + " seconds");
-            LOGGER.debug("\n[DEBUG] Finished execution of qctool.");
+            System.out.println("\n[DEBUG] qctool startTime: " + startTime);
+            System.out.println("\n[DEBUG] qctool endTime: " + stopTime);
+            System.out.println("\n[DEBUG] qctool elapsedTime: " + elapsedTime + " seconds");
+            System.out.println("\n[DEBUG] Finished execution of qctool.");
         }
     }
 
@@ -774,16 +767,16 @@ public class GuidanceImpl {
         String qctoolBinary = loadFromEnvironment(QCTOOLBINARY, HEADER_QCTOOLS);
 
         if (DEBUG) {
-            LOGGER.debug("\nRunning qctoolS for generation a subset of rsids with parameters:");
-            LOGGER.debug("\t- qctoolBinary               : " + qctoolBinary);
-            LOGGER.debug("\t- Input imputeFile           : " + imputeFile);
-            LOGGER.debug("\t- Input inclusionRsIdFile    : " + inclusionRsIdFile);
-            LOGGER.debug("\t- Input mafThreshold         : " + mafThresholdS);
-            LOGGER.debug("\t- Output filteredFile        : " + filteredFileGz);
-            LOGGER.debug("\t- Output filteredLogFile     : " + filteredLogFile);
-            LOGGER.debug(NEW_LINE);
-            LOGGER.debug("[DEBUG] \t- Command: " + cmdToStore);
-            LOGGER.debug("--------------------------------------");
+            System.out.println("\nRunning qctoolS for generation a subset of rsids with parameters:");
+            System.out.println("\t- qctoolBinary               : " + qctoolBinary);
+            System.out.println("\t- Input imputeFile           : " + imputeFile);
+            System.out.println("\t- Input inclusionRsIdFile    : " + inclusionRsIdFile);
+            System.out.println("\t- Input mafThreshold         : " + mafThresholdS);
+            System.out.println("\t- Output filteredFile        : " + filteredFileGz);
+            System.out.println("\t- Output filteredLogFile     : " + filteredLogFile);
+            System.out.println(NEW_LINE);
+            System.out.println("[DEBUG] \t- Command: " + cmdToStore);
+            System.out.println("--------------------------------------");
         }
         long startTime = System.currentTimeMillis();
 
@@ -807,7 +800,7 @@ public class GuidanceImpl {
                 + " -omit-chromosome -force -log " + filteredLogFile + " -maf " + mafThresholdS + " 1";
 
         if (DEBUG) {
-            LOGGER.debug(HEADER_QCTOOLS + MSG_CMD + cmd);
+            System.out.println(HEADER_QCTOOLS + MSG_CMD + cmd);
         }
 
         // Execute the command retrieving its exitValue, output and error
@@ -830,10 +823,10 @@ public class GuidanceImpl {
         long stopTime = System.currentTimeMillis();
         long elapsedTime = (stopTime - startTime) / 1_000;
         if (DEBUG) {
-            LOGGER.debug("\n[DEBUG] qctoolS startTime: " + startTime);
-            LOGGER.debug("\n[DEBUG] qctoolS endTime: " + stopTime);
-            LOGGER.debug("\n[DEBUG] qctoolS elapsedTime: " + elapsedTime + " seconds");
-            LOGGER.debug("\n[DEBUG] Finished execution of qctoolS.");
+            System.out.println("\n[DEBUG] qctoolS startTime: " + startTime);
+            System.out.println("\n[DEBUG] qctoolS endTime: " + stopTime);
+            System.out.println("\n[DEBUG] qctoolS elapsedTime: " + elapsedTime + " seconds");
+            System.out.println("\n[DEBUG] Finished execution of qctoolS.");
         }
     }
 
@@ -853,14 +846,14 @@ public class GuidanceImpl {
             String cmdToStore) throws GuidanceTaskException {
 
         if (DEBUG) {
-            LOGGER.debug("\n[DEBUG] Running createListOfExcludedSnps method:");
-            LOGGER.debug("[DEBUG] \t- Input shapeitHapsFile   : " + shapeitHapsFile);
-            LOGGER.debug("[DEBUG] \t- Output excludedSnpsFile : " + excludedSnpsFile);
-            LOGGER.debug("[DEBUG] \t- Input exclCgatFlag      : " + exclCgatFlag);
-            LOGGER.debug("[DEBUG] \t- Input exclSVFlag        : " + exclSVFlag);
-            LOGGER.debug(NEW_LINE);
-            LOGGER.debug("[DEBUG] \t- Command: " + cmdToStore);
-            LOGGER.debug("--------------------------------------");
+            System.out.println("\n[DEBUG] Running createListOfExcludedSnps method:");
+            System.out.println("[DEBUG] \t- Input shapeitHapsFile   : " + shapeitHapsFile);
+            System.out.println("[DEBUG] \t- Output excludedSnpsFile : " + excludedSnpsFile);
+            System.out.println("[DEBUG] \t- Input exclCgatFlag      : " + exclCgatFlag);
+            System.out.println("[DEBUG] \t- Input exclSVFlag        : " + exclSVFlag);
+            System.out.println(NEW_LINE);
+            System.out.println("[DEBUG] \t- Command: " + cmdToStore);
+            System.out.println("--------------------------------------");
         }
 
         long startTime = System.currentTimeMillis();
@@ -961,10 +954,10 @@ public class GuidanceImpl {
         long stopTime = System.currentTimeMillis();
         long elapsedTime = (stopTime - startTime) / 1_000;
         if (DEBUG) {
-            LOGGER.debug("\n[DEBUG] createListOfExcludedSnps startTime: " + startTime);
-            LOGGER.debug("\n[DEBUG] createListOfExcludedSnps endTime: " + stopTime);
-            LOGGER.debug("\n[DEBUG] createListOfExcludedSnps elapsedTime: " + elapsedTime + " seconds");
-            LOGGER.debug("\n[DEBUG] Finished execution of createListOfExcludedSnps.");
+            System.out.println("\n[DEBUG] createListOfExcludedSnps startTime: " + startTime);
+            System.out.println("\n[DEBUG] createListOfExcludedSnps endTime: " + stopTime);
+            System.out.println("\n[DEBUG] createListOfExcludedSnps elapsedTime: " + elapsedTime + " seconds");
+            System.out.println("\n[DEBUG] Finished execution of createListOfExcludedSnps.");
         }
     }
 
@@ -990,18 +983,18 @@ public class GuidanceImpl {
         String shapeitBinary = loadFromEnvironment(SHAPEITBINARY, HEADER_PHASING_BED);
 
         if (DEBUG) {
-            LOGGER.debug("\n[DEBUG] Running phasing with parameters:");
-            LOGGER.debug("[DEBUG] \t- shapeitBinary            : " + shapeitBinary);
-            LOGGER.debug("[DEBUG] \t- Input bedFile            : " + bedFile);
-            LOGGER.debug("[DEBUG] \t- Input bimFile            : " + bimFile);
-            LOGGER.debug("[DEBUG] \t- Input famFile            : " + famFile);
-            LOGGER.debug("[DEBUG] \t- Input gmapFile           : " + gmapFile);
-            LOGGER.debug("[DEBUG] \t- Output shapeitHapsFile   : " + shapeitHapsFile);
-            LOGGER.debug("[DEBUG] \t- Output shapeitSampleFile : " + shapeitSampleFile);
-            LOGGER.debug("[DEBUG] \t- Output shapeitLogFile    : " + shapeitLogFile);
-            LOGGER.debug(NEW_LINE);
-            LOGGER.debug("[DEBUG] \t- Command: " + cmdToStore);
-            LOGGER.debug("--------------------------------------");
+            System.out.println("\n[DEBUG] Running phasing with parameters:");
+            System.out.println("[DEBUG] \t- shapeitBinary            : " + shapeitBinary);
+            System.out.println("[DEBUG] \t- Input bedFile            : " + bedFile);
+            System.out.println("[DEBUG] \t- Input bimFile            : " + bimFile);
+            System.out.println("[DEBUG] \t- Input famFile            : " + famFile);
+            System.out.println("[DEBUG] \t- Input gmapFile           : " + gmapFile);
+            System.out.println("[DEBUG] \t- Output shapeitHapsFile   : " + shapeitHapsFile);
+            System.out.println("[DEBUG] \t- Output shapeitSampleFile : " + shapeitSampleFile);
+            System.out.println("[DEBUG] \t- Output shapeitLogFile    : " + shapeitLogFile);
+            System.out.println(NEW_LINE);
+            System.out.println("[DEBUG] \t- Command: " + cmdToStore);
+            System.out.println("--------------------------------------");
         }
 
         long startTime = System.currentTimeMillis();
@@ -1020,7 +1013,7 @@ public class GuidanceImpl {
         }
 
         if (DEBUG) {
-            LOGGER.debug(HEADER_PHASING_BED + MSG_CMD + cmd);
+            System.out.println(HEADER_PHASING_BED + MSG_CMD + cmd);
         }
 
         // Execute the command retrieving its exitValue, output and error
@@ -1035,8 +1028,8 @@ public class GuidanceImpl {
 
         // Check process exit value
         if (exitValue != 0) {
-            LOGGER.error(HEADER_PHASING_BED + "Warning executing shapeitProc job, exit value is: " + exitValue);
-            LOGGER.error(HEADER_PHASING_BED + "                         (This warning is not fatal).");
+            System.err.println(HEADER_PHASING_BED + "Warning executing shapeitProc job, exit value is: " + exitValue);
+            System.err.println(HEADER_PHASING_BED + "                         (This warning is not fatal).");
         }
 
         // Ugly, because shapeit_v2 automatically puts the .log to the file.
@@ -1058,10 +1051,10 @@ public class GuidanceImpl {
         long stopTime = System.currentTimeMillis();
         long elapsedTime = (stopTime - startTime) / 1_000;
         if (DEBUG) {
-            LOGGER.debug("\n[DEBUG] phasing startTime: " + startTime);
-            LOGGER.debug("\n[DEBUG] phasing endTime: " + stopTime);
-            LOGGER.debug("\n[DEBUG] phasing elapsedTime: " + elapsedTime + " seconds");
-            LOGGER.debug("\n[DEBUG] Finished execution of phasing.");
+            System.out.println("\n[DEBUG] phasing startTime: " + startTime);
+            System.out.println("\n[DEBUG] phasing endTime: " + stopTime);
+            System.out.println("\n[DEBUG] phasing elapsedTime: " + elapsedTime + " seconds");
+            System.out.println("\n[DEBUG] Finished execution of phasing.");
         }
     }
 
@@ -1086,17 +1079,17 @@ public class GuidanceImpl {
         String shapeitBinary = loadFromEnvironment(SHAPEITBINARY, HEADER_PHASING);
 
         if (DEBUG) {
-            LOGGER.debug("\n[DEBUG] Running phasing with parameters:");
-            LOGGER.debug("[DEBUG] \t- shapeitBinary            : " + shapeitBinary);
-            LOGGER.debug("[DEBUG] \t- Input inputGenFile       : " + inputGenFile);
-            LOGGER.debug("[DEBUG] \t- Input inputSampleFile    : " + inputSampleFile);
-            LOGGER.debug("[DEBUG] \t- Input gmapFile           : " + gmapFile);
-            LOGGER.debug("[DEBUG] \t- Output shapeitHapsFile   : " + shapeitHapsFile);
-            LOGGER.debug("[DEBUG] \t- Output shapeitSampleFile : " + shapeitSampleFile);
-            LOGGER.debug("[DEBUG] \t- Output shapeitLogFile    : " + shapeitLogFile);
-            LOGGER.debug(NEW_LINE);
-            LOGGER.debug("[DEBUG] \t- Command: " + cmdToStore);
-            LOGGER.debug("--------------------------------------");
+            System.out.println("\n[DEBUG] Running phasing with parameters:");
+            System.out.println("[DEBUG] \t- shapeitBinary            : " + shapeitBinary);
+            System.out.println("[DEBUG] \t- Input inputGenFile       : " + inputGenFile);
+            System.out.println("[DEBUG] \t- Input inputSampleFile    : " + inputSampleFile);
+            System.out.println("[DEBUG] \t- Input gmapFile           : " + gmapFile);
+            System.out.println("[DEBUG] \t- Output shapeitHapsFile   : " + shapeitHapsFile);
+            System.out.println("[DEBUG] \t- Output shapeitSampleFile : " + shapeitSampleFile);
+            System.out.println("[DEBUG] \t- Output shapeitLogFile    : " + shapeitLogFile);
+            System.out.println(NEW_LINE);
+            System.out.println("[DEBUG] \t- Command: " + cmdToStore);
+            System.out.println("--------------------------------------");
         }
 
         long startTime = System.currentTimeMillis();
@@ -1115,7 +1108,7 @@ public class GuidanceImpl {
         }
 
         if (DEBUG) {
-            LOGGER.debug(HEADER_PHASING + MSG_CMD + cmd);
+            System.out.println(HEADER_PHASING + MSG_CMD + cmd);
         }
 
         // Execute the command retrieving its exitValue, output and error
@@ -1128,8 +1121,8 @@ public class GuidanceImpl {
 
         // Check process exit value
         if (exitValue != 0) {
-            LOGGER.error(HEADER_PHASING + "Warning executing shapeitProc job, exit value is: " + exitValue);
-            LOGGER.error(HEADER_PHASING + "                         (This warning is not fatal).");
+            System.err.println(HEADER_PHASING + "Warning executing shapeitProc job, exit value is: " + exitValue);
+            System.err.println(HEADER_PHASING + "                         (This warning is not fatal).");
         }
 
         // Ugly, because shapeit_v2 automatically puts the .log to the file.
@@ -1151,10 +1144,10 @@ public class GuidanceImpl {
         long stopTime = System.currentTimeMillis();
         long elapsedTime = (stopTime - startTime) / 1_000;
         if (DEBUG) {
-            LOGGER.debug("\n[DEBUG] phasing startTime: " + startTime);
-            LOGGER.debug("\n[DEBUG] phasing endTime: " + stopTime);
-            LOGGER.debug("\n[DEBUG] phasing elapsedTime: " + elapsedTime + " seconds");
-            LOGGER.debug("\n[DEBUG] Finished execution of phasing.");
+            System.out.println("\n[DEBUG] phasing startTime: " + startTime);
+            System.out.println("\n[DEBUG] phasing endTime: " + stopTime);
+            System.out.println("\n[DEBUG] phasing elapsedTime: " + elapsedTime + " seconds");
+            System.out.println("\n[DEBUG] Finished execution of phasing.");
         }
     }
 
@@ -1181,19 +1174,19 @@ public class GuidanceImpl {
         String shapeitBinary = loadFromEnvironment(SHAPEITBINARY, HEADER_FILTER_HAPLOTYPES);
 
         if (DEBUG) {
-            LOGGER.debug("\n[DEBUG] Running filterHaplotypes with parameters:");
-            LOGGER.debug("[DEBUG] \t- shapeitBinary             : " + shapeitBinary);
-            LOGGER.debug("[DEBUG] \t- Input hapsFile            : " + hapsFile);
-            LOGGER.debug("[DEBUG] \t- Input sampleFile          : " + sampleFile);
-            LOGGER.debug("[DEBUG] \t- Input excludedSnpsFile    : " + excludedSnpsFile);
-            LOGGER.debug("[DEBUG] \t- Output filteredHapsFile   : " + filteredHapsFile);
-            LOGGER.debug("[DEBUG] \t- Output filteredSampleFile : " + filteredSampleFile);
-            LOGGER.debug("[DEBUG] \t- Output filteredLogFile     : " + filteredLogFile);
-            LOGGER.debug("[DEBUG] \t- Output filteredHapsVcfFile : " + filteredHapsVcfFile);
-            LOGGER.debug("[DEBUG] \t- Output lisfOfSnpsFile     : " + listOfSnpsFile);
-            LOGGER.debug(NEW_LINE);
-            LOGGER.debug("[DEBUG] \t- Command: " + cmdToStore);
-            LOGGER.debug("--------------------------------------");
+            System.out.println("\n[DEBUG] Running filterHaplotypes with parameters:");
+            System.out.println("[DEBUG] \t- shapeitBinary             : " + shapeitBinary);
+            System.out.println("[DEBUG] \t- Input hapsFile            : " + hapsFile);
+            System.out.println("[DEBUG] \t- Input sampleFile          : " + sampleFile);
+            System.out.println("[DEBUG] \t- Input excludedSnpsFile    : " + excludedSnpsFile);
+            System.out.println("[DEBUG] \t- Output filteredHapsFile   : " + filteredHapsFile);
+            System.out.println("[DEBUG] \t- Output filteredSampleFile : " + filteredSampleFile);
+            System.out.println("[DEBUG] \t- Output filteredLogFile     : " + filteredLogFile);
+            System.out.println("[DEBUG] \t- Output filteredHapsVcfFile : " + filteredHapsVcfFile);
+            System.out.println("[DEBUG] \t- Output lisfOfSnpsFile     : " + listOfSnpsFile);
+            System.out.println(NEW_LINE);
+            System.out.println("[DEBUG] \t- Command: " + cmdToStore);
+            System.out.println("--------------------------------------");
         }
         long startTime = System.currentTimeMillis();
 
@@ -1219,7 +1212,7 @@ public class GuidanceImpl {
                 + filteredHapsVcfFileGz;
 
         if (DEBUG) {
-            LOGGER.debug(HEADER_FILTER_HAPLOTYPES + MSG_CMD + cmd);
+            System.out.println(HEADER_FILTER_HAPLOTYPES + MSG_CMD + cmd);
         }
 
         // Execute the command retrieving its exitValue, output and error
@@ -1234,8 +1227,9 @@ public class GuidanceImpl {
 
         // Check process exit value
         if (exitValue != 0) {
-            LOGGER.error(HEADER_FILTER_HAPLOTYPES + "Warning executing shapeitProc job in mode -convert, exit value is: " + exitValue);
-            LOGGER.error(HEADER_FILTER_HAPLOTYPES + "                         (This warning is not fatal).");
+            System.err
+                    .println(HEADER_FILTER_HAPLOTYPES + "Warning executing shapeitProc job in mode -convert, exit value is: " + exitValue);
+            System.err.println(HEADER_FILTER_HAPLOTYPES + "                         (This warning is not fatal).");
         }
 
         // Ugly, because shapeit_v2 automatically puts the .log to the file.
@@ -1249,7 +1243,7 @@ public class GuidanceImpl {
             }
         }
 
-        LOGGER.info(HEADER_FILTER_HAPLOTYPES + "Filtering haplotypes OK. Now we create the listofSnps...");
+        System.out.println(HEADER_FILTER_HAPLOTYPES + "Filtering haplotypes OK. Now we create the listofSnps...");
 
         // Now we have to create the list of snps and write them into the output file.
         // Taking into account that shapeit had generated a gziped file, then we have to use GZIPInputStream.
@@ -1264,7 +1258,7 @@ public class GuidanceImpl {
         }
 
         // Print information about the existence of the file
-        LOGGER.info("\n[DEBUG] \t- Output file " + listOfSnpsFile + " was succesfuly created? " + bool);
+        System.out.println("\n[DEBUG] \t- Output file " + listOfSnpsFile + " was succesfuly created? " + bool);
 
         try (GZIPInputStream inputGz = new GZIPInputStream(new FileInputStream(filteredHapsFileGz));
                 Reader decoder = new InputStreamReader(inputGz);
@@ -1297,10 +1291,10 @@ public class GuidanceImpl {
         long stopTime = System.currentTimeMillis();
         long elapsedTime = (stopTime - startTime) / 1_000;
         if (DEBUG) {
-            LOGGER.debug("\n[DEBUG] filterHaplotypes startTime: " + startTime);
-            LOGGER.debug("\n[DEBUG] filterHaplotypes endTime: " + stopTime);
-            LOGGER.debug("\n[DEBUG] filterHaplotypes elapsedTime: " + elapsedTime + " seconds");
-            LOGGER.debug("\n[DEBUG] Finished execution of filterHaplotypes.");
+            System.out.println("\n[DEBUG] filterHaplotypes startTime: " + startTime);
+            System.out.println("\n[DEBUG] filterHaplotypes endTime: " + stopTime);
+            System.out.println("\n[DEBUG] filterHaplotypes elapsedTime: " + elapsedTime + " seconds");
+            System.out.println("\n[DEBUG] Finished execution of filterHaplotypes.");
         }
     }
 
@@ -1332,24 +1326,24 @@ public class GuidanceImpl {
         String impute2Binary = loadFromEnvironment(IMPUTE2BINARY, HEADER_IMPUTE);
 
         if (DEBUG) {
-            LOGGER.debug("\n[DEBUG] Running impute with parameters:");
-            LOGGER.debug("[DEBUG] \t- impute2Binary             : " + impute2Binary);
-            LOGGER.debug("[DEBUG] \t- Input gmapFile            : " + gmapFile);
-            LOGGER.debug("[DEBUG] \t- Input knownHapFile        : " + knownHapFile);
-            LOGGER.debug("[DEBUG] \t- Input legendHapFile       : " + legendFile);
-            LOGGER.debug("[DEBUG] \t- Input shapeitHapsFile     : " + shapeitHapsFile);
-            LOGGER.debug("[DEBUG] \t- Input shapeitSampleFile   : " + shapeitSampleFile);
-            LOGGER.debug("[DEBUG] \t- Input lim1S               : " + lim1S);
-            LOGGER.debug("[DEBUG] \t- Input lim2S               : " + lim2S);
-            LOGGER.debug("[DEBUG] \t- Input pairsFile           : " + pairsFile);
-            LOGGER.debug("[DEBUG] \t- Output imputeFile         : " + imputeFile);
-            LOGGER.debug("[DEBUG] \t- Output imputeFileInfo     : " + imputeFileInfo);
-            LOGGER.debug("[DEBUG] \t- Output imputeFileSummary  : " + imputeFileSummary);
-            LOGGER.debug("[DEBUG] \t- Output imputeFileWarnings : " + imputeFileWarnings);
-            LOGGER.debug("[DEBUG] \t- Input  theChromo          : " + theChromo);
-            LOGGER.debug(NEW_LINE);
-            LOGGER.debug("[DEBUG] \t- Command: " + cmdToStore);
-            LOGGER.debug("--------------------------------------");
+            System.out.println("\n[DEBUG] Running impute with parameters:");
+            System.out.println("[DEBUG] \t- impute2Binary             : " + impute2Binary);
+            System.out.println("[DEBUG] \t- Input gmapFile            : " + gmapFile);
+            System.out.println("[DEBUG] \t- Input knownHapFile        : " + knownHapFile);
+            System.out.println("[DEBUG] \t- Input legendHapFile       : " + legendFile);
+            System.out.println("[DEBUG] \t- Input shapeitHapsFile     : " + shapeitHapsFile);
+            System.out.println("[DEBUG] \t- Input shapeitSampleFile   : " + shapeitSampleFile);
+            System.out.println("[DEBUG] \t- Input lim1S               : " + lim1S);
+            System.out.println("[DEBUG] \t- Input lim2S               : " + lim2S);
+            System.out.println("[DEBUG] \t- Input pairsFile           : " + pairsFile);
+            System.out.println("[DEBUG] \t- Output imputeFile         : " + imputeFile);
+            System.out.println("[DEBUG] \t- Output imputeFileInfo     : " + imputeFileInfo);
+            System.out.println("[DEBUG] \t- Output imputeFileSummary  : " + imputeFileSummary);
+            System.out.println("[DEBUG] \t- Output imputeFileWarnings : " + imputeFileWarnings);
+            System.out.println("[DEBUG] \t- Input  theChromo          : " + theChromo);
+            System.out.println(NEW_LINE);
+            System.out.println("[DEBUG] \t- Command: " + cmdToStore);
+            System.out.println("--------------------------------------");
         }
 
         long startTime = System.currentTimeMillis();
@@ -1380,7 +1374,7 @@ public class GuidanceImpl {
         }
 
         if (DEBUG) {
-            LOGGER.debug(HEADER_IMPUTE + MSG_CMD + cmd);
+            System.out.println(HEADER_IMPUTE + MSG_CMD + cmd);
         }
 
         // Execute the command retrieving its exitValue, output and error
@@ -1393,8 +1387,8 @@ public class GuidanceImpl {
 
         // Check process exit value
         if (exitValue != 0) {
-            LOGGER.error(HEADER_IMPUTE + " Warning executing imputeProc job, exit value is: " + exitValue);
-            LOGGER.error(HEADER_IMPUTE + "                        (This warning is not fatal).");
+            System.err.println(HEADER_IMPUTE + " Warning executing imputeProc job, exit value is: " + exitValue);
+            System.err.println(HEADER_IMPUTE + "                        (This warning is not fatal).");
         }
 
         // With the -o_gz option in the comand, the outputs are imputeFile.gz
@@ -1426,10 +1420,10 @@ public class GuidanceImpl {
         long stopTime = System.currentTimeMillis();
         long elapsedTime = (stopTime - startTime) / 1_000;
         if (DEBUG) {
-            LOGGER.debug("\n[DEBUG] imputeWithImpute startTime: " + startTime);
-            LOGGER.debug("\n[DEBUG] imputeWithImpute endTime: " + stopTime);
-            LOGGER.debug("\n[DEBUG] imputeWithImpute elapsedTime: " + elapsedTime + " seconds");
-            LOGGER.debug("\n[DEBUG] Finished execution of imputeWithImpute with parameters:");
+            System.out.println("\n[DEBUG] imputeWithImpute startTime: " + startTime);
+            System.out.println("\n[DEBUG] imputeWithImpute endTime: " + stopTime);
+            System.out.println("\n[DEBUG] imputeWithImpute elapsedTime: " + elapsedTime + " seconds");
+            System.out.println("\n[DEBUG] Finished execution of imputeWithImpute with parameters:");
         }
 
     }
@@ -1464,25 +1458,25 @@ public class GuidanceImpl {
         String minimacBinary = loadFromEnvironment(MINIMACBINARY, HEADER_IMPUTE);
 
         if (DEBUG) {
-            LOGGER.debug("\n[DEBUG] Running imputation with parameters:");
-            LOGGER.debug("[DEBUG] \t- minimacBinary                : " + minimacBinary);
-            LOGGER.debug("[DEBUG] \t- Input knownHapFile           : " + knownHapFile);
-            LOGGER.debug("[DEBUG] \t- Input filteredHapsFile       : " + filteredHapsFile);
-            LOGGER.debug("[DEBUG] \t- Input filteredSampleFile     : " + filteredSampleFile);
-            LOGGER.debug("[DEBUG] \t- Input filteredListOfSnpsFile : " + filteredListOfSnpsFile);
-            LOGGER.debug("[DEBUG] \t- Output imputedMMFileName     : " + imputedMMFileName);
-            LOGGER.debug("[DEBUG] \t- Output imputedMMInfoFile     : " + imputedMMInfoFile);
-            // LOGGER.debug("[DEBUG] \t- Output imputedMMDraftFile : " + imputedMMDraftFile);
-            LOGGER.debug("[DEBUG] \t- Output imputedMMErateFile    : " + imputedMMErateFile);
-            LOGGER.debug("[DEBUG] \t- Output imputedMMRecFile      : " + imputedMMRecFile);
-            LOGGER.debug("[DEBUG] \t- Output imputedMMDoseFile     : " + imputedMMDoseFile);
-            LOGGER.debug("[DEBUG] \t- Output imputedMMLogFile      : " + imputedMMLogFile);
-            LOGGER.debug("[DEBUG] \t- Input  theChromo             : " + theChromo);
-            LOGGER.debug("[DEBUG] \t- Input lim1S                  : " + lim1S);
-            LOGGER.debug("[DEBUG] \t- Input lim2S                  : " + lim2S);
-            LOGGER.debug(NEW_LINE);
-            LOGGER.debug("[DEBUG] \t- Command: " + cmdToStore);
-            LOGGER.debug("--------------------------------------");
+            System.out.println("\n[DEBUG] Running imputation with parameters:");
+            System.out.println("[DEBUG] \t- minimacBinary                : " + minimacBinary);
+            System.out.println("[DEBUG] \t- Input knownHapFile           : " + knownHapFile);
+            System.out.println("[DEBUG] \t- Input filteredHapsFile       : " + filteredHapsFile);
+            System.out.println("[DEBUG] \t- Input filteredSampleFile     : " + filteredSampleFile);
+            System.out.println("[DEBUG] \t- Input filteredListOfSnpsFile : " + filteredListOfSnpsFile);
+            System.out.println("[DEBUG] \t- Output imputedMMFileName     : " + imputedMMFileName);
+            System.out.println("[DEBUG] \t- Output imputedMMInfoFile     : " + imputedMMInfoFile);
+            // System.out.println("[DEBUG] \t- Output imputedMMDraftFile : " + imputedMMDraftFile);
+            System.out.println("[DEBUG] \t- Output imputedMMErateFile    : " + imputedMMErateFile);
+            System.out.println("[DEBUG] \t- Output imputedMMRecFile      : " + imputedMMRecFile);
+            System.out.println("[DEBUG] \t- Output imputedMMDoseFile     : " + imputedMMDoseFile);
+            System.out.println("[DEBUG] \t- Output imputedMMLogFile      : " + imputedMMLogFile);
+            System.out.println("[DEBUG] \t- Input  theChromo             : " + theChromo);
+            System.out.println("[DEBUG] \t- Input lim1S                  : " + lim1S);
+            System.out.println("[DEBUG] \t- Input lim2S                  : " + lim2S);
+            System.out.println(NEW_LINE);
+            System.out.println("[DEBUG] \t- Command: " + cmdToStore);
+            System.out.println("--------------------------------------");
         }
 
         long startTime = System.currentTimeMillis();
@@ -1490,7 +1484,7 @@ public class GuidanceImpl {
         // We have to make sure whether we are using renamed files of the original gz files.
         // We detect this situation by scanning the last three characters:
         String extension = filteredHapsFile.substring(Math.max(0, filteredHapsFile.length() - 3));
-        LOGGER.info("DEBUG \t The file extension is: " + extension + " and the file is " + filteredHapsFile);
+        System.out.println("DEBUG \t The file extension is: " + extension + " and the file is " + filteredHapsFile);
 
         String filteredHapsFileGz = null;
         if (extension.equals(".gz")) {
@@ -1506,7 +1500,7 @@ public class GuidanceImpl {
                 + theChromo + " --vcfwindow 250000 --rounds 5 --states 200 --prefix " + imputedMMFileName + " --gzip";
 
         if (DEBUG) {
-            LOGGER.debug(HEADER_IMPUTE + MSG_CMD + cmd);
+            System.out.println(HEADER_IMPUTE + MSG_CMD + cmd);
         }
 
         // Execute the command retrieving its exitValue, output and error
@@ -1519,8 +1513,8 @@ public class GuidanceImpl {
 
         // Check process exit value
         if (exitValue != 0) {
-            LOGGER.error(HEADER_IMPUTE + " Warning executing minimacProc job, exit value is: " + exitValue);
-            LOGGER.error(HEADER_IMPUTE + "                        (This warning is not fatal).");
+            System.err.println(HEADER_IMPUTE + " Warning executing minimacProc job, exit value is: " + exitValue);
+            System.err.println(HEADER_IMPUTE + "                        (This warning is not fatal).");
         }
 
         // With the -o_gz option in the command, the outputs are imputeFile.gz
@@ -1597,10 +1591,10 @@ public class GuidanceImpl {
         long stopTime = System.currentTimeMillis();
         long elapsedTime = (stopTime - startTime) / 1_000;
         if (DEBUG) {
-            LOGGER.debug("\n[DEBUG] imputeWithMinimac startTime: " + startTime);
-            LOGGER.debug("\n[DEBUG] imputeWithMinimac endTime: " + stopTime);
-            LOGGER.debug("\n[DEBUG] imputeWithMinimac elapsedTime: " + elapsedTime + " seconds");
-            LOGGER.debug("\n[DEBUG] Finished execution of imputeWithMinimac with parameters:");
+            System.out.println("\n[DEBUG] imputeWithMinimac startTime: " + startTime);
+            System.out.println("\n[DEBUG] imputeWithMinimac endTime: " + stopTime);
+            System.out.println("\n[DEBUG] imputeWithMinimac elapsedTime: " + elapsedTime + " seconds");
+            System.out.println("\n[DEBUG] Finished execution of imputeWithMinimac with parameters:");
         }
 
     }
@@ -1620,13 +1614,13 @@ public class GuidanceImpl {
             throws GuidanceTaskException {
 
         if (DEBUG) {
-            LOGGER.debug("\n[DEBUG] Running filterByInfo with parameters:");
-            LOGGER.debug("[DEBUG] \t- Input inputeFileInfo   : " + imputeFileInfo);
-            LOGGER.debug("[DEBUG] \t- Output filteredFile    : " + filteredFile);
-            LOGGER.debug("[DEBUG] \t- Input threshold        : " + threshold);
-            LOGGER.debug(NEW_LINE);
-            LOGGER.debug("[DEBUG] \t- Command: " + cmdToStore);
-            LOGGER.debug("--------------------------------------");
+            System.out.println("\n[DEBUG] Running filterByInfo with parameters:");
+            System.out.println("[DEBUG] \t- Input inputeFileInfo   : " + imputeFileInfo);
+            System.out.println("[DEBUG] \t- Output filteredFile    : " + filteredFile);
+            System.out.println("[DEBUG] \t- Input threshold        : " + threshold);
+            System.out.println(NEW_LINE);
+            System.out.println("[DEBUG] \t- Command: " + cmdToStore);
+            System.out.println("--------------------------------------");
         }
         long startTime = System.currentTimeMillis();
 
@@ -1646,7 +1640,7 @@ public class GuidanceImpl {
             throw new GuidanceTaskException(ioe);
         }
         // Print information about the existence of the file
-        LOGGER.info("\n[DEBUG] \t- Output file " + filteredFile + " was succesfuly created? " + bool);
+        System.out.println("\n[DEBUG] \t- Output file " + filteredFile + " was succesfuly created? " + bool);
 
         try (FileReader fr = new FileReader(imputeFileInfo);
                 BufferedReader br = new BufferedReader(fr);
@@ -1676,10 +1670,10 @@ public class GuidanceImpl {
         long stopTime = System.currentTimeMillis();
         long elapsedTime = (stopTime - startTime) / 1_000;
         if (DEBUG) {
-            LOGGER.debug("\n[DEBUG] filterByInfo startTime: " + startTime);
-            LOGGER.debug("\n[DEBUG] filterByInfo endTime: " + stopTime);
-            LOGGER.debug("\n[DEBUG] filterByInfo elapsedTime: " + elapsedTime + " seconds");
-            LOGGER.debug("\n[DEBUG] Finished execution of filterByInfo");
+            System.out.println("\n[DEBUG] filterByInfo startTime: " + startTime);
+            System.out.println("\n[DEBUG] filterByInfo endTime: " + stopTime);
+            System.out.println("\n[DEBUG] filterByInfo elapsedTime: " + elapsedTime + " seconds");
+            System.out.println("\n[DEBUG] Finished execution of filterByInfo");
         }
 
     }
@@ -1705,18 +1699,18 @@ public class GuidanceImpl {
             throws GuidanceTaskException {
 
         if (DEBUG) {
-            LOGGER.debug("\n[DEBUG] Running filterByAll with parameters:");
-            LOGGER.debug("[DEBUG] \t- Input summaryFile             : " + inputFile);
-            LOGGER.debug("[DEBUG] \t- Output outputFile             : " + outputFile);
-            LOGGER.debug("[DEBUG] \t- Output outputCondensedFile    : " + outputCondensedFile);
-            LOGGER.debug("[DEBUG] \t- Input maf threshold           : " + mafThresholdS);
-            LOGGER.debug("[DEBUG] \t- Input info threshold          : " + infoThresholdS);
-            LOGGER.debug("[DEBUG] \t- Input hwe cohort threshold    : " + hweCohortThresholdS);
-            LOGGER.debug("[DEBUG] \t- Input hwe controls threshold  : " + hweCasesThresholdS);
-            LOGGER.debug("[DEBUG] \t- Input hwe cases threshold     : " + hweControlsThresholdS);
-            LOGGER.debug(NEW_LINE);
-            LOGGER.debug("[DEBUG] \t- Command: " + cmdToStore);
-            LOGGER.debug("--------------------------------------");
+            System.out.println("\n[DEBUG] Running filterByAll with parameters:");
+            System.out.println("[DEBUG] \t- Input summaryFile             : " + inputFile);
+            System.out.println("[DEBUG] \t- Output outputFile             : " + outputFile);
+            System.out.println("[DEBUG] \t- Output outputCondensedFile    : " + outputCondensedFile);
+            System.out.println("[DEBUG] \t- Input maf threshold           : " + mafThresholdS);
+            System.out.println("[DEBUG] \t- Input info threshold          : " + infoThresholdS);
+            System.out.println("[DEBUG] \t- Input hwe cohort threshold    : " + hweCohortThresholdS);
+            System.out.println("[DEBUG] \t- Input hwe controls threshold  : " + hweCasesThresholdS);
+            System.out.println("[DEBUG] \t- Input hwe cases threshold     : " + hweControlsThresholdS);
+            System.out.println(NEW_LINE);
+            System.out.println("[DEBUG] \t- Command: " + cmdToStore);
+            System.out.println("--------------------------------------");
         }
         long startTime = System.currentTimeMillis();
 
@@ -1834,10 +1828,10 @@ public class GuidanceImpl {
         long stopTime = System.currentTimeMillis();
         long elapsedTime = (stopTime - startTime) / 1_000;
         if (DEBUG) {
-            LOGGER.debug("\n[DEBUG] filterByAll startTime: " + startTime);
-            LOGGER.debug("\n[DEBUG] filterByAll endTime: " + stopTime);
-            LOGGER.debug("\n[DEBUG] filterByAll elapsedTime: " + elapsedTime + " seconds");
-            LOGGER.debug("\n[DEBUG] Finished execution of filterByAll");
+            System.out.println("\n[DEBUG] filterByAll startTime: " + startTime);
+            System.out.println("\n[DEBUG] filterByAll endTime: " + stopTime);
+            System.out.println("\n[DEBUG] filterByAll elapsedTime: " + elapsedTime + " seconds");
+            System.out.println("\n[DEBUG] Finished execution of filterByAll");
         }
 
     }
@@ -1859,13 +1853,13 @@ public class GuidanceImpl {
             String rpanelFlag, String cmdToStore) throws GuidanceTaskException {
 
         if (DEBUG) {
-            LOGGER.debug("\n[DEBUG] Running jointFilteredByAllFiles with parameters:");
-            LOGGER.debug("[DEBUG] \t- Input filteredByAllA          : " + filteredByAllA);
-            LOGGER.debug("[DEBUG] \t- Input filteredByAllB          : " + filteredByAllB);
-            LOGGER.debug("[DEBUG] \t- Output filteredByAllC         : " + filteredByAllC);
-            LOGGER.debug(NEW_LINE);
-            LOGGER.debug("[DEBUG] \t- Command: " + cmdToStore);
-            LOGGER.debug("--------------------------------------");
+            System.out.println("\n[DEBUG] Running jointFilteredByAllFiles with parameters:");
+            System.out.println("[DEBUG] \t- Input filteredByAllA          : " + filteredByAllA);
+            System.out.println("[DEBUG] \t- Input filteredByAllB          : " + filteredByAllB);
+            System.out.println("[DEBUG] \t- Output filteredByAllC         : " + filteredByAllC);
+            System.out.println(NEW_LINE);
+            System.out.println("[DEBUG] \t- Command: " + cmdToStore);
+            System.out.println("--------------------------------------");
         }
 
         long startTime = System.currentTimeMillis();
@@ -1947,10 +1941,10 @@ public class GuidanceImpl {
         long stopTime = System.currentTimeMillis();
         long elapsedTime = (stopTime - startTime) / 1_000;
         if (DEBUG) {
-            LOGGER.debug("\n[DEBUG] jointFilteredByAllFiles startTime: " + startTime);
-            LOGGER.debug("\n[DEBUG] jointFilteredByAllFiles endTime: " + stopTime);
-            LOGGER.debug("\n[DEBUG] jointFilteredByAllFiles elapsedTime: " + elapsedTime + " seconds");
-            LOGGER.debug("\n[DEBUG] Finished execution of jointFilteredByAllFiles");
+            System.out.println("\n[DEBUG] jointFilteredByAllFiles startTime: " + startTime);
+            System.out.println("\n[DEBUG] jointFilteredByAllFiles endTime: " + stopTime);
+            System.out.println("\n[DEBUG] jointFilteredByAllFiles elapsedTime: " + elapsedTime + " seconds");
+            System.out.println("\n[DEBUG] Finished execution of jointFilteredByAllFiles");
         }
 
     }
@@ -1970,13 +1964,13 @@ public class GuidanceImpl {
             throws GuidanceTaskException {
 
         if (DEBUG) {
-            LOGGER.debug("\n[DEBUG] Running jointCondensedFiles with parameters:");
-            LOGGER.debug("[DEBUG] \t- InputAFile                    : " + inputAFile);
-            LOGGER.debug("[DEBUG] \t- InputBFile                    : " + inputBFile);
-            LOGGER.debug("[DEBUG] \t- Output outputCondensedFile    : " + outputFile);
-            LOGGER.debug(NEW_LINE);
-            LOGGER.debug("[DEBUG] \t- Command: " + cmdToStore);
-            LOGGER.debug("--------------------------------------");
+            System.out.println("\n[DEBUG] Running jointCondensedFiles with parameters:");
+            System.out.println("[DEBUG] \t- InputAFile                    : " + inputAFile);
+            System.out.println("[DEBUG] \t- InputBFile                    : " + inputBFile);
+            System.out.println("[DEBUG] \t- Output outputCondensedFile    : " + outputFile);
+            System.out.println(NEW_LINE);
+            System.out.println("[DEBUG] \t- Command: " + cmdToStore);
+            System.out.println("--------------------------------------");
         }
 
         long startTime = System.currentTimeMillis();
@@ -2038,10 +2032,10 @@ public class GuidanceImpl {
         long stopTime = System.currentTimeMillis();
         long elapsedTime = (stopTime - startTime) / 1_000;
         if (DEBUG) {
-            LOGGER.debug("\n[DEBUG] jointCondensedFiles startTime: " + startTime);
-            LOGGER.debug("\n[DEBUG] jointCondensedFiles endTime: " + stopTime);
-            LOGGER.debug("\n[DEBUG] jointCondensedFiles elapsedTime: " + elapsedTime + " seconds");
-            LOGGER.debug("\n[DEBUG] Finished execution of jointCondensedFiles");
+            System.out.println("\n[DEBUG] jointCondensedFiles startTime: " + startTime);
+            System.out.println("\n[DEBUG] jointCondensedFiles endTime: " + stopTime);
+            System.out.println("\n[DEBUG] jointCondensedFiles elapsedTime: " + elapsedTime + " seconds");
+            System.out.println("\n[DEBUG] Finished execution of jointCondensedFiles");
         }
     }
 
@@ -2060,13 +2054,13 @@ public class GuidanceImpl {
             throws GuidanceTaskException {
 
         if (DEBUG) {
-            LOGGER.debug("\n[DEBUG] Running combinePanels with parameters:");
-            LOGGER.debug("[DEBUG] \t- resultsPanelA             : " + resultsPanelA);
-            LOGGER.debug("[DEBUG] \t- resultsPanelB             : " + resultsPanelB);
-            LOGGER.debug("[DEBUG] \t- resultsPanelC             : " + resultsPanelC);
-            LOGGER.debug(NEW_LINE);
-            LOGGER.debug("[DEBUG] \t- Command: " + cmdToStore);
-            LOGGER.debug("--------------------------------------");
+            System.out.println("\n[DEBUG] Running combinePanels with parameters:");
+            System.out.println("[DEBUG] \t- resultsPanelA             : " + resultsPanelA);
+            System.out.println("[DEBUG] \t- resultsPanelB             : " + resultsPanelB);
+            System.out.println("[DEBUG] \t- resultsPanelC             : " + resultsPanelC);
+            System.out.println(NEW_LINE);
+            System.out.println("[DEBUG] \t- Command: " + cmdToStore);
+            System.out.println("--------------------------------------");
         }
         long startTime = System.currentTimeMillis();
 
@@ -2193,10 +2187,10 @@ public class GuidanceImpl {
         long stopTime = System.currentTimeMillis();
         long elapsedTime = (stopTime - startTime) / 1_000;
         if (DEBUG) {
-            LOGGER.debug("\n[DEBUG] combinePanels startTime: " + startTime);
-            LOGGER.debug("\n[DEBUG] combinePanels endTime: " + stopTime);
-            LOGGER.debug("\n[DEBUG] combinePanels elapsedTime: " + elapsedTime + " seconds");
-            LOGGER.debug("\n[DEBUG] Finished execution of combinePanels");
+            System.out.println("\n[DEBUG] combinePanels startTime: " + startTime);
+            System.out.println("\n[DEBUG] combinePanels endTime: " + stopTime);
+            System.out.println("\n[DEBUG] combinePanels elapsedTime: " + elapsedTime + " seconds");
+            System.out.println("\n[DEBUG] Finished execution of combinePanels");
         }
     }
 
@@ -2217,15 +2211,15 @@ public class GuidanceImpl {
             String cmdToStore) throws GuidanceTaskException {
 
         if (DEBUG) {
-            LOGGER.debug("\n[DEBUG] Running combinePanelsComplex with parameters:");
-            LOGGER.debug("[DEBUG] \t- resultsPanelA             : " + resultsPanelA);
-            LOGGER.debug("[DEBUG] \t- resultsPanelB             : " + resultsPanelB);
-            LOGGER.debug("[DEBUG] \t- resultsPanelC             : " + resultsPanelC);
-            LOGGER.debug("[DEBUG] \t- lim1               : " + lim1);
-            LOGGER.debug("[DEBUG] \t- lim2                 : " + lim2);
-            LOGGER.debug(NEW_LINE);
-            LOGGER.debug("[DEBUG] \t- Command: " + cmdToStore);
-            LOGGER.debug("--------------------------------------");
+            System.out.println("\n[DEBUG] Running combinePanelsComplex with parameters:");
+            System.out.println("[DEBUG] \t- resultsPanelA             : " + resultsPanelA);
+            System.out.println("[DEBUG] \t- resultsPanelB             : " + resultsPanelB);
+            System.out.println("[DEBUG] \t- resultsPanelC             : " + resultsPanelC);
+            System.out.println("[DEBUG] \t- lim1               : " + lim1);
+            System.out.println("[DEBUG] \t- lim2                 : " + lim2);
+            System.out.println(NEW_LINE);
+            System.out.println("[DEBUG] \t- Command: " + cmdToStore);
+            System.out.println("--------------------------------------");
         }
         long startTime = System.currentTimeMillis();
 
@@ -2290,7 +2284,7 @@ public class GuidanceImpl {
             throw new GuidanceTaskException(ioe);
         }
 
-        // LOGGER.debug("i\n[DEBUG] We have read the chromo " + chromoS + " from first File. contador = " +
+        // System.out.println("i\n[DEBUG] We have read the chromo " + chromoS + " from first File. contador = " +
         // contador);
 
         // Create the second treeMap for the chromo
@@ -2326,7 +2320,7 @@ public class GuidanceImpl {
         } catch (IOException ioe) {
             throw new GuidanceTaskException(ioe);
         }
-        // LOGGER.debug("\n[DEBUG] We have read the chromo " + chromoS + " from second File. contador = " +
+        // System.out.println("\n[DEBUG] We have read the chromo " + chromoS + " from second File. contador = " +
         // contador);
 
         // A place to store the results of this combining
@@ -2367,7 +2361,7 @@ public class GuidanceImpl {
             posAllelesComplementAndReverse = splittedA[posIdx] + "_" + getAllele(splittedA[a1Idx], splittedA[a2Idx], "complementAndReverse")
                     + "_" + splittedA[chrIdx];
 
-            // LOGGER.debug("[combinePanelsComplex] " + positionA1A2Chr + " " + posAllelesEqual + " " +
+            // System.out.println("[combinePanelsComplex] " + positionA1A2Chr + " " + posAllelesEqual + " " +
             // posAllelesReverse + " " + posAllelesComplement + " " + posAllelesComplementAndReverse);
 
             // The same: position, a1 and a2?
@@ -2383,7 +2377,7 @@ public class GuidanceImpl {
                 } else {
                     fileTreeMapC.put(positionA1A2Chr, lineB);
                 }
-                // LOGGER.debug("WOW alelos iguales: " + positionA1A2Chr);
+                // System.out.println("WOW alelos iguales: " + positionA1A2Chr);
 
                 // Now we remove this value from the fileTreeMapB
                 fileTreeMapB.remove(positionA1A2Chr);
@@ -2401,7 +2395,7 @@ public class GuidanceImpl {
                 }
                 // Now we remove this value from the fileTreeMapB
                 fileTreeMapB.remove(posAllelesReverse);
-                // LOGGER.debug("WOW alelos reversos: " + positionA1A2Chr + " " + posAllelesReverse);
+                // System.out.println("WOW alelos reversos: " + positionA1A2Chr + " " + posAllelesReverse);
             } else if (fileTreeMapB.containsKey(posAllelesComplement)) {
                 // If the fileTreeMapB contains this posAllelesComplement, then we have to choose
                 // the ones that has a better info (that is the ones with greater info).
@@ -2416,7 +2410,7 @@ public class GuidanceImpl {
                 }
                 // Now we remove this value from the fileTreeMapB
                 fileTreeMapB.remove(posAllelesComplement);
-                // LOGGER.debug("WOW alelos complementarios: " + positionA1A2Chr + " " +
+                // System.out.println("WOW alelos complementarios: " + positionA1A2Chr + " " +
                 // posAllelesComplement);
             } else if (fileTreeMapB.containsKey(posAllelesComplementAndReverse)) {
                 // If the fileTreeMapB contains this posAllelesComplement, then we have to choose
@@ -2432,13 +2426,13 @@ public class GuidanceImpl {
                 }
                 // Now we remove this value from the fileTreeMapB
                 fileTreeMapB.remove(posAllelesComplementAndReverse);
-                // LOGGER.debug("WOW alelos complementariosYreversos: " + positionA1A2Chr + " " +
+                // System.out.println("WOW alelos complementariosYreversos: " + positionA1A2Chr + " " +
                 // posAllelesComplementAndReverse);
             } else {
                 // Else means that fileTreeMapB does not contain this SNP or any of its variants.
                 // Therefore, we keep the one in fileTreeMapA
                 fileTreeMapC.put(positionA1A2Chr, lineA);
-                // LOGGER.debug("WOW fileTreeMapB does not contain this SNP: " + positionA1A2Chr);
+                // System.out.println("WOW fileTreeMapB does not contain this SNP: " + positionA1A2Chr);
             }
             // contador++;
         }
@@ -2460,7 +2454,7 @@ public class GuidanceImpl {
         }
 
         fileTreeMapB.clear();
-        // LOGGER.debug("\n[DEBUG] We have processed the chromosome " + chromoS + ". contador " + contador);
+        // System.out.println("\n[DEBUG] We have processed the chromosome " + chromoS + ". contador " + contador);
 
         // Finally we put the fileTreeMapC into the plain output file and then compress it
         String plainResultsPanelC = resultsPanelC.substring(0, resultsPanelC.length() - 3);
@@ -2492,29 +2486,29 @@ public class GuidanceImpl {
         }
 
         fileTreeMapC.clear();
-        // LOGGER.debug("\n[DEBUG] We have stored snps from chromosome " + chromoS + " in the output file");
+        // System.out.println("\n[DEBUG] We have stored snps from chromosome " + chromoS + " in the output file");
 
         // Then, we create the gz file and rename it
         FileUtils.gzipFile(plainResultsPanelC, resultsPanelC);
 
         File fA = new File(resultsPanelA + ".temp");
         if (!fA.delete()) {
-            LOGGER.error("ERROR: Cannot erase temp file " + resultsPanelA);
+            System.err.println("ERROR: Cannot erase temp file " + resultsPanelA);
         }
         File fB = new File(resultsPanelB + ".temp");
         if (!fB.delete()) {
-            LOGGER.error("ERROR: Cannot erase temp file " + resultsPanelB);
+            System.err.println("ERROR: Cannot erase temp file " + resultsPanelB);
         }
 
-        LOGGER.info("\n[DEBUG] Finished all chromosomes");
+        System.out.println("\n[DEBUG] Finished all chromosomes");
 
         long stopTime = System.currentTimeMillis();
         long elapsedTime = (stopTime - startTime) / 1_000;
         if (DEBUG) {
-            LOGGER.debug("\n[DEBUG] combinePanelsComplex startTime: " + startTime);
-            LOGGER.debug("\n[DEBUG] combinePanelsComplex endTime: " + stopTime);
-            LOGGER.debug("\n[DEBUG] combinePanelsComplex elapsedTime: " + elapsedTime + " seconds");
-            LOGGER.debug("\n[DEBUG] Finished execution of combinePanelsComplex");
+            System.out.println("\n[DEBUG] combinePanelsComplex startTime: " + startTime);
+            System.out.println("\n[DEBUG] combinePanelsComplex endTime: " + stopTime);
+            System.out.println("\n[DEBUG] combinePanelsComplex elapsedTime: " + elapsedTime + " seconds");
+            System.out.println("\n[DEBUG] Finished execution of combinePanelsComplex");
         }
 
     }
@@ -2540,18 +2534,18 @@ public class GuidanceImpl {
             throws GuidanceTaskException {
 
         if (DEBUG) {
-            LOGGER.debug("\n[DEBUG] Running combineCondensedFiles with parameters:");
-            LOGGER.debug("[DEBUG] \t- Input filteredA             : " + filteredA);
-            LOGGER.debug("[DEBUG] \t- Input filteredX             : " + filteredX);
-            LOGGER.debug("[DEBUG] \t- Output combinedCondensedFile : " + combinedCondensedFile);
-            LOGGER.debug("[DEBUG] \t- Input maf threshold           : " + mafThresholdS);
-            LOGGER.debug("[DEBUG] \t- Input info threshold          : " + infoThresholdS);
-            LOGGER.debug("[DEBUG] \t- Input hwe cohort threshold    : " + hweCohortThresholdS);
-            LOGGER.debug("[DEBUG] \t- Input hwe controls threshold  : " + hweCasesThresholdS);
-            LOGGER.debug("[DEBUG] \t- Input hwe cases threshold     : " + hweControlsThresholdS);
-            LOGGER.debug(NEW_LINE);
-            LOGGER.debug("[DEBUG] \t- Command: " + cmdToStore);
-            LOGGER.debug("--------------------------------------");
+            System.out.println("\n[DEBUG] Running combineCondensedFiles with parameters:");
+            System.out.println("[DEBUG] \t- Input filteredA             : " + filteredA);
+            System.out.println("[DEBUG] \t- Input filteredX             : " + filteredX);
+            System.out.println("[DEBUG] \t- Output combinedCondensedFile : " + combinedCondensedFile);
+            System.out.println("[DEBUG] \t- Input maf threshold           : " + mafThresholdS);
+            System.out.println("[DEBUG] \t- Input info threshold          : " + infoThresholdS);
+            System.out.println("[DEBUG] \t- Input hwe cohort threshold    : " + hweCohortThresholdS);
+            System.out.println("[DEBUG] \t- Input hwe controls threshold  : " + hweCasesThresholdS);
+            System.out.println("[DEBUG] \t- Input hwe cases threshold     : " + hweControlsThresholdS);
+            System.out.println(NEW_LINE);
+            System.out.println("[DEBUG] \t- Command: " + cmdToStore);
+            System.out.println("--------------------------------------");
         }
         long startTime = System.currentTimeMillis();
 
@@ -2734,10 +2728,10 @@ public class GuidanceImpl {
         long stopTime = System.currentTimeMillis();
         long elapsedTime = (stopTime - startTime) / 1_000;
         if (DEBUG) {
-            LOGGER.debug("\n[DEBUG] combineCondensedFiles startTime: " + startTime);
-            LOGGER.debug("\n[DEBUG] combineCondensedFiles endTime: " + stopTime);
-            LOGGER.debug("\n[DEBUG] combineCondensedFiles elapsedTime: " + elapsedTime + " seconds");
-            LOGGER.debug("\n[DEBUG] Finished execution of combinedCondensedFiles");
+            System.out.println("\n[DEBUG] combineCondensedFiles startTime: " + startTime);
+            System.out.println("\n[DEBUG] combineCondensedFiles endTime: " + stopTime);
+            System.out.println("\n[DEBUG] combineCondensedFiles elapsedTime: " + elapsedTime + " seconds");
+            System.out.println("\n[DEBUG] Finished execution of combinedCondensedFiles");
         }
     }
 
@@ -2756,13 +2750,13 @@ public class GuidanceImpl {
             throws GuidanceTaskException {
 
         if (DEBUG) {
-            LOGGER.debug("\n[DEBUG] Running generateTopHits with parameters:");
-            LOGGER.debug("[DEBUG] \t- resultsFile                : " + resultsFile);
-            LOGGER.debug("[DEBUG] \t- outputTopHitFile           : " + outputTopHitFile);
-            LOGGER.debug("[DEBUG] \t- pvaThreshold               : " + pvaThreshold);
-            LOGGER.debug(NEW_LINE);
-            LOGGER.debug("[DEBUG] \t- Command: " + cmdToStore);
-            LOGGER.debug("--------------------------------------");
+            System.out.println("\n[DEBUG] Running generateTopHits with parameters:");
+            System.out.println("[DEBUG] \t- resultsFile                : " + resultsFile);
+            System.out.println("[DEBUG] \t- outputTopHitFile           : " + outputTopHitFile);
+            System.out.println("[DEBUG] \t- pvaThreshold               : " + pvaThreshold);
+            System.out.println(NEW_LINE);
+            System.out.println("[DEBUG] \t- Command: " + cmdToStore);
+            System.out.println("--------------------------------------");
         }
 
         long startTime = System.currentTimeMillis();
@@ -2786,7 +2780,7 @@ public class GuidanceImpl {
             int indexPosition = resultsFileHashTableIndex.get("position");
             int indexRsId = resultsFileHashTableIndex.get("rs_id_all");
 
-            LOGGER.info("ANTES 3");
+            System.out.println("ANTES 3");
 
             int indexPvalue = resultsFileHashTableIndex.get("frequentist_add_pvalue");
             int indexChromo = resultsFileHashTableIndex.get("chr");
@@ -2844,10 +2838,10 @@ public class GuidanceImpl {
         long stopTime = System.currentTimeMillis();
         long elapsedTime = (stopTime - startTime) / 1_000;
         if (DEBUG) {
-            LOGGER.debug("\n[DEBUG] generateTopHits startTime:  " + startTime);
-            LOGGER.debug("\n[DEBUG] generateTopHits endTime:    " + stopTime);
-            LOGGER.debug("\n[DEBUG] generateTopHits elapsedTime: " + elapsedTime + " seconds");
-            LOGGER.debug("\n[DEBUG] Finished execution of generateTopHits");
+            System.out.println("\n[DEBUG] generateTopHits startTime:  " + startTime);
+            System.out.println("\n[DEBUG] generateTopHits endTime:    " + stopTime);
+            System.out.println("\n[DEBUG] generateTopHits elapsedTime: " + elapsedTime + " seconds");
+            System.out.println("\n[DEBUG] Finished execution of generateTopHits");
         }
     }
 
@@ -2867,14 +2861,14 @@ public class GuidanceImpl {
             String cmdToStore) throws GuidanceTaskException {
 
         if (DEBUG) {
-            LOGGER.debug("\n[DEBUG] Running generateTopHits with parameters:");
-            LOGGER.debug("[DEBUG] \t- resultsAFile                : " + resultsAFile);
-            LOGGER.debug("[DEBUG] \t- resultsBFile                : " + resultsBFile);
-            LOGGER.debug("[DEBUG] \t- outputTopHitFile           : " + outputTopHitFile);
-            LOGGER.debug("[DEBUG] \t- pvaThreshold               : " + pvaThreshold);
-            LOGGER.debug(NEW_LINE);
-            LOGGER.debug("[DEBUG] \t- Command: " + cmdToStore);
-            LOGGER.debug("--------------------------------------");
+            System.out.println("\n[DEBUG] Running generateTopHits with parameters:");
+            System.out.println("[DEBUG] \t- resultsAFile                : " + resultsAFile);
+            System.out.println("[DEBUG] \t- resultsBFile                : " + resultsBFile);
+            System.out.println("[DEBUG] \t- outputTopHitFile           : " + outputTopHitFile);
+            System.out.println("[DEBUG] \t- pvaThreshold               : " + pvaThreshold);
+            System.out.println(NEW_LINE);
+            System.out.println("[DEBUG] \t- Command: " + cmdToStore);
+            System.out.println("--------------------------------------");
         }
 
         long startTime = System.currentTimeMillis();
@@ -2946,7 +2940,7 @@ public class GuidanceImpl {
                 int indexPosition = resultsBFileHashTableIndex.get("position");
                 int indexRsId = resultsBFileHashTableIndex.get("rs_id_all");
 
-                LOGGER.debug("ANTES X");
+                System.out.println("ANTES X");
 
                 int indexPvalue = resultsBFileHashTableIndex.get("frequentist_add_pvalue");
                 int indexChromo = resultsBFileHashTableIndex.get("chr");
@@ -3020,10 +3014,10 @@ public class GuidanceImpl {
         long stopTime = System.currentTimeMillis();
         long elapsedTime = (stopTime - startTime) / 1_000;
         if (DEBUG) {
-            LOGGER.debug("\n[DEBUG] generateTopHits startTime:  " + startTime);
-            LOGGER.debug("\n[DEBUG] generateTopHits endTime:    " + stopTime);
-            LOGGER.debug("\n[DEBUG] generateTopHits elapsedTime: " + elapsedTime + " seconds");
-            LOGGER.debug("\n[DEBUG] Finished execution of generateTopHits");
+            System.out.println("\n[DEBUG] generateTopHits startTime:  " + startTime);
+            System.out.println("\n[DEBUG] generateTopHits endTime:    " + stopTime);
+            System.out.println("\n[DEBUG] generateTopHits elapsedTime: " + elapsedTime + " seconds");
+            System.out.println("\n[DEBUG] Finished execution of generateTopHits");
         }
     }
 
@@ -3049,16 +3043,16 @@ public class GuidanceImpl {
         String rScriptDir = loadFromEnvironment(RSCRIPTDIR, HEADER_GENERATE_QQ_MANHATTAN_PLOTS);
 
         if (DEBUG) {
-            LOGGER.debug("\n[DEBUG] Running generateQQManhattanPlots with parameters:");
-            LOGGER.debug("[DEBUG] \t- lastCondensedFile             : " + lastCondensedFile);
-            LOGGER.debug("[DEBUG] \t- qqPlotFile                    : " + qqPlotFile);
-            LOGGER.debug("[DEBUG] \t- manhattanPlotFile             : " + manhattanPlotFile);
-            LOGGER.debug("[DEBUG] \t- qqPlotTiffFile                : " + qqPlotTiffFile);
-            LOGGER.debug("[DEBUG] \t- manhattanPlotTiffFile         : " + manhattanPlotTiffFile);
-            LOGGER.debug("[DEBUG] \t- Output outputCondensedFile    : " + correctedPvaluesFile);
-            LOGGER.debug(NEW_LINE);
-            LOGGER.debug("[DEBUG] \t- Command: " + cmdToStore);
-            LOGGER.debug("--------------------------------------");
+            System.out.println("\n[DEBUG] Running generateQQManhattanPlots with parameters:");
+            System.out.println("[DEBUG] \t- lastCondensedFile             : " + lastCondensedFile);
+            System.out.println("[DEBUG] \t- qqPlotFile                    : " + qqPlotFile);
+            System.out.println("[DEBUG] \t- manhattanPlotFile             : " + manhattanPlotFile);
+            System.out.println("[DEBUG] \t- qqPlotTiffFile                : " + qqPlotTiffFile);
+            System.out.println("[DEBUG] \t- manhattanPlotTiffFile         : " + manhattanPlotTiffFile);
+            System.out.println("[DEBUG] \t- Output outputCondensedFile    : " + correctedPvaluesFile);
+            System.out.println(NEW_LINE);
+            System.out.println("[DEBUG] \t- Command: " + cmdToStore);
+            System.out.println("--------------------------------------");
         }
 
         long startTime = System.currentTimeMillis();
@@ -3072,8 +3066,8 @@ public class GuidanceImpl {
                 + " " + qqPlotTiffFile + " " + manhattanPlotTiffFile + " " + correctedPvaluesFile;
 
         if (DEBUG) {
-            LOGGER.debug("\n[DEBUG] Cmd -> " + cmd);
-            LOGGER.debug(" ");
+            System.out.println("\n[DEBUG] Cmd -> " + cmd);
+            System.out.println(" ");
         }
 
         // Execute the command retrieving its exitValue, output and error
@@ -3093,10 +3087,10 @@ public class GuidanceImpl {
         long stopTime = System.currentTimeMillis();
         long elapsedTime = (stopTime - startTime) / 1_000;
         if (DEBUG) {
-            LOGGER.debug("\n[DEBUG] generateQQManhattanPlots startTime: " + startTime);
-            LOGGER.debug("\n[DEBUG] generateQQManhattanPlots endTime: " + stopTime);
-            LOGGER.debug("\n[DEBUG] generateQQManhattanPlots elapsedTime: " + elapsedTime + " seconds");
-            LOGGER.debug("\n[DEBUG] Finished execution of generate generateQQManhattanPlots.");
+            System.out.println("\n[DEBUG] generateQQManhattanPlots startTime: " + startTime);
+            System.out.println("\n[DEBUG] generateQQManhattanPlots endTime: " + stopTime);
+            System.out.println("\n[DEBUG] generateQQManhattanPlots elapsedTime: " + elapsedTime + " seconds");
+            System.out.println("\n[DEBUG] Finished execution of generate generateQQManhattanPlots.");
         }
 
     }
@@ -3122,23 +3116,23 @@ public class GuidanceImpl {
         String snptestBinary = loadFromEnvironment(SNPTESTBINARY, HEADER_SNPTEST);
 
         if (DEBUG) {
-            LOGGER.debug("\n[DEBUG] Running snptest with parameters:");
-            LOGGER.debug("[DEBUG] \t- snptestBinary                    : " + snptestBinary);
-            LOGGER.debug("[DEBUG] \t- Input mergedGenFile              : " + mergedGenFile);
-            LOGGER.debug("[DEBUG] \t- Input mergedSampleFile           : " + mergedSampleFile);
-            LOGGER.debug("[DEBUG] \t- Output snptestOutFile            : " + snptestOutFileGz);
-            LOGGER.debug("[DEBUG] \t- Output snptestLogFile            : " + snptestLogFile);
-            LOGGER.debug("[DEBUG] \t- Input responseVar               : " + responseVar);
-            LOGGER.debug("[DEBUG] \t- Input covariables                : " + covariables);
-            LOGGER.debug(NEW_LINE);
-            LOGGER.debug("[DEBUG] \t- Command: " + cmdToStore);
-            LOGGER.debug("--------------------------------------");
+            System.out.println("\n[DEBUG] Running snptest with parameters:");
+            System.out.println("[DEBUG] \t- snptestBinary                    : " + snptestBinary);
+            System.out.println("[DEBUG] \t- Input mergedGenFile              : " + mergedGenFile);
+            System.out.println("[DEBUG] \t- Input mergedSampleFile           : " + mergedSampleFile);
+            System.out.println("[DEBUG] \t- Output snptestOutFile            : " + snptestOutFileGz);
+            System.out.println("[DEBUG] \t- Output snptestLogFile            : " + snptestLogFile);
+            System.out.println("[DEBUG] \t- Input responseVar               : " + responseVar);
+            System.out.println("[DEBUG] \t- Input covariables                : " + covariables);
+            System.out.println(NEW_LINE);
+            System.out.println("[DEBUG] \t- Command: " + cmdToStore);
+            System.out.println("--------------------------------------");
         }
 
         // Replace commas in the string covariables
         String newStr = covariables.replace(',', ' ');
         if (DEBUG) {
-            LOGGER.debug("[DEBUG] \t- Changing covariable format. New covariables : " + newStr);
+            System.out.println("[DEBUG] \t- Changing covariable format. New covariables : " + newStr);
         }
 
         long startTime = System.currentTimeMillis();
@@ -3186,7 +3180,7 @@ public class GuidanceImpl {
             }
 
             if (DEBUG) {
-                LOGGER.debug(HEADER_SNPTEST + MSG_CMD + cmd);
+                System.out.println(HEADER_SNPTEST + MSG_CMD + cmd);
             }
 
             // Execute the command retrieving its exitValue, output and error
@@ -3199,8 +3193,8 @@ public class GuidanceImpl {
 
             // Check process exit value
             if (exitValue != 0) {
-                LOGGER.error(HEADER_SNPTEST + "Warning executing snptestProc job, exit value is: " + exitValue);
-                LOGGER.error(HEADER_SNPTEST + "                         (This error is not fatal).");
+                System.err.println(HEADER_SNPTEST + "Warning executing snptestProc job, exit value is: " + exitValue);
+                System.err.println(HEADER_SNPTEST + "                         (This error is not fatal).");
             }
         }
 
@@ -3218,10 +3212,10 @@ public class GuidanceImpl {
         long stopTime = System.currentTimeMillis();
         long elapsedTime = (stopTime - startTime) / 1_000;
         if (DEBUG) {
-            LOGGER.debug("\n[DEBUG] snptest startTime: " + startTime);
-            LOGGER.debug("\n[DEBUG] snptest endTime: " + stopTime);
-            LOGGER.debug("\n[DEBUG] snptest elapsedTime: " + elapsedTime + " seconds");
-            LOGGER.debug("\n[DEBUG] Finished execution of snptest.");
+            System.out.println("\n[DEBUG] snptest startTime: " + startTime);
+            System.out.println("\n[DEBUG] snptest endTime: " + stopTime);
+            System.out.println("\n[DEBUG] snptest elapsedTime: " + elapsedTime + " seconds");
+            System.out.println("\n[DEBUG] Finished execution of snptest.");
         }
     }
 
@@ -3242,13 +3236,13 @@ public class GuidanceImpl {
             String cmdToStore) throws GuidanceTaskException {
 
         if (DEBUG) {
-            LOGGER.debug("\n[DEBUG] Running mergeTwoChunks with parameters:");
-            LOGGER.debug("[DEBUG] \t- Input reduceFileA            : " + reduceFileA);
-            LOGGER.debug("[DEBUG] \t- Input reduceFileB            : " + reduceFileB);
-            LOGGER.debug("[DEBUG] \t- Output reduceFileC           : " + reduceFileC);
-            LOGGER.debug(NEW_LINE);
-            LOGGER.debug("[DEBUG] \t- Command: " + cmdToStore);
-            LOGGER.debug("--------------------------------------");
+            System.out.println("\n[DEBUG] Running mergeTwoChunks with parameters:");
+            System.out.println("[DEBUG] \t- Input reduceFileA            : " + reduceFileA);
+            System.out.println("[DEBUG] \t- Input reduceFileB            : " + reduceFileB);
+            System.out.println("[DEBUG] \t- Output reduceFileC           : " + reduceFileC);
+            System.out.println(NEW_LINE);
+            System.out.println("[DEBUG] \t- Command: " + cmdToStore);
+            System.out.println("--------------------------------------");
         }
 
         long startTime = System.currentTimeMillis();
@@ -3442,10 +3436,10 @@ public class GuidanceImpl {
         long stopTime = System.currentTimeMillis();
         long elapsedTime = (stopTime - startTime) / 1_000;
         if (DEBUG) {
-            LOGGER.debug("\n[DEBUG] mergeTwoChunks startTime: " + startTime);
-            LOGGER.debug("\n[DEBUG] mergeTwoChunks endTime: " + stopTime);
-            LOGGER.debug("\n[DEBUG] mergeTwoChunks elapsedTime: " + elapsedTime + " seconds");
-            LOGGER.debug("\n[DEBUG] Finished execution of mergeTwoChunks.");
+            System.out.println("\n[DEBUG] mergeTwoChunks startTime: " + startTime);
+            System.out.println("\n[DEBUG] mergeTwoChunks endTime: " + stopTime);
+            System.out.println("\n[DEBUG] mergeTwoChunks elapsedTime: " + elapsedTime + " seconds");
+            System.out.println("\n[DEBUG] Finished execution of mergeTwoChunks.");
         }
     }
 
@@ -3471,19 +3465,19 @@ public class GuidanceImpl {
             String hweControlsThresholdS, String cmdToStore) throws GuidanceTaskException {
 
         if (DEBUG) {
-            LOGGER.debug("\n[DEBUG] Running collectSummary with parameters:");
-            LOGGER.debug("[DEBUG] \t- Input chromosome             : " + chr);
-            LOGGER.debug("[DEBUG] \t- Input casesImputeFileInfo    : " + firstImputeFileInfo);
-            LOGGER.debug("[DEBUG] \t- Input snptestOutFile         : " + snptestOutFile);
-            LOGGER.debug("[DEBUG] \t- Output reduceFile            : " + reduceFile);
-            LOGGER.debug("[DEBUG] \t- Input mafThresholdS          : " + mafThresholdS);
-            LOGGER.debug("[DEBUG] \t- Input infoThresholdS         : " + infoThresholdS);
-            LOGGER.debug("[DEBUG] \t- Input hweCohortThresholdS    : " + hweCohortThresholdS);
-            LOGGER.debug("[DEBUG] \t- Input hweCasesThresholdS     : " + hweCasesThresholdS);
-            LOGGER.debug("[DEBUG] \t- Input hweControlsThresholdS  : " + hweControlsThresholdS);
-            LOGGER.debug(NEW_LINE);
-            LOGGER.debug("[DEBUG] \t- Command: " + cmdToStore);
-            LOGGER.debug("--------------------------------------");
+            System.out.println("\n[DEBUG] Running collectSummary with parameters:");
+            System.out.println("[DEBUG] \t- Input chromosome             : " + chr);
+            System.out.println("[DEBUG] \t- Input casesImputeFileInfo    : " + firstImputeFileInfo);
+            System.out.println("[DEBUG] \t- Input snptestOutFile         : " + snptestOutFile);
+            System.out.println("[DEBUG] \t- Output reduceFile            : " + reduceFile);
+            System.out.println("[DEBUG] \t- Input mafThresholdS          : " + mafThresholdS);
+            System.out.println("[DEBUG] \t- Input infoThresholdS         : " + infoThresholdS);
+            System.out.println("[DEBUG] \t- Input hweCohortThresholdS    : " + hweCohortThresholdS);
+            System.out.println("[DEBUG] \t- Input hweCasesThresholdS     : " + hweCasesThresholdS);
+            System.out.println("[DEBUG] \t- Input hweControlsThresholdS  : " + hweControlsThresholdS);
+            System.out.println(NEW_LINE);
+            System.out.println("[DEBUG] \t- Command: " + cmdToStore);
+            System.out.println("--------------------------------------");
         }
 
         long startTime = System.currentTimeMillis();
@@ -3525,10 +3519,10 @@ public class GuidanceImpl {
                 indexInfo = imputeHashTableIndex.get("info");
                 indexCertainty = imputeHashTableIndex.get("certainty");
 
-                // LOGGER.debug("indexPosition: "+indexPosition);
-                // LOGGER.debug("indexRsId: " + indexRsId);
-                // LOGGER.debug("indexInfo: " + indexInfo);
-                // LOGGER.debug("indexCertainty: " + indexCertainty);
+                // System.out.println("indexPosition: "+indexPosition);
+                // System.out.println("indexRsId: " + indexRsId);
+                // System.out.println("indexInfo: " + indexInfo);
+                // System.out.println("indexCertainty: " + indexCertainty);
             }
 
             while ((line = br.readLine()) != null) {
@@ -3653,7 +3647,7 @@ public class GuidanceImpl {
                 // key=value separator this by Map.Entry to get key and value
                 Entry<String, ArrayList<String>> m = iter.next();
                 ArrayList<String> lineTmp = m.getValue();
-                // LOGGER.debug("VALUE = " + lineTmp);
+                // System.out.println("VALUE = " + lineTmp);
 
                 writer.write(lineTmp.get(0));
                 for (int j = 1; j < lineTmp.size(); j++) {
@@ -3680,10 +3674,10 @@ public class GuidanceImpl {
         long stopTime = System.currentTimeMillis();
         long elapsedTime = (stopTime - startTime) / 1_000;
         if (DEBUG) {
-            LOGGER.debug("\n[DEBUG] collectSummary startTime: " + startTime);
-            LOGGER.debug("\n[DEBUG] collectSummary endTime: " + stopTime);
-            LOGGER.debug("\n[DEBUG] collectSummary elapsedTime: " + elapsedTime + " seconds");
-            LOGGER.debug("\n[DEBUG] Finished execution of collectSummary.");
+            System.out.println("\n[DEBUG] collectSummary startTime: " + startTime);
+            System.out.println("\n[DEBUG] collectSummary endTime: " + stopTime);
+            System.out.println("\n[DEBUG] collectSummary elapsedTime: " + elapsedTime + " seconds");
+            System.out.println("\n[DEBUG] Finished execution of collectSummary.");
         }
     }
 
@@ -3703,14 +3697,14 @@ public class GuidanceImpl {
             throws GuidanceTaskException {
 
         if (DEBUG) {
-            LOGGER.debug("\n[DEBUG] Running initPhenoMatrix with parameters:");
-            LOGGER.debug("[DEBUG] \t- Input topHitsFile       : " + topHitsFile);
-            LOGGER.debug("[DEBUG] \t- Input ttName            : " + ttName);
-            LOGGER.debug("[DEBUG] \t- Input rpName            : " + rpName);
-            LOGGER.debug("[DEBUG] \t- Output phenomeFile      : " + phenomeFile);
-            LOGGER.debug(NEW_LINE);
-            LOGGER.debug("[DEBUG] \t- Command: " + cmdToStore);
-            LOGGER.debug("--------------------------------------");
+            System.out.println("\n[DEBUG] Running initPhenoMatrix with parameters:");
+            System.out.println("[DEBUG] \t- Input topHitsFile       : " + topHitsFile);
+            System.out.println("[DEBUG] \t- Input ttName            : " + ttName);
+            System.out.println("[DEBUG] \t- Input rpName            : " + rpName);
+            System.out.println("[DEBUG] \t- Output phenomeFile      : " + phenomeFile);
+            System.out.println(NEW_LINE);
+            System.out.println("[DEBUG] \t- Command: " + cmdToStore);
+            System.out.println("--------------------------------------");
         }
 
         long startTime = System.currentTimeMillis();
@@ -3738,7 +3732,7 @@ public class GuidanceImpl {
         String chrAndPosition = null;
         String newHeader = headerPhenomeFile;
         if (DEBUG) {
-            LOGGER.debug("[DEBUG] \t- The new header will be : [" + newHeader + "]");
+            System.out.println("[DEBUG] \t- The new header will be : [" + newHeader + "]");
         }
 
         // First, we load the whole topHitsFile into a TreeMap
@@ -3784,7 +3778,7 @@ public class GuidanceImpl {
                 firstList.add(splitted[indexChrInTopHitsFile]);
                 firstList.add(splitted[indexPositionInTopHitsFile]);
 
-                // LOGGER.debug("\n[DEBUG] phenomeHashTableIndex.size() " + phenomeHashTableIndex.size());
+                // System.out.println("\n[DEBUG] phenomeHashTableIndex.size() " + phenomeHashTableIndex.size());
 
                 // Finally, we put this data into the firstTreeMap, using chrPosition as key and the firstList as value.
                 phenomeTreeMap.put(chrAndPosition, firstList);
@@ -3828,10 +3822,10 @@ public class GuidanceImpl {
         long stopTime = System.currentTimeMillis();
         long elapsedTime = (stopTime - startTime) / 1_000;
         if (DEBUG) {
-            LOGGER.debug("\n[DEBUG] initPhenoMatrix startTime: " + startTime);
-            LOGGER.debug("\n[DEBUG] initPhenoMatrix endTime: " + stopTime);
-            LOGGER.debug("\n[DEBUG] initPhenoMatrix elapsedTime: " + elapsedTime + " seconds");
-            LOGGER.debug("\n[DEBUG] Finished execution of initPhenoMatrix.");
+            System.out.println("\n[DEBUG] initPhenoMatrix startTime: " + startTime);
+            System.out.println("\n[DEBUG] initPhenoMatrix endTime: " + stopTime);
+            System.out.println("\n[DEBUG] initPhenoMatrix elapsedTime: " + elapsedTime + " seconds");
+            System.out.println("\n[DEBUG] Finished execution of initPhenoMatrix.");
         }
     }
 
@@ -3852,15 +3846,15 @@ public class GuidanceImpl {
             String cmdToStore) throws GuidanceTaskException {
 
         if (DEBUG) {
-            LOGGER.debug("\n[DEBUG] Running addToPhenoMatrix with parameters:");
-            LOGGER.debug("[DEBUG] \t- Input phenomeFileA      : " + phenomeAFile);
-            LOGGER.debug("[DEBUG] \t- Input topHitsFile       : " + topHitsFile);
-            LOGGER.debug("[DEBUG] \t- Input ttName            : " + ttName);
-            LOGGER.debug("[DEBUG] \t- Input rpName            : " + rpName);
-            LOGGER.debug("[DEBUG] \t- Output phenomeFileB     : " + phenomeBFile);
-            LOGGER.debug(NEW_LINE);
-            LOGGER.debug("[DEBUG] \t- Command: " + cmdToStore);
-            LOGGER.debug("--------------------------------------");
+            System.out.println("\n[DEBUG] Running addToPhenoMatrix with parameters:");
+            System.out.println("[DEBUG] \t- Input phenomeFileA      : " + phenomeAFile);
+            System.out.println("[DEBUG] \t- Input topHitsFile       : " + topHitsFile);
+            System.out.println("[DEBUG] \t- Input ttName            : " + ttName);
+            System.out.println("[DEBUG] \t- Input rpName            : " + rpName);
+            System.out.println("[DEBUG] \t- Output phenomeFileB     : " + phenomeBFile);
+            System.out.println(NEW_LINE);
+            System.out.println("[DEBUG] \t- Command: " + cmdToStore);
+            System.out.println("--------------------------------------");
         }
 
         long startTime = System.currentTimeMillis();
@@ -4003,10 +3997,10 @@ public class GuidanceImpl {
         long stopTime = System.currentTimeMillis();
         long elapsedTime = (stopTime - startTime) / 1_000;
         if (DEBUG) {
-            LOGGER.debug("\n[DEBUG] addToPhenoMatrix startTime: " + startTime);
-            LOGGER.debug("\n[DEBUG] addToPhenoMatrix endTime: " + stopTime);
-            LOGGER.debug("\n[DEBUG] addToPhenoMatrix elapsedTime: " + elapsedTime + " seconds");
-            LOGGER.debug("\n[DEBUG] Finished execution of addToPhenoMatrix.");
+            System.out.println("\n[DEBUG] addToPhenoMatrix startTime: " + startTime);
+            System.out.println("\n[DEBUG] addToPhenoMatrix endTime: " + stopTime);
+            System.out.println("\n[DEBUG] addToPhenoMatrix elapsedTime: " + elapsedTime + " seconds");
+            System.out.println("\n[DEBUG] Finished execution of addToPhenoMatrix.");
         }
     }
 
@@ -4027,15 +4021,15 @@ public class GuidanceImpl {
             String cmdToStore) throws GuidanceTaskException {
 
         if (DEBUG) {
-            LOGGER.debug("\n[DEBUG] Running addToPhenoMatrixX with parameters:");
-            LOGGER.debug("[DEBUG] \t- Input phenomeFileA      : " + phenomeAFile);
-            LOGGER.debug("[DEBUG] \t- Input filteredByAllFile : " + filteredByAllFile);
-            LOGGER.debug("[DEBUG] \t- Input ttName            : " + ttName);
-            LOGGER.debug("[DEBUG] \t- Input rpName            : " + rpName);
-            LOGGER.debug("[DEBUG] \t- Output phenomeFileB     : " + phenomeBFile);
-            LOGGER.debug(NEW_LINE);
-            LOGGER.debug("[DEBUG] \t- Command: " + cmdToStore);
-            LOGGER.debug("--------------------------------------");
+            System.out.println("\n[DEBUG] Running addToPhenoMatrixX with parameters:");
+            System.out.println("[DEBUG] \t- Input phenomeFileA      : " + phenomeAFile);
+            System.out.println("[DEBUG] \t- Input filteredByAllFile : " + filteredByAllFile);
+            System.out.println("[DEBUG] \t- Input ttName            : " + ttName);
+            System.out.println("[DEBUG] \t- Input rpName            : " + rpName);
+            System.out.println("[DEBUG] \t- Output phenomeFileB     : " + phenomeBFile);
+            System.out.println(NEW_LINE);
+            System.out.println("[DEBUG] \t- Command: " + cmdToStore);
+            System.out.println("--------------------------------------");
         }
 
         long startTime = System.currentTimeMillis();
@@ -4210,10 +4204,10 @@ public class GuidanceImpl {
         long stopTime = System.currentTimeMillis();
         long elapsedTime = (stopTime - startTime) / 1_000;
         if (DEBUG) {
-            LOGGER.debug("\n[DEBUG] addToPhenoMatrix startTime: " + startTime);
-            LOGGER.debug("\n[DEBUG] addToPhenoMatrix endTime: " + stopTime);
-            LOGGER.debug("\n[DEBUG] addToPhenoMatrix elapsedTime: " + elapsedTime + " seconds");
-            LOGGER.debug("\n[DEBUG] Finished execution of addToPhenoMatrixX");
+            System.out.println("\n[DEBUG] addToPhenoMatrix startTime: " + startTime);
+            System.out.println("\n[DEBUG] addToPhenoMatrix endTime: " + stopTime);
+            System.out.println("\n[DEBUG] addToPhenoMatrix elapsedTime: " + elapsedTime + " seconds");
+            System.out.println("\n[DEBUG] Finished execution of addToPhenoMatrixX");
         }
     }
 
@@ -4236,17 +4230,17 @@ public class GuidanceImpl {
             String ttName, String rpName, String phenomeBFile, String cmdToStore) throws GuidanceTaskException {
 
         if (DEBUG) {
-            LOGGER.debug("\n[DEBUG] Running filloutPhenoMatrix with parameters:");
-            LOGGER.debug("[DEBUG] \t- Input phenomeFileA       : " + phenomeAFile);
-            LOGGER.debug("[DEBUG] \t- Input filteredByAllFile  : " + filteredByAllFile);
-            LOGGER.debug("[DEBUG] \t- Input filteredByAllXFile : " + filteredByAllXFile);
-            LOGGER.debug("[DEBUG] \t- Input endChrS            : " + endChrS);
-            LOGGER.debug("[DEBUG] \t- Input ttName             : " + ttName);
-            LOGGER.debug("[DEBUG] \t- Input rpName             : " + rpName);
-            LOGGER.debug("[DEBUG] \t- Output phenomeFileB      : " + phenomeBFile);
-            LOGGER.debug(NEW_LINE);
-            LOGGER.debug("[DEBUG] \t- Command: " + cmdToStore);
-            LOGGER.debug("--------------------------------------");
+            System.out.println("\n[DEBUG] Running filloutPhenoMatrix with parameters:");
+            System.out.println("[DEBUG] \t- Input phenomeFileA       : " + phenomeAFile);
+            System.out.println("[DEBUG] \t- Input filteredByAllFile  : " + filteredByAllFile);
+            System.out.println("[DEBUG] \t- Input filteredByAllXFile : " + filteredByAllXFile);
+            System.out.println("[DEBUG] \t- Input endChrS            : " + endChrS);
+            System.out.println("[DEBUG] \t- Input ttName             : " + ttName);
+            System.out.println("[DEBUG] \t- Input rpName             : " + rpName);
+            System.out.println("[DEBUG] \t- Output phenomeFileB      : " + phenomeBFile);
+            System.out.println(NEW_LINE);
+            System.out.println("[DEBUG] \t- Command: " + cmdToStore);
+            System.out.println("--------------------------------------");
         }
 
         long startTime = System.currentTimeMillis();
@@ -4525,10 +4519,10 @@ public class GuidanceImpl {
         long stopTime = System.currentTimeMillis();
         long elapsedTime = (stopTime - startTime) / 1_000;
         if (DEBUG) {
-            LOGGER.debug("\n[DEBUG] filloutPhenoMatrix startTime: " + startTime);
-            LOGGER.debug("\n[DEBUG] filloutPhenoMatrix endTime: " + stopTime);
-            LOGGER.debug("\n[DEBUG] filloutPhenoMatrix elapsedTime: " + elapsedTime + " seconds");
-            LOGGER.debug("\n[DEBUG] Finished execution of filloutPhenoMatrix.");
+            System.out.println("\n[DEBUG] filloutPhenoMatrix startTime: " + startTime);
+            System.out.println("\n[DEBUG] filloutPhenoMatrix endTime: " + stopTime);
+            System.out.println("\n[DEBUG] filloutPhenoMatrix elapsedTime: " + elapsedTime + " seconds");
+            System.out.println("\n[DEBUG] Finished execution of filloutPhenoMatrix.");
         }
 
     }
@@ -4550,15 +4544,15 @@ public class GuidanceImpl {
             String cmdToStore) throws GuidanceTaskException {
 
         if (DEBUG) {
-            LOGGER.debug("\n[DEBUG] Running finalizePhenoMatrix with parameters:");
-            LOGGER.debug("[DEBUG] \t- Input phenomeAFile  : " + phenomeAFile);
-            LOGGER.debug("[DEBUG] \t- Input phenomeBFile  : " + phenomeBFile);
-            LOGGER.debug("[DEBUG] \t- Input ttName        : " + ttName);
-            LOGGER.debug("[DEBUG] \t- Input rpName        : " + rpName);
-            LOGGER.debug("[DEBUG] \t- Output phenomeCFile : " + phenomeCFile);
-            LOGGER.debug(NEW_LINE);
-            LOGGER.debug("[DEBUG] \t- Command: " + cmdToStore);
-            LOGGER.debug("--------------------------------------");
+            System.out.println("\n[DEBUG] Running finalizePhenoMatrix with parameters:");
+            System.out.println("[DEBUG] \t- Input phenomeAFile  : " + phenomeAFile);
+            System.out.println("[DEBUG] \t- Input phenomeBFile  : " + phenomeBFile);
+            System.out.println("[DEBUG] \t- Input ttName        : " + ttName);
+            System.out.println("[DEBUG] \t- Input rpName        : " + rpName);
+            System.out.println("[DEBUG] \t- Output phenomeCFile : " + phenomeCFile);
+            System.out.println(NEW_LINE);
+            System.out.println("[DEBUG] \t- Command: " + cmdToStore);
+            System.out.println("--------------------------------------");
         }
         long startTime = System.currentTimeMillis();
 
@@ -4684,10 +4678,10 @@ public class GuidanceImpl {
         long stopTime = System.currentTimeMillis();
         long elapsedTime = (stopTime - startTime) / 1_000;
         if (DEBUG) {
-            LOGGER.debug("\n[DEBUG] finalizePhenoMatrix startTime: " + startTime);
-            LOGGER.debug("\n[DEBUG] finalizePhenoMatrix endTime: " + stopTime);
-            LOGGER.debug("\n[DEBUG] finalizePhenoMatrix elapsedTime: " + elapsedTime + " seconds");
-            LOGGER.debug("\n[DEBUG] Finished execution of finalizePhenoMatrix.");
+            System.out.println("\n[DEBUG] finalizePhenoMatrix startTime: " + startTime);
+            System.out.println("\n[DEBUG] finalizePhenoMatrix endTime: " + stopTime);
+            System.out.println("\n[DEBUG] finalizePhenoMatrix elapsedTime: " + elapsedTime + " seconds");
+            System.out.println("\n[DEBUG] Finished execution of finalizePhenoMatrix.");
         }
 
     }
@@ -4734,7 +4728,7 @@ public class GuidanceImpl {
                 summaryTmp.add(caseArray.get(i));
             }
         } else {
-            LOGGER.info("\n[DEBUG] Extranisimo, este caso no deberia darse.");
+            System.out.println("\n[DEBUG] Extranisimo, este caso no deberia darse.");
         }
 
         if (assocArray != null) {

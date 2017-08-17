@@ -951,7 +951,7 @@ public class Guidance {
             CombinedPanelsFiles combinedPanelsFilesInfo, List<String> rpanelTypes, int ttIndex, ArrayList<String> listOfCommands,
             ChromoInfo generalChromoInfo) {
 
-        ArrayList<String> listDeleteFiles = new ArrayList<String>();
+        ArrayList<String> listDeleteFiles = new ArrayList<>();
 
         int startChr = parsingArgs.getStart();
         int endChr = parsingArgs.getEnd();
@@ -1012,9 +1012,6 @@ public class Guidance {
 
                         doCombinePanelsComplex(parsingArgs, listOfCommands, condensedPanelA, condensedPanelB, condensedPanelC, lim1, lim2);
                         condensedPanelA = condensedPanelC;
-
-                        listDeleteFiles.add(condensedPanelB);
-                        listDeleteFiles.add(condensedPanelA);
                     }
 
                     if (!elemA) {
@@ -1034,7 +1031,7 @@ public class Guidance {
                             // listDeleteFiles.add(filteredCombineA);
 
                             indexFC++;
-                        } else if (chr == 23) {
+                        } else {
                             if (j == minSize) {
                                 filteredCombineXA = filteredPanelC;
                             } else {

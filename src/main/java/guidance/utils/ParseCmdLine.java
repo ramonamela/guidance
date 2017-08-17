@@ -196,10 +196,12 @@ public class ParseCmdLine {
             if (myArgument[0].equals("wfDeep")) {
                 wfDeepRequired = myArgument[1];
                 boolean validKey = wfPossibleDeeps.containsKey(wfDeepRequired);
-                if (validKey) {
+                if (!validKey) {
                     LOGGER.fatal(CLASS_HEADER + " Error, wfDeep parameter " + wfDeepRequired + " is not accepted");
                     LOGGER.fatal(CLASS_HEADER + "        The only accepted values are:");
-                    LOGGER.fatal(CLASS_HEADER + "	until_phasing, until_imputation, until_association or whole_workflow");
+                    for (String key : wfPossibleDeeps.keySet()) {
+                        LOGGER.fatal(CLASS_HEADER + "- " + key);
+                    }
                     System.exit(1);
                 }
             } else {
