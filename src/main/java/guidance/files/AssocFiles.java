@@ -79,7 +79,7 @@ public class AssocFiles {
      * @param baseOutDir
      * @param refPanels
      */
-    public AssocFiles(ParseCmdLine parsingArgs, ChromoInfo generalChromoInfo, String baseOutDir, List<String> refPanels) {
+    public AssocFiles(ParseCmdLine parsingArgs, String baseOutDir, List<String> refPanels) {
         this.startChr = parsingArgs.getStart();
         this.endChr = parsingArgs.getEnd();
 
@@ -125,7 +125,7 @@ public class AssocFiles {
 
                 for (int i = this.startChr; i <= this.endChr; i++) {
                     int chromo = i;
-                    int maxSize = generalChromoInfo.getMaxSize(chromo);
+                    int maxSize = ChromoInfo.getMaxSize(chromo);
                     int totalChunks = maxSize / chunkSize;
                     int module = maxSize % chunkSize;
                     if (module != 0) {
@@ -185,7 +185,7 @@ public class AssocFiles {
                     String tmpChrDir = rpanelOutDir + File.separator + "Chr_" + chromo;
                     chromoListOutDir.add(tmpChrDir);
 
-                    int maxSize = generalChromoInfo.getMaxSize(chromo);
+                    int maxSize = ChromoInfo.getMaxSize(chromo);
                     int totalChunks = maxSize / chunkSize;
                     int module = maxSize % chunkSize;
                     if (module != 0)

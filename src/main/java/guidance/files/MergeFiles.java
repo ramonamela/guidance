@@ -90,7 +90,7 @@ public class MergeFiles {
      * @param baseOutDir
      * @param refPanels
      */
-    public MergeFiles(ParseCmdLine parsingArgs, ChromoInfo generalChromoInfo, String baseOutDir, List<String> refPanels) {
+    public MergeFiles(ParseCmdLine parsingArgs, String baseOutDir, List<String> refPanels) {
         this.startChr = parsingArgs.getStart();
         this.endChr = parsingArgs.getEnd();
 
@@ -165,7 +165,7 @@ public class MergeFiles {
                     String tmpChrDir = rpanelOutDir + File.separator + "Chr_" + chromo;
                     chromoListOutDir.add(tmpChrDir);
 
-                    int maxSize = generalChromoInfo.getMaxSize(chromo);
+                    int maxSize = ChromoInfo.getMaxSize(chromo);
                     int total_chunks = maxSize / chunkSize;
                     int module = maxSize % chunkSize;
                     if (module != 0) {

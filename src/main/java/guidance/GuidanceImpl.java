@@ -2207,20 +2207,21 @@ public class GuidanceImpl {
      * @throws InterruptedException
      * @throws Exception
      */
-    public static void combinePanelsComplex(String resultsPanelA, String resultsPanelB, String resultsPanelC, int lim1, int lim2,
-            String cmdToStore) throws GuidanceTaskException {
+    public static void combinePanelsComplex(String resultsPanelA, String resultsPanelB, int lim1, int lim2, String cmdToStore)
+            throws GuidanceTaskException {
 
         if (DEBUG) {
             System.out.println("\n[DEBUG] Running combinePanelsComplex with parameters:");
             System.out.println("[DEBUG] \t- resultsPanelA             : " + resultsPanelA);
             System.out.println("[DEBUG] \t- resultsPanelB             : " + resultsPanelB);
-            System.out.println("[DEBUG] \t- resultsPanelC             : " + resultsPanelC);
+            System.out.println("[DEBUG] \t- resultsPanelC             : " + resultsPanelA);
             System.out.println("[DEBUG] \t- lim1               : " + lim1);
             System.out.println("[DEBUG] \t- lim2                 : " + lim2);
             System.out.println(NEW_LINE);
             System.out.println("[DEBUG] \t- Command: " + cmdToStore);
             System.out.println("--------------------------------------");
         }
+
         long startTime = System.currentTimeMillis();
 
         // int chrStart = Integer.parseInt(chromoStart);
@@ -2236,8 +2237,10 @@ public class GuidanceImpl {
         int infoIdx = 0;
 
         // First, we uncompress the input files
-        FileUtils.gunzipFile(resultsPanelA, resultsPanelA + ".temp");
-        FileUtils.gunzipFile(resultsPanelB, resultsPanelB + ".temp");
+        String resultsPanelAUnzip = resultsPanelA + ".temp";
+        String resultsPanelBUnzip = resultsPanelB + ".temp";
+        FileUtils.gunzipFile(resultsPanelA, resultsPanelAUnzip);
+        FileUtils.gunzipFile(resultsPanelB, resultsPanelBUnzip);
 
         // We read each line of the resultsPanelA and put them into the String
         // IMPORTANT: In that case we sort by position and not by position_rsID. So, maybe we
@@ -2250,38 +2253,46 @@ public class GuidanceImpl {
         // Create the first treeMap for the chromo
         TreeMap<String, String> fileTreeMapA = new TreeMap<>();
 
-        String header = null;
+        final String EMPTY_HEADER = "chr\tposition\trs_id_all\tinfo_all\tcertainty_all\t";
+        String finalHeader = EMPTY_HEADER;
         String positionA1A2Chr = null;
-        try (Scanner sc1 = new Scanner(new File(resultsPanelA + ".temp"))) {
-            // Get the header
-            header = sc1.nextLine();
 
-            if (!header.equals("chr\tposition\trs_id_all\tinfo_all\tcertainty_all\t")) {
-                resultsHashTableIndex = Headers.createHashWithHeader(header, TAB);
-                chrIdx = resultsHashTableIndex.get("chr");
-                posIdx = resultsHashTableIndex.get("position");
-                a1Idx = resultsHashTableIndex.get("alleleA");
-                a2Idx = resultsHashTableIndex.get("alleleB");
-                infoIdx = resultsHashTableIndex.get("info_all");
+        // Treat results Panel A if it is not empty
+        if (new File(resultsPanelAUnzip).exists()) {
+            try (Scanner sc1 = new Scanner(new File(resultsPanelAUnzip))) {
+                // Get the header
+                String header = sc1.nextLine();
 
-                while (sc1.hasNextLine()) {
-                    String line = sc1.nextLine();
-                    String[] splitted = line.split(TAB);
+                if (!header.equals(EMPTY_HEADER)) {
+                    // Save header for the end file
+                    finalHeader = header;
+                    // Process header
+                    resultsHashTableIndex = Headers.createHashWithHeader(header, TAB);
+                    chrIdx = resultsHashTableIndex.get("chr");
+                    posIdx = resultsHashTableIndex.get("position");
+                    a1Idx = resultsHashTableIndex.get("alleleA");
+                    a2Idx = resultsHashTableIndex.get("alleleB");
+                    infoIdx = resultsHashTableIndex.get("info_all");
 
-                    // if(splitted[chrIdx].equals(chromoS)) {
-                    positionA1A2Chr = splitted[posIdx] + "_" + splitted[a1Idx] + "_" + splitted[a2Idx] + "_" + splitted[chrIdx];
-                    // Now, we put this String into the treemap with the key positionA1A1Chr
-                    fileTreeMapA.put(positionA1A2Chr, line);
-                    // contador++;
-                    // }
+                    while (sc1.hasNextLine()) {
+                        String line = sc1.nextLine();
+                        String[] splitted = line.split(TAB);
+
+                        // if(splitted[chrIdx].equals(chromoS)) {
+                        positionA1A2Chr = splitted[posIdx] + "_" + splitted[a1Idx] + "_" + splitted[a2Idx] + "_" + splitted[chrIdx];
+                        // Now, we put this String into the treemap with the key positionA1A1Chr
+                        fileTreeMapA.put(positionA1A2Chr, line);
+                        // contador++;
+                        // }
+                    }
+                    // note that Scanner suppresses exceptions
+                    if (sc1.ioException() != null) {
+                        throw sc1.ioException();
+                    }
                 }
-                // note that Scanner suppresses exceptions
-                if (sc1.ioException() != null) {
-                    throw sc1.ioException();
-                }
+            } catch (IOException ioe) {
+                throw new GuidanceTaskException(ioe);
             }
-        } catch (IOException ioe) {
-            throw new GuidanceTaskException(ioe);
         }
 
         // System.out.println("i\n[DEBUG] We have read the chromo " + chromoS + " from first File. contador = " +
@@ -2290,35 +2301,43 @@ public class GuidanceImpl {
         // Create the second treeMap for the chromo
         TreeMap<String, String> fileTreeMapB = new TreeMap<>();
         // contador=0;
-        try (Scanner sc = new Scanner(new File(resultsPanelB + ".temp"))) {
-            // Get the header
-            header = sc.nextLine();
 
-            if (!header.equals("chr\tposition\trs_id_all\tinfo_all\tcertainty_all\t")) {
-                chrIdx = resultsHashTableIndex.get("chr");
-                posIdx = resultsHashTableIndex.get("position");
-                a1Idx = resultsHashTableIndex.get("alleleA");
-                a2Idx = resultsHashTableIndex.get("alleleB");
-                infoIdx = resultsHashTableIndex.get("info_all");
+        // Treat results Panel B if it is not empty
+        if (new File(resultsPanelBUnzip).exists()) {
+            try (Scanner sc = new Scanner(new File(resultsPanelBUnzip))) {
+                // Get the header
+                String header = sc.nextLine();
 
-                while (sc.hasNextLine()) {
-                    String line = sc.nextLine();
-                    String[] splitted = line.split(TAB);
+                if (!header.equals(EMPTY_HEADER)) {
+                    // Store header for end file
+                    finalHeader = header;
+                    // Process header
+                    resultsHashTableIndex = Headers.createHashWithHeader(header, TAB);
+                    chrIdx = resultsHashTableIndex.get("chr");
+                    posIdx = resultsHashTableIndex.get("position");
+                    a1Idx = resultsHashTableIndex.get("alleleA");
+                    a2Idx = resultsHashTableIndex.get("alleleB");
+                    infoIdx = resultsHashTableIndex.get("info_all");
 
-                    // if(splitted[chrIdx].equals(chromoS)) {
-                    positionA1A2Chr = splitted[posIdx] + "_" + splitted[a1Idx] + "_" + splitted[a2Idx] + "_" + splitted[chrIdx];
-                    // Now, we put this String into the treemap with the key positionA1A1Chr
-                    fileTreeMapB.put(positionA1A2Chr, line);
-                    // contador++;
-                    // }
+                    while (sc.hasNextLine()) {
+                        String line = sc.nextLine();
+                        String[] splitted = line.split(TAB);
+
+                        // if(splitted[chrIdx].equals(chromoS)) {
+                        positionA1A2Chr = splitted[posIdx] + "_" + splitted[a1Idx] + "_" + splitted[a2Idx] + "_" + splitted[chrIdx];
+                        // Now, we put this String into the treemap with the key positionA1A1Chr
+                        fileTreeMapB.put(positionA1A2Chr, line);
+                        // contador++;
+                        // }
+                    }
+                    // note that Scanner suppresses exceptions
+                    if (sc.ioException() != null) {
+                        throw sc.ioException();
+                    }
                 }
-                // note that Scanner suppresses exceptions
-                if (sc.ioException() != null) {
-                    throw sc.ioException();
-                }
+            } catch (IOException ioe) {
+                throw new GuidanceTaskException(ioe);
             }
-        } catch (IOException ioe) {
-            throw new GuidanceTaskException(ioe);
         }
         // System.out.println("\n[DEBUG] We have read the chromo " + chromoS + " from second File. contador = " +
         // contador);
@@ -2457,13 +2476,11 @@ public class GuidanceImpl {
         // System.out.println("\n[DEBUG] We have processed the chromosome " + chromoS + ". contador " + contador);
 
         // Finally we put the fileTreeMapC into the plain output file and then compress it
-        String plainResultsPanelC = resultsPanelC.substring(0, resultsPanelC.length() - 3);
+        String plainResultsPanelC = resultsPanelA.substring(0, resultsPanelA.length() - 3);
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(plainResultsPanelC))) {
             // We print the header which is the same always!.
-            // if(chromo == chrStart) {
-            writer.write(header);
+            writer.write(finalHeader);
             writer.newLine();
-            // }
 
             String myLine = null;
 
@@ -2489,15 +2506,16 @@ public class GuidanceImpl {
         // System.out.println("\n[DEBUG] We have stored snps from chromosome " + chromoS + " in the output file");
 
         // Then, we create the gz file and rename it
-        FileUtils.gzipFile(plainResultsPanelC, resultsPanelC);
+        FileUtils.gzipFile(plainResultsPanelC, resultsPanelA);
 
-        File fA = new File(resultsPanelA + ".temp");
-        if (!fA.delete()) {
-            System.err.println("ERROR: Cannot erase temp file " + resultsPanelA);
+        // Erase tmp files
+        File fA = new File(resultsPanelAUnzip);
+        if (fA.exists() && !fA.delete()) {
+            System.err.println("ERROR: Cannot erase temp file " + resultsPanelAUnzip);
         }
-        File fB = new File(resultsPanelB + ".temp");
-        if (!fB.delete()) {
-            System.err.println("ERROR: Cannot erase temp file " + resultsPanelB);
+        File fB = new File(resultsPanelBUnzip);
+        if (fB.exists() && !fB.delete()) {
+            System.err.println("ERROR: Cannot erase temp file " + resultsPanelBUnzip);
         }
 
         System.out.println("\n[DEBUG] Finished all chromosomes");
@@ -3441,6 +3459,25 @@ public class GuidanceImpl {
             System.out.println("\n[DEBUG] mergeTwoChunks elapsedTime: " + elapsedTime + " seconds");
             System.out.println("\n[DEBUG] Finished execution of mergeTwoChunks.");
         }
+    }
+
+    /**
+     * Method to merge two chunks in the first one
+     * 
+     * @param reduceFileA
+     * @param reduceFileB
+     * @param reduceFileC
+     * @param chrS
+     * @param type
+     * @param cmdToStore
+     * @throws IOException
+     * @throws InterruptedException
+     * @throws Exception
+     */
+    public static void mergeTwoChunksInTheFirst(String reduceFileA, String reduceFileB, String chrS, String type, String cmdToStore)
+            throws GuidanceTaskException {
+        
+        mergeTwoChunks(reduceFileA, reduceFileB, reduceFileA, chrS, type, cmdToStore);
     }
 
     /**

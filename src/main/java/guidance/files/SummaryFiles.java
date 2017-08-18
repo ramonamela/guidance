@@ -91,7 +91,7 @@ public class SummaryFiles {
      * @param myOutDir
      * @param refPanels
      */
-    public SummaryFiles(ParseCmdLine parsingArgs, ChromoInfo generalChromoInfo, String myOutDir, List<String> refPanels) {
+    public SummaryFiles(ParseCmdLine parsingArgs, String myOutDir, List<String> refPanels) {
         int chunkSize = parsingArgs.getChunkSize();
         String testTypeName = parsingArgs.getTestTypeName(0);
 
@@ -133,7 +133,7 @@ public class SummaryFiles {
                 String tmpChrDir = assocOutDir + "/" + "Chr_" + chromo;
                 chromoListOutDir.add(tmpChrDir);
 
-                int maxSize = generalChromoInfo.getMaxSize(chromo);
+                int maxSize = ChromoInfo.getMaxSize(chromo);
                 int total_chunks = maxSize / chunkSize;
                 int module = maxSize % chunkSize;
                 if (module != 0)

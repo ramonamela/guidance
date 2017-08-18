@@ -84,15 +84,15 @@ public class ImputationFiles {
      * @param myOutDir
      * @param refPanels
      */
-    public ImputationFiles(ParseCmdLine parsingArgs, ChromoInfo generalChromoInfo, String myOutDir, List<String> refPanels) {
+    public ImputationFiles(ParseCmdLine parsingArgs, String myOutDir, List<String> refPanels) {
         this.startChr = parsingArgs.getStart();
         this.endChr = parsingArgs.getEnd();
 
         String imputationTool = parsingArgs.getImputationTool();
         if (imputationTool.equals("impute")) {
-            initializeForImpute(parsingArgs, generalChromoInfo, myOutDir, refPanels);
+            initializeForImpute(parsingArgs, myOutDir, refPanels);
         } else if (imputationTool.equals("minimac")) {
-            initializeForMinimac(parsingArgs, generalChromoInfo, myOutDir, refPanels);
+            initializeForMinimac(parsingArgs, myOutDir, refPanels);
         } else {
             System.err.println("[ImputationFiles] Error, this imputation tool (" + imputationTool + ") is not supported yet!.");
             System.exit(1);
@@ -107,7 +107,7 @@ public class ImputationFiles {
      * @param myOutDir
      * @param refPanels
      */
-    private void initializeForImpute(ParseCmdLine parsingArgs, ChromoInfo generalChromoInfo, String myOutDir, List<String> refPanels) {
+    private void initializeForImpute(ParseCmdLine parsingArgs, String myOutDir, List<String> refPanels) {
         int chunkSize = parsingArgs.getChunkSize();
 
         // We create the first directory name: the cohort directory.
@@ -147,8 +147,8 @@ public class ImputationFiles {
                 ArrayList<GenericFile> chunkListFilteredLogFile = new ArrayList<>();
                 ArrayList<GenericFile> chunkListFilteredRsIdFile = new ArrayList<>();
 
-                int numberOfChunks = generalChromoInfo.getMaxSize(chromo) / chunkSize;
-                int module = generalChromoInfo.getMaxSize(chromo) % chunkSize;
+                int numberOfChunks = ChromoInfo.getMaxSize(chromo) / chunkSize;
+                int module = ChromoInfo.getMaxSize(chromo) % chunkSize;
                 if (module != 0)
                     numberOfChunks++;
 
@@ -221,7 +221,7 @@ public class ImputationFiles {
      * @param myOutDir
      * @param refPanels
      */
-    private void initializeForMinimac(ParseCmdLine parsingArgs, ChromoInfo generalChromoInfo, String myOutDir, List<String> refPanels) {
+    private void initializeForMinimac(ParseCmdLine parsingArgs, String myOutDir, List<String> refPanels) {
         int chunkSize = parsingArgs.getChunkSize();
 
         // We create the first directory name: the cohort directory.
@@ -261,8 +261,8 @@ public class ImputationFiles {
                 ArrayList<GenericFile> chunkListImputedMMDoseFile = new ArrayList<>();
                 ArrayList<GenericFile> chunkListImputedMMLogFile = new ArrayList<>();
 
-                int numberOfChunks = generalChromoInfo.getMaxSize(chromo) / chunkSize;
-                int module = generalChromoInfo.getMaxSize(chromo) % chunkSize;
+                int numberOfChunks = ChromoInfo.getMaxSize(chromo) / chunkSize;
+                int module = ChromoInfo.getMaxSize(chromo) % chunkSize;
                 if (module != 0) {
                     numberOfChunks++;
                 }

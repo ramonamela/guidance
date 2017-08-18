@@ -36,6 +36,7 @@ import java.util.ArrayList;
 
 import java.io.File;
 
+import guidance.utils.ChromoInfo;
 import guidance.utils.ParseCmdLine;
 
 
@@ -101,49 +102,51 @@ public class CombinedPanelsFiles {
             }
 
             rPanel = refPanels.get(0);
-            String prefixFilteredName = "filteredByAll_results_" + testTypeName + "_" + mixedCohort + "_" + rPanel;
-            String prefixCondensedName = "condensed_results_" + testTypeName + "_" + mixedCohort + "_" + rPanel;
-            String prefixTopHitsName = "tophits_" + testTypeName + "_" + mixedCohort + "_" + rPanel;
-            String prefixQqPlotName = "QQplot_" + testTypeName + "_" + mixedCohort + "_" + rPanel;
-            String prefixManhattanName = "manhattan_" + testTypeName + "_" + mixedCohort + "_" + rPanel;
-            String prefixCorrectedPvaluesName = "corrected_pvalues_" + testTypeName + "_" + mixedCohort + "_" + rPanel;
+            String prefixFilteredName = "filteredByAll_results_" + testTypeName + "_" + mixedCohort;
+            String prefixCondensedName = "condensed_results_" + testTypeName + "_" + mixedCohort;
+            String prefixTopHitsName = "tophits_" + testTypeName + "_" + mixedCohort;
+            String prefixQqPlotName = "QQplot_" + testTypeName + "_" + mixedCohort;
+            String prefixManhattanName = "manhattan_" + testTypeName + "_" + mixedCohort;
+            String prefixCorrectedPvaluesName = "corrected_pvalues_" + testTypeName + "_" + mixedCohort;
 
-            for (int j = 1; j < refPanels.size(); j++) {
-                rPanel = refPanels.get(j);
-                prefixFilteredName = prefixFilteredName + "_" + rPanel;
-                prefixCondensedName = prefixCondensedName + "_" + rPanel;
-                prefixTopHitsName = prefixTopHitsName + "_" + rPanel;
-                prefixQqPlotName = prefixQqPlotName + "_" + rPanel;
-                prefixManhattanName = prefixManhattanName + "_" + rPanel;
-                prefixCorrectedPvaluesName = prefixCorrectedPvaluesName + "_" + rPanel;
+            for (int chr = startChr; chr <= endChr; ++chr) {
+                int minSize = ChromoInfo.getMinSize(chr);
+                int maxSize = ChromoInfo.getMaxSize(chr);
+                int chunkSize = parsingArgs.getChunkSize();
 
-                String tmpCombinedFilteredByAllFileName = null;
-                if (startChr == endChrNormal) {
-                    tmpCombinedFilteredByAllFileName = prefixFilteredName + "_chr_" + startChrS + ".txt.gz";
-                } else {
-                    tmpCombinedFilteredByAllFileName = prefixFilteredName + "_chr_" + startChrS + "_to_" + endChrNormalS + ".txt.gz";
-                }
-                GenericFile myCombinedFilteredByAllFile = new GenericFile(testTypeOutDir, tmpCombinedFilteredByAllFileName, "compressed",
-                        "none");
-                combinedFilteredByAllFile.add(myCombinedFilteredByAllFile);
+                for (int j = minSize; j < maxSize; j = j + chunkSize) {
 
-                // If we are going to process chr 23, then prepare file names for it.
-                if (endChr == 23) {
-                    String tmpCombinedFilteredByAllXFileName = prefixFilteredName + "_chr_" + endChr + ".txt.gz";
-                    GenericFile myCombinedFilteredByAllXFile = new GenericFile(testTypeOutDir, tmpCombinedFilteredByAllXFileName,
+                    String tmpCombinedFilteredByAllFileName = null;
+                    if (startChr == endChrNormal) {
+                        tmpCombinedFilteredByAllFileName = prefixFilteredName + "_chr_" + startChrS + "_chunk" + j + ".txt.gz";
+                    } else {
+                        tmpCombinedFilteredByAllFileName = prefixFilteredName + "_chr_" + startChrS + "_to_" + endChrNormalS + "_chunk" + j
+                                + ".txt.gz";
+                    }
+                    GenericFile myCombinedFilteredByAllFile = new GenericFile(testTypeOutDir, tmpCombinedFilteredByAllFileName,
                             "compressed", "none");
-                    combinedFilteredByAllXFile.add(myCombinedFilteredByAllXFile);
-                }
+                    combinedFilteredByAllFile.add(myCombinedFilteredByAllFile);
 
-                String tmpCombinedCondensedFileName = null;
-                if (startChr == endChrNormal) {
-                    tmpCombinedCondensedFileName = prefixCondensedName + "_chr_" + startChrS + ".txt.gz";
-                } else {
-                    tmpCombinedCondensedFileName = prefixCondensedName + "_chr_" + startChrS + "_to_" + endChrNormalS + ".txt.gz";
-                }
-                GenericFile myCombinedCondensedFile = new GenericFile(testTypeOutDir, tmpCombinedCondensedFileName, "compressed", "none");
-                combinedCondensedAllFile.add(myCombinedCondensedFile);
-            } // End of for refPanels
+                    // If we are going to process chr 23, then prepare file names for it.
+                    if (chr == 23) {
+                        String tmpCombinedFilteredByAllXFileName = prefixFilteredName + "_chr_" + chr + "_chunk" + j + ".txt.gz";
+                        GenericFile myCombinedFilteredByAllXFile = new GenericFile(testTypeOutDir, tmpCombinedFilteredByAllXFileName,
+                                "compressed", "none");
+                        combinedFilteredByAllXFile.add(myCombinedFilteredByAllXFile);
+                    }
+
+                    String tmpCombinedCondensedFileName = null;
+                    if (startChr == endChrNormal) {
+                        tmpCombinedCondensedFileName = prefixCondensedName + "_chr_" + startChrS + "_chunk" + j + ".txt.gz";
+                    } else {
+                        tmpCombinedCondensedFileName = prefixCondensedName + "_chr_" + startChrS + "_to_" + endChrNormalS + "_chunk" + j
+                                + ".txt.gz";
+                    }
+                    GenericFile myCombinedCondensedFile = new GenericFile(testTypeOutDir, tmpCombinedCondensedFileName, "compressed",
+                            "none");
+                    combinedCondensedAllFile.add(myCombinedCondensedFile);
+                } // End of for chunk
+            } // End of for chromo
 
             // Now we have to build the list of reduced files for the type of Test. We store this list
             this.testTypeListOutDir.add(testTypeOutDir);

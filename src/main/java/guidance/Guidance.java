@@ -169,7 +169,6 @@ public class Guidance {
         // Get the names of the reference panel to be used in the execution
         ArrayList<String> rpanelTypes = new ArrayList<>(parsingArgs.getRpanelTypes());
         String outDir = parsingArgs.getOutDir();
-        ChromoInfo generalChromoInfo = new ChromoInfo();
 
         LOGGER.info("[Guidance] We print testTypes information");
         int numberOfTestTypes = parsingArgs.getNumberOfTestTypeName();
@@ -181,7 +180,7 @@ public class Guidance {
         }
 
         // Main code of the work flow:
-        doMixed(parsingArgs, outDir, rpanelTypes, generalChromoInfo, listOfCommands);
+        doMixed(parsingArgs, outDir, rpanelTypes, listOfCommands);
 
         // Finally, we print the commands in the output file defined for this.
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(listOfStages))) {
@@ -240,8 +239,7 @@ public class Guidance {
      * @param generalChromoInfo
      * @param listOfCommands
      */
-    private static void doMixed(ParseCmdLine parsingArgs, String outDir, List<String> rpanelTypes, ChromoInfo generalChromoInfo,
-            ArrayList<String> listOfCommands) {
+    private static void doMixed(ParseCmdLine parsingArgs, String outDir, List<String> rpanelTypes, ArrayList<String> listOfCommands) {
 
         // Create some general objects
         int startChr = parsingArgs.getStart();
@@ -275,13 +273,13 @@ public class Guidance {
         FileUtils.createDirStructure(parsingArgs, outDir, rpanelTypes, startChr, endChr);
 
         // Create the names for mixed files
-        ImputationFiles imputationFilesInfo = new ImputationFiles(parsingArgs, generalChromoInfo, outDir, rpanelTypes);
+        ImputationFiles imputationFilesInfo = new ImputationFiles(parsingArgs, outDir, rpanelTypes);
 
         // Create the names for Association files
-        AssocFiles assocFilesInfo = new AssocFiles(parsingArgs, generalChromoInfo, outDir, rpanelTypes);
+        AssocFiles assocFilesInfo = new AssocFiles(parsingArgs, outDir, rpanelTypes);
 
         // Create the names for Merge files
-        MergeFiles mergeFilesInfo = new MergeFiles(parsingArgs, generalChromoInfo, outDir, rpanelTypes);
+        MergeFiles mergeFilesInfo = new MergeFiles(parsingArgs, outDir, rpanelTypes);
 
         // Create the names for Results Files. Take into account this class it to generate file name for results
         // of each testType and each rPanelType. The results for combined panels or phenome analysis are created
@@ -295,8 +293,8 @@ public class Guidance {
         // Create all file names used in the workflow.
         // Also, define which of them will be temporal or permanent.
         setFinalStatusForCommonFiles(parsingArgs, commonFilesInfo);
-        setFinalStatusForImputationFiles(parsingArgs, imputationFilesInfo, generalChromoInfo, rpanelTypes);
-        setFinalStatusForAssocFiles(parsingArgs, assocFilesInfo, generalChromoInfo, rpanelTypes);
+        setFinalStatusForImputationFiles(parsingArgs, imputationFilesInfo, rpanelTypes);
+        setFinalStatusForAssocFiles(parsingArgs, assocFilesInfo, rpanelTypes);
 
         // The number of Chromos to process is endChr - startChr + 1;
         for (int i = startChr; i <= endChr; i++) {
@@ -372,8 +370,8 @@ public class Guidance {
             for (int kk = 0; kk < rpanelTypes.size(); kk++) {
                 // String rpanelDir = parsingArgs.getRpanelDir(kk);
 
-                int maxSize = generalChromoInfo.getMaxSize(i);
-                int minSize = generalChromoInfo.getMinSize(i);
+                int maxSize = ChromoInfo.getMaxSize(i);
+                int minSize = ChromoInfo.getMinSize(i);
                 int lim1 = minSize;
                 int lim2 = lim1 + chunkSize - 1;
                 int j = 0;
@@ -397,8 +395,8 @@ public class Guidance {
         for (int tt = 0; tt < numberOfTestTypes; tt++) {
             for (int kk = 0; kk < rpanelTypes.size(); kk++) {
                 for (int i = startChr; i <= endChr; i++) {
-                    int maxSize = generalChromoInfo.getMaxSize(i);
-                    int minSize = generalChromoInfo.getMinSize(i);
+                    int maxSize = ChromoInfo.getMaxSize(i);
+                    int minSize = ChromoInfo.getMinSize(i);
                     int lim1 = minSize;
                     int lim2 = lim1 + chunkSize - 1;
                     /*
@@ -482,8 +480,7 @@ public class Guidance {
 
             // Now we continue with the combining of the results of the different reference panels.
             // It is done if the refPanelCombine flag is true.
-            makeCombinePanels(parsingArgs, assocFilesInfo, mergeFilesInfo, combinedPanelsFilesInfo, rpanelTypes, tt, listOfCommands,
-                    generalChromoInfo);
+            makeCombinePanels(parsingArgs, assocFilesInfo, mergeFilesInfo, combinedPanelsFilesInfo, rpanelTypes, tt, listOfCommands);
 
         } // End for test types
 
@@ -949,8 +946,7 @@ public class Guidance {
      * @throws GuidanceTaskException
      */
     private static void makeCombinePanels(ParseCmdLine parsingArgs, AssocFiles assocFilesInfo, MergeFiles mergeFilesInfo,
-            CombinedPanelsFiles combinedPanelsFilesInfo, List<String> rpanelTypes, int ttIndex, ArrayList<String> listOfCommands,
-            ChromoInfo generalChromoInfo) {
+            CombinedPanelsFiles combinedPanelsFilesInfo, List<String> rpanelTypes, int ttIndex, ArrayList<String> listOfCommands) {
 
         boolean refPanelCombine = parsingArgs.getRefPanelCombine();
         if (!refPanelCombine) {
@@ -958,19 +954,22 @@ public class Guidance {
             return;
         }
 
-        // Places to store the final combined chromosome information
-        String filteredCombineAll = combinedPanelsFilesInfo.getCombinedFilteredByAllFile(ttIndex);
-        String filteredCombineAllX = combinedPanelsFilesInfo.getCombinedFilteredByAllXFile(ttIndex);
-        String condensedCombineAll = combinedPanelsFilesInfo.getCombinedCondensedFile(ttIndex);
-
         // We combine the panels per chromosome
         int startChr = parsingArgs.getStart();
         int endChr = parsingArgs.getEnd();
         int chunkSize = parsingArgs.getChunkSize();
 
+        // Places to store the final combined chromosome information
+        String filteredCombineAll = combinedPanelsFilesInfo.getCombinedFilteredByAllFile(ttIndex);
+        String filteredCombineAllX = null;
+        if (endChr == 23) {
+            filteredCombineAllX = combinedPanelsFilesInfo.getCombinedFilteredByAllXFile(ttIndex);
+        }
+        String condensedCombineAll = combinedPanelsFilesInfo.getCombinedCondensedFile(ttIndex);
+
         for (int chr = startChr; chr <= endChr; chr++) {
-            int maxSize = generalChromoInfo.getMaxSize(chr);
-            int minSize = generalChromoInfo.getMinSize(chr);
+            int minSize = ChromoInfo.getMinSize(chr);
+            int maxSize = ChromoInfo.getMaxSize(chr);
 
             int lim1 = minSize;
             int lim2 = lim1 + chunkSize - 1;
@@ -992,16 +991,14 @@ public class Guidance {
                     if (!filteredPanelsToCombine.isEmpty()) {
                         String filteredPanelB = filteredPanelsToCombine.poll();
                         // Filtered part: combines A and B into A
-                        doCombinePanelsComplex(parsingArgs, listOfCommands, filteredPanelA, filteredPanelB, filteredPanelA, lim1, lim2);
+                        doCombinePanelsComplex(parsingArgs, listOfCommands, filteredPanelA, filteredPanelB, lim1, lim2);
                         // Adds A to the queue again
                         filteredPanelsToCombine.add(filteredPanelA);
                         // Deletes B since it is no longer needed
-                        try {
-                            FileUtils.deleteFile(filteredPanelB);
-                        } catch (GuidanceTaskException gte) {
-                            LOGGER.fatal("ERROR: Cannot erase file: " + filteredPanelB, gte);
-                            System.exit(1);
-                        }
+                        /*
+                         * try { FileUtils.deleteFile(filteredPanelB); } catch (GuidanceTaskException gte) {
+                         * LOGGER.fatal("ERROR: Cannot erase file: " + filteredPanelB, gte); System.exit(1); }
+                         */
                     }
                 }
 
@@ -1018,74 +1015,68 @@ public class Guidance {
                     if (!condensedPanelsToCombine.isEmpty()) {
                         String condensedPanelB = condensedPanelsToCombine.poll();
                         // Filtered part: combines A and B into A
-                        doCombinePanelsComplex(parsingArgs, listOfCommands, condensedPanelA, condensedPanelB, condensedPanelA, lim1, lim2);
+                        doCombinePanelsComplex(parsingArgs, listOfCommands, condensedPanelA, condensedPanelB, lim1, lim2);
                         // Adds A to the queue again
                         condensedPanelsToCombine.add(condensedPanelA);
                         // Deletes B since it is no longer needed
-                        try {
-                            FileUtils.deleteFile(condensedPanelB);
-                        } catch (GuidanceTaskException gte) {
-                            LOGGER.fatal("ERROR: Cannot erase file: " + condensedPanelB, gte);
-                            System.exit(1);
-                        }
+                        /*
+                         * try { FileUtils.deleteFile(condensedPanelB); } catch (GuidanceTaskException gte) {
+                         * LOGGER.fatal("ERROR: Cannot erase file: " + condensedPanelB, gte); System.exit(1); }
+                         */
                     }
                 }
 
                 // -- COMBINE FILTERED TO FINAL CHROMOSOME FILE
                 // Files are merged to the first file because of queue
-
                 String filteredPanel = assocFilesInfo.getSummaryFilteredFile(ttIndex, 0, chr, lim1, lim2, chunkSize);
                 String condensedPanel = assocFilesInfo.getSummaryCondensedFile(ttIndex, 0, chr, lim1, lim2, chunkSize);
                 if (chr != 23) {
                     // We merge into the final combine file directly
-                    String filteredCombine = combinedPanelsFilesInfo.getCombinedFilteredByAllChromoFile(ttIndex, chr);
-                    doMergeTwoChunks(parsingArgs, listOfCommands, filteredCombine, filteredPanel, filteredCombine, Integer.toString(chr),
+                    String filteredCombine = combinedPanelsFilesInfo.getCombinedFilteredByAllChromoFile(ttIndex, indexFC);
+                    doMergeTwoChunksInTheFirst(parsingArgs, listOfCommands, filteredCombine, filteredPanel, Integer.toString(chr),
                             FILTERED);
                     ++indexFC;
                 } else {
                     // We merge into the final combine file directly
-                    String filteredCombineX = combinedPanelsFilesInfo.getCombinedFilteredByAllXChromoFile(ttIndex, chr);
-                    doMergeTwoChunks(parsingArgs, listOfCommands, filteredCombineX, filteredPanel, filteredCombineX, Integer.toString(chr),
+                    String filteredCombineX = combinedPanelsFilesInfo.getCombinedFilteredByAllXChromoFile(ttIndex, indexXFC);
+                    doMergeTwoChunksInTheFirst(parsingArgs, listOfCommands, filteredCombineX, filteredPanel, Integer.toString(chr),
                             FILTERED);
                     ++indexXFC;
                 }
                 // Deletes filteredPanel since it is no longer needed
-                try {
-                    FileUtils.deleteFile(filteredPanel);
-                } catch (GuidanceTaskException gte) {
-                    LOGGER.fatal("ERROR: Cannot erase file: " + filteredPanel, gte);
-                    System.exit(1);
-                }
+                /*
+                 * try { FileUtils.deleteFile(filteredPanel); } catch (GuidanceTaskException gte) {
+                 * LOGGER.fatal("ERROR: Cannot erase file: " + filteredPanel, gte); System.exit(1); }
+                 */
 
                 // -- COMBINE CONDENSED TO FINAL CHROMOSOME FILE
-                String condensedCombine = combinedPanelsFilesInfo.getCombinedCondensedChromoFile(ttIndex, chr);
-                doMergeTwoChunks(parsingArgs, listOfCommands, condensedCombine, condensedPanel, condensedCombine, Integer.toString(chr),
-                        CONDENSED);
+                String condensedCombine = combinedPanelsFilesInfo.getCombinedCondensedChromoFile(ttIndex, indexCC);
+                doMergeTwoChunksInTheFirst(parsingArgs, listOfCommands, condensedCombine, condensedPanel, Integer.toString(chr), CONDENSED);
                 ++indexCC;
                 // Deletes condensedPanel since it is no longer needed
-                try {
-                    FileUtils.deleteFile(condensedPanel);
-                } catch (GuidanceTaskException gte) {
-                    LOGGER.fatal("ERROR: Cannot erase file: " + condensedPanel, gte);
-                    System.exit(1);
-                }
+                /*
+                 * try { FileUtils.deleteFile(condensedPanel); } catch (GuidanceTaskException gte) {
+                 * LOGGER.fatal("ERROR: Cannot erase file: " + condensedPanel, gte); System.exit(1); }
+                 */
 
             } // End for chunk
 
             // Merge the chromosome information into the global one
-            String filteredCombineChromo = mergeFilesInfo.getCombinedReducedFilteredFile(ttIndex, 0, chr, indexFC - 1);
-            doMergeTwoChunks(parsingArgs, listOfCommands, filteredCombineAll, filteredCombineChromo, filteredCombineAll,
-                    Integer.toString(chr), FILTERED);
+            String filteredCombineChromo = combinedPanelsFilesInfo.getCombinedFilteredByAllChromoFile(ttIndex, indexFC -  1);
+            doMergeTwoChunksInTheFirst(parsingArgs, listOfCommands, filteredCombineAll, filteredCombineChromo, Integer.toString(chr),
+                    FILTERED);
+
+            // Merge the chromosome X information into the global one
+            if (chr == 23) {
+                String filteredCombineChromoX = combinedPanelsFilesInfo.getCombinedFilteredByAllXChromoFile(ttIndex, indexXFC - 1);
+                doMergeTwoChunksInTheFirst(parsingArgs, listOfCommands, filteredCombineAllX, filteredCombineChromoX, Integer.toString(chr),
+                        FILTERED);
+            }
 
             // Merge the chromosome information into the global one
-            String filteredCombineChromoX = mergeFilesInfo.getCombinedReducedFilteredXFile(ttIndex, 0, chr, indexXFC - 1);
-            doMergeTwoChunks(parsingArgs, listOfCommands, filteredCombineAllX, filteredCombineChromoX, filteredCombineAllX,
-                    Integer.toString(chr), FILTERED);
-
-            // Merge the chromosome information into the global one
-            String condensedCombineChromo = mergeFilesInfo.getCombinedReducedCondensedFile(ttIndex, 0, chr, indexCC - 1);
-            doMergeTwoChunks(parsingArgs, listOfCommands, condensedCombineAll, condensedCombineChromo, condensedCombineAll,
-                    Integer.toString(chr), CONDENSED);
+            String condensedCombineChromo = combinedPanelsFilesInfo.getCombinedCondensedChromoFile(ttIndex, indexCC - 1);
+            doMergeTwoChunksInTheFirst(parsingArgs, listOfCommands, condensedCombineAll, condensedCombineChromo, Integer.toString(chr),
+                    CONDENSED);
 
             // Increase loop variables
             lim1 = lim1 + chunkSize;
@@ -1785,15 +1776,14 @@ public class Guidance {
      * @param lim2
      */
     private static void doCombinePanelsComplex(ParseCmdLine parsingArgs, ArrayList<String> listOfCommands, String resultsPanelA,
-            String resultsPanelB, String lastResultFile, int lim1, int lim2) {
+            String resultsPanelB, int lim1, int lim2) {
 
         if (parsingArgs.getStageStatus("combinePanelsComplex") == 1) {
-            String cmdToStore = JAVA_HOME + "/java combinePanelsComplex " + resultsPanelA + " " + resultsPanelB + " " + lastResultFile + " "
-                    + lim1 + " " + lim2;
+            String cmdToStore = JAVA_HOME + "/java combinePanelsComplex " + resultsPanelA + " " + resultsPanelB + " " + lim1 + " " + lim2;
             listOfCommands.add(cmdToStore);
 
             try {
-                GuidanceImpl.combinePanelsComplex(resultsPanelA, resultsPanelB, lastResultFile, lim1, lim2, cmdToStore);
+                GuidanceImpl.combinePanelsComplex(resultsPanelA, resultsPanelB, lim1, lim2, cmdToStore);
             } catch (GuidanceTaskException gte) {
                 LOGGER.error("[Guidance] Exception trying the execution of combinePanelsComplex task", gte);
             }
@@ -1820,6 +1810,32 @@ public class Guidance {
             listOfCommands.add(cmdToStore);
             try {
                 GuidanceImpl.mergeTwoChunks(reduceA, reduceB, reduceC, theChromo, type, cmdToStore);
+            } catch (GuidanceTaskException gte) {
+                LOGGER.error("[Guidance] Exception trying the execution of mergeTwoChunks task", gte);
+            }
+        }
+    }
+
+    /**
+     * Method that wraps the mergeTwoChunks task and store the command in the listOfCommands
+     * 
+     * @param parsingArgs
+     * @param listOfCommands
+     * @param reduceA
+     * @param reduceB
+     * @param reduceC
+     * @param theChromo
+     * @param type
+     */
+    private static void doMergeTwoChunksInTheFirst(ParseCmdLine parsingArgs, ArrayList<String> listOfCommands, String reduceA,
+            String reduceB, String theChromo, String type) {
+
+        if (parsingArgs.getStageStatus("mergeTwoChunks") == 1) {
+            // Task
+            String cmdToStore = JAVA_HOME + "/java mergeTwoChunks " + reduceA + " " + reduceB + " " + theChromo;
+            listOfCommands.add(cmdToStore);
+            try {
+                GuidanceImpl.mergeTwoChunksInTheFirst(reduceA, reduceB, theChromo, type, cmdToStore);
             } catch (GuidanceTaskException gte) {
                 LOGGER.error("[Guidance] Exception trying the execution of mergeTwoChunks task", gte);
             }
@@ -2018,7 +2034,7 @@ public class Guidance {
      * @param refPanels
      */
     private static void setFinalStatusForImputationFiles(ParseCmdLine parsingArgs, ImputationFiles imputationFilesInfo,
-            ChromoInfo generalChromoInfo, List<String> refPanels) {
+            List<String> refPanels) {
 
         int startChr = parsingArgs.getStart();
         int endChr = parsingArgs.getEnd();
@@ -2045,8 +2061,8 @@ public class Guidance {
                     int chromo = i;
                     int lim1 = 1;
                     int lim2 = lim1 + chunkSize - 1;
-                    int numberOfChunks = generalChromoInfo.getMaxSize(chromo) / chunkSize;
-                    int module = generalChromoInfo.getMaxSize(chromo) % chunkSize;
+                    int numberOfChunks = ChromoInfo.getMaxSize(chromo) / chunkSize;
+                    int module = ChromoInfo.getMaxSize(chromo) % chunkSize;
                     if (module != 0)
                         numberOfChunks++;
 
@@ -2067,8 +2083,8 @@ public class Guidance {
                     int chromo = i;
                     int lim1 = 1;
                     int lim2 = lim1 + chunkSize - 1;
-                    int numberOfChunks = generalChromoInfo.getMaxSize(chromo) / chunkSize;
-                    int module = generalChromoInfo.getMaxSize(chromo) % chunkSize;
+                    int numberOfChunks = ChromoInfo.getMaxSize(chromo) / chunkSize;
+                    int module = ChromoInfo.getMaxSize(chromo) % chunkSize;
                     if (module != 0)
                         numberOfChunks++;
 
@@ -2093,8 +2109,7 @@ public class Guidance {
      * @param generalChromoInfo
      * @param refPanels
      */
-    private static void setFinalStatusForAssocFiles(ParseCmdLine parsingArgs, AssocFiles assocFilesInfo, ChromoInfo generalChromoInfo,
-            List<String> refPanels) {
+    private static void setFinalStatusForAssocFiles(ParseCmdLine parsingArgs, AssocFiles assocFilesInfo, List<String> refPanels) {
 
         int startChr = parsingArgs.getStart();
         int endChr = parsingArgs.getEnd();
@@ -2122,7 +2137,7 @@ public class Guidance {
                 for (int i = startChr; i <= endChr; i++) {
                     int chromo = i;
 
-                    int maxSize = generalChromoInfo.getMaxSize(chromo);
+                    int maxSize = ChromoInfo.getMaxSize(chromo);
                     int total_chunks = maxSize / chunkSize;
                     int lim1 = 1;
                     int lim2 = lim1 + chunkSize - 1;

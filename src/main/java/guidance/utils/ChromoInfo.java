@@ -100,7 +100,7 @@ public class ChromoInfo {
      * @param chromoNumber
      * @return
      */
-    public int getMinSize(int chromoNumber) {
+    public static int getMinSize(int chromoNumber) {
         // Check that chromo index is within the bounds
         checkChromoIndex(chromoNumber);
 
@@ -113,7 +113,7 @@ public class ChromoInfo {
      * @param chromoNumber
      * @return
      */
-    public int getMaxSize(int chromoNumber) {
+    public static int getMaxSize(int chromoNumber) {
         // Check that chromo index is within the bounds
         checkChromoIndex(chromoNumber);
 
@@ -125,7 +125,7 @@ public class ChromoInfo {
      * 
      * @param chromoNumber
      */
-    public void printChromoInfo(int chromoNumber) {
+    public static void printChromoInfo(int chromoNumber) {
         // Check that chromo index is within the bounds
         checkChromoIndex(chromoNumber);
 
@@ -133,7 +133,7 @@ public class ChromoInfo {
         LOGGER.info("Max size     : " + MAX_SIZE[chromoNumber - 1]);
     }
 
-    private void checkChromoIndex(int chromo) {
+    private static void checkChromoIndex(int chromo) {
         if ((chromo < 1) || (chromo > MAX_NUMBER_OF_CHROMOSOMES)) {
             LOGGER.fatal("[chromoInfo] Errro, chromo " + chromo + "does not exist");
             System.exit(1);
