@@ -7,7 +7,6 @@
 	<artifactId>guidance</artifactId>
 	<packaging>jar</packaging>
 	<version>0.9.9</version>
-
 	<!-- PROJECT INFORMATION -->
 	<name>Guidance Official Release</name>
 	<description>Guidance Official Release Application</description>
