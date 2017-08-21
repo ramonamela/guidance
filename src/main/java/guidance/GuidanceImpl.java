@@ -37,15 +37,13 @@ import guidance.processes.ProcessUtils;
 import guidance.utils.Headers;
 
 import java.io.File;
-import java.io.Reader;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
-import java.io.FileInputStream;
 import java.io.FileReader;
-import java.io.IOException;
+import java.io.FileInputStream;
 import java.io.InputStreamReader;
-import java.io.RandomAccessFile;
+import java.io.IOException;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -54,7 +52,6 @@ import java.util.Iterator;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.zip.GZIPInputStream;
-import java.util.Scanner;
 
 
 public class GuidanceImpl {
@@ -518,17 +515,6 @@ public class GuidanceImpl {
 
         long startTime = System.currentTimeMillis();
 
-        // Check if the file is gzip or not.
-        // This is done by checking the magic number of gzip files, which is 0x1f8b (the first two bytes)
-        File tmpInputFile = new File(genOrBimFile);
-        long n;
-        try (RandomAccessFile raf = new RandomAccessFile(tmpInputFile, "r")) {
-            n = raf.readInt();
-            n = n & 0xFFFF0000;
-        } catch (IOException ioe) {
-            throw new GuidanceTaskException(ioe);
-        }
-
         // Create output file
         File outPairsFile = new File(pairsFile);
         try {
@@ -539,14 +525,14 @@ public class GuidanceImpl {
             throw new GuidanceTaskException(ioe);
         }
 
-        boolean thisIsGz = (n == 0x1f8b0000);
-
+        // Check if the file is gzip or not
+        boolean thisIsGz = genOrBimFile.endsWith(".gz");
+        // Process the file depending on its format
         if (thisIsGz) {
-            System.out.println(HEADER_CREATE_RSID_LIST + "It seems the file " + genOrBimFile + " is a gzip file. Magic Number is "
-                    + String.format("%x", n));
+            System.out.println(HEADER_CREATE_RSID_LIST + "It seems the file " + genOrBimFile + " is a gzip file");
 
             try (GZIPInputStream inputGz = new GZIPInputStream(new FileInputStream(genOrBimFile));
-                    Reader decoder = new InputStreamReader(inputGz);
+                    InputStreamReader decoder = new InputStreamReader(inputGz);
                     BufferedReader br = new BufferedReader(decoder)) {
 
                 writeOutPairsFile(br, outPairsFile, inputFormat, exclCgatFlag, pairsFile);
@@ -885,7 +871,7 @@ public class GuidanceImpl {
 
         // Then, we read the gz File line by line
         try (GZIPInputStream inputGz = new GZIPInputStream(new FileInputStream(shapeitHapsFileGz));
-                Reader decoder = new InputStreamReader(inputGz);
+                InputStreamReader decoder = new InputStreamReader(inputGz);
                 BufferedReader br = new BufferedReader(decoder)) {
 
             String line = "";
@@ -1261,7 +1247,7 @@ public class GuidanceImpl {
         System.out.println("\n[DEBUG] \t- Output file " + listOfSnpsFile + " was succesfuly created? " + bool);
 
         try (GZIPInputStream inputGz = new GZIPInputStream(new FileInputStream(filteredHapsFileGz));
-                Reader decoder = new InputStreamReader(inputGz);
+                InputStreamReader decoder = new InputStreamReader(inputGz);
                 BufferedReader br = new BufferedReader(decoder);
                 BufferedWriter writerFiltered = new BufferedWriter(new FileWriter(outFilteredFile))) {
 
@@ -1729,7 +1715,7 @@ public class GuidanceImpl {
         // HashMap<Integer, String> inputFileHashTableIndexReversed = new HashMap<>();
 
         try (GZIPInputStream inputGz = new GZIPInputStream(new FileInputStream(inputFile));
-                Reader decoder = new InputStreamReader(inputGz);
+                InputStreamReader decoder = new InputStreamReader(inputGz);
                 BufferedReader br = new BufferedReader(decoder);
                 BufferedWriter writerFiltered = new BufferedWriter(new FileWriter(plainOutputFile));
                 BufferedWriter writerCondensed = new BufferedWriter(new FileWriter(plainOutputCondensedFile))) {
@@ -1868,7 +1854,7 @@ public class GuidanceImpl {
         String plainFilteredByAll = filteredByAllC.substring(0, filteredByAllC.length() - 3);
         try (BufferedWriter writerFiltered = new BufferedWriter(new FileWriter(plainFilteredByAll))) {
             try (GZIPInputStream filteredByAllGz = new GZIPInputStream(new FileInputStream(filteredByAllA));
-                    Reader decoder = new InputStreamReader(filteredByAllGz);
+                    InputStreamReader decoder = new InputStreamReader(filteredByAllGz);
                     BufferedReader br = new BufferedReader(decoder)) {
 
                 boolean putRefpanel = false;
@@ -1901,7 +1887,7 @@ public class GuidanceImpl {
             // In that case, in the main program, we put the same file as filteredByAllA and filteredByAllB.
             if (!filteredByAllA.equals(filteredByAllB)) {
                 try (GZIPInputStream filteredByAllGz = new GZIPInputStream(new FileInputStream(filteredByAllB));
-                        Reader decoder = new InputStreamReader(filteredByAllGz);
+                        InputStreamReader decoder = new InputStreamReader(filteredByAllGz);
                         BufferedReader br = new BufferedReader(decoder)) {
 
                     boolean putRefpanel = false;
@@ -1980,7 +1966,7 @@ public class GuidanceImpl {
 
         try (BufferedWriter writerCondensed = new BufferedWriter(new FileWriter(plainOutCondensed))) {
             try (GZIPInputStream inputGz = new GZIPInputStream(new FileInputStream(inputAFile));
-                    Reader decoder = new InputStreamReader(inputGz);
+                    InputStreamReader decoder = new InputStreamReader(inputGz);
                     BufferedReader br = new BufferedReader(decoder)) {
 
                 // I read the header
@@ -2001,7 +1987,7 @@ public class GuidanceImpl {
             if (!inputAFile.equals(inputBFile)) {
                 // Now the next file: inputBFile
                 try (GZIPInputStream inputGz = new GZIPInputStream(new FileInputStream(inputBFile));
-                        Reader decoder = new InputStreamReader(inputGz);
+                        InputStreamReader decoder = new InputStreamReader(inputGz);
                         BufferedReader br = new BufferedReader(decoder)) {
 
                     // I read the header and skip it.
@@ -2259,9 +2245,9 @@ public class GuidanceImpl {
 
         // Treat results Panel A if it is not empty
         if (new File(resultsPanelAUnzip).exists()) {
-            try (Scanner sc1 = new Scanner(new File(resultsPanelAUnzip))) {
+            try (BufferedReader br = new BufferedReader(new FileReader(resultsPanelAUnzip))) {
                 // Get the header
-                String header = sc1.nextLine();
+                String header = br.readLine();
 
                 if (!header.equals(EMPTY_HEADER)) {
                     // Save header for the end file
@@ -2274,8 +2260,8 @@ public class GuidanceImpl {
                     a2Idx = resultsHashTableIndex.get("alleleB");
                     infoIdx = resultsHashTableIndex.get("info_all");
 
-                    while (sc1.hasNextLine()) {
-                        String line = sc1.nextLine();
+                    String line = null;
+                    while ((line = br.readLine()) != null) {
                         String[] splitted = line.split(TAB);
 
                         // if(splitted[chrIdx].equals(chromoS)) {
@@ -2284,10 +2270,6 @@ public class GuidanceImpl {
                         fileTreeMapA.put(positionA1A2Chr, line);
                         // contador++;
                         // }
-                    }
-                    // note that Scanner suppresses exceptions
-                    if (sc1.ioException() != null) {
-                        throw sc1.ioException();
                     }
                 }
             } catch (IOException ioe) {
@@ -2304,9 +2286,9 @@ public class GuidanceImpl {
 
         // Treat results Panel B if it is not empty
         if (new File(resultsPanelBUnzip).exists()) {
-            try (Scanner sc = new Scanner(new File(resultsPanelBUnzip))) {
+            try (BufferedReader br = new BufferedReader(new FileReader(resultsPanelBUnzip))) {
                 // Get the header
-                String header = sc.nextLine();
+                String header = br.readLine();
 
                 if (!header.equals(EMPTY_HEADER)) {
                     // Store header for end file
@@ -2319,8 +2301,8 @@ public class GuidanceImpl {
                     a2Idx = resultsHashTableIndex.get("alleleB");
                     infoIdx = resultsHashTableIndex.get("info_all");
 
-                    while (sc.hasNextLine()) {
-                        String line = sc.nextLine();
+                    String line = null;
+                    while ((line = br.readLine()) != null) {
                         String[] splitted = line.split(TAB);
 
                         // if(splitted[chrIdx].equals(chromoS)) {
@@ -2329,10 +2311,6 @@ public class GuidanceImpl {
                         fileTreeMapB.put(positionA1A2Chr, line);
                         // contador++;
                         // }
-                    }
-                    // note that Scanner suppresses exceptions
-                    if (sc.ioException() != null) {
-                        throw sc.ioException();
                     }
                 }
             } catch (IOException ioe) {
@@ -2582,7 +2560,7 @@ public class GuidanceImpl {
 
         try (BufferedWriter writerCondensed = new BufferedWriter(new FileWriter(plainCombinedCondensedFile))) {
             try (GZIPInputStream inputGz = new GZIPInputStream(new FileInputStream(filteredA));
-                    Reader decoder = new InputStreamReader(inputGz);
+                    InputStreamReader decoder = new InputStreamReader(inputGz);
                     BufferedReader br = new BufferedReader(decoder)) {
 
                 // I read the header
@@ -2657,7 +2635,7 @@ public class GuidanceImpl {
             // results. Otherwise, there is nothing to do.
             if (!filteredA.equals(filteredX)) {
                 try (GZIPInputStream inputGz = new GZIPInputStream(new FileInputStream(filteredX));
-                        Reader decoder = new InputStreamReader(inputGz);
+                        InputStreamReader decoder = new InputStreamReader(inputGz);
                         BufferedReader br = new BufferedReader(decoder);) {
 
                     inputFileHashTableIndex = new HashMap<>();
@@ -2789,7 +2767,7 @@ public class GuidanceImpl {
         HashMap<String, Integer> resultsFileHashTableIndex = new HashMap<>();
         // First: read the header and avoid it
         try (GZIPInputStream inputGz = new GZIPInputStream(new FileInputStream(resultsFile));
-                Reader decoder = new InputStreamReader(inputGz);
+                InputStreamReader decoder = new InputStreamReader(inputGz);
                 BufferedReader br = new BufferedReader(decoder)) {
 
             header = br.readLine();
@@ -2905,7 +2883,7 @@ public class GuidanceImpl {
 
         // First: read the header and avoid it
         try (GZIPInputStream inputGz = new GZIPInputStream(new FileInputStream(resultsAFile));
-                Reader decoder = new InputStreamReader(inputGz);
+                InputStreamReader decoder = new InputStreamReader(inputGz);
                 BufferedReader br = new BufferedReader(decoder)) {
 
             header = br.readLine();
@@ -2946,7 +2924,7 @@ public class GuidanceImpl {
         // have to include it in the outputTopHitFile
         if (!resultsAFile.equals(resultsBFile)) {
             try (GZIPInputStream inputGz = new GZIPInputStream(new FileInputStream(resultsBFile));
-                    Reader decoder = new InputStreamReader(inputGz);
+                    InputStreamReader decoder = new InputStreamReader(inputGz);
                     BufferedReader br = new BufferedReader(decoder)) {
 
                 resultsBFileHashTableIndex = new HashMap<>();
@@ -3275,7 +3253,7 @@ public class GuidanceImpl {
         HashMap<Integer, String> reduceFileBHashTableIndexReversed = new HashMap<>();
 
         try (GZIPInputStream reduceGz = new GZIPInputStream(new FileInputStream(reduceFileA));
-                Reader decoder = new InputStreamReader(reduceGz);
+                InputStreamReader decoder = new InputStreamReader(reduceGz);
                 BufferedReader br = new BufferedReader(decoder)) {
 
             // First: read the header and avoid it
@@ -3336,7 +3314,7 @@ public class GuidanceImpl {
         TreeMap<String, ArrayList<String>> fileBTreeMap = new TreeMap<>();
 
         try (GZIPInputStream reduceGz = new GZIPInputStream(new FileInputStream(reduceFileB));
-                Reader decoder = new InputStreamReader(reduceGz);
+                InputStreamReader decoder = new InputStreamReader(reduceGz);
                 BufferedReader br = new BufferedReader(decoder)) {
 
             int indexChr = 0;
@@ -3476,7 +3454,7 @@ public class GuidanceImpl {
      */
     public static void mergeTwoChunksInTheFirst(String reduceFileA, String reduceFileB, String chrS, String type, String cmdToStore)
             throws GuidanceTaskException {
-        
+
         mergeTwoChunks(reduceFileA, reduceFileB, reduceFileA, chrS, type, cmdToStore);
     }
 
@@ -3590,7 +3568,7 @@ public class GuidanceImpl {
         // We read each line of the snptestOutFile and put them into assocTreeMap array of Strings
         TreeMap<String, ArrayList<String>> assocTreeMap = new TreeMap<>();
         try (GZIPInputStream snptestOutGz = new GZIPInputStream(new FileInputStream(snptestOutFile));
-                Reader decoder = new InputStreamReader(snptestOutGz);
+                InputStreamReader decoder = new InputStreamReader(snptestOutGz);
                 BufferedReader br = new BufferedReader(decoder)) {
 
             String line = null;
@@ -3792,7 +3770,7 @@ public class GuidanceImpl {
 
         // We start reading the topHits File
         try (GZIPInputStream topHitsFileGz = new GZIPInputStream(new FileInputStream(topHitsFile));
-                Reader decoder = new InputStreamReader(topHitsFileGz);
+                InputStreamReader decoder = new InputStreamReader(topHitsFileGz);
                 BufferedReader br = new BufferedReader(decoder)) {
 
             String line = br.readLine();
@@ -3917,7 +3895,7 @@ public class GuidanceImpl {
         // We start reading the phenomeFileA
         String phenomeAHeader = null;
         try (GZIPInputStream phenomeAFileGz = new GZIPInputStream(new FileInputStream(phenomeAFile));
-                Reader decoder = new InputStreamReader(phenomeAFileGz);
+                InputStreamReader decoder = new InputStreamReader(phenomeAFileGz);
                 BufferedReader br = new BufferedReader(decoder)) {
 
             // First of all, the header
@@ -3970,7 +3948,7 @@ public class GuidanceImpl {
 
         // Now we read the topHitsFile
         try (GZIPInputStream topHitsFileGz = new GZIPInputStream(new FileInputStream(topHitsFile));
-                Reader decoder = new InputStreamReader(topHitsFileGz);
+                InputStreamReader decoder = new InputStreamReader(topHitsFileGz);
                 BufferedReader br = new BufferedReader(decoder);) {
 
             // We start reading the topHits File
@@ -4093,7 +4071,7 @@ public class GuidanceImpl {
         // We start reading the phenomeFileA
         String phenomeAHeader = null;
         try (GZIPInputStream phenomeAFileGz = new GZIPInputStream(new FileInputStream(phenomeAFile));
-                Reader decoder = new InputStreamReader(phenomeAFileGz);
+                InputStreamReader decoder = new InputStreamReader(phenomeAFileGz);
                 BufferedReader br = new BufferedReader(decoder)) {
 
             // First of all, the header
@@ -4128,7 +4106,7 @@ public class GuidanceImpl {
         // Now we load the whole filteredByAllFile into a TreeMap
         TreeMap<String, ArrayList<String>> filteredTreeMap = new TreeMap<>();
         try (GZIPInputStream filteredByAllGz = new GZIPInputStream(new FileInputStream(filteredByAllFile));
-                Reader decoder = new InputStreamReader(filteredByAllGz);
+                InputStreamReader decoder = new InputStreamReader(filteredByAllGz);
                 BufferedReader br = new BufferedReader(decoder)) {
 
             HashMap<String, Integer> filteredByAllHashTableIndex = new HashMap<>();
@@ -4291,7 +4269,7 @@ public class GuidanceImpl {
         // We start reading the phenomeFileA
         String phenomeAHeader = null;
         try (GZIPInputStream phenomeAFileGz = new GZIPInputStream(new FileInputStream(phenomeAFile));
-                Reader decoder = new InputStreamReader(phenomeAFileGz);
+                InputStreamReader decoder = new InputStreamReader(phenomeAFileGz);
                 BufferedReader br = new BufferedReader(decoder)) {
 
             // First of all, the header
@@ -4364,7 +4342,7 @@ public class GuidanceImpl {
         // Now we load the whole filteredByAllFile into a TreeMap
         TreeMap<String, ArrayList<String>> filteredTreeMap = new TreeMap<>();
         try (GZIPInputStream filteredByAllGz = new GZIPInputStream(new FileInputStream(filteredByAllFile));
-                Reader decoder = new InputStreamReader(filteredByAllGz);
+                InputStreamReader decoder = new InputStreamReader(filteredByAllGz);
                 BufferedReader br = new BufferedReader(decoder)) {
 
             HashMap<String, Integer> filteredByAllHashTableIndex = new HashMap<>();
@@ -4428,7 +4406,7 @@ public class GuidanceImpl {
             // Then, we need to extract the information of each snp from the filteredByAllFile
             // Now we load the whole filteredByAllFile into a TreeMap
             try (GZIPInputStream filteredByAllXGz = new GZIPInputStream(new FileInputStream(filteredByAllXFile));
-                    Reader decoder = new InputStreamReader(filteredByAllXGz);
+                    InputStreamReader decoder = new InputStreamReader(filteredByAllXGz);
                     BufferedReader br = new BufferedReader(decoder)) {
 
                 // We start reading the filteredByAllXFile
@@ -4601,7 +4579,7 @@ public class GuidanceImpl {
         // We start reading the phenomeFileA
         String phenomeAHeader = null;
         try (GZIPInputStream phenomeAFileGz = new GZIPInputStream(new FileInputStream(phenomeAFile));
-                Reader decoder = new InputStreamReader(phenomeAFileGz);
+                InputStreamReader decoder = new InputStreamReader(phenomeAFileGz);
                 BufferedReader br = new BufferedReader(decoder)) {
 
             // First of all, the header
@@ -4638,7 +4616,7 @@ public class GuidanceImpl {
         HashMap<String, Integer> phenomeBHashTableIndex = new HashMap<>();
         HashMap<Integer, String> phenomeBHashTableIndexReversed = new HashMap<>();
         try (GZIPInputStream phenomeBFileGz = new GZIPInputStream(new FileInputStream(phenomeBFile));
-                Reader decoder = new InputStreamReader(phenomeBFileGz);
+                InputStreamReader decoder = new InputStreamReader(phenomeBFileGz);
                 BufferedReader br = new BufferedReader(decoder)) {
 
             // We start reading the phenomeFileA
