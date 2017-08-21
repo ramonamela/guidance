@@ -37,7 +37,7 @@
 
   # Add permissions
   echo "- Adding file permissions..."
-  ssh ${MNuser}@${MNendpoint} "chmod -R 775 ${REMOTE_INSTALL_BASE_DIR}"
+  ssh ${MNuser}@${MNendpoint} "chmod -R 777 ${REMOTE_INSTALL_BASE_DIR}/*"
 
   # End
   echo "DONE!"

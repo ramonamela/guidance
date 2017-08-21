@@ -1,0 +1,155 @@
+== General Information ==
+We will work with the Guidance sources in our local machine and deploy only the executable files in the target SuperComputer.
+
+
+== How to install all the required dependencies ==
+Everything must be run locally. This information is for the Linux OpenSUSE 13.2 distribution.
+
+- Subversion (SVN): (for version control management)
+	sudo zypper install subversion
+- JAVA: (for development)
+	sudo zypper install java-1_8_0-openjdk java-1_8_0-openjdk-devel
+- MAVEN: (to build the sources automatically)
+	cd Downloads
+	wget http://ftp.cixug.es/apache/maven/maven-3/3.5.0/binaries/apache-maven-3.5.0-bin.tar.gz
+	tar -xzvf apache-maven-3.5.0-bin.tar.gz
+	sudo mkdir -p /opt/maven-3.5.0
+	sudo chown USER:users -R /opt/maven-3.5.0
+	cp -r apache-maven-3.5.0-bin/* /opt/maven-3.5.0/
+	sudo vi /etc/init.d/maven.sh
+		Write: export PATH=$PATH:/opt/maven-3.5.0/bin/
+		Save: :wq
+	Restart console (or execute source /etc/init.d/maven.sh)
+	mvn -version
+- Tree: (to see the sources map easily. Optional)
+	sudo zypper install tree
+- An IDE: EclipseIDE, Netbeans, InteliJ, etc.
+
+** Notice that this part must be only done once **
+
+
+== HOW TO CHECK OUT THE GUIDANCE SOURCES ==
+To download the guidance sources you need to check out a fresh copy from the Subversion server. To do so, run:
+	cd ~
+	mkdir svn/
+	cd svn
+	svn co http://compss.bsc.es/svn/projects/guidance/
+
+
+== HOW THE GUIDANCE SOURCES LOOK LIKE ==
+cd ~/svn/guidance
+tree -L 4
+.
+├── branches					A branch is the main a track where some features are different from the trunk track (main track)
+│   └── binary					For example, this is a branch based on guidance 0.9.6 using the COMPSs binary annotation
+├── tags					A tag is an "official" release of the trunk track
+└── trunk					The trunk is the main track of the project. Here is where the main devlopments are done
+    ├── builders				This folder contains the build scripts
+    │   └── buildMN				This is an script to build the guidance sources in the MareNostrum 4 supercomputer
+    ├── changelog
+    ├── compile.sh				This is just a legacy script
+    ├── dependency-reduced-pom.xml		This is automatically generated
+    ├── doc					This is the doc folder for the official documentation
+    ├── LICENSE
+    ├── NOTICE
+    ├── pom.xml					This is the main file for maven. DO NOT MODIFY IT
+    ├── pom.xml.versionsBackup			This is automatically generated
+    ├── README
+    ├── RELEASE_NOTES
+    ├── src					This is the folder for the sources
+    │   ├── main
+    │   │   ├── java				Java sources
+    │   │   ├── R				R scripts
+    │   │   └── resources
+    │   └── test
+    │       └── java
+    └── utils					This is a folder for internal utils such as environment variables, matrix definitions, configurations, etc.
+        ├── conf_examples
+        │   ├── config_bed_test_1.txt
+        │   └── resources
+        ├── guidance_env
+        ├── header_setup
+        │   ├── header.template.java
+        │   ├── remove_header_java.awk
+        │   ├── replace_all.sh
+        │   └── replace_header.sh
+        └── matrix_updated.txt
+
+
+== HOW TO BUILD GUIDANCE SOURCES ==
+To build the guidance sources locally and check that all our installation/development is correct, we must run:
+	cd ~/svn/guidance/trunk
+	mvn clean package
+
+
+== HOW TO DEPLOY GUIDANCE SOURCES ==
+Once you have locally build your sources and you are sure you want to deploy them on a SuperComputer, you must run:
+	cd ~/svn/guidance/trunk/builders/
+	./buildMN
+
+Everything has gone OK if you read "DONE!" at the end.
+
+The build script can be modified to change the login user, the login endpoint and the target folder. To do so edit the buildMN file and change the
+following variable definitions:
+
+  MNuser=XXXX
+  MNendpoint=XXXX
+  REMOTE_INSTALL_BASE_DIR=XXXX
+
+** DO NOT CHANGE ANYTHING MORE INSIDE THIS SCRIPT UNLESS YOU KNOW WHAT ARE YOU DOING **
+
+** THE REMOTE_INSTALL_BASE_DIR WILL BE COMPLETELY REMOVED **
+
+
+== HOW TO USE SVN: BASIC COMMANDS ==
+When using svn (or any other version control software) you need to be aware that you currently own a version of your software but that the real modifications must
+be deployed onto the server so that other developers can see them. So, here I provide you the basic commands to handle this information:
+
+$ svn status or svn st
+	To know the current modifications you have with respect to the version in the server. The codes are:
+	? 	The file was not in the server and you have it (you may want to add it)
+	!	The file was on the server and you no longer have it (you may want to delete it)
+	M	The file has been modified
+	A 	The file has been added
+	D	The file has been deleted
+
+$ svn update or svn up
+	Updates your current sources to the ones that are deployed in the server. This will always keep your changes and try to merge them with the modifications
+in the server. If the software is not capable of automatically doing the merge, it will trigger a "Conflict" so that you can manually edit that. If a conflict happens,
+select the postpone option and call me :D
+
+$ svn commit -m "MESSAGE"
+	Commits the current modifications (listed by the svn st command) to the server with the associated message. The message should be short but enough to know what
+modifications are you introducing in the sources (i.e. svn commit -m "Solve bug on makeCombinePanels")
+
+$ svn add file
+	Adds a new file to be commited
+
+$ svn remove file
+	Removes a file from the commit. WARNING: This command also erases the file in the current file system if it exists. If you are removing a file from the server
+that you want to keep locally (which is pretty strange tho), first move the file to another location, do the svn remove, and then move back the file.
+
+THE GENERAL WORKFLOW WHEN WORKING WITH SVN IS:
+- Check your status and resolve all the ? and !:
+	svn st --> add ? and remove !
+- Update your status to the last server modifications:
+	svn up
+- Commit your modifications:
+	svn commit -m "MESSAGE"
+
+
+== HOW TO IMPORT THE GUIDANCE SOURCES ONTO ECLIPSE IDE ==
+To edit the Guidance sources I do recommend use an IDE. Although there are many options available, I personally use Eclipse IDE.
+To import the Guidance sources into the IDE you need to run the following actions:
+	- Open Eclipse IDE
+	- Right click on the left menu tab
+	- Select import
+	- From the prompt, select "Import existing maven project"
+	- Browse sources until you find ~/svn/guidance/trunk/
+	- Select "Open"
+	- You will see a pom.xml file is going to be imported
+	- Select import
+	- The project will appear at the left menu
+
+** You should edit the Guidance sources using the IDE and commit and build the changes using a terminal **
+

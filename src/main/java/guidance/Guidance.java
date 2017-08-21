@@ -961,7 +961,8 @@ public class Guidance {
 
         // Places to store the final combined chromosome information
         String filteredCombineAll = combinedPanelsFilesInfo.getCombinedFilteredByAllFile(ttIndex);
-        String filteredCombineAllX = null;
+        // We use same file when we do not need to compute the chromo 23 (doTopHits task uses this information)
+        String filteredCombineAllX = filteredCombineAll;
         if (endChr == 23) {
             filteredCombineAllX = combinedPanelsFilesInfo.getCombinedFilteredByAllXFile(ttIndex);
         }
@@ -1062,7 +1063,7 @@ public class Guidance {
             } // End for chunk
 
             // Merge the chromosome information into the global one
-            String filteredCombineChromo = combinedPanelsFilesInfo.getCombinedFilteredByAllChromoFile(ttIndex, indexFC -  1);
+            String filteredCombineChromo = combinedPanelsFilesInfo.getCombinedFilteredByAllChromoFile(ttIndex, indexFC - 1);
             doMergeTwoChunksInTheFirst(parsingArgs, listOfCommands, filteredCombineAll, filteredCombineChromo, Integer.toString(chr),
                     FILTERED);
 
