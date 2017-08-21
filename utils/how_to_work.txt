@@ -129,6 +129,20 @@ $ svn remove file
 	Removes a file from the commit. WARNING: This command also erases the file in the current file system if it exists. If you are removing a file from the server
 that you want to keep locally (which is pretty strange tho), first move the file to another location, do the svn remove, and then move back the file.
 
+$ svn info file
+	Displays the svn version information about a file
+
+$ svn diff file
+	Displays the content differences of your file against the version hold by the server
+
+$ svn revert file or svn revert -R dir
+	Reverts all the local modifications of the specified file or directory. This means that basically it removes all your changes and downloads again the file or 
+folder from the server
+
+$ svn propedit svn:ignore . or svn pe svn:ignore .
+	Edits the meta-property svn:ignore of a directory. This is used to ignore some kind of files (jar files, target folders, etc.)
+
+
 THE GENERAL WORKFLOW WHEN WORKING WITH SVN IS:
 - Check your status and resolve all the ? and !:
 	svn st --> add ? and remove !
