@@ -2321,12 +2321,6 @@ public class GuidanceImpl {
         // contador);
 
         // A place to store the results of this combining
-        String lineA = null;
-        String lineB = null;
-
-        String[] splittedA = null;
-        String[] splittedB = null;
-
         Double infoA;
         Double infoB;
 
@@ -2346,8 +2340,8 @@ public class GuidanceImpl {
             // key=value separator this by Map.Entry to get key and value
             Entry<String, String> m = iter.next();
             positionA1A2Chr = m.getKey();
-            lineA = m.getValue();
-            splittedA = lineA.split(TAB);
+            String lineA = m.getValue();
+            String[] splittedA = lineA.split(TAB);
             infoA = Double.parseDouble(splittedA[infoIdx]);
 
             // posAllelesEqual = positionA1A2Chr;
@@ -2365,8 +2359,8 @@ public class GuidanceImpl {
             if (fileTreeMapB.containsKey(positionA1A2Chr)) {
                 // If the fileTreeMapB contains this positionA1A2Chr combination, then we have to choose
                 // the ones that has a better info (that is the ones with greater info).
-                lineB = fileTreeMapB.get(positionA1A2Chr);
-                splittedB = lineB.split(TAB);
+                String lineB = fileTreeMapB.get(positionA1A2Chr);
+                String[] splittedB = lineB.split(TAB);
                 infoB = Double.parseDouble(splittedB[infoIdx]);
                 // Then we have to choose between A o B.
                 if (infoA >= infoB) {
@@ -2381,8 +2375,8 @@ public class GuidanceImpl {
             } else if (fileTreeMapB.containsKey(posAllelesReverse)) {
                 // If the fileTreeMapB contains this posAllelesReverse, then we have to choose
                 // the ones that has a better info (that is the ones with greater info).
-                lineB = fileTreeMapB.get(posAllelesReverse);
-                splittedB = lineB.split(TAB);
+                String lineB = fileTreeMapB.get(posAllelesReverse);
+                String[] splittedB = lineB.split(TAB);
                 infoB = Double.parseDouble(splittedB[infoIdx]);
                 // Then we have to choose between A and B.
                 if (infoA >= infoB) {
@@ -2396,8 +2390,8 @@ public class GuidanceImpl {
             } else if (fileTreeMapB.containsKey(posAllelesComplement)) {
                 // If the fileTreeMapB contains this posAllelesComplement, then we have to choose
                 // the ones that has a better info (that is the ones with greater info).
-                lineB = fileTreeMapB.get(posAllelesComplement);
-                splittedB = lineB.split(TAB);
+                String lineB = fileTreeMapB.get(posAllelesComplement);
+                String[] splittedB = lineB.split(TAB);
                 infoB = Double.parseDouble(splittedB[infoIdx]);
                 // Then we have to choose between A o B.
                 if (infoA >= infoB) {
@@ -2412,8 +2406,8 @@ public class GuidanceImpl {
             } else if (fileTreeMapB.containsKey(posAllelesComplementAndReverse)) {
                 // If the fileTreeMapB contains this posAllelesComplement, then we have to choose
                 // the ones that has a better info (that is the ones with greater info).
-                lineB = fileTreeMapB.get(posAllelesComplementAndReverse);
-                splittedB = lineB.split(TAB);
+                String lineB = fileTreeMapB.get(posAllelesComplementAndReverse);
+                String[] splittedB = lineB.split(TAB);
                 infoB = Double.parseDouble(splittedB[infoIdx]);
                 // Then we have to choose between A o B.
                 if (infoA >= infoB) {
@@ -2444,7 +2438,7 @@ public class GuidanceImpl {
         while (iter.hasNext()) {
             Entry<String, String> m = iter.next();
             positionA1A2Chr = m.getKey();
-            lineB = m.getValue();
+            String lineB = m.getValue();
             // Then we have to store the value in fileTreeMapC
             fileTreeMapC.put(positionA1A2Chr, lineB);
             // contador++;
@@ -2456,7 +2450,7 @@ public class GuidanceImpl {
         // Finally we put the fileTreeMapC into the plain output file and then compress it
         String plainResultsPanelC = resultsPanelA.substring(0, resultsPanelA.length() - 3);
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(plainResultsPanelC))) {
-            // We print the header which is the same always!.
+            // We print the header which is the same always
             writer.write(finalHeader);
             writer.newLine();
 

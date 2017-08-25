@@ -980,11 +980,13 @@ public class Guidance {
             int indexXFC = 0;
 
             for (int j = minSize; j < maxSize; j = j + chunkSize) {
+                System.out.println("CHUNK: " + j);
                 // -- FILTERED PART --
                 // Construct a queue with all the filtered panels to combine
                 LinkedList<String> filteredPanelsToCombine = new LinkedList<>();
                 for (int k = 0; k < rpanelTypes.size(); ++k) {
                     String filteredPanel = assocFilesInfo.getSummaryFilteredFile(ttIndex, k, chr, lim1, lim2, chunkSize);
+                    System.out.println("ADDING FILTERED FILE: " + filteredPanel);
                     filteredPanelsToCombine.add(filteredPanel);
                 }
                 // Combine all the filtered panels 2 by 2 until there are no remaining panels
@@ -993,6 +995,7 @@ public class Guidance {
                     if (!filteredPanelsToCombine.isEmpty()) {
                         String filteredPanelB = filteredPanelsToCombine.poll();
                         // Filtered part: combines A and B into A
+                        System.out.println("COMBINING " + filteredPanelA + " AND " + filteredPanelB);
                         doCombinePanelsComplex(parsingArgs, listOfCommands, filteredPanelA, filteredPanelB, lim1, lim2);
                         // Adds A to the queue again
                         filteredPanelsToCombine.add(filteredPanelA);
@@ -1009,6 +1012,7 @@ public class Guidance {
                 LinkedList<String> condensedPanelsToCombine = new LinkedList<>();
                 for (int k = 0; k < rpanelTypes.size(); ++k) {
                     String condensedPanel = assocFilesInfo.getSummaryCondensedFile(ttIndex, k, chr, lim1, lim2, chunkSize);
+                    System.out.println("ADDING CONDENSED FILE: " + condensedPanel);
                     condensedPanelsToCombine.add(condensedPanel);
                 }
                 // Combine all the filtered panels 2 by 2 until there are no remaining panels
@@ -1017,6 +1021,7 @@ public class Guidance {
                     if (!condensedPanelsToCombine.isEmpty()) {
                         String condensedPanelB = condensedPanelsToCombine.poll();
                         // Filtered part: combines A and B into A
+                        System.out.println("COMBINING " + condensedPanelA + " AND " + condensedPanelB);
                         doCombinePanelsComplex(parsingArgs, listOfCommands, condensedPanelA, condensedPanelB, lim1, lim2);
                         // Adds A to the queue again
                         condensedPanelsToCombine.add(condensedPanelA);
@@ -1029,12 +1034,13 @@ public class Guidance {
                 }
 
                 // -- COMBINE FILTERED TO FINAL CHROMOSOME FILE
-                // Files are merged to the first file because of queue
-                String filteredPanel = assocFilesInfo.getSummaryFilteredFile(ttIndex, 0, chr, lim1, lim2, chunkSize);
-                String condensedPanel = assocFilesInfo.getSummaryCondensedFile(ttIndex, 0, chr, lim1, lim2, chunkSize);
+                // Files are merged to the first or the last file depending on the panel Size
+                int mergeIndex = (rpanelTypes.size() % 2 == 0) ? 0 : rpanelTypes.size() - 1;
+                String filteredPanel = assocFilesInfo.getSummaryFilteredFile(ttIndex, mergeIndex, chr, lim1, lim2, chunkSize);
                 if (chr != 23) {
                     // We merge into the final combine file directly
                     String filteredCombine = combinedPanelsFilesInfo.getCombinedFilteredByAllChromoFile(ttIndex, indexFC);
+                    System.out.println("MERGING FITLERED" + filteredCombine + " AND " + filteredPanel);
                     doMergeTwoChunksInTheFirst(parsingArgs, listOfCommands, filteredCombine, filteredPanel, Integer.toString(chr),
                             FILTERED);
                     ++indexFC;
@@ -1052,7 +1058,9 @@ public class Guidance {
                  */
 
                 // -- COMBINE CONDENSED TO FINAL CHROMOSOME FILE
+                String condensedPanel = assocFilesInfo.getSummaryCondensedFile(ttIndex, mergeIndex, chr, lim1, lim2, chunkSize);
                 String condensedCombine = combinedPanelsFilesInfo.getCombinedCondensedChromoFile(ttIndex, indexCC);
+                System.out.println("MERGING COMBINED " + condensedCombine + " AND " + condensedPanel);
                 doMergeTwoChunksInTheFirst(parsingArgs, listOfCommands, condensedCombine, condensedPanel, Integer.toString(chr), CONDENSED);
                 ++indexCC;
                 // Deletes condensedPanel since it is no longer needed
@@ -1061,10 +1069,15 @@ public class Guidance {
                  * LOGGER.fatal("ERROR: Cannot erase file: " + condensedPanel, gte); System.exit(1); }
                  */
 
+                // Increase loop variables
+                lim1 = lim1 + chunkSize;
+                lim2 = lim2 + chunkSize;
+
             } // End for chunk
 
             // Merge the chromosome information into the global one
             String filteredCombineChromo = combinedPanelsFilesInfo.getCombinedFilteredByAllChromoFile(ttIndex, indexFC - 1);
+            System.out.println("MERGING FILTERED CHROMO " + filteredCombineAll + " AND " + filteredCombineChromo);
             doMergeTwoChunksInTheFirst(parsingArgs, listOfCommands, filteredCombineAll, filteredCombineChromo, Integer.toString(chr),
                     FILTERED);
 
@@ -1077,12 +1090,9 @@ public class Guidance {
 
             // Merge the chromosome information into the global one
             String condensedCombineChromo = combinedPanelsFilesInfo.getCombinedCondensedChromoFile(ttIndex, indexCC - 1);
+            System.out.println("MERGING COMBINED CHROMO " + condensedCombineAll + " AND " + condensedCombineChromo);
             doMergeTwoChunksInTheFirst(parsingArgs, listOfCommands, condensedCombineAll, condensedCombineChromo, Integer.toString(chr),
                     CONDENSED);
-
-            // Increase loop variables
-            lim1 = lim1 + chunkSize;
-            lim2 = lim2 + chunkSize;
 
         } // End for chromosomes
 
