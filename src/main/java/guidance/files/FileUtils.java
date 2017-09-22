@@ -6,9 +6,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.nio.channels.FileChannel;
 import java.nio.file.Files;
+
 import java.util.List;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
@@ -186,31 +185,6 @@ public class FileUtils {
     public static void copyFile(File source, File dest) throws GuidanceTaskException {
         try {
             Files.copy(source.toPath(), dest.toPath(), REPLACE_EXISTING);
-        } catch (IOException ioe) {
-            throw new GuidanceTaskException(ioe);
-        }
-    }
-
-    /**
-     * Method to delete file sourceFile
-     * 
-     * @param sourceFile
-     * @throws IOException
-     * @throws InterruptedException
-     * @throws Exception
-     */
-    public static void deleteFile(String sourceFile) throws GuidanceTaskException {
-        try (FileOutputStream fis = new FileOutputStream(new File(sourceFile))) {
-            FileChannel destination = fis.getChannel();
-            String newData = "This file has been compressed. See the .gz version";
-            ByteBuffer buf = ByteBuffer.allocate(64);
-            buf.clear();
-            buf.put(newData.getBytes());
-            buf.flip();
-
-            while (buf.hasRemaining()) {
-                destination.write(buf);
-            }
         } catch (IOException ioe) {
             throw new GuidanceTaskException(ioe);
         }

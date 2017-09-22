@@ -1799,7 +1799,7 @@ public class GuidanceImpl {
             throw new GuidanceTaskException(ioe);
         }
 
-        // We create the file if empty
+        // Should never be empty since we always write the header but lets create the file if empty
         try {
             FileUtils.createEmptyFile(plainOutputFile, "[filterByAll]");
             FileUtils.createEmptyFile(plainOutputCondensedFile, "[filterByAll]");
@@ -3040,6 +3040,9 @@ public class GuidanceImpl {
             System.out.println("[DEBUG] \t- qqPlotTiffFile                : " + qqPlotTiffFile);
             System.out.println("[DEBUG] \t- manhattanPlotTiffFile         : " + manhattanPlotTiffFile);
             System.out.println("[DEBUG] \t- Output outputCondensedFile    : " + correctedPvaluesFile);
+            System.out.println(NEW_LINE);
+            System.out.println("[DEBUG] \t- WARN: R Binary output on file " + lastCondensedFile + STDOUT_EXTENSION);
+            System.out.println("[DEBUG] \t- WARN: R Binary error on file " + lastCondensedFile + STDERR_EXTENSION);
             System.out.println(NEW_LINE);
             System.out.println("[DEBUG] \t- Command: " + cmdToStore);
             System.out.println("--------------------------------------");
