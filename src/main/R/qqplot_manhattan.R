@@ -29,15 +29,15 @@ qq.plot <- function(tab,lambda=T,stat,BA=F,plot=T,mod,
                     pch.col="red",max.yaxis=10,max.xaxis=10,scale.cex=T,scale.fact=0.25,dens=T,...) {
 
     #Calculating LAMBDA
-    chi_list <- qchisq(na.omit(tab$P),df=1,lower.tail=F);
+    chi_list <- qchisq(na.omit(tab$pvalue),df=1,lower.tail=F);
     l.fac <- median(chi_list)/0.456;
     print(paste(c("LAMBDA = ",l.fac),collapse=""));
 
     #Setting format for plot
-    pvals <- -log10((na.omit(tab$P)));
+    pvals <- -log10((na.omit(tab$pvalue)));
     tab$col <- "ivory3"
-    tab$col[tab$P <= 5e-8] <- "deeppink"
-    col <- tab$col[!is.na(tab$P)]
+    tab$col[tab$pvalue <= 5e-8] <- "deeppink"
+    col <- tab$col[!is.na(tab$pvalue)]
     col <- col[order(pvals)]
     pvals <- pvals[order(pvals)]
     tab$log10 <- pvals
@@ -64,8 +64,8 @@ qq.plot <- function(tab,lambda=T,stat,BA=F,plot=T,mod,
     my.cex[pvals > -log10(5e-5)] <- 0.15 * pvals[pvals > -log10(5e-5)] * 0.9;
     my.cex[pvals > -log10(5e-8)] <- 0.1 * pvals[pvals > -log10(5e-8)] * 0.9;
     my.cex[pvals > -log10(5e-20)] <- 0.05 * pvals[pvals > -log10(5e-20)] * 0.9;
-    ylab <- expression(-log[10]~italic(P)[Obs])
-    xlab <- expression(-log[10]~italic(P)[Exp])
+    ylab <- expression(-log[10]~italic(p)[Obs])
+    xlab <- expression(-log[10]~italic(p)[Exp])
     max.xaxis <- max(p.exp) + 1
     max.yaxis <- max(pvals) + 6
     
@@ -100,10 +100,10 @@ manhattan <- function(dataframe, colors=c("lightsteelblue4","lightyellow2"),
                       annotate=NULL, ...) {
    d=dataframe
    #Validate input files
-   if (!("CHR" %in% names(d) & "BP" %in% names(d) & "P" %in% names(d))) stop("Make sure your data frame contains columns CHR, BP, and P")
-   if (any(limitchromosomes)) d=d[d$CHR %in% limitchromosomes, ]
-   d=subset(na.omit(d[order(d$CHR, d$BP), ]), (P>0 & P<=1)) # remove na's, sort, and keep only 0<P<=1
-   d$logp = -log10(d$P)
+   if (!("chr" %in% names(d) & "position" %in% names(d) & "pvalue" %in% names(d))) stop("Make sure your data frame contains columns chr, position, and pvalue")
+   if (any(limitchromosomes)) d=d[d$chr %in% limitchromosomes, ]
+   d=subset(na.omit(d[order(d$chr, d$position), ]), (pvalue>0 & pvalue<=1)) # remove na's, sort, and keep only 0<pvalue<=1
+   d$logp = -log10(d$pvalue)
    d$pos=NA
    ticks=NULL
    lastbase=0
@@ -116,40 +116,40 @@ manhattan <- function(dataframe, colors=c("lightsteelblue4","lightyellow2"),
         print(paste("YMAX:",ymax))
         print(paste("YMIN:",ymin))
 
-        numchroms = length(unique(d$CHR))
+        numchroms = length(unique(d$chr))
 
         if (numchroms==1) {
-                d$pos=d$BP
+                d$pos=d$position
                 ticks=floor(length(d$pos))/2+1
         } else {
-                for (i in unique(d$CHR)) {
-                        if (i==as.vector(unique(d$CHR))[1]) {
-                                d[d$CHR==i, ]$pos=d[d$CHR==i, ]$BP
+                for (i in unique(d$chr)) {
+                        if (i==as.vector(unique(d$chr))[1]) {
+                                d[d$chr==i, ]$pos=d[d$chr==i, ]$position
                         } else {
-                                lastbase=lastbase+tail(subset(d,CHR==i-1)$BP, 1)
-                                d[d$CHR==i, ]$pos=d[d$CHR==i, ]$BP+lastbase
+                                lastbase=lastbase+tail(subset(d,chr==i-1)$position, 1)
+                                d[d$chr==i, ]$pos=d[d$chr==i, ]$position+lastbase
                         }
-                        ticks=c(ticks, d[d$CHR==i, ]$pos[floor(length(d[d$CHR==i, ]$pos)/2)+1])
+                        ticks=c(ticks, d[d$chr==i, ]$pos[floor(length(d[d$chr==i, ]$pos)/2)+1])
                 }
         }
         if (numchroms==1) {
                 plot(d$pos, d$logp, ylim=c(ymin,ymax), ylab=expression(-log[10](italic(p))),
-                        xlab=paste("Chromosome",unique(d$CHR),"position"))
+                        xlab=paste("Chromosome",unique(d$chr),"position"))
         }else {
                 plot(d$pos,d$logp, ylim=c(ymin,ymax), ylab=expression(-log[10](italic(p))),
                         xlab="Chromosome", xaxt="n", type="n")
-                axis(1, at=ticks, lab=unique(d$CHR))
+                axis(1, at=ticks, lab=unique(d$chr))
                 icol=1
 
-                for (i in unique(d$CHR)) {
-                #with(d[d$CHR==i, ],points(pos[d$P > 5e-8], logp[d$P > 5e-8], col=colors[icol], ...))
-                        points(d$pos[d$CHR == i], d$logp[d$CHR == i], col=colors[icol],pch=".")
+                for (i in unique(d$chr)) {
+                #with(d[d$chr==i, ],points(pos[d$pvalue > 5e-8], logp[d$pvalue > 5e-8], col=colors[icol], ...))
+                        points(d$pos[d$chr == i], d$logp[d$chr == i], col=colors[icol],pch=".")
                         icol=icol+1
                 }
-                for (i in unique(d$CHR)) {
-                        #with(d[d$CHR==i, ],points(pos[d$P > 5e-8], logp[d$P > 5e-8], col=colors[icol], ...))
-                        points(d$pos[d$CHR == i & d$logp >= -log10(5e-8)], 
-                        d$logp[d$CHR == i & d$logp >= -log10(5e-8)], 
+                for (i in unique(d$chr)) {
+                        #with(d[d$chr==i, ],points(pos[d$pvalue > 5e-8], logp[d$pvalue > 5e-8], col=colors[icol], ...))
+                        points(d$pos[d$chr == i & d$logp >= -log10(5e-8)], 
+                        d$logp[d$chr == i & d$logp >= -log10(5e-8)], 
                         col="lightcoral",cex=0.6,pch=16)
                 }
         }
@@ -163,13 +163,15 @@ manhattan <- function(dataframe, colors=c("lightsteelblue4","lightyellow2"),
 
 ################################################################################################################
 
+.libPaths("/gpfs/projects/bsc05/silvia/R_INSTALL/R_libs")
+
 library(gap)
 library(sfsmisc)
 
 
 args <- commandArgs(TRUE)
 
-tab_file <- args[1] #tab file with CHR, BP , P
+tab_file <- args[1] #tab file with chr, position , pvalue
 out_qqplot <- args[2] #name out qqplot qqplot_namestudy.pdf
 out_manhattan <- args[3] #name out manhattan manhattan_namestudy.pdf
 
@@ -180,7 +182,7 @@ out_corrected_pvals <- args[6]  #Name of output file with genomic control correc
 
 
     tab_file_data<-read.delim(tab_file)
-    p <- tab_file_data$P
+    p <- tab_file_data$pvalue
     p <- p[!is.na(p)]
     n <- length(p)
     x2obs <- qchisq(p, 1, lower.tail = FALSE)
@@ -188,22 +190,22 @@ out_corrected_pvals <- args[6]  #Name of output file with genomic control correc
 
     #makeqqplot
     pdf(out_qqplot)
-        qq.plot(tab_file_data, lambda=F, stat="P" ,scale.cex=T);
+        qq.plot(tab_file_data, lambda=F, stat="pvalue" ,scale.cex=T);
 
     dev.off()
     tiff(out_qqplot_tiff,width=5600,height=5600,units = "px", res = 800,compression="lzw")
-            qq.plot(tab_file_data, lambda=F, stat="P" ,scale.cex=T,mod=modal);
+            qq.plot(tab_file_data, lambda=F, stat="pvalue" ,scale.cex=T,mod=modal);
     dev.off()
     cat("Q-Q Plot Assoc successfully completed!\n")
     
     #make Manhattan on pdf
-    tab_file_data$SNP <- paste(paste("chr",tab_file_data$CHR,sep=""),tab_file_data$BP,sep=":")
+    tab_file_data$SNP <- paste(paste("chr",tab_file_data$chr,sep=""),tab_file_data$position,sep=":")
     tab_man <- data.frame(SNP=tab_file_data$SNP,
-                          CHR=tab_file_data$CHR,
-                          BP=tab_file_data$BP,
-                          P=tab_file_data$P)
+                          chr=tab_file_data$chr,
+                          position=tab_file_data$position,
+                          pvalue=tab_file_data$pvalue)
 
-    tab_man <- tab_man[tab_man$P <= 0.05,]
+    tab_man <- tab_man[tab_man$pvalue <= 0.05,]
 
     title <- "Manhattan-plot"
     YMIN <- 0
