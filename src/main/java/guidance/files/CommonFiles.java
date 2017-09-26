@@ -31,6 +31,7 @@
 
 package guidance.files;
 
+import java.io.File;
 import java.util.ArrayList;
 
 import org.apache.logging.log4j.LogManager;
@@ -90,7 +91,7 @@ public class CommonFiles {
         String cohort = parsingArgs.getCohort();
 
         // We create the names for mixed:
-        String tmpOutDir = myOutDir + "/" + cohort + "/common/mixed";
+        String tmpOutDir = myOutDir + File.separator + cohort + File.separator + "common" + File.separator + "mixed";
         startChr = parsingArgs.getStart();
         endChr = parsingArgs.getEnd();
 
@@ -114,7 +115,7 @@ public class CommonFiles {
             int chromo = i;
 
             // First: We create the output directory for this chromosome
-            String theOutputDir = tmpOutDir + "/Chr_" + chromo;
+            String theOutputDir = tmpOutDir + File.separator + "Chr_" + chromo;
             outputMixedDir.add(theOutputDir);
 
             String aTmpDir = null;
@@ -300,20 +301,6 @@ public class CommonFiles {
     }
 
     /**
-     * Method to access genFileName information
-     * 
-     * @param chromo
-     * @return
-     */
-    public String getGenFileName(int chromo) {
-        // Check that chromo index is within the bounds
-        checkChromoIndex(chromo);
-
-        int index = chromo - startChr;
-        return mixedGenFile.get(index).getName();
-    }
-
-    /**
      * Method to access genFile information
      * 
      * @param chromo
@@ -339,20 +326,6 @@ public class CommonFiles {
 
         int index = chromo - startChr;
         return mixedGenFile.get(index).getFinalStatus();
-    }
-
-    /**
-     * Method to access pairsFileName information
-     * 
-     * @param chromo
-     * @return
-     */
-    public String getPairsFileName(int chromo) {
-        // Check that chromo index is within the bounds
-        checkChromoIndex(chromo);
-
-        int index = chromo - startChr;
-        return mixedPairsFile.get(index).getName();
     }
 
     /**
@@ -395,20 +368,6 @@ public class CommonFiles {
 
         int index = chromo - startChr;
         return mixedPairsFile.get(index).getFinalStatus();
-    }
-
-    /**
-     * Method to access sampleFileName information
-     * 
-     * @param chromo
-     * @return
-     */
-    public String getSampleFileName(int chromo) {
-        // Check that chromo index is within the bounds
-        checkChromoIndex(chromo);
-
-        int index = chromo - startChr;
-        return mixedSampleFile.get(index).getName();
     }
 
     /**
@@ -468,20 +427,6 @@ public class CommonFiles {
     }
 
     /**
-     * Method to access shapeitHapsFileName information
-     * 
-     * @param chromo
-     * @return
-     */
-    public String getShapeitHapsFileName(int chromo) {
-        // Check that chromo index is within the bounds
-        checkChromoIndex(chromo);
-
-        int index = chromo - startChr;
-        return mixedShapeitHapsFile.get(index).getName();
-    }
-
-    /**
      * Method to access shapeitHapsFile information
      * 
      * @param chromo
@@ -538,20 +483,6 @@ public class CommonFiles {
     }
 
     /**
-     * Method to access shapeitSampleFileName information
-     * 
-     * @param chromo
-     * @return
-     */
-    public String getShapeitSampleFileName(int chromo) {
-        // Check that chromo index is within the bounds
-        checkChromoIndex(chromo);
-
-        int index = chromo - startChr;
-        return mixedShapeitSampleFile.get(index).getName();
-    }
-
-    /**
      * Method to access shapeitSampleFile information
      * 
      * @param chromo
@@ -577,20 +508,6 @@ public class CommonFiles {
 
         int index = chromo - startChr;
         return mixedShapeitSampleFile.get(index).getFinalStatus();
-    }
-
-    /**
-     * Method to access shapeitLogFileName information
-     * 
-     * @param chromo
-     * @return
-     */
-    public String getShapeitLogFileName(int chromo) {
-        // Check that chromo index is within the bounds
-        checkChromoIndex(chromo);
-
-        int index = chromo - startChr;
-        return mixedShapeitLogFile.get(index).getName();
     }
 
     /**
@@ -622,20 +539,6 @@ public class CommonFiles {
     }
 
     /**
-     * Method to access excludedSnpsFileName information
-     * 
-     * @param chromo
-     * @return
-     */
-    public String getExcludedSnpsFileName(int chromo) {
-        // Check that chromo index is within the bounds
-        checkChromoIndex(chromo);
-
-        int index = chromo - startChr;
-        return mixedExcludedSnpsFile.get(index).getName();
-    }
-
-    /**
      * Method to access excludedSnpsFile information
      * 
      * @param chromo
@@ -661,20 +564,6 @@ public class CommonFiles {
 
         int index = chromo - startChr;
         return mixedExcludedSnpsFile.get(index).getFinalStatus();
-    }
-
-    /**
-     * Method to access filteredHaplotypesFileName information
-     * 
-     * @param chromo
-     * @return
-     */
-    public String getFilteredHaplotypesFileName(int chromo) {
-        // Check that chromo index is within the bounds
-        checkChromoIndex(chromo);
-
-        int index = chromo - startChr;
-        return mixedFilteredHaplotypesFile.get(index).getName();
     }
 
     /**
@@ -706,20 +595,6 @@ public class CommonFiles {
     }
 
     /**
-     * Method to access filteredHaplotypesSampleFileName information
-     * 
-     * @param chromo
-     * @return
-     */
-    public String getFilteredHaplotypesSampleFileName(int chromo) {
-        // Check that chromo index is within the bounds
-        checkChromoIndex(chromo);
-
-        int index = chromo - startChr;
-        return mixedFilteredHaplotypesSampleFile.get(index).getName();
-    }
-
-    /**
      * Method to access shapeitHapsFile information
      * 
      * @param chromo
@@ -745,20 +620,6 @@ public class CommonFiles {
 
         int index = chromo - startChr;
         mixedFilteredHaplotypesSampleFile.get(index).setFinalStatus(finalStatus);
-    }
-
-    /**
-     * Method to access filteredHaplotypesLogFileName information
-     * 
-     * @param chromo
-     * @return
-     */
-    public String getFilteredHaplotypesLogFileName(int chromo) {
-        // Check that chromo index is within the bounds
-        checkChromoIndex(chromo);
-
-        int index = chromo - startChr;
-        return mixedFilteredHaplotypesLogFile.get(index).getName();
     }
 
     /**
@@ -790,20 +651,6 @@ public class CommonFiles {
     }
 
     /**
-     * Method to access filteredHaplotypesVcfFileName information
-     * 
-     * @param chromo
-     * @return
-     */
-    public String getFilteredHaplotypesVcfFileName(int chromo) {
-        // Check that chromo index is within the bounds
-        checkChromoIndex(chromo);
-
-        int index = chromo - startChr;
-        return mixedFilteredHaplotypesVcfFile.get(index).getName();
-    }
-
-    /**
      * Method to access filteredHaplotypesVcfFile information
      * 
      * @param chromo
@@ -829,20 +676,6 @@ public class CommonFiles {
 
         int index = chromo - startChr;
         mixedFilteredHaplotypesVcfFile.get(index).setFinalStatus(finalStatus);
-    }
-
-    /**
-     * Method to access listOfSnpsFileName information
-     * 
-     * @param chromo
-     * @return
-     */
-    public String getListOfSnpsFileName(int chromo) {
-        // Check that chromo index is within the bounds
-        checkChromoIndex(chromo);
-
-        int index = chromo - startChr;
-        return mixedListOfSnpsFile.get(index).getName();
     }
 
     /**
@@ -888,7 +721,6 @@ public class CommonFiles {
         LOGGER.info("mixedGenFile         : " + mixedGenFile.get(index).getFullName());
 
         LOGGER.info("mixedPairsFile       : " + mixedPairsFile.get(index).getFullName());
-        LOGGER.info("mixedSampleFileName  : " + mixedSampleFile.get(index).getName());
         LOGGER.info("mixedSampleFile      : " + mixedSampleFile.get(index));
         LOGGER.info("mixedTypeSample      : " + mixedTypeSample.get(index));
 

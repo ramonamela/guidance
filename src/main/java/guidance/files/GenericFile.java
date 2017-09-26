@@ -31,6 +31,9 @@
 
 package guidance.files;
 
+import java.io.File;
+
+
 /**
  * @brief GenericClass. This clase includes 5 attributes
  * @author Friman Sanchez
@@ -39,7 +42,6 @@ package guidance.files;
 public class GenericFile {
 
     private final String dir;
-    private final String name;
     private final String fullName;
     private final String generatedBy;
 
@@ -55,8 +57,7 @@ public class GenericFile {
      */
     public GenericFile(String myDir, String myName, String myFinalStatus) {
         this.dir = myDir;
-        this.name = myName;
-        this.fullName = myDir + "/" + myName;
+        this.fullName = myDir + File.separator + myName;
 
         this.generatedBy = null;
 
@@ -73,8 +74,7 @@ public class GenericFile {
      */
     public GenericFile(String myDir, String myName, String myFinalStatus, String myGeneratedBy) {
         this.dir = myDir;
-        this.name = myName;
-        this.fullName = myDir + "/" + myName;
+        this.fullName = myDir + File.separator + myName;
 
         this.generatedBy = myGeneratedBy;
 
@@ -97,15 +97,6 @@ public class GenericFile {
      */
     public String getDir() {
         return this.dir;
-    }
-
-    /**
-     * A method to get Name field
-     * 
-     * @return
-     */
-    public String getName() {
-        return this.name;
     }
 
     /**

@@ -777,6 +777,7 @@ public class GuidanceImpl {
         // This tool always creates a filteredFile output (empty or not)
         // Now we need to GZ it and move to the output parameter
         FileUtils.gzipFile(filteredFile, filteredFileGz);
+        FileUtils.delete(filteredFile);
 
         long stopTime = System.currentTimeMillis();
         long elapsedTime = (stopTime - startTime) / 1_000;

@@ -57,7 +57,6 @@ public class AssocFiles {
     private ArrayList<ArrayList<ArrayList<String>>> outDir = new ArrayList<>();
 
     private ArrayList<ArrayList<ArrayList<ArrayList<GenericFile>>>> snptestOutFile = new ArrayList<>();
-    private ArrayList<ArrayList<ArrayList<ArrayList<GenericFile>>>> snptestLogFileName = new ArrayList<>();
     private ArrayList<ArrayList<ArrayList<ArrayList<GenericFile>>>> snptestLogFile = new ArrayList<>();
 
     private ArrayList<ArrayList<ArrayList<ArrayList<GenericFile>>>> summaryFile = new ArrayList<>();
@@ -280,30 +279,6 @@ public class AssocFiles {
     }
 
     /**
-     * Method to access snptestOutFileName
-     * 
-     * @param testTypeIndex
-     * @param rPanelIndex
-     * @param chromo
-     * @param lim1
-     * @param lim2
-     * @param chunkSize
-     * @return
-     */
-    public String getSnptestOutFileName(int testTypeIndex, int rPanelIndex, int chromo, int lim1, int lim2, int chunkSize) {
-        // Check that chromo index is within the bounds
-        checkChromoIndex(chromo);
-
-        // Check limits are within the bounds
-        checkLimits(chromo, lim1, lim2);
-
-        // The offset is because the array start in position 0
-        int i = chromo - this.startChr;
-        int index = lim1 / chunkSize;
-        return this.snptestOutFile.get(testTypeIndex).get(rPanelIndex).get(i).get(index).getName();
-    }
-
-    /**
      * Method to access snptestOutFile
      * 
      * @param testTypeIndex
@@ -389,30 +364,6 @@ public class AssocFiles {
      * @param chunkSize
      * @return
      */
-    public String getSummaryFilteredFileName(int testTypeIndex, int rPanelIndex, int chromo, int lim1, int lim2, int chunkSize) {
-        // Check that chromo index is within the bounds
-        checkChromoIndex(chromo);
-
-        // Check limits are within the bounds
-        checkLimits(chromo, lim1, lim2);
-
-        // The offset is because the array start in position 0
-        int i = chromo - this.startChr;
-        int index = lim1 / chunkSize;
-        return this.summaryFilteredFile.get(testTypeIndex).get(rPanelIndex).get(i).get(index).getName();
-    }
-
-    /**
-     * Method to access summaryFilteredFile
-     * 
-     * @param testTypeIndex
-     * @param rPanelIndex
-     * @param chromo
-     * @param lim1
-     * @param lim2
-     * @param chunkSize
-     * @return
-     */
     public String getSummaryFilteredFile(int testTypeIndex, int rPanelIndex, int chromo, int lim1, int lim2, int chunkSize) {
         // Check that chromo index is within the bounds
         checkChromoIndex(chromo);
@@ -474,30 +425,6 @@ public class AssocFiles {
         int i = chromo - this.startChr;
         int index = lim1 / chunkSize;
         return this.summaryFilteredFile.get(testTypeIndex).get(rPanelIndex).get(i).get(index).getFinalStatus();
-    }
-
-    /**
-     * Method to access combinedFilteredFileName
-     * 
-     * @param testTypeIndex
-     * @param rPanelIndex
-     * @param chromo
-     * @param lim1
-     * @param lim2
-     * @param chunkSize
-     * @return
-     */
-    public String getCombinedFilteredFileName(int testTypeIndex, int rPanelIndex, int chromo, int lim1, int lim2, int chunkSize) {
-        // Check that chromo index is within the bounds
-        checkChromoIndex(chromo);
-
-        // Check limits are within the bounds
-        checkLimits(chromo, lim1, lim2);
-
-        // The offset is because the array start in position 0
-        int i = chromo - this.startChr;
-        int index = lim1 / chunkSize;
-        return this.combinedFilteredFile.get(testTypeIndex).get(rPanelIndex).get(i).get(index).getName();
     }
 
     /**
@@ -574,31 +501,7 @@ public class AssocFiles {
         return this.combinedFilteredFile.get(testTypeIndex).get(rPanelIndex).get(i).get(index).getFinalStatus();
     }
 
-    /** Condensed ------------------------------------- */
-
-    /**
-     * Method to access summaryCondensedFileName
-     * 
-     * @param testTypeIndex
-     * @param rPanelIndex
-     * @param chromo
-     * @param lim1
-     * @param lim2
-     * @param chunkSize
-     * @return
-     */
-    public String getSummaryCondensedFileName(int testTypeIndex, int rPanelIndex, int chromo, int lim1, int lim2, int chunkSize) {
-        // Check that chromo index is within the bounds
-        checkChromoIndex(chromo);
-
-        // Check limits are within the bounds
-        checkLimits(chromo, lim1, lim2);
-
-        // The offset is because the array start in position 0
-        int i = chromo - this.startChr;
-        int index = lim1 / chunkSize;
-        return this.summaryCondensedFile.get(testTypeIndex).get(rPanelIndex).get(i).get(index).getName();
-    }
+    /* Condensed ------------------------------------- */
 
     /**
      * Method to access summaryCondensedFile
@@ -672,30 +575,6 @@ public class AssocFiles {
         int i = chromo - this.startChr;
         int index = lim1 / chunkSize;
         return this.summaryCondensedFile.get(testTypeIndex).get(rPanelIndex).get(i).get(index).getFinalStatus();
-    }
-
-    /**
-     * Method to access combinedCondensedFileName
-     * 
-     * @param testTypeIndex
-     * @param rPanelIndex
-     * @param chromo
-     * @param lim1
-     * @param lim2
-     * @param chunkSize
-     * @return
-     */
-    public String getCombinedCondensedFileName(int testTypeIndex, int rPanelIndex, int chromo, int lim1, int lim2, int chunkSize) {
-        // Check that chromo index is within the bounds
-        checkChromoIndex(chromo);
-
-        // Check limits are within the bounds
-        checkLimits(chromo, lim1, lim2);
-
-        // The offset is because the array start in position 0
-        int i = chromo - this.startChr;
-        int index = lim1 / chunkSize;
-        return this.combinedCondensedFile.get(testTypeIndex).get(rPanelIndex).get(i).get(index).getName();
     }
 
     /**
@@ -773,30 +652,6 @@ public class AssocFiles {
     }
 
     /**
-     * Method to access snptestLogFileName
-     * 
-     * @param testTypeIndex
-     * @param rPanelIndex
-     * @param chromo
-     * @param lim1
-     * @param lim2
-     * @param chunkSize
-     * @return
-     */
-    public String getSnptestLogFileName(int testTypeIndex, int rPanelIndex, int chromo, int lim1, int lim2, int chunkSize) {
-        // Check that chromo index is within the bounds
-        checkChromoIndex(chromo);
-
-        // Check limits are within the bounds
-        checkLimits(chromo, lim1, lim2);
-
-        // The offset is because the array start in position 0
-        int i = chromo - this.startChr;
-        int index = lim1 / chunkSize;
-        return this.snptestLogFileName.get(testTypeIndex).get(rPanelIndex).get(i).get(index).getName();
-    }
-
-    /**
      * Method to access snptestLogFile
      * 
      * @param testTypeIndex
@@ -818,30 +673,6 @@ public class AssocFiles {
         int i = chromo - this.startChr;
         int index = lim1 / chunkSize;
         return this.snptestLogFile.get(testTypeIndex).get(rPanelIndex).get(i).get(index).getFullName();
-    }
-
-    /**
-     * Method to access snptestLogFileName
-     * 
-     * @param testTypeIndex
-     * @param rPanelIndex
-     * @param chromo
-     * @param lim1
-     * @param lim2
-     * @param chunkSize
-     * @return
-     */
-    public String getSummaryFileName(int testTypeIndex, int rPanelIndex, int chromo, int lim1, int lim2, int chunkSize) {
-        // Check that chromo index is within the bounds
-        checkChromoIndex(chromo);
-
-        // Check limits are within the bounds
-        checkLimits(chromo, lim1, lim2);
-
-        // The offset is because the array start in position 0
-        int i = chromo - this.startChr;
-        int index = lim1 / chunkSize;
-        return this.summaryFile.get(testTypeIndex).get(rPanelIndex).get(i).get(index).getName();
     }
 
     /**

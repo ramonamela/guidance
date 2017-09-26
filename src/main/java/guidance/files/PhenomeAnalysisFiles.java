@@ -125,16 +125,6 @@ public class PhenomeAnalysisFiles {
     }
 
     /**
-     * Method to access phenomeAnalysisFileName
-     * 
-     * @param index
-     * @return
-     */
-    public String getPhenotypeIntermediateFileName(int index) {
-        return this.phenomeTmpFile.get(index).getName();
-    }
-
-    /**
      * Method to access phenomeAnalysisFile
      * 
      * @param index
@@ -165,16 +155,6 @@ public class PhenomeAnalysisFiles {
     }
 
     /**
-     * Method to access phenomeAnalysisFileName
-     * 
-     * @param index
-     * @return
-     */
-    public String getPhenotypeFileName(int index) {
-        return this.phenomeAnalysisFile.get(index).getName();
-    }
-
-    /**
      * Method to access phenomeAnalysisFile
      * 
      * @param index
@@ -202,16 +182,6 @@ public class PhenomeAnalysisFiles {
      */
     public String getPhenotypeFileFinalStatus(int index) {
         return this.phenomeAnalysisFile.get(index).getFinalStatus();
-    }
-
-    /**
-     * Method to access phenomeFinalFileName
-     * 
-     * @param index
-     * @return
-     */
-    public String getPhenotypeFinalFileName(int index) {
-        return this.phenomeFinalFile.get(index).getName();
     }
 
     /**

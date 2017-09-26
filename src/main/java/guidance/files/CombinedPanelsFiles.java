@@ -254,17 +254,6 @@ public class CombinedPanelsFiles {
     }
 
     /**
-     * Method to access testTypeCombinedFilteredByAllFileName
-     * 
-     * @param testTypeIndex
-     * @param index
-     * @return
-     */
-    public String getCombinedFilteredByAllFileName(int testTypeIndex) {
-        return this.testTypeCombinedFilteredByAllFile.get(testTypeIndex).getName();
-    }
-
-    /**
      * Method to access testTypeCombinedFilteredByAllFile
      * 
      * @param testTypeIndex
@@ -331,16 +320,6 @@ public class CombinedPanelsFiles {
     }
 
     /**
-     * Method to access testTypeCombinedCondensedFileName
-     * 
-     * @param testTypeIndex
-     * @return
-     */
-    public String getCombinedCondensedFileName(int testTypeIndex) {
-        return this.testTypeCombinedCondensedFile.get(testTypeIndex).getName();
-    }
-
-    /**
      * Method to access testTypeCombinedCondensedFile
      * 
      * @param testTypeIndex
@@ -368,17 +347,6 @@ public class CombinedPanelsFiles {
      */
     public String getCombinedCondensedFileFinalStatus(int testTypeIndex) {
         return this.testTypeCombinedCondensedFile.get(testTypeIndex).getFinalStatus();
-    }
-
-    /**
-     * Method to access testTypeCombinedFilteredByAllFileName
-     * 
-     * @param testTypeIndex
-     * @param index
-     * @return
-     */
-    public String getCombinedFilteredByAllChromoFileName(int testTypeIndex, int index) {
-        return this.testTypeCombinedFilteredByAllChromoFile.get(testTypeIndex).get(index).getName();
     }
 
     /**
@@ -448,16 +416,6 @@ public class CombinedPanelsFiles {
     }
 
     /**
-     * Method to access testTypeCombinedCondensedFileName
-     * 
-     * @param testTypeIndex
-     * @return
-     */
-    public String getCombinedCondensedChromoFileName(int testTypeIndex, int index) {
-        return this.testTypeCombinedCondensedChromoFile.get(testTypeIndex).get(index).getName();
-    }
-
-    /**
      * Method to access testTypeCombinedCondensedFile
      * 
      * @param testTypeIndex
@@ -485,16 +443,6 @@ public class CombinedPanelsFiles {
      */
     public String getCombinedCondensedChromoFileFinalStatus(int testTypeIndex, int index) {
         return this.testTypeCombinedCondensedChromoFile.get(testTypeIndex).get(index).getFinalStatus();
-    }
-
-    /**
-     * Method to access testTypeTopHitsFileName
-     * 
-     * @param testTypeIndex
-     * @return
-     */
-    public String getCombinedTopHitsFileName(int testTypeIndex) {
-        return this.testTypeTopHitsFile.get(testTypeIndex).getName();
     }
 
     /**
@@ -528,16 +476,6 @@ public class CombinedPanelsFiles {
     }
 
     /**
-     * Method to access qqPlotPdfFileName
-     * 
-     * @param testTypeIndex
-     * @return
-     */
-    public String getQqPlotPdfFileName(int testTypeIndex) {
-        return this.testTypeQqPlotPdfFile.get(testTypeIndex).getName();
-    }
-
-    /**
      * Method to access qqPlotPdfFile
      * 
      * @param testTypeIndex
@@ -565,16 +503,6 @@ public class CombinedPanelsFiles {
      */
     public String getQqPlotPdfFileFinalStatus(int testTypeIndex) {
         return this.testTypeQqPlotPdfFile.get(testTypeIndex).getFinalStatus();
-    }
-
-    /**
-     * Method to access qqPlotTiffFileName
-     * 
-     * @param testTypeIndex
-     * @return
-     */
-    public String getQqPlotTiffFileName(int testTypeIndex) {
-        return this.testTypeQqPlotTiffFile.get(testTypeIndex).getName();
     }
 
     /**
@@ -608,16 +536,6 @@ public class CombinedPanelsFiles {
     }
 
     /**
-     * Method to access mahattanPdfFileName
-     * 
-     * @param testTypeIndex
-     * @return
-     */
-    public String getManhattanPdfFileName(int testTypeIndex) {
-        return this.testTypeManhattanPdfFile.get(testTypeIndex).getName();
-    }
-
-    /**
      * Method to access manhattanPdfFile
      * 
      * @param testTypeIndex
@@ -628,16 +546,6 @@ public class CombinedPanelsFiles {
     }
 
     /**
-     * Method to access mahattanTiffFileName
-     * 
-     * @param testTypeIndex
-     * @return
-     */
-    public String getManhattanTiffFileName(int testTypeIndex) {
-        return this.testTypeManhattanTiffFile.get(testTypeIndex).getName();
-    }
-
-    /**
      * Method to access manhattanTiffFile
      * 
      * @param testTypeIndex
@@ -645,16 +553,6 @@ public class CombinedPanelsFiles {
      */
     public String getManhattanTiffFile(int testTypeIndex) {
         return this.testTypeManhattanTiffFile.get(testTypeIndex).getFullName();
-    }
-
-    /**
-     * Method to access CorrectedPvaluesFileName
-     * 
-     * @param testTypeIndex
-     * @return
-     */
-    public String getCorrectedPvaluesFileName(int testTypeIndex) {
-        return this.testTypeCorrectedPvaluesFile.get(testTypeIndex).getName();
     }
 
     /**

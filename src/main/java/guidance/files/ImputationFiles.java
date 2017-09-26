@@ -364,29 +364,6 @@ public class ImputationFiles {
     }
 
     /**
-     * Method to access the imputedFileName
-     * 
-     * @param rPanelIndex
-     * @param chromo
-     * @param lim1
-     * @param lim2
-     * @param chunkSize
-     * @return
-     */
-    public String getImputedFileName(int rPanelIndex, int chromo, int lim1, int lim2, int chunkSize) {
-        // Check that chromo index is within the bounds
-        checkChromoIndex(chromo);
-
-        // Check limits are within the bounds
-        checkLimits(chromo, lim1, lim2);
-
-        int indexChr = chromo - this.startChr;
-        int indexChunk = lim1 / chunkSize;
-        // The offset is because the array start in position 0.
-        return this.imputedFile.get(rPanelIndex).get(indexChr).get(indexChunk).getName();
-    }
-
-    /**
      * Method to access the imputedFile
      * 
      * @param rPanelIndex
@@ -560,28 +537,6 @@ public class ImputationFiles {
         int indexChr = chromo - this.startChr;
         int indexChunk = lim1 / chunkSize;
         return this.imputedWarningsFile.get(rPanelIndex).get(indexChr).get(indexChunk).getFullName();
-    }
-
-    /**
-     * Method to access the imputedLogFileName
-     * 
-     * @param rPanelIndex
-     * @param chromo
-     * @param lim1
-     * @param lim2
-     * @param chunkSize
-     * @return
-     */
-    public String getImputedLogFileName(int rPanelIndex, int chromo, int lim1, int lim2, int chunkSize) {
-        // Check that chromo index is within the bounds
-        checkChromoIndex(chromo);
-
-        // Check limits are within the bounds
-        checkLimits(chromo, lim1, lim2);
-
-        int indexChr = chromo - this.startChr;
-        int indexChunk = lim1 / chunkSize;
-        return this.imputedLogFile.get(rPanelIndex).get(indexChr).get(indexChunk).getName();
     }
 
     /**
@@ -915,29 +870,6 @@ public class ImputationFiles {
     }
 
     /**
-     * Method to access the filteredFileName
-     * 
-     * @param rPanelIndex
-     * @param chromo
-     * @param lim1
-     * @param lim2
-     * @param chunkSize
-     * @return
-     */
-    public String getFilteredFileName(int rPanelIndex, int chromo, int lim1, int lim2, int chunkSize) {
-        // Check that chromo index is within the bounds
-        checkChromoIndex(chromo);
-
-        // Check limits are within the bounds
-        checkLimits(chromo, lim1, lim2);
-
-        int indexChr = chromo - this.startChr;
-        int indexChunk = lim1 / chunkSize;
-        // The offset is because the array start in position 0.
-        return this.filteredFile.get(rPanelIndex).get(indexChr).get(indexChunk).getName();
-    }
-
-    /**
      * Method to access the filteredFile
      * 
      * @param rPanelIndex
@@ -1004,29 +936,6 @@ public class ImputationFiles {
     }
 
     /**
-     * Method to access the filteredLogFileName
-     * 
-     * @param rPanelIndex
-     * @param chromo
-     * @param lim1
-     * @param lim2
-     * @param chunkSize
-     * @return
-     */
-    public String getFilteredLogFileName(int rPanelIndex, int chromo, int lim1, int lim2, int chunkSize) {
-        // Check that chromo index is within the bounds
-        checkChromoIndex(chromo);
-
-        // Check limits are within the bounds
-        checkLimits(chromo, lim1, lim2);
-
-        int indexChr = chromo - this.startChr;
-        int indexChunk = lim1 / chunkSize;
-        // The offset is because the array start in position 0.
-        return this.filteredFileLogFile.get(rPanelIndex).get(indexChr).get(indexChunk).getName();
-    }
-
-    /**
      * Method to access the filteredLogFile
      * 
      * @param rPanelIndex
@@ -1046,29 +955,6 @@ public class ImputationFiles {
         int indexChr = chromo - this.startChr;
         int indexChunk = lim1 / chunkSize;
         return this.filteredFileLogFile.get(rPanelIndex).get(indexChr).get(indexChunk).getFullName();
-    }
-
-    /**
-     * Method to access the filteredRsIdFileName
-     * 
-     * @param rPanelIndex
-     * @param chromo
-     * @param lim1
-     * @param lim2
-     * @param chunkSize
-     * @return
-     */
-    public String getFilteredRsIdFileName(int rPanelIndex, int chromo, int lim1, int lim2, int chunkSize) {
-        // Check that chromo index is within the bounds
-        checkChromoIndex(chromo);
-
-        // Check limits are within the bounds
-        checkLimits(chromo, lim1, lim2);
-
-        int indexChr = chromo - this.startChr;
-        int indexChunk = lim1 / chunkSize;
-        // The offset is because the array start in position 0.
-        return this.filteredFileRsIdFile.get(rPanelIndex).get(indexChr).get(indexChunk).getName();
     }
 
     /**

@@ -135,17 +135,6 @@ public class ResultsFiles {
     }
 
     /**
-     * Method to access topHitsFileName
-     * 
-     * @param testTypeIndex
-     * @param rPanelIndex
-     * @return
-     */
-    public String getTopHitsFileName(int testTypeIndex, int rPanelIndex) {
-        return this.testTypeTopHitsFile.get(testTypeIndex).get(rPanelIndex).getName();
-    }
-
-    /**
      * Method to access topHitsFile
      * 
      * @param testTypeIndex
@@ -176,17 +165,6 @@ public class ResultsFiles {
      */
     public String getTopHitsFileFinalStatus(int testTypeIndex, int rPanelIndex) {
         return this.testTypeTopHitsFile.get(testTypeIndex).get(rPanelIndex).getFinalStatus();
-    }
-
-    /**
-     * Method to access CorrectedPvaluesFileName
-     * 
-     * @param testTypeIndex
-     * @param rPanelIndex
-     * @return
-     */
-    public String getCorrectedPvaluesFileName(int testTypeIndex, int rPanelIndex) {
-        return this.testTypeCorrectedPvaluesFile.get(testTypeIndex).get(rPanelIndex).getName();
     }
 
     /**
@@ -223,17 +201,6 @@ public class ResultsFiles {
     }
 
     /**
-     * Method to access qqPlotPdfFileName
-     * 
-     * @param testTypeIndex
-     * @param rPanelIndex
-     * @return
-     */
-    public String getQqPlotPdfFileName(int testTypeIndex, int rPanelIndex) {
-        return this.testTypeQqPlotPdfFile.get(testTypeIndex).get(rPanelIndex).getName();
-    }
-
-    /**
      * Method to access qqPlotPdfFile
      * 
      * @param testTypeIndex
@@ -264,17 +231,6 @@ public class ResultsFiles {
      */
     public String getQqPlotPdfFileFinalStatus(int testTypeIndex, int rPanelIndex) {
         return this.testTypeQqPlotPdfFile.get(testTypeIndex).get(rPanelIndex).getFinalStatus();
-    }
-
-    /**
-     * Method to access qqPlotTiffFileName
-     * 
-     * @param testTypeIndex
-     * @param rPanelIndex
-     * @return
-     */
-    public String getQqPlotTiffFileName(int testTypeIndex, int rPanelIndex) {
-        return this.testTypeQqPlotTiffFile.get(testTypeIndex).get(rPanelIndex).getName();
     }
 
     /**
@@ -311,17 +267,6 @@ public class ResultsFiles {
     }
 
     /**
-     * Method to access mahattanPdfFileName
-     * 
-     * @param testTypeIndex
-     * @param rPanelIndex
-     * @return
-     */
-    public String getManhattanPdfFileName(int testTypeIndex, int rPanelIndex) {
-        return this.testTypeManhattanPdfFile.get(testTypeIndex).get(rPanelIndex).getName();
-    }
-
-    /**
      * Method to access manhattanPdfFile
      * 
      * @param testTypeIndex
@@ -352,17 +297,6 @@ public class ResultsFiles {
      */
     public String getManhattanPdfFileFinalStatus(int testTypeIndex, int rPanelIndex) {
         return this.testTypeManhattanPdfFile.get(testTypeIndex).get(rPanelIndex).getFinalStatus();
-    }
-
-    /**
-     * Method to access manhattanTiffFileName
-     * 
-     * @param testTypeIndex
-     * @param rPanelIndex
-     * @return
-     */
-    public String getManhattanTiffFileName(int testTypeIndex, int rPanelIndex) {
-        return this.testTypeManhattanTiffFile.get(testTypeIndex).get(rPanelIndex).getName();
     }
 
     /**
