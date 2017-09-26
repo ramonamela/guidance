@@ -1,12 +1,9 @@
 package guidance.files;
 
-import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.nio.file.Files;
 
 import java.util.List;
 import java.util.zip.GZIPInputStream;
@@ -176,17 +173,30 @@ public class FileUtils {
     }
 
     /**
-     * Method to copy file source to dest
+     * Moves a file or a directory from @source to @{dest}. Returns true if success, false otherwise
      * 
      * @param source
      * @param dest
-     * @throws IOException
+     * @return
      */
-    public static void copyFile(File source, File dest) throws GuidanceTaskException {
-        try {
-            Files.copy(source.toPath(), dest.toPath(), REPLACE_EXISTING);
-        } catch (IOException ioe) {
-            throw new GuidanceTaskException(ioe);
+    public static boolean move(String source, String dest) {
+        File srcFile = new File(source);
+        File destFile = new File(dest);
+
+        // Rename file (or directory)
+        return srcFile.renameTo(destFile);
+    }
+
+    /**
+     * Deletes the file denoted by the filename @file
+     * 
+     * @param file
+     * @throws GuidanceTaskException
+     */
+    public static void delete(String file) throws GuidanceTaskException {
+        boolean success = new File(file).delete();
+        if (!success) {
+            throw new GuidanceTaskException("ERROR: Cannot erase file " + file);
         }
     }
 
@@ -201,7 +211,7 @@ public class FileUtils {
     public static boolean createEmptyFile(String fileName, String moduleName) throws IOException {
         File fa = new File(fileName);
         if (!fa.exists()) {
-            LOGGER.info(moduleName + " The file " + fileName + " does not exist, then we create an empty file");
+            System.out.println(moduleName + " The file " + fileName + " does not exist, then we create an empty file");
             return fa.createNewFile();
         }
 
@@ -228,7 +238,8 @@ public class FileUtils {
 
             gzipOuputStream.finish();
         } catch (IOException ioe) {
-            LOGGER.error("ERROR: Cannot zip file", ioe);
+            System.err.println("ERROR: Cannot zip file");
+            ioe.printStackTrace();
         }
     }
 
@@ -250,7 +261,8 @@ public class FileUtils {
                 fileOutputStream.write(buffer, 0, bytesRead);
             }
         } catch (IOException ioe) {
-            LOGGER.error("ERROR: Cannot unzip file", ioe);
+            System.err.println("ERROR: Cannot zip file");
+            ioe.printStackTrace();
         }
     }
 

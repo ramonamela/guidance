@@ -447,20 +447,13 @@ public class Guidance {
                 // because the file format changes if chr23 is being processed. This situation is taken into account
                 // inside the next function.
                 String rpanelName = rpanelTypes.get(panel);
-
                 makeJointFilteredByAllFiles(parsingArgs, listOfCommands, test, panel, rpanelName, startChr, endChr, mergeFilesInfo);
 
+                // Generate TopHits
                 String lastCondensedFile = mergeFilesInfo.getFinalCondensedFile(test, panel);
-                // LOGGER.info("\n[Guidance] The last Condensed file is " + lastCondensedFile);
-
                 String lastFilteredByAllFile = mergeFilesInfo.getFinalFilteredByAllFile(test, panel);
-                // LOGGER.info("\n[Guidance] The last FilteredByAll file is " + lastFilteredByAllFile);
-
-                // Lets extract top-hits results from the lastFilteredByAllFile
                 String topHitsResults = resultsFilesInfo.getTopHitsFile(test, panel);
-                // LOGGER.info("\n[Guidance] The topHitsFile is " + topHitsResults);
-
-                String filteredByAllXFile = null;
+                String filteredByAllXFile;
                 if (endChr == 23) {
                     filteredByAllXFile = mergeFilesInfo.getAdditionalFilteredByAllXFile(test, panel, 0);
                 } else {
@@ -470,12 +463,11 @@ public class Guidance {
                 doGenerateTopHits(parsingArgs, listOfCommands, lastFilteredByAllFile, filteredByAllXFile, topHitsResults,
                         PVA_THRESHOLD_STR);
 
+                // Generate QQManhattan Plots
                 String qqPlotPdfFile = resultsFilesInfo.getQqPlotPdfFile(test, panel);
                 String qqPlotTiffFile = resultsFilesInfo.getQqPlotTiffFile(test, panel);
-
                 String manhattanPlotPdfFile = resultsFilesInfo.getManhattanPdfFile(test, panel);
                 String manhattanPlotTiffFile = resultsFilesInfo.getManhattanTiffFile(test, panel);
-
                 String correctedPvaluesFile = resultsFilesInfo.getCorrectedPvaluesFile(test, panel);
 
                 doGenerateQQManhattanPlots(parsingArgs, listOfCommands, lastCondensedFile, qqPlotPdfFile, manhattanPlotPdfFile,
@@ -749,9 +741,12 @@ public class Guidance {
                     indexC++;
                 }
 
-                /*
-                 * File fA = new File(reducedA); fA.delete(); File fB = new File(reducedB); fB.delete();
-                 */
+                // Clean intermediate files
+                File fA = new File(reducedA);
+                fA.delete();
+                File fB = new File(reducedB);
+                fB.delete();
+
             } // End for Chunks
 
         } else if (type.equals(CONDENSED)) {
@@ -783,9 +778,12 @@ public class Guidance {
                     indexC++;
                 }
 
-                /*
-                 * File fA = new File(reducedA); fA.delete(); File fB = new File(reducedB); fB.delete();
-                 */
+                // Clean intermediate files
+                File fA = new File(reducedA);
+                fA.delete();
+                File fB = new File(reducedB);
+                fB.delete();
+
             } // End of for Chunks
         }
     }
@@ -844,10 +842,11 @@ public class Guidance {
               // processedCondensed +2)
         }
 
-        // File fA = new File(condensedA);
-        // fA.delete();
-        // File fB = new File(condensedB);
-        // fB.delete();
+        // Clean intermediate files
+        File fA = new File(condensedA);
+        fA.delete();
+        File fB = new File(condensedB);
+        fB.delete();
     }
 
     /**
@@ -877,7 +876,6 @@ public class Guidance {
         int indexA = 0;
         int indexC = 0;
         int processedFiltered = 0;
-        int i = 0;
         String rpanelFlag = "NO";
         String filteredA = null;
         String filteredB = null;
@@ -897,7 +895,7 @@ public class Guidance {
         } else {
             for (processedFiltered = 0; processedFiltered < 2 * numberOfChrs - 2; processedFiltered = processedFiltered + 2) {
                 if (processedFiltered < numberOfChrs) {
-                    i = startChr + processedFiltered;
+                    int i = startChr + processedFiltered;
                     filteredA = mergeFilesInfo.getFilteredByAllFile(ttIndex, rpanelIndex, i);
                 } else {
                     filteredA = mergeFilesInfo.getAdditionalFilteredByAllFile(ttIndex, rpanelIndex, indexA);
@@ -905,7 +903,7 @@ public class Guidance {
                 }
 
                 if (processedFiltered < numberOfChrs - 1) {
-                    i = startChr + processedFiltered + 1;
+                    int i = startChr + processedFiltered + 1;
                     filteredB = mergeFilesInfo.getFilteredByAllFile(ttIndex, rpanelIndex, i);
                 } else {
                     filteredB = mergeFilesInfo.getAdditionalFilteredByAllFile(ttIndex, rpanelIndex, indexA);
@@ -929,11 +927,11 @@ public class Guidance {
             doJointFilteredByAllFiles(parsingArgs, listOfCommands, filteredA, filteredA, filteredC, rpanelName, rpanelFlag);
         }
 
-        // File fA = new File(filteredA);
-        // fA.delete();
-        // File fB = new File(filteredB);
-        // fB.delete();
-
+        // Clean intermediate files
+        File fA = new File(filteredA);
+        fA.delete();
+        File fB = new File(filteredB);
+        fB.delete();
     }
 
     /**
@@ -987,6 +985,7 @@ public class Guidance {
             LOGGER.error("[Guidance] Exception when initializing makeCombinePanel filtered ALL file", ioe);
         }
         FileUtils.gzipFile(plainfilteredCombineAll, filteredCombineAll);
+        new File(plainfilteredCombineAll).delete();
 
         String filteredXHeader = null;
         if (endChr == 23) {
@@ -1000,6 +999,7 @@ public class Guidance {
                 LOGGER.error("[Guidance] Exception when initializing makeCombinePanel filteredX ALL file", ioe);
             }
             FileUtils.gzipFile(plainfilteredCombineAllX, filteredCombineAllX);
+            new File(plainfilteredCombineAllX).delete();
         }
 
         final String condensedHeader = Headers.constructCondensedHeader();
@@ -1012,6 +1012,7 @@ public class Guidance {
             LOGGER.error("[Guidance] Exception when initializing makeCombinePanel condensed ALL file", ioe);
         }
         FileUtils.gzipFile(plainCondensedCombineAll, condensedCombineAll);
+        new File(plainCondensedCombineAll).delete();
 
         // CHR LOOP
         for (int chr = startChr; chr <= endChr; chr++) {
@@ -1047,11 +1048,9 @@ public class Guidance {
                         doCombinePanelsComplex(parsingArgs, listOfCommands, filteredPanelA, filteredPanelB, lim1, lim2);
                         // Adds A to the queue again
                         filteredPanelsToCombine.add(filteredPanelA);
+
                         // Deletes B since it is no longer needed
-                        /*
-                         * try { FileUtils.deleteFile(filteredPanelB); } catch (GuidanceTaskException gte) {
-                         * LOGGER.fatal("ERROR: Cannot erase file: " + filteredPanelB, gte); System.exit(1); }
-                         */
+                        new File(filteredPanelB).delete();
                     }
                 }
 
@@ -1077,11 +1076,9 @@ public class Guidance {
                         doCombinePanelsComplex(parsingArgs, listOfCommands, condensedPanelA, condensedPanelB, lim1, lim2);
                         // Adds A to the queue again
                         condensedPanelsToCombine.add(condensedPanelA);
+
                         // Deletes B since it is no longer needed
-                        /*
-                         * try { FileUtils.deleteFile(condensedPanelB); } catch (GuidanceTaskException gte) {
-                         * LOGGER.fatal("ERROR: Cannot erase file: " + condensedPanelB, gte); System.exit(1); }
-                         */
+                        new File(condensedPanelB).delete();
                     }
                 }
 
@@ -1103,6 +1100,7 @@ public class Guidance {
                             LOGGER.error("[Guidance] Exception when initializing makeCombinePanel filteredCombinePerChunk file", ioe);
                         }
                         FileUtils.gzipFile(plainfilteredCombinePerChunk, filteredCombinePerChunk);
+                        new File(plainfilteredCombinePerChunk).delete();
                     }
                     if (DEBUG) {
                         LOGGER.debug(
@@ -1132,6 +1130,7 @@ public class Guidance {
                             LOGGER.error("[Guidance] Exception when initializing makeCombinePanel filteredCombineXPerChunk file", ioe);
                         }
                         FileUtils.gzipFile(plainfilteredCombineXPerChunk, filteredCombineXPerChunk);
+                        new File(plainfilteredCombineXPerChunk).delete();
                     }
                     doMergeTwoChunksInTheFirst(parsingArgs, listOfCommands, filteredCombineXPerChunk, chunkResultsFiltered,
                             Integer.toString(chr), FILTERED);
@@ -1141,6 +1140,9 @@ public class Guidance {
                             Integer.toString(chr), FILTERED);
                     ++indexXFC;
                 }
+
+                // Clean partial results
+                new File(chunkResultsFiltered).delete();
 
                 // -- COMBINE CONDENSED TO FINAL CHUNK AND ALL FILES
                 String chunkResultsCondensed = assocFilesInfo.getSummaryCondensedFile(ttIndex, mergeIndex, chr, lim1, lim2, chunkSize);
@@ -1157,6 +1159,7 @@ public class Guidance {
                         LOGGER.error("[Guidance] Exception when initializing makeCombinePanel plainCondensedCombinePerChunk file", ioe);
                     }
                     FileUtils.gzipFile(plainCondensedCombinePerChunk, condensedCombinePerChunk);
+                    new File(plainCondensedCombinePerChunk).delete();
                 }
                 if (DEBUG) {
                     LOGGER.debug(
@@ -1172,6 +1175,9 @@ public class Guidance {
                 doMergeTwoChunksInTheFirst(parsingArgs, listOfCommands, condensedCombineAll, chunkResultsCondensed, Integer.toString(chr),
                         CONDENSED);
                 ++indexCC;
+
+                // Clean partial results
+                new File(chunkResultsCondensed).delete();
 
                 // Increase loop variables
                 lim1 = lim1 + chunkSize;
