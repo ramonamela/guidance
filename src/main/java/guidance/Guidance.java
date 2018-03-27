@@ -64,6 +64,10 @@ import guidance.utils.ChromoInfo;
 import guidance.utils.Headers;
 import guidance.utils.ParseCmdLine;
 
+import es.bsc.compss.api.COMPSs;
+
+
+//import es.bsc.compss.api.COMPSs;
 
 /**
  * The higher-level class of Guidance
@@ -296,6 +300,8 @@ public class Guidance {
         setFinalStatusForImputationFiles(parsingArgs, imputationFilesInfo, rpanelTypes);
         setFinalStatusForAssocFiles(parsingArgs, assocFilesInfo, rpanelTypes);
 
+        // COMPSs.barrier();
+
         // The number of Chromos to process is endChr - startChr + 1;
         for (int chr = startChr; chr <= endChr; chr++) {
             // We get the output pairs file name for mixed
@@ -389,6 +395,7 @@ public class Guidance {
         // * comment out following line to include the synchronization point *
         // *******************************************************************
         // COMPSs.waitForAllTasks();
+        // COMPSs.barrier();
 
         // Now we continue with the association
         int numberOfTestTypes = parsingArgs.getNumberOfTestTypeName();
@@ -742,10 +749,10 @@ public class Guidance {
                 }
 
                 // Clean intermediate files
-                File fA = new File(reducedA);
-                fA.delete();
-                File fB = new File(reducedB);
-                fB.delete();
+                // File fA = new File(reducedA);
+                // fA.delete();
+                // File fB = new File(reducedB);
+                // fB.delete();
 
             } // End for Chunks
 
@@ -779,10 +786,10 @@ public class Guidance {
                 }
 
                 // Clean intermediate files
-                File fA = new File(reducedA);
-                fA.delete();
-                File fB = new File(reducedB);
-                fB.delete();
+                // File fA = new File(reducedA);
+                // fA.delete();
+                // File fB = new File(reducedB);
+                // fB.delete();
 
             } // End of for Chunks
         }
@@ -843,10 +850,10 @@ public class Guidance {
         }
 
         // Clean intermediate files
-        File fA = new File(condensedA);
-        fA.delete();
-        File fB = new File(condensedB);
-        fB.delete();
+        // File fA = new File(condensedA);
+        // fA.delete();
+        // File fB = new File(condensedB);
+        // fB.delete();
     }
 
     /**
@@ -928,10 +935,10 @@ public class Guidance {
         }
 
         // Clean intermediate files
-        File fA = new File(filteredA);
-        fA.delete();
-        File fB = new File(filteredB);
-        fB.delete();
+        // File fA = new File(filteredA);
+        // fA.delete();
+        // File fB = new File(filteredB);
+        // fB.delete();
     }
 
     /**
@@ -1050,7 +1057,7 @@ public class Guidance {
                         filteredPanelsToCombine.add(filteredPanelA);
 
                         // Deletes B since it is no longer needed
-                        new File(filteredPanelB).delete();
+                        //new File(filteredPanelB).delete();
                     }
                 }
 
@@ -1078,7 +1085,7 @@ public class Guidance {
                         condensedPanelsToCombine.add(condensedPanelA);
 
                         // Deletes B since it is no longer needed
-                        new File(condensedPanelB).delete();
+                        //new File(condensedPanelB).delete();
                     }
                 }
 
@@ -1142,7 +1149,7 @@ public class Guidance {
                 }
 
                 // Clean partial results
-                new File(chunkResultsFiltered).delete();
+                //new File(chunkResultsFiltered).delete();
 
                 // -- COMBINE CONDENSED TO FINAL CHUNK AND ALL FILES
                 String chunkResultsCondensed = assocFilesInfo.getSummaryCondensedFile(ttIndex, mergeIndex, chr, lim1, lim2, chunkSize);
@@ -1177,7 +1184,7 @@ public class Guidance {
                 ++indexCC;
 
                 // Clean partial results
-                new File(chunkResultsCondensed).delete();
+                //new File(chunkResultsCondensed).delete();
 
                 // Increase loop variables
                 lim1 = lim1 + chunkSize;
@@ -1907,7 +1914,7 @@ public class Guidance {
 
         if (parsingArgs.getStageStatus("mergeTwoChunks") == 1) {
             // Task
-            String cmdToStore = JAVA_HOME + "/java mergeTwoChunks " + reduceA + " " + reduceB + " " + reduceC + " " + theChromo;
+            String cmdToStore = JAVA_HOME + "/java mergeTwoChunks " + reduceA + " " + reduceB + " " + reduceC + " " + theChromo + " " + type;
             listOfCommands.add(cmdToStore);
             try {
                 GuidanceImpl.mergeTwoChunks(reduceA, reduceB, reduceC, theChromo, type, cmdToStore);

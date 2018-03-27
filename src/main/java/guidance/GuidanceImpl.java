@@ -2862,15 +2862,16 @@ public class GuidanceImpl {
             while ((line = br.readLine()) != null) {
                 String[] splitted = line.split(TAB);
                 String positionAndRsId = splitted[indexPosition] + "_" + splitted[indexRsId];
-                double myPva = Double.parseDouble(splitted[indexPvalue]);
-
-                if (myPva <= pvaThres && myPva > 0.0) {
-                    // Now, we put this String into the treemap with the key positionAndRsId
-                    // reducedLine is chr;position;RSID_ALL;MAF;a1;a2;pval
-                    String reducedLine = splitted[indexChromo] + TAB + splitted[indexPosition] + TAB + splitted[indexRsId] + TAB
-                            + splitted[indexAllMaf] + TAB + splitted[indexAlleleA] + TAB + splitted[indexAlleleB] + TAB
-                            + splitted[indexPvalue];
-                    fileATreeMap.put(positionAndRsId, reducedLine);
+                if (!splitted[indexPvalue].equals("NA")) {
+                    double myPva = Double.parseDouble(splitted[indexPvalue]);
+                    if (myPva <= pvaThres && myPva > 0.0) {
+                        // Now, we put this String into the treemap with the key positionAndRsId
+                        // reducedLine is chr;position;RSID_ALL;MAF;a1;a2;pval
+                        String reducedLine = splitted[indexChromo] + TAB + splitted[indexPosition] + TAB + splitted[indexRsId] + TAB
+                                + splitted[indexAllMaf] + TAB + splitted[indexAlleleA] + TAB + splitted[indexAlleleB] + TAB
+                                + splitted[indexPvalue];
+                        fileATreeMap.put(positionAndRsId, reducedLine);
+                    }
                 }
             }
         } catch (IOException ioe) {
@@ -3270,7 +3271,10 @@ public class GuidanceImpl {
                     // Now, we put this casesList into the treemap with the key position
                     fileATreeMap.put(variantKey, fileAList);
                 } else {
-                    fileATreeMap.remove(variantKey);
+                    // fileATreeMap.remove(variantKey);
+                    if (DEBUG) {
+                        System.out.println("There is a repeated key: " + variantKey);
+                    }
                 }
             }
         } catch (IOException ioe) {
@@ -3278,7 +3282,7 @@ public class GuidanceImpl {
         }
 
         // We read each line of the reducedFileB and put them into fileBList array of Strings
-        TreeMap<String, ArrayList<String>> fileBTreeMap = new TreeMap<>();
+        // TreeMap<String, ArrayList<String>> fileBTreeMap = new TreeMap<>();
 
         try (GZIPInputStream reduceGz = new GZIPInputStream(new FileInputStream(reduceFileB));
                 InputStreamReader decoder = new InputStreamReader(reduceGz);
@@ -3292,6 +3296,16 @@ public class GuidanceImpl {
             // First: read the header and avoid it
             String line = br.readLine();
 
+            if (line != null && !line.isEmpty()) {
+                reduceFileAHashTableIndex = Headers.createHashWithHeader(line, TAB);
+                reduceFileAHashTableIndexReversed = Headers.createHashWithHeaderReversed(line, TAB);
+
+                indexChr = reduceFileAHashTableIndex.get("chr");
+                indexPosition = reduceFileAHashTableIndex.get("position");
+                indexAlleleA = reduceFileAHashTableIndex.get("alleleA");
+                indexAlleleB = reduceFileAHashTableIndex.get("alleleB");
+            }
+
             // Then we process the file
             while ((line = br.readLine()) != null) {
                 ArrayList<String> fileBList = new ArrayList<>();
@@ -3303,11 +3317,14 @@ public class GuidanceImpl {
 
                 // We only store the ones that are not repeated.
                 // Question for Siliva: what is the criteria?
-                if (!fileBTreeMap.containsKey(variantKey)) {
+                if (!fileATreeMap.containsKey(variantKey)) {
                     // Now, we put this casesList into the treemap with the key position
-                    fileBTreeMap.put(variantKey, fileBList);
+                    fileATreeMap.put(variantKey, fileBList);
                 } else {
-                    fileATreeMap.remove(variantKey);
+                    // fileBTreeMap.remove(variantKey);
+                    if (DEBUG) {
+                        System.out.println("There is a repeated key: " + variantKey);
+                    }
                 }
             }
         } catch (IOException ioe) {
@@ -3329,18 +3346,14 @@ public class GuidanceImpl {
             // If found, we get the value, otherwise we get null
             fileCTreeMap.put(variantKey, fileTmp);
         }
-        mySet = fileBTreeMap.entrySet();
-        // Move next key and value of Map by iterator
-        iter = mySet.iterator();
-        while (iter.hasNext()) {
-            Entry<String, ArrayList<String>> m = iter.next();
-            String variantKey = m.getKey();
-            ArrayList<String> fileTmp = m.getValue();
-
-            // We look for the casesPosition key in the controlsTreeMap.
-            // If found, we get the value, otherwise we get null
-            fileCTreeMap.put(variantKey, fileTmp);
-        }
+        /*
+         * mySet = fileBTreeMap.entrySet(); // Move next key and value of Map by iterator iter = mySet.iterator(); while
+         * (iter.hasNext()) { Entry<String, ArrayList<String>> m = iter.next(); String variantKey = m.getKey();
+         * ArrayList<String> fileTmp = m.getValue();
+         * 
+         * // We look for the casesPosition key in the controlsTreeMap. // If found, we get the value, otherwise we get
+         * null fileCTreeMap.put(variantKey, fileTmp); }
+         */
 
         // Finally we put the fileCTreeMap into the outputFile
         // We have to create the outputFile for this combination
@@ -3473,6 +3486,8 @@ public class GuidanceImpl {
         int indexPosition = 0;
         int indexInfo = 0;
         int indexCertainty = 0;
+        int indexAlleleA = 0;
+        int indexAlleleB = 0;
 
         int length_entry_assoc_list = 0;
 
@@ -3501,6 +3516,8 @@ public class GuidanceImpl {
                 indexRsId = imputeHashTableIndex.get("rs_id");
                 indexInfo = imputeHashTableIndex.get("info");
                 indexCertainty = imputeHashTableIndex.get("certainty");
+                indexAlleleA = imputeHashTableIndex.get("a0");
+                indexAlleleB = imputeHashTableIndex.get("a1");
 
                 // System.out.println("indexPosition: "+indexPosition);
                 // System.out.println("indexRsId: " + indexRsId);
@@ -3518,16 +3535,20 @@ public class GuidanceImpl {
                 firstList.add(splitted[indexRsId]);
                 firstList.add(splitted[indexInfo]);
                 firstList.add(splitted[indexCertainty]);
-                positionAndRsId = splitted[indexPosition] + "_" + splitted[indexRsId];
+                firstList.add(splitted[indexAlleleA]);
+                firstList.add(splitted[indexAlleleB]);
+                positionAndRsId = splitted[indexPosition] + "_" + splitted[indexRsId] + "_" + splitted[indexAlleleA] + "_"
+                        + splitted[indexAlleleB];
 
                 // If there is not a previous snp with this combination of position and rsID, we store it.
                 if (!firstTreeMap.containsKey(positionAndRsId)) {
                     // We, put this in the firstTreeMap
                     firstTreeMap.put(positionAndRsId, firstList);
-                } else {
-                    // If there is a snp with this combination we should remove it.
-                    firstTreeMap.remove(positionAndRsId);
                 }
+                /*
+                 * else { // If there is a snp with this combination we should remove it.
+                 * firstTreeMap.remove(positionAndRsId); }
+                 */
             }
         } catch (IOException ioe) {
             throw new GuidanceTaskException(ioe);
@@ -3568,13 +3589,15 @@ public class GuidanceImpl {
                     }
 
                     // Now, store the array of string assocList in the assocTreeMap
-                    positionAndRsId = splitted[snptestHashTableIndex.get("position")] + "_" + splitted[snptestHashTableIndex.get("rsid")];
+                    positionAndRsId = splitted[snptestHashTableIndex.get("position")] + "_" + splitted[snptestHashTableIndex.get("rsid")]
+                            + "_" + splitted[snptestHashTableIndex.get("alleleA")] + "_" + splitted[snptestHashTableIndex.get("alleleB")];
                     if (!assocTreeMap.containsKey(positionAndRsId)) {
                         assocTreeMap.put(positionAndRsId, assocList);
                         length_entry_assoc_list = assocList.size();
-                    } else {
-                        assocTreeMap.remove(positionAndRsId);
                     }
+                    /*
+                     * else { assocTreeMap.remove(positionAndRsId); }
+                     */
                 }
                 // The line does not start nor with "#" neither "alternate"
             }
@@ -3588,6 +3611,7 @@ public class GuidanceImpl {
         // Move next key and value of Map by iterator
         Iterator<Entry<String, ArrayList<String>>> iter = mySet.iterator();
         while (iter.hasNext()) {
+            System.out.println("Processing all the SNP information");
             Entry<String, ArrayList<String>> m = iter.next();
             String firstPositionAndRsId = m.getKey();
             ArrayList<String> firstTmp = m.getValue();
@@ -3617,9 +3641,13 @@ public class GuidanceImpl {
             // We do not store the first 4 field because they are not necessary or are repeated:
             // These four fields are:
             // alternative_ids, rsid, chromosome, position
-            for (int index = 4; index < snptestHashTableIndexReversed.size(); index++) {
-                String valueReversed = snptestHashTableIndexReversed.get(index);
-                writer.write(valueReversed + TAB);
+            if (snptestHashTableIndexReversed.size() > 4) {
+                for (int index = 4; index < snptestHashTableIndexReversed.size(); index++) {
+                    String valueReversed = snptestHashTableIndexReversed.get(index);
+                    writer.write(valueReversed + TAB);
+                }
+            } else {
+                writer.write(Headers.constructHeader());
             }
             writer.write(NEW_LINE);
 
