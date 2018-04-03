@@ -3211,204 +3211,28 @@ public class GuidanceImpl {
 
         long startTime = System.currentTimeMillis();
 
-        // We read each line of th reducedFileA and put them into fileAList array of Strings
-        TreeMap<String, ArrayList<String>> fileATreeMap = new TreeMap<>();
-
-        HashMap<String, Integer> reduceFileAHashTableIndex = new HashMap<>();
-        HashMap<Integer, String> reduceFileAHashTableIndexReversed = new HashMap<>();
-
-        // HashMap<String, Integer> reduceFileBHashTableIndex = new HashMap<>();
-        HashMap<Integer, String> reduceFileBHashTableIndexReversed = new HashMap<>();
-
-        try (GZIPInputStream reduceGz = new GZIPInputStream(new FileInputStream(reduceFileA));
-                InputStreamReader decoder = new InputStreamReader(reduceGz);
-                BufferedReader br = new BufferedReader(decoder)) {
-
-            // First: read the header and avoid it
-            String line = br.readLine();
-
-            // We do not use the previous line, instead, we use a predefined header
-            if (type.equals("filtered")) {
-                if (chrS.equals(CHR_23)) {
-                    line = Headers.constructHeaderX();
-                } else {
-                    line = Headers.constructHeader();
-                }
-            } else if (type.equals("condensed")) {
-                line = Headers.constructCondensedHeader();
-            }
-
-            // By default values for indexes in the header
-            // int indexRsId =2;
-            int indexChr = 0;
-            int indexPosition = 0;
-            int indexAlleleA = 0;
-            int indexAlleleB = 0;
-
-            if (line != null && !line.isEmpty()) {
-                reduceFileAHashTableIndex = Headers.createHashWithHeader(line, TAB);
-                reduceFileAHashTableIndexReversed = Headers.createHashWithHeaderReversed(line, TAB);
-
-                indexChr = reduceFileAHashTableIndex.get("chr");
-                indexPosition = reduceFileAHashTableIndex.get("position");
-                indexAlleleA = reduceFileAHashTableIndex.get("alleleA");
-                indexAlleleB = reduceFileAHashTableIndex.get("alleleB");
-            }
-
-            while ((line = br.readLine()) != null) {
-                ArrayList<String> fileAList = new ArrayList<>();
-                // delimiter I assume a tab
-                String[] splitted = line.split(TAB);
-
-                // Store Position:Store rsIDCases:Store infoCases:Store certCases
-                fileAList.add(line);
-                String variantKey = splitted[indexChr] + "_" + splitted[indexPosition] + "_" + splitted[indexAlleleA] + "_"
-                        + splitted[indexAlleleB];
-
-                // We only store the ones that are not repeated.
-                // Question for Siliva: what is the criteria?
-                if (!fileATreeMap.containsKey(variantKey)) {
-                    // Now, we put this casesList into the treemap with the key position
-                    fileATreeMap.put(variantKey, fileAList);
-                } else {
-                    // fileATreeMap.remove(variantKey);
-                    if (DEBUG) {
-                        System.out.println("There is a repeated key: " + variantKey);
-                    }
-                }
-            }
-        } catch (IOException ioe) {
-            throw new GuidanceTaskException(ioe);
-        }
-
-        // We read each line of the reducedFileB and put them into fileBList array of Strings
-        // TreeMap<String, ArrayList<String>> fileBTreeMap = new TreeMap<>();
-
-        try (GZIPInputStream reduceGz = new GZIPInputStream(new FileInputStream(reduceFileB));
-                InputStreamReader decoder = new InputStreamReader(reduceGz);
-                BufferedReader br = new BufferedReader(decoder)) {
-
-            int indexChr = 0;
-            int indexPosition = 0;
-            int indexAlleleA = 0;
-            int indexAlleleB = 0;
-
-            // First: read the header and avoid it
-            String line = br.readLine();
-
-            if (line != null && !line.isEmpty()) {
-                reduceFileAHashTableIndex = Headers.createHashWithHeader(line, TAB);
-                reduceFileAHashTableIndexReversed = Headers.createHashWithHeaderReversed(line, TAB);
-
-                indexChr = reduceFileAHashTableIndex.get("chr");
-                indexPosition = reduceFileAHashTableIndex.get("position");
-                indexAlleleA = reduceFileAHashTableIndex.get("alleleA");
-                indexAlleleB = reduceFileAHashTableIndex.get("alleleB");
-            }
-
-            // Then we process the file
-            while ((line = br.readLine()) != null) {
-                ArrayList<String> fileBList = new ArrayList<>();
-                String[] splitted = line.split(TAB);// delimiter I assume tab
-
-                fileBList.add(line);
-                String variantKey = splitted[indexChr] + "_" + splitted[indexPosition] + "_" + splitted[indexAlleleA] + "_"
-                        + splitted[indexAlleleB];
-
-                // We only store the ones that are not repeated.
-                // Question for Siliva: what is the criteria?
-                if (!fileATreeMap.containsKey(variantKey)) {
-                    // Now, we put this casesList into the treemap with the key position
-                    fileATreeMap.put(variantKey, fileBList);
-                } else {
-                    // fileBTreeMap.remove(variantKey);
-                    if (DEBUG) {
-                        System.out.println("There is a repeated key: " + variantKey);
-                    }
-                }
-            }
-        } catch (IOException ioe) {
-            throw new GuidanceTaskException(ioe);
-        }
-
-        // A place to store the results of this merge
-        TreeMap<String, ArrayList<String>> fileCTreeMap = new TreeMap<>();
-        Set<Entry<String, ArrayList<String>>> mySet = fileATreeMap.entrySet();
-        // Move next key and value of Map by iterator
-        Iterator<Entry<String, ArrayList<String>>> iter = mySet.iterator();
-
-        while (iter.hasNext()) {
-            Entry<String, ArrayList<String>> m = iter.next();
-            String variantKey = m.getKey();
-            ArrayList<String> fileTmp = m.getValue();
-
-            // We look for the casesPosition key in the controlsTreeMap.
-            // If found, we get the value, otherwise we get null
-            fileCTreeMap.put(variantKey, fileTmp);
-        }
-        /*
-         * mySet = fileBTreeMap.entrySet(); // Move next key and value of Map by iterator iter = mySet.iterator(); while
-         * (iter.hasNext()) { Entry<String, ArrayList<String>> m = iter.next(); String variantKey = m.getKey();
-         * ArrayList<String> fileTmp = m.getValue();
-         * 
-         * // We look for the casesPosition key in the controlsTreeMap. // If found, we get the value, otherwise we get
-         * null fileCTreeMap.put(variantKey, fileTmp); }
-         */
-
-        // Finally we put the fileCTreeMap into the outputFile
-        // We have to create the outputFile for this combination
-
-        // First we generate the plain output, then we will compress it
-        String plainReduceFileC = reduceFileC.substring(0, reduceFileC.length() - 3);
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(plainReduceFileC))) {
-            String valueReversed = null;
-            int index;
-            if (reduceFileAHashTableIndexReversed.size() >= reduceFileBHashTableIndexReversed.size()) {
-                for (index = 0; index < reduceFileAHashTableIndexReversed.size() - 1; index++) {
-                    valueReversed = reduceFileAHashTableIndexReversed.get(index);
-                    writer.write(valueReversed + TAB);
-                }
-                valueReversed = reduceFileAHashTableIndexReversed.get(index);
-                writer.write(valueReversed);
-                writer.newLine();
-            } else {
-                for (index = 0; index < reduceFileBHashTableIndexReversed.size() - 1; index++) {
-                    valueReversed = reduceFileBHashTableIndexReversed.get(index);
-                    writer.write(valueReversed + TAB);
-                }
-                valueReversed = reduceFileBHashTableIndexReversed.get(index);
-                writer.write(valueReversed);
-                writer.newLine();
-            }
-
-            mySet = fileCTreeMap.entrySet();
-            // Move next key and value of Map by iterator
-            iter = mySet.iterator();
-            while (iter.hasNext()) {
-                Entry<String, ArrayList<String>> m = iter.next();
-                ArrayList<String> lineTmp = m.getValue();
-
-                writer.write(lineTmp.get(0));
-                for (int j = 1; j < lineTmp.size(); j++) {
-                    writer.write(TAB + lineTmp.get(j));
-                }
-                writer.newLine();
-            }
-            writer.flush();
-        } catch (IOException ioe) {
-            throw new GuidanceTaskException(ioe);
-        }
-
-        // Create the file if it is empty
+        String reducePlainFile = reduceFileC.substring(0, reduceFileC.length() - 3);
+        String command1 = "zcat " + reduceFileA + " | grep -v Extrae > " + reducePlainFile;
+        String command2 = "zcat " + reduceFileB + " | grep -v Extrae | tail -n +2 >> " + reducePlainFile;
+        String command3 = "gzip -f " + reducePlainFile;
+        
         try {
-            FileUtils.createEmptyFile(plainReduceFileC, "[mergeTwoChunks]");
+            ProcessUtils.executeWithoutOutputs(command1);
         } catch (IOException ioe) {
             throw new GuidanceTaskException(ioe);
-        }
-
-        // Then, we create the gz file from the plain one
-        FileUtils.gzipFile(plainReduceFileC, reduceFileC);
-        FileUtils.delete(plainReduceFileC);
+        } 
+        
+        try {
+            ProcessUtils.executeWithoutOutputs(command2);
+        } catch (IOException ioe) {
+            throw new GuidanceTaskException(ioe);
+        } 
+        
+        try {
+            ProcessUtils.executeWithoutOutputs(command3);
+        } catch (IOException ioe) {
+            throw new GuidanceTaskException(ioe);
+        } 
 
         long stopTime = System.currentTimeMillis();
         long elapsedTime = (stopTime - startTime) / 1_000;

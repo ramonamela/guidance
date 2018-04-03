@@ -2,9 +2,11 @@ package guidance.processes;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 
 
 public class ProcessUtils {
@@ -42,6 +44,99 @@ public class ProcessUtils {
 
         // Return the exit value
         return exitValue;
+    }
+
+    /**
+     * Executes the given cmd. At the end of the command execution returns the exitValue
+     * 
+     * @param cmd
+     * @return
+     * @throws IOException
+     */
+    public static int executeWithoutOutputs(String cmd) throws IOException {
+        // Create the process
+        ProcessBuilder pb = new ProcessBuilder(cmd.split(" "));
+
+        // Remove unnecessary environment
+        pb.environment().remove("LD_PRELOAD");
+
+        // Start the process
+        Process p = pb.start();
+
+        // Retrieve the exit value
+        int exitValue = -1;
+        try {
+            exitValue = p.waitFor();
+        } catch (InterruptedException ie) {
+            Thread.currentThread().interrupt();
+        }
+
+        // Return the exit value
+        return exitValue;
+    }
+
+    /**
+     * Execute a bash command. We can handle complex bash commands including multiple executions (; | && ||), quotes,
+     * expansions ($), escapes (\), e.g.: "cd /abc/def; mv ghi 'older ghi '$(whoami)"
+     * 
+     * @param command
+     * @return true if bash got started, but your command may have failed.
+     */
+    public static int executeBashCommand(String command, String outputFile, String errorFile) throws IOException {
+
+        Runtime r = Runtime.getRuntime();
+        // Use bash -c so we can handle things like multi commands separated by ; and
+        // things like quotes, $, |, and \. My tests show that command comes as
+        // one argument to bash, so we do not need to quote it to make it one thing.
+        // Also, exec may object if it does not have an executable file as the first thing,
+        // so having bash here makes it happy provided bash is installed and in path.
+        String[] commands = { "bash", "-c", command };
+
+        Process p = r.exec(commands);
+
+        int exitValue = -1;
+        try {
+            exitValue = p.waitFor();
+        } catch (InterruptedException ie) {
+            Thread.currentThread().interrupt();
+        }
+
+        readOutputAndError(p.getInputStream(), outputFile, p.getErrorStream(), errorFile);
+
+        return exitValue;
+
+    }
+
+    /**
+     * Execute a bash command. We can handle complex bash commands including multiple executions (; | && ||), quotes,
+     * expansions ($), escapes (\), e.g.: "cd /abc/def; mv ghi 'older ghi '$(whoami)"
+     * 
+     * @param command
+     * @return true if bash got started, but your command may have failed.
+     */
+    public static int executeBashCommandWithoutOutput(String command) throws IOException, InterruptedException {
+
+        Runtime r = Runtime.getRuntime();
+        // Use bash -c so we can handle things like multi commands separated by ; and
+        // things like quotes, $, |, and \. My tests show that command comes as
+        // one argument to bash, so we do not need to quote it to make it one thing.
+        // Also, exec may object if it does not have an executable file as the first thing,
+        // so having bash here makes it happy provided bash is installed and in path.
+        String[] commands = { "bash", "-c", command };
+
+        System.out.println("[DEBUG] Executed command: " + command);
+
+        Process p = r.exec(commands);
+
+        int exitValue = -1;
+        try {
+            exitValue = p.waitFor();
+        } catch (InterruptedException ie) {
+            Thread.currentThread().interrupt();
+        }
+
+        return exitValue;
+
     }
 
     /**

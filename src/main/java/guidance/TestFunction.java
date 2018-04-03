@@ -76,7 +76,7 @@ public class TestFunction {
         System.out.println(Arrays.toString(args));
         // collectSummaryWrapper(args);
         //filterByAllWrapper(args);
-        //mergeOfChunksWrapper(args);
-        generateTopHits(args);
+        mergeOfChunksWrapper(args);
+        //generateTopHits(args);
     }
 }

@@ -2,3 +2,7 @@
 .project
 .settings/
 target/
+dependency-reduced-pom.xml
+*.jar
+pom.xml.versionsBackup
+

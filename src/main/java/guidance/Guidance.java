@@ -1032,6 +1032,7 @@ public class Guidance {
             int indexCC = 0;
             int indexXFC = 0;
 
+            // CHUNK LOOP
             for (int j = minSize; j < maxSize; j = j + chunkSize) {
                 // -- FILTERED PART --
                 // Construct a queue with all the filtered panels to combine
@@ -1057,7 +1058,7 @@ public class Guidance {
                         filteredPanelsToCombine.add(filteredPanelA);
 
                         // Deletes B since it is no longer needed
-                        //new File(filteredPanelB).delete();
+                        // new File(filteredPanelB).delete();
                     }
                 }
 
@@ -1085,7 +1086,7 @@ public class Guidance {
                         condensedPanelsToCombine.add(condensedPanelA);
 
                         // Deletes B since it is no longer needed
-                        //new File(condensedPanelB).delete();
+                        // new File(condensedPanelB).delete();
                     }
                 }
 
@@ -1109,13 +1110,14 @@ public class Guidance {
                         FileUtils.gzipFile(plainfilteredCombinePerChunk, filteredCombinePerChunk);
                         new File(plainfilteredCombinePerChunk).delete();
                     }
+                    /*
                     if (DEBUG) {
                         LOGGER.debug(
                                 "[Guidance] Merging filtered into chunk-file: " + filteredCombinePerChunk + " and " + chunkResultsFiltered);
                     }
                     doMergeTwoChunksInTheFirst(parsingArgs, listOfCommands, filteredCombinePerChunk, chunkResultsFiltered,
                             Integer.toString(chr), FILTERED);
-
+                    */
                     // We merge in the all files
                     if (DEBUG) {
                         LOGGER.debug("[Guidance] Merging filtered into ALL: " + filteredCombineAll + " and " + chunkResultsFiltered);
@@ -1149,7 +1151,7 @@ public class Guidance {
                 }
 
                 // Clean partial results
-                //new File(chunkResultsFiltered).delete();
+                // new File(chunkResultsFiltered).delete();
 
                 // -- COMBINE CONDENSED TO FINAL CHUNK AND ALL FILES
                 String chunkResultsCondensed = assocFilesInfo.getSummaryCondensedFile(ttIndex, mergeIndex, chr, lim1, lim2, chunkSize);
@@ -1168,12 +1170,13 @@ public class Guidance {
                     FileUtils.gzipFile(plainCondensedCombinePerChunk, condensedCombinePerChunk);
                     new File(plainCondensedCombinePerChunk).delete();
                 }
+                /*
                 if (DEBUG) {
                     LOGGER.debug(
                             "[Guidance] Merging combined into chunk-file: " + condensedCombinePerChunk + " and " + chunkResultsCondensed);
                 }
                 doMergeTwoChunksInTheFirst(parsingArgs, listOfCommands, condensedCombinePerChunk, chunkResultsCondensed,
-                        Integer.toString(chr), CONDENSED);
+                        Integer.toString(chr), CONDENSED);*/
 
                 // We merge in the all files
                 if (DEBUG) {
@@ -1184,7 +1187,7 @@ public class Guidance {
                 ++indexCC;
 
                 // Clean partial results
-                //new File(chunkResultsCondensed).delete();
+                // new File(chunkResultsCondensed).delete();
 
                 // Increase loop variables
                 lim1 = lim1 + chunkSize;
@@ -1914,7 +1917,8 @@ public class Guidance {
 
         if (parsingArgs.getStageStatus("mergeTwoChunks") == 1) {
             // Task
-            String cmdToStore = JAVA_HOME + "/java mergeTwoChunks " + reduceA + " " + reduceB + " " + reduceC + " " + theChromo + " " + type;
+            String cmdToStore = JAVA_HOME + "/java mergeTwoChunks " + reduceA + " " + reduceB + " " + reduceC + " " + theChromo + " "
+                    + type;
             listOfCommands.add(cmdToStore);
             try {
                 GuidanceImpl.mergeTwoChunks(reduceA, reduceB, reduceC, theChromo, type, cmdToStore);
