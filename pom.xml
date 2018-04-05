@@ -27,7 +27,7 @@
 	<!-- PROPERTIES -->
 	<properties>
 		<!-- COMPSs version -->
-		<compss.version>2.2.rc1710</compss.version>
+		<compss.version>2.2.rc1803</compss.version>
 
 		<!-- JUNIT Test -->
 		<junit.version>4.12</junit.version>
@@ -62,9 +62,9 @@
 
 	<!-- SOURCE CONTROL MANAGEMENT -->
 	<scm>
-		<connection>scm:svn:https://compss.bsc.es/svn/projects/guidance/</connection>
-		<developerConnection>scm:svn:https://compss.bsc.es/svn/projects/guidance/</developerConnection>
-		<url>https://compss.bsc.es/svn/projects/guidance/</url>
+		<connection>scm:git:http://compss.bsc.es/gitlab/compss/framework.git</connection>
+		<developerConnection>scm:git:http://compss.bsc.es/gitlab/compss/framework.git</developerConnection>
+		<url>http://compss.bsc.es/gitlab/compss/framework.git</url>
 	</scm>
 
 	<!-- REPOSITORIES -->
@@ -79,7 +79,7 @@
 		</repository>
 		<repository>
 			<id>compss-repo</id>
-			<name>BSC Grid computing and Clusters group</name>
+			<name>BSC Workflows and Distributed Computing group</name>
 			<url>http://compss.bsc.es/artifactory/libs-release</url>
 		</repository>
 	</repositories>
