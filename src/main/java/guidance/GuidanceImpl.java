@@ -43,6 +43,7 @@ import java.io.FileWriter;
 import java.io.FileReader;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
+import java.nio.file.Files;
 import java.io.IOException;
 
 import java.util.ArrayList;
@@ -3212,8 +3213,10 @@ public class GuidanceImpl {
         long startTime = System.currentTimeMillis();
 
         String reducePlainFile = reduceFileC.substring(0, reduceFileC.length() - 3);
-        String command1 = "zcat " + reduceFileA + " | grep -v Extrae > " + reducePlainFile;
-        String command2 = "zcat " + reduceFileB + " | grep -v Extrae | tail -n +2 >> " + reducePlainFile;
+        
+        /*
+        String command1 = "zcat " + reduceFileA + " > " + reducePlainFile;
+        String command2 = "zcat " + reduceFileB + " | tail -n +2 >> " + reducePlainFile;
         String command3 = "gzip -f " + reducePlainFile;
         
         try {
@@ -3233,7 +3236,16 @@ public class GuidanceImpl {
         } catch (IOException ioe) {
             throw new GuidanceTaskException(ioe);
         } 
+        */
+        
+        String command = "zcat " + reduceFileA + " > " + reducePlainFile + ";zcat " + reduceFileB + " | tail -n +2 >> " + reducePlainFile + ";gzip -f " + reducePlainFile;
 
+        try {
+            ProcessUtils.executeWithoutOutputs(command);
+        } catch (IOException ioe) {
+            throw new GuidanceTaskException(ioe);
+        } 
+        
         long stopTime = System.currentTimeMillis();
         long elapsedTime = (stopTime - startTime) / 1_000;
         if (DEBUG) {
@@ -4668,6 +4680,14 @@ public class GuidanceImpl {
         } else {
             throw new GuidanceTaskException("Error, the option (" + typeAllele + ") for creating alternative alleles is now correct!!");
         }
+    }
+    
+    public static void copyFile(String fileA, String fileB) throws IOException {
+        File srcFile = new File(fileA);
+        File destFile = new File(fileB);
+
+        // Rename file (or directory)
+        Files.copy(srcFile.toPath(), destFile.toPath());
     }
 
 }

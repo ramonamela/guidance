@@ -243,8 +243,10 @@ public class Guidance {
      * @param rpanelTypes
      * @param generalChromoInfo
      * @param listOfCommands
+     * @throws IOException
      */
-    private static void doMixed(ParseCmdLine parsingArgs, String outDir, List<String> rpanelTypes, ArrayList<String> listOfCommands) {
+    private static void doMixed(ParseCmdLine parsingArgs, String outDir, List<String> rpanelTypes, ArrayList<String> listOfCommands)
+            throws IOException {
         // Create some general objects
         int startChr = parsingArgs.getStart();
         int endChr = parsingArgs.getEnd();
@@ -739,7 +741,6 @@ public class Guidance {
                 }
 
                 if (processedChunks == 2 * numberOfChunks - 4) {
-                    reducedC = mergeFilesInfo.getReducedFilteredFile(ttIndex, rpanelIndex, chr, indexC);
                     doMergeTwoChunks(parsingArgs, listOfCommands, reducedA, reducedB, filteredByAllFile, theChromo, type);
                     indexC++;
                 } else {
@@ -776,11 +777,122 @@ public class Guidance {
                 }
 
                 if (processedChunks == 2 * numberOfChunks - 4) {
-                    reducedC = mergeFilesInfo.getReducedCondensedFile(ttIndex, rpanelIndex, chr, indexC);
                     doMergeTwoChunks(parsingArgs, listOfCommands, reducedA, reducedB, condensedFile, theChromo, type);
                     indexC++;
                 } else {
                     reducedC = mergeFilesInfo.getReducedCondensedFile(ttIndex, rpanelIndex, chr, indexC);
+                    doMergeTwoChunks(parsingArgs, listOfCommands, reducedA, reducedB, reducedC, theChromo, type);
+                    indexC++;
+                }
+
+                // Clean intermediate files
+                // File fA = new File(reducedA);
+                // fA.delete();
+                // File fB = new File(reducedB);
+                // fB.delete();
+
+            } // End of for Chunks
+        }
+    }
+
+    /**
+     * Method to perform the merging of chunks for each chromosome.
+     * 
+     * @param parsingArgs
+     * @param listOfCommands
+     * @param ttIndex
+     * @param rpanelIndex
+     * @param chr
+     * @param minSize
+     * @param maxSize
+     * @param chunkSize
+     * @param assocFilesInfo
+     * @param mergeFilesInfo
+     * @param type
+     */
+    private static void makeMergeOfChunksCombined(ParseCmdLine parsingArgs, ArrayList<String> listOfCommands, int ttIndex, int rpanelIndex,
+            int chr, int minSize, int maxSize, int chunkSize, AssocFiles assocFilesInfo, MergeFiles mergeFilesInfo, String type) {
+
+        String theChromo = Integer.toString(chr);
+        int lim1 = minSize;
+        int lim2 = lim1 + chunkSize - 1;
+
+        int numberOfChunks = maxSize / chunkSize;
+        int module = maxSize % chunkSize;
+        if (module != 0)
+            numberOfChunks++;
+
+        int indexA = 0;
+        int indexC = 0;
+        String reducedA = null;
+        String reducedB = null;
+        String reducedC = null;
+
+        String filteredByAllFile = mergeFilesInfo.getCombinedFilteredByAllFile(ttIndex, rpanelIndex, chr);
+        String condensedFile = mergeFilesInfo.getCombinedCondensedFile(ttIndex, rpanelIndex, chr);
+
+        if (type.equals(FILTERED)) {
+            // LOGGER.info("Number of chunks for testType " + ttIndex + " | rpanel " + rpanelIndex + " |chr " +
+            // chr + " " + numberOfChunks);
+            for (int processedChunks = 0; processedChunks < 2 * numberOfChunks - 2; processedChunks = processedChunks + 2) {
+                if (processedChunks < numberOfChunks) {
+                    reducedA = assocFilesInfo.getCombinedFilteredFile(ttIndex, rpanelIndex, chr, lim1, lim2, chunkSize);
+                    lim1 = lim1 + chunkSize;
+                    lim2 = lim2 + chunkSize;
+                } else {
+                    reducedA = mergeFilesInfo.getCombinedReducedFilteredFile(ttIndex, rpanelIndex, chr, indexA);
+                    indexA++;
+                }
+                if (processedChunks < numberOfChunks - 1) {
+                    reducedB = assocFilesInfo.getCombinedFilteredFile(ttIndex, rpanelIndex, chr, lim1, lim2, chunkSize);
+                    lim1 = lim1 + chunkSize;
+                    lim2 = lim2 + chunkSize;
+                } else {
+                    reducedB = mergeFilesInfo.getCombinedReducedFilteredFile(ttIndex, rpanelIndex, chr, indexA);
+                    indexA++;
+                }
+
+                if (processedChunks == 2 * numberOfChunks - 4) {
+                    doMergeTwoChunks(parsingArgs, listOfCommands, reducedA, reducedB, filteredByAllFile, theChromo, type);
+                    indexC++;
+                } else {
+                    reducedC = mergeFilesInfo.getCombinedReducedFilteredFile(ttIndex, rpanelIndex, chr, indexC);
+                    doMergeTwoChunks(parsingArgs, listOfCommands, reducedA, reducedB, reducedC, theChromo, type);
+                    indexC++;
+                }
+
+                // Clean intermediate files
+                // File fA = new File(reducedA);
+                // fA.delete();
+                // File fB = new File(reducedB);
+                // fB.delete();
+
+            } // End for Chunks
+
+        } else if (type.equals(CONDENSED)) {
+            for (int processedChunks = 0; processedChunks < 2 * numberOfChunks - 2; processedChunks = processedChunks + 2) {
+                if (processedChunks < numberOfChunks) {
+                    reducedA = assocFilesInfo.getCombinedCondensedFile(ttIndex, rpanelIndex, chr, lim1, lim2, chunkSize);
+                    lim1 = lim1 + chunkSize;
+                    lim2 = lim2 + chunkSize;
+                } else {
+                    reducedA = mergeFilesInfo.getCombinedReducedCondensedFile(ttIndex, rpanelIndex, chr, indexA);
+                    indexA++;
+                }
+                if (processedChunks < numberOfChunks - 1) {
+                    reducedB = assocFilesInfo.getCombinedCondensedFile(ttIndex, rpanelIndex, chr, lim1, lim2, chunkSize);
+                    lim1 = lim1 + chunkSize;
+                    lim2 = lim2 + chunkSize;
+                } else {
+                    reducedB = mergeFilesInfo.getCombinedReducedCondensedFile(ttIndex, rpanelIndex, chr, indexA);
+                    indexA++;
+                }
+
+                if (processedChunks == 2 * numberOfChunks - 4) {
+                    doMergeTwoChunks(parsingArgs, listOfCommands, reducedA, reducedB, condensedFile, theChromo, type);
+                    indexC++;
+                } else {
+                    reducedC = mergeFilesInfo.getCombinedReducedCondensedFile(ttIndex, rpanelIndex, chr, indexC);
                     doMergeTwoChunks(parsingArgs, listOfCommands, reducedA, reducedB, reducedC, theChromo, type);
                     indexC++;
                 }
@@ -953,10 +1065,12 @@ public class Guidance {
      * @param ttIndex
      * @param listOfCommands
      * @param generalChromoInfo
+     * @throws IOException
      * @throws GuidanceTaskException
      */
-    private static void makeCombinePanels(ParseCmdLine parsingArgs, AssocFiles assocFilesInfo, MergeFiles mergeFilesInfo,
-            CombinedPanelsFiles combinedPanelsFilesInfo, List<String> rpanelTypes, int ttIndex, ArrayList<String> listOfCommands) {
+    public static void makeCombinePanels(ParseCmdLine parsingArgs, AssocFiles assocFilesInfo, MergeFiles mergeFilesInfo,
+            CombinedPanelsFiles combinedPanelsFilesInfo, List<String> rpanelTypes, int ttIndex, ArrayList<String> listOfCommands)
+            throws IOException {
 
         final boolean refPanelCombine = parsingArgs.getRefPanelCombine();
         if (!refPanelCombine) {
@@ -1059,6 +1173,9 @@ public class Guidance {
 
                         // Deletes B since it is no longer needed
                         // new File(filteredPanelB).delete();
+                    } else {
+                        String destFilteredPanel = assocFilesInfo.getCombinedFilteredFile(ttIndex, 0, chr, lim1, lim2, chunkSize);
+                        GuidanceImpl.copyFile(filteredPanelA, destFilteredPanel);
                     }
                 }
 
@@ -1087,6 +1204,9 @@ public class Guidance {
 
                         // Deletes B since it is no longer needed
                         // new File(condensedPanelB).delete();
+                    } else {
+                        String destCondensedPanel = assocFilesInfo.getCombinedCondensedFile(ttIndex, 0, chr, lim1, lim2, chunkSize);
+                        GuidanceImpl.copyFile(condensedPanelA, destCondensedPanel);
                     }
                 }
 
@@ -1111,19 +1231,19 @@ public class Guidance {
                         new File(plainfilteredCombinePerChunk).delete();
                     }
                     /*
-                    if (DEBUG) {
-                        LOGGER.debug(
-                                "[Guidance] Merging filtered into chunk-file: " + filteredCombinePerChunk + " and " + chunkResultsFiltered);
-                    }
-                    doMergeTwoChunksInTheFirst(parsingArgs, listOfCommands, filteredCombinePerChunk, chunkResultsFiltered,
-                            Integer.toString(chr), FILTERED);
-                    */
+                     * if (DEBUG) { LOGGER.debug( "[Guidance] Merging filtered into chunk-file: " +
+                     * filteredCombinePerChunk + " and " + chunkResultsFiltered); }
+                     * doMergeTwoChunksInTheFirst(parsingArgs, listOfCommands, filteredCombinePerChunk,
+                     * chunkResultsFiltered, Integer.toString(chr), FILTERED);
+                     */
                     // We merge in the all files
                     if (DEBUG) {
                         LOGGER.debug("[Guidance] Merging filtered into ALL: " + filteredCombineAll + " and " + chunkResultsFiltered);
                     }
-                    doMergeTwoChunksInTheFirst(parsingArgs, listOfCommands, filteredCombineAll, chunkResultsFiltered, Integer.toString(chr),
-                            FILTERED);
+                    /*
+                     * doMergeTwoChunksInTheFirst(parsingArgs, listOfCommands, filteredCombineAll, chunkResultsFiltered,
+                     * Integer.toString(chr), FILTERED);
+                     */
                     ++indexFC;
                 } else {
                     // We merge in the chunk files
@@ -1141,12 +1261,12 @@ public class Guidance {
                         FileUtils.gzipFile(plainfilteredCombineXPerChunk, filteredCombineXPerChunk);
                         new File(plainfilteredCombineXPerChunk).delete();
                     }
-                    doMergeTwoChunksInTheFirst(parsingArgs, listOfCommands, filteredCombineXPerChunk, chunkResultsFiltered,
-                            Integer.toString(chr), FILTERED);
 
                     // We merge in the all files
-                    doMergeTwoChunksInTheFirst(parsingArgs, listOfCommands, filteredCombineAllX, chunkResultsFiltered,
-                            Integer.toString(chr), FILTERED);
+                    /*
+                     * doMergeTwoChunksInTheFirst(parsingArgs, listOfCommands, filteredCombineAllX,
+                     * chunkResultsFiltered, Integer.toString(chr), FILTERED);
+                     */
                     ++indexXFC;
                 }
 
@@ -1171,19 +1291,19 @@ public class Guidance {
                     new File(plainCondensedCombinePerChunk).delete();
                 }
                 /*
-                if (DEBUG) {
-                    LOGGER.debug(
-                            "[Guidance] Merging combined into chunk-file: " + condensedCombinePerChunk + " and " + chunkResultsCondensed);
-                }
-                doMergeTwoChunksInTheFirst(parsingArgs, listOfCommands, condensedCombinePerChunk, chunkResultsCondensed,
-                        Integer.toString(chr), CONDENSED);*/
+                 * if (DEBUG) { LOGGER.debug( "[Guidance] Merging combined into chunk-file: " + condensedCombinePerChunk
+                 * + " and " + chunkResultsCondensed); } doMergeTwoChunksInTheFirst(parsingArgs, listOfCommands,
+                 * condensedCombinePerChunk, chunkResultsCondensed, Integer.toString(chr), CONDENSED);
+                 */
 
                 // We merge in the all files
                 if (DEBUG) {
                     LOGGER.debug("[Guidance] Merging combined into ALL: " + condensedCombineAll + " and " + chunkResultsCondensed);
                 }
-                doMergeTwoChunksInTheFirst(parsingArgs, listOfCommands, condensedCombineAll, chunkResultsCondensed, Integer.toString(chr),
-                        CONDENSED);
+                /*
+                 * doMergeTwoChunksInTheFirst(parsingArgs, listOfCommands, condensedCombineAll, chunkResultsCondensed,
+                 * Integer.toString(chr), CONDENSED);
+                 */
                 ++indexCC;
 
                 // Clean partial results
@@ -1193,7 +1313,21 @@ public class Guidance {
                 lim1 = lim1 + chunkSize;
                 lim2 = lim2 + chunkSize;
             } // End for chunk
+            makeMergeOfChunksCombined(parsingArgs, listOfCommands, ttIndex, 0, chr, minSize, maxSize, chunkSize, assocFilesInfo,
+                    mergeFilesInfo, FILTERED);
+
+            makeMergeOfChunksCombined(parsingArgs, listOfCommands, ttIndex, 0, chr, minSize, maxSize, chunkSize, assocFilesInfo,
+                    mergeFilesInfo, CONDENSED);
+
         } // End for chromosomes
+
+        for (int chr = startChr; chr <= endChr; chr++) {
+            String filteredFile = mergeFilesInfo.getCombinedFilteredByAllFile(ttIndex, 0, chr);
+            doMergeTwoChunksInTheFirst(parsingArgs, listOfCommands, filteredCombineAll, filteredFile, Integer.toString(chr), FILTERED);
+
+            String condensedFile = mergeFilesInfo.getCombinedCondensedFile(ttIndex, 0, chr);
+            doMergeTwoChunksInTheFirst(parsingArgs, listOfCommands, condensedCombineAll, condensedFile, Integer.toString(chr), CONDENSED);
+        }
 
         // Finally, we create topHits from filteredCombined, and QQ and Manhattan plots from condensedCombined
         String topHitsCombinedResults = combinedPanelsFilesInfo.getTopHitsFile(ttIndex);
@@ -1207,6 +1341,7 @@ public class Guidance {
 
         doGenerateQQManhattanPlots(parsingArgs, listOfCommands, condensedCombineAll, combinedQqPlotPdfFile, combinedManhattanPlotPdfFile,
                 combinedQqPlotTiffFile, combinedManhattanPlotTiffFile, combinedCorrectedPvaluesFile);
+
     }
 
     /**
@@ -1892,12 +2027,11 @@ public class Guidance {
         if (parsingArgs.getStageStatus("combinePanelsComplex") == 1) {
             String cmdToStore = JAVA_HOME + "/java combinePanelsComplex " + resultsPanelA + " " + resultsPanelB + " " + lim1 + " " + lim2;
             listOfCommands.add(cmdToStore);
-
-            try {
-                GuidanceImpl.combinePanelsComplex(resultsPanelA, resultsPanelB, lim1, lim2, cmdToStore);
-            } catch (GuidanceTaskException gte) {
-                LOGGER.error("[Guidance] Exception trying the execution of combinePanelsComplex task", gte);
-            }
+            /*
+             * try { GuidanceImpl.combinePanelsComplex(resultsPanelA, resultsPanelB, lim1, lim2, cmdToStore); } catch
+             * (GuidanceTaskException gte) {
+             * LOGGER.error("[Guidance] Exception trying the execution of combinePanelsComplex task", gte); }
+             */
         }
     }
 
@@ -1920,11 +2054,13 @@ public class Guidance {
             String cmdToStore = JAVA_HOME + "/java mergeTwoChunks " + reduceA + " " + reduceB + " " + reduceC + " " + theChromo + " "
                     + type;
             listOfCommands.add(cmdToStore);
+
             try {
                 GuidanceImpl.mergeTwoChunks(reduceA, reduceB, reduceC, theChromo, type, cmdToStore);
             } catch (GuidanceTaskException gte) {
                 LOGGER.error("[Guidance] Exception trying the execution of mergeTwoChunks task", gte);
             }
+
         }
     }
 
@@ -1946,11 +2082,13 @@ public class Guidance {
             // Task
             String cmdToStore = JAVA_HOME + "/java mergeTwoChunksInTheFirst " + reduceA + " " + reduceB + " " + theChromo;
             listOfCommands.add(cmdToStore);
+
             try {
                 GuidanceImpl.mergeTwoChunksInTheFirst(reduceA, reduceB, theChromo, type, cmdToStore);
             } catch (GuidanceTaskException gte) {
                 LOGGER.error("[Guidance] Exception trying the execution of mergeTwoChunks task", gte);
             }
+
         }
     }
 

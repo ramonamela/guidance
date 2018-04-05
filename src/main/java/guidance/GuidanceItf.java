@@ -445,7 +445,8 @@ public interface GuidanceItf {
 
    @Method(declaringClass = "guidance.GuidanceImpl")
    @Constraints(computingUnits="1", memorySize = "1.0f")
-   void deleteFile(
-      @Parameter(type = Type.FILE, direction = Direction.INOUT) String sourceFile);
+   void copyFile(
+      @Parameter(type = Type.FILE, direction = Direction.IN) String fileA,
+      @Parameter(type = Type.FILE, direction = Direction.OUT) String fileB);
 
 }

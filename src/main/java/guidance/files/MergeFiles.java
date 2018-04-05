@@ -75,8 +75,10 @@ public class MergeFiles {
 
     private ArrayList<ArrayList<ArrayList<ArrayList<GenericFile>>>> testTypeCombinedReducedFilteredFile = new ArrayList<>();
     private ArrayList<ArrayList<ArrayList<ArrayList<GenericFile>>>> testTypeCombinedReducedCondensedFile = new ArrayList<>();
-
     private ArrayList<ArrayList<ArrayList<ArrayList<GenericFile>>>> testTypeCombinedReducedFilteredXFile = new ArrayList<>();
+
+    private ArrayList<ArrayList<ArrayList<GenericFile>>> testTypeCombinedFilteredByAllFile = new ArrayList<>();
+    private ArrayList<ArrayList<ArrayList<GenericFile>>> testTypeCombinedCondensedFile = new ArrayList<>();
 
     private int startChr = 0;
     private int endChr = 0;
@@ -128,8 +130,10 @@ public class MergeFiles {
 
             ArrayList<ArrayList<ArrayList<GenericFile>>> rpanelCombinedReducedFilteredFile = new ArrayList<>();
             ArrayList<ArrayList<ArrayList<GenericFile>>> rpanelCombinedReducedCondensedFile = new ArrayList<>();
-
             ArrayList<ArrayList<ArrayList<GenericFile>>> rpanelCombinedReducedFilteredXFile = new ArrayList<>();
+
+            ArrayList<ArrayList<GenericFile>> rpanelCombinedFilteredByAllFile = new ArrayList<>();
+            ArrayList<ArrayList<GenericFile>> rpanelCombinedCondensedFile = new ArrayList<>();
 
             for (int j = 0; j < refPanels.size(); j++) {
                 rPanel = refPanels.get(j);
@@ -150,8 +154,10 @@ public class MergeFiles {
 
                 ArrayList<ArrayList<GenericFile>> chromoListCombinedReducedFilteredFile = new ArrayList<>();
                 ArrayList<ArrayList<GenericFile>> chromoListCombinedReducedCondensedFile = new ArrayList<>();
-
                 ArrayList<ArrayList<GenericFile>> chromoListCombinedReducedFilteredXFile = new ArrayList<>();
+
+                ArrayList<GenericFile> chromoCombinedFilteredByAllFile = new ArrayList<>();
+                ArrayList<GenericFile> chromoCombinedCondensedFile = new ArrayList<>();
 
                 boolean addExtraCount = false;
                 for (int i = this.startChr; i <= this.endChr; i++) {
@@ -269,6 +275,18 @@ public class MergeFiles {
                     chromoListCombinedReducedCondensedFile.add(listCombinedReducedCondensedFile);
                     chromoListCombinedReducedFilteredXFile.add(listCombinedReducedFilteredXFile);
 
+                    String tmpCombinedFilteredByAllFileName = "chr_" + chromo + "_" + testTypeName + "_" + rPanel
+                            + "_combined_filtered_by_maf_info_hwe.txt.gz";
+                    GenericFile myCombinedFilteredByAllFile = new GenericFile(testTypeOutDir2, tmpCombinedFilteredByAllFileName,
+                            UNCOMPRESSED_FILE, "none");
+                    chromoCombinedFilteredByAllFile.add(myCombinedFilteredByAllFile);
+
+                    String tmpCombinedCondensedFileName = "chr_" + chromo + "_" + testTypeName + "_" + rPanel
+                            + "_combined_condensed.txt.gz";
+                    GenericFile myCombinedCondensedFile = new GenericFile(testTypeOutDir2, tmpCombinedCondensedFileName, UNCOMPRESSED_FILE,
+                            "none");
+                    chromoCombinedCondensedFile.add(myCombinedCondensedFile);
+
                     String tmpFilteredByAllFileName = "chr_" + chromo + "_" + testTypeName + "_" + rPanel
                             + "_filtered_by_maf_info_hwe.txt.gz";
                     GenericFile myFilteredByAllFile = new GenericFile(tmpChrDir, tmpFilteredByAllFileName, UNCOMPRESSED_FILE, "none");
@@ -283,16 +301,17 @@ public class MergeFiles {
                 rpanelReducedFile.add(chromoListReducedFile);
                 rpanelReducedFilteredFile.add(chromoListReducedFilteredFile);
                 rpanelReducedCondensedFile.add(chromoListReducedCondensedFile);
+                rpanelFilteredByAllFile.add(chromoFilteredByAllFile);
+                rpanelCondensedFile.add(chromoCondensedFile);
 
                 // Only for all the panels combined
                 if (j == 0) {
                     rpanelCombinedReducedFilteredFile.add(chromoListCombinedReducedFilteredFile);
                     rpanelCombinedReducedCondensedFile.add(chromoListCombinedReducedCondensedFile);
                     rpanelCombinedReducedFilteredXFile.add(chromoListCombinedReducedFilteredXFile);
+                    rpanelCombinedFilteredByAllFile.add(chromoCombinedFilteredByAllFile);
+                    rpanelCombinedCondensedFile.add(chromoCombinedCondensedFile);
                 }
-
-                rpanelFilteredByAllFile.add(chromoFilteredByAllFile);
-                rpanelCondensedFile.add(chromoCondensedFile);
 
                 // Here we have to create an additional list of condensed files that will be used when we execute
                 // jointCondensedFiles Task, for all chromosomes.
@@ -396,6 +415,9 @@ public class MergeFiles {
 
             this.testTypeFilteredByAllFile.add(rpanelFilteredByAllFile);
             this.testTypeCondensedFile.add(rpanelCondensedFile);
+
+            this.testTypeCombinedFilteredByAllFile.add(rpanelCombinedFilteredByAllFile);
+            this.testTypeCombinedCondensedFile.add(rpanelCombinedCondensedFile);
 
             this.testTypeAdditionalCondensedFile.add(rpanelAdditionalCondensedFile);
             this.testTypeAdditionalFilteredByAllFile.add(rpanelAdditionalFilteredByAllFile);
@@ -1092,6 +1114,100 @@ public class MergeFiles {
         return this.testTypeFilteredByAllFile.get(testTypeIndex).get(rPanelIndex).get(i).getFinalStatus();
     }
 
+    
+    
+    
+    
+    
+    
+    /**
+     * Method to access filterByAllFileName
+     * 
+     * @param testTypeIndex
+     * @param rPanelIndex
+     * @param chromo
+     * @return
+     */
+    public String getCombinedFilterByAllFileName(int testTypeIndex, int rPanelIndex, int chromo) {
+        // Check that chromo index is within the bounds
+        checkChromoIndex(chromo);
+
+        int i = chromo - this.startChr;
+
+        // Check the index
+        int maxIndex = this.testTypeCombinedFilteredByAllFile.get(testTypeIndex).get(rPanelIndex).size();
+        checkIndex(i, maxIndex, chromo);
+
+        return this.testTypeCombinedFilteredByAllFile.get(testTypeIndex).get(rPanelIndex).get(i).getFullName();
+    }
+
+    /**
+     * Method to access filteredByAllFile
+     * 
+     * @param testTypeIndex
+     * @param rPanelIndex
+     * @param chromo
+     * @return
+     */
+    public String getCombinedFilteredByAllFile(int testTypeIndex, int rPanelIndex, int chromo) {
+        // Check that chromo index is within the bounds
+        checkChromoIndex(chromo);
+
+        int i = chromo - this.startChr;
+
+        // Check the index
+        int maxIndex = this.testTypeCombinedFilteredByAllFile.get(testTypeIndex).get(rPanelIndex).size();
+        checkIndex(i, maxIndex, chromo);
+
+        return this.testTypeCombinedFilteredByAllFile.get(testTypeIndex).get(rPanelIndex).get(i).getFullName();
+    }
+
+    /**
+     * Method to set the finalStatus of the filteredByAllFile
+     * 
+     * @param testTypeIndex
+     * @param rPanelIndex
+     * @param chromo
+     * @param finalStatus
+     */
+    public void setCombinedFilteredByAllFileFinalStatus(int testTypeIndex, int rPanelIndex, int chromo, String finalStatus) {
+        // Check that chromo index is within the bounds
+        checkChromoIndex(chromo);
+
+        int i = chromo - this.startChr;
+
+        // Check the index
+        int maxIndex = this.testTypeCombinedFilteredByAllFile.get(testTypeIndex).get(rPanelIndex).size();
+        checkIndex(i, maxIndex, chromo);
+
+        this.testTypeCombinedFilteredByAllFile.get(testTypeIndex).get(rPanelIndex).get(i).setFinalStatus(finalStatus);
+    }
+
+    /**
+     * Method to access the finalStatus of the filteredByAllFile
+     * 
+     * @param testTypeIndex
+     * @param rPanelIndex
+     * @param chromo
+     * @return
+     */
+    public String getCombinedFilteredByAllFileFinalStatus(int testTypeIndex, int rPanelIndex, int chromo) {
+        // Check that chromo index is within the bounds
+        checkChromoIndex(chromo);
+
+        int i = chromo - this.startChr;
+
+        // Check the index
+        int maxIndex = this.testTypeCombinedFilteredByAllFile.get(testTypeIndex).get(rPanelIndex).size();
+        checkIndex(i, maxIndex, chromo);
+
+        return this.testTypeCombinedFilteredByAllFile.get(testTypeIndex).get(rPanelIndex).get(i).getFinalStatus();
+    }
+
+    
+    
+    
+    
     /**
      * Method to access condensedFileName
      * 
@@ -1174,6 +1290,90 @@ public class MergeFiles {
         checkIndex(i, maxIndex, chromo);
 
         return this.testTypeCondensedFile.get(testTypeIndex).get(rPanelIndex).get(i).getFinalStatus();
+    }
+
+    /**
+     * Method to access condensedFileName
+     * 
+     * @param testTypeIndex
+     * @param rPanelIndex
+     * @param chromo
+     * @return
+     */
+    public String getCombinedCondensedFileName(int testTypeIndex, int rPanelIndex, int chromo) {
+        // Check that chromo index is within the bounds
+        checkChromoIndex(chromo);
+
+        int i = chromo - this.startChr;
+
+        // Check the index
+        int maxIndex = this.testTypeCombinedCondensedFile.get(testTypeIndex).get(rPanelIndex).size();
+        checkIndex(i, maxIndex, chromo);
+
+        return this.testTypeCombinedCondensedFile.get(testTypeIndex).get(rPanelIndex).get(i).getFullName();
+    }
+
+    /**
+     * Method to access condensedFile
+     * 
+     * @param testTypeIndex
+     * @param rPanelIndex
+     * @param chromo
+     * @return
+     */
+    public String getCombinedCondensedFile(int testTypeIndex, int rPanelIndex, int chromo) {
+        // Check that chromo index is within the bounds
+        checkChromoIndex(chromo);
+
+        int i = chromo - this.startChr;
+
+        // Check the index
+        int maxIndex = this.testTypeCombinedCondensedFile.get(testTypeIndex).get(rPanelIndex).size();
+        checkIndex(i, maxIndex, chromo);
+
+        return this.testTypeCombinedCondensedFile.get(testTypeIndex).get(rPanelIndex).get(i).getFullName();
+    }
+
+    /**
+     * Method to set the finalStatus of the condensedFile
+     * 
+     * @param testTypeIndex
+     * @param rPanelIndex
+     * @param chromo
+     * @param finalStatus
+     */
+    public void setCombinedCondensedFileFinalStatus(int testTypeIndex, int rPanelIndex, int chromo, String finalStatus) {
+        // Check that chromo index is within the bounds
+        checkChromoIndex(chromo);
+
+        int i = chromo - this.startChr;
+
+        // Check the index
+        int maxIndex = this.testTypeCombinedCondensedFile.get(testTypeIndex).get(rPanelIndex).size();
+        checkIndex(i, maxIndex, chromo);
+
+        this.testTypeCombinedCondensedFile.get(testTypeIndex).get(rPanelIndex).get(i).setFinalStatus(finalStatus);
+    }
+
+    /**
+     * Method to access the finalStatus of the condensedFile
+     * 
+     * @param testTypeIndex
+     * @param rPanelIndex
+     * @param chromo
+     * @return
+     */
+    public String getCombinedCondensedFileFinalStatus(int testTypeIndex, int rPanelIndex, int chromo) {
+        // Check that chromo index is within the bounds
+        checkChromoIndex(chromo);
+
+        int i = chromo - this.startChr;
+
+        // Check the index
+        int maxIndex = this.testTypeCombinedCondensedFile.get(testTypeIndex).get(rPanelIndex).size();
+        checkIndex(i, maxIndex, chromo);
+
+        return this.testTypeCombinedCondensedFile.get(testTypeIndex).get(rPanelIndex).get(i).getFinalStatus();
     }
 
     /**

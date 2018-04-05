@@ -54,8 +54,11 @@ public class ProcessUtils {
      * @throws IOException
      */
     public static int executeWithoutOutputs(String cmd) throws IOException {
+
+        String[] commandArray = { "bash", "-c", cmd };
+
         // Create the process
-        ProcessBuilder pb = new ProcessBuilder(cmd.split(" "));
+        ProcessBuilder pb = new ProcessBuilder(commandArray);
 
         // Remove unnecessary environment
         pb.environment().remove("LD_PRELOAD");

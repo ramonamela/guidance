@@ -1,9 +1,18 @@
 package guidance;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 
 import guidance.GuidanceImpl;
 import guidance.exceptions.GuidanceTaskException;
+import guidance.files.AssocFiles;
+import guidance.files.CombinedPanelsFiles;
+import guidance.files.MergeFiles;
+import guidance.utils.ParseCmdLine;
 
 
 public class TestFunction {
@@ -71,12 +80,50 @@ public class TestFunction {
             e.printStackTrace();
         }
     }
+    
+    private static void printPaths(String[] args) throws IOException {
+        
+        ArrayList<String> listOfCommands = new ArrayList<>();
+        
+        ParseCmdLine parsingArgs = new ParseCmdLine(args);
+        
+        String outDir = parsingArgs.getOutDir();
+        
+        ArrayList<String> rpanelTypes = new ArrayList<>(parsingArgs.getRpanelTypes());
+        
+        // Create the names for Association files
+        AssocFiles assocFilesInfo = new AssocFiles(parsingArgs, outDir, rpanelTypes);
+
+        // Create the names for Merge files
+        MergeFiles mergeFilesInfo = new MergeFiles(parsingArgs, outDir, rpanelTypes);
+        
+        CombinedPanelsFiles combinedPanelsFilesInfo = new CombinedPanelsFiles(parsingArgs, outDir, rpanelTypes);
+        
+        Guidance.makeCombinePanels(parsingArgs, assocFilesInfo, mergeFilesInfo, combinedPanelsFilesInfo, rpanelTypes, 0, listOfCommands);
+        
+        File listOfStages = new File("/gpfs/scratch/pr1ees00/pr1ees14/GCAT/SHAPEIT_IMPUTE/list.txt");
+        try {
+            listOfStages.createNewFile();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(listOfStages))) {
+            for (String str : listOfCommands) {
+                writer.write(str);
+                writer.newLine();
+                writer.newLine();
+            }
+            // Close the file with the list of commands...
+            writer.flush();
+        }
+    }
 
     public static void main(String[] args) throws Exception {
         System.out.println(Arrays.toString(args));
         // collectSummaryWrapper(args);
         //filterByAllWrapper(args);
-        mergeOfChunksWrapper(args);
+        //mergeOfChunksWrapper(args);
         //generateTopHits(args);
+        printPaths(args);
     }
 }
