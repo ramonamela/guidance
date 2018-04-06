@@ -59,11 +59,9 @@ public class TestFunction {
         String reduceA = args[0];
         String reduceB = args[1];
         String reduceC = args[2];
-        String theChromo = args[3];
-        String type = args[4];
         String cmdToStore = "";
         try {
-            GuidanceImpl.mergeTwoChunks(reduceA, reduceB, reduceC, theChromo, type, cmdToStore);
+            GuidanceImpl.mergeTwoChunks(reduceA, reduceB, reduceC, cmdToStore);
         } catch (GuidanceTaskException e) {
             e.printStackTrace();
         }
@@ -120,10 +118,18 @@ public class TestFunction {
 
     public static void main(String[] args) throws Exception {
         System.out.println(Arrays.toString(args));
-        // collectSummaryWrapper(args);
-        //filterByAllWrapper(args);
-        //mergeOfChunksWrapper(args);
-        //generateTopHits(args);
-        printPaths(args);
+        int option = 4;
+        switch (option) {
+        case 0:
+        	collectSummaryWrapper(args);
+        case 1:
+        	filterByAllWrapper(args);
+        case 2:
+        	mergeOfChunksWrapper(args);
+        case 3:
+        	generateTopHits(args);
+        case 4:
+        	printPaths(args);
+        }
     }
 }

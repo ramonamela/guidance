@@ -364,8 +364,6 @@ public interface GuidanceItf {
       @Parameter(type = Type.FILE, direction = Direction.IN) String reduceFileA,
       @Parameter(type = Type.FILE, direction = Direction.IN) String reduceFileB,
       @Parameter(type = Type.FILE, direction = Direction.OUT) String reduceFileC,
-      @Parameter(type = Type.STRING, direction = Direction.IN) String chrS,
-      @Parameter(type = Type.STRING, direction = Direction.IN) String type,
       @Parameter(type = Type.STRING, direction = Direction.IN) String cmdToStore);
    
    @Method(declaringClass = "guidance.GuidanceImpl")

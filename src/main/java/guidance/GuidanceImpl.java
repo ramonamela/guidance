@@ -3197,7 +3197,7 @@ public class GuidanceImpl {
      * @throws InterruptedException
      * @throws Exception
      */
-    public static void mergeTwoChunks(String reduceFileA, String reduceFileB, String reduceFileC, String chrS, String type,
+    public static void mergeTwoChunks(String reduceFileA, String reduceFileB, String reduceFileC,
             String cmdToStore) throws GuidanceTaskException {
 
         if (DEBUG) {
@@ -3269,10 +3269,10 @@ public class GuidanceImpl {
      * @throws InterruptedException
      * @throws Exception
      */
-    public static void mergeTwoChunksInTheFirst(String reduceFileA, String reduceFileB, String chrS, String type, String cmdToStore)
+    public static void mergeTwoChunksInTheFirst(String reduceFileA, String reduceFileB, String cmdToStore)
             throws GuidanceTaskException {
 
-        mergeTwoChunks(reduceFileA, reduceFileB, reduceFileA, chrS, type, cmdToStore);
+        mergeTwoChunks(reduceFileA, reduceFileB, reduceFileA, cmdToStore);
     }
 
     /**
