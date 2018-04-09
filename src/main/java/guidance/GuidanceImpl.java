@@ -2994,7 +2994,8 @@ public class GuidanceImpl {
      * @throws Exception
      */
     public static void generateQQManhattanPlots(String lastCondensedFile, String qqPlotFile, String manhattanPlotFile,
-            String qqPlotTiffFile, String manhattanPlotTiffFile, String correctedPvaluesFile, String cmdToStore)
+            //String qqPlotTiffFile, String manhattanPlotTiffFile, String correctedPvaluesFile, String cmdToStore)
+    		String qqPlotTiffFile, String manhattanPlotTiffFile, String cmdToStore)
             throws GuidanceTaskException {
 
         String rScriptBinDir = loadFromEnvironment(RSCRIPTBINDIR, HEADER_GENERATE_QQ_MANHATTAN_PLOTS);
@@ -3007,7 +3008,6 @@ public class GuidanceImpl {
             System.out.println("[DEBUG] \t- manhattanPlotFile             : " + manhattanPlotFile);
             System.out.println("[DEBUG] \t- qqPlotTiffFile                : " + qqPlotTiffFile);
             System.out.println("[DEBUG] \t- manhattanPlotTiffFile         : " + manhattanPlotTiffFile);
-            System.out.println("[DEBUG] \t- Output outputCondensedFile    : " + correctedPvaluesFile);
             System.out.println(NEW_LINE);
             System.out.println("[DEBUG] \t- WARN: R Binary output on file " + lastCondensedFile + STDOUT_EXTENSION);
             System.out.println("[DEBUG] \t- WARN: R Binary error on file " + lastCondensedFile + STDERR_EXTENSION);
@@ -3024,7 +3024,7 @@ public class GuidanceImpl {
 
         String cmd = null;
         cmd = rScriptBinDir + "/Rscript " + rScriptDir + "/qqplot_manhattan.R " + theInputFile + " " + qqPlotFile + " " + manhattanPlotFile
-                + " " + qqPlotTiffFile + " " + manhattanPlotTiffFile + " " + correctedPvaluesFile;
+                + " " + qqPlotTiffFile + " " + manhattanPlotTiffFile;
 
         if (DEBUG) {
             System.out.println("\n[DEBUG] Cmd -> " + cmd);
@@ -3419,8 +3419,8 @@ public class GuidanceImpl {
                     // assocList.add(splitted[3]);
 
                     // We store everything, from the line.
-                    int index_field = 0;
-                    for (index_field = 0; index_field < splitted.length; index_field++) {
+                    int index_field;
+                    for (index_field = 2; index_field < splitted.length; index_field++) {
                         assocList.add(splitted[index_field]);
                     }
 
@@ -4593,7 +4593,7 @@ public class GuidanceImpl {
             }
         } else {
             // 67 is the number of field in a mixed assocArray
-            for (int i = 4; i < real_length_assoc; i++) {
+            for (int i = 6; i < real_length_assoc; i++) {
                 summaryTmp.add("NA");
             }
         }

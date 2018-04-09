@@ -2148,7 +2148,7 @@ public class Guidance {
 
 			try {
 				GuidanceImpl.generateQQManhattanPlots(condensedFile, qqPlotFile, manhattanPlotFile, qqPlotTiffFile,
-						manhattanPlotTiffFile, correctedPvaluesFile, cmdToStore);
+						manhattanPlotTiffFile, cmdToStore);
 			} catch (GuidanceTaskException gte) {
 				LOGGER.error("[Guidance] Exception trying the execution of generateQQManhattanPlots task", gte);
 			}
