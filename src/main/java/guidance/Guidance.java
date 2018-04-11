@@ -412,6 +412,7 @@ public class Guidance {
 					int maxSize = ChromoInfo.getMaxSize(chr);
 					int lim1 = minSize;
 					int lim2 = lim1 + chunkSize - 1;
+					String panelName = rpanelTypes.get(panel);
 					/*
 					 * for(j=minSize; j<maxSize; j = j + chunkSize) {
 					 * makeAssociationPerChunk(parsingArgs,tt, kk, i, lim1, lim2,
@@ -435,11 +436,10 @@ public class Guidance {
 					for (int j = minSize; j < maxSize; j = j + chunkSize) {
 						if (DEBUG) {
 							String testName = parsingArgs.getTestTypeName(test);
-							String panelName = rpanelTypes.get(panel);
 							LOGGER.debug("Making association for TEST " + testName + ", PANEL " + panelName
 									+ ", CHROMO " + chr + ", CHUNK " + lim1 + " - " + lim2);
 						}
-						makeAssociationPerChunk(parsingArgs, test, panel, chr, lim1, lim2, imputationFilesInfo,
+						makeAssociationPerChunk(parsingArgs, test, panel, panelName, chr, lim1, lim2, imputationFilesInfo,
 								commonFilesInfo, assocFilesInfo, listOfCommands);
 
 						lim1 = lim1 + chunkSize;
@@ -681,7 +681,7 @@ public class Guidance {
 	 * @param assocFilesInfo
 	 * @param listOfCommands
 	 */
-	private static void makeAssociationPerChunk(ParseCmdLine parsingArgs, int testTypeIndex, int panelIndex,
+	private static void makeAssociationPerChunk(ParseCmdLine parsingArgs, int testTypeIndex, int panelIndex, String rpanelName,
 			int chrNumber, int lim1, int lim2, ImputationFiles imputationFilesInfo, CommonFiles commonFilesInfo,
 			AssocFiles assocFilesInfo, ArrayList<String> listOfCommands) {
 
@@ -730,7 +730,7 @@ public class Guidance {
 		String assocCondensed = assocFilesInfo.getSummaryCondensedFile(testTypeIndex, panelIndex, chrNumber, lim1, lim2,
 				chunkSize);
 
-		doFilterByAll(parsingArgs, listOfCommands, summaryFile, assocFilteredByAll, assocCondensed);
+		doFilterByAll(parsingArgs, listOfCommands, summaryFile, assocFilteredByAll, assocCondensed, rpanelName);
 	}
 
 	/**
@@ -2288,7 +2288,7 @@ public class Guidance {
 	 * @param outputCondensedFile
 	 */
 	private static void doFilterByAll(ParseCmdLine parsingArgs, ArrayList<String> listOfCommands, String inputFile,
-			String outputFile, String outputCondensedFile) {
+			String outputFile, String outputCondensedFile, String rpanelName) {
 
 		double mafThreshold = parsingArgs.getMafThreshold();
 		double infoThreshold = parsingArgs.getInfoThreshold();
@@ -2305,12 +2305,12 @@ public class Guidance {
 		// Task
 		if (parsingArgs.getStageStatus("filterByAll") == 1) {
 			String cmdToStore = JAVA_HOME + "/java filterByAll " + inputFile + " " + outputFile + " "
-					+ outputCondensedFile + " " + mafThresholdS + " " + infoThresholdS + " " + hweCohortThresholdS + " "
+					+ outputCondensedFile + " " + rpanelName + " " + mafThresholdS + " " + infoThresholdS + " " + hweCohortThresholdS + " "
 					+ hweCasesThresholdS + " " + hweControlsThresholdS;
 
 			listOfCommands.add(cmdToStore);
 			try {
-				GuidanceImpl.filterByAll(inputFile, outputFile, outputCondensedFile, mafThresholdS, infoThresholdS,
+				GuidanceImpl.filterByAll(inputFile, outputFile, outputCondensedFile, rpanelName, mafThresholdS, infoThresholdS,
 						hweCohortThresholdS, hweCasesThresholdS, hweControlsThresholdS, cmdToStore);
 			} catch (GuidanceTaskException gte) {
 				LOGGER.error("[Guidance] Exception trying the execution of filterByAll task", gte);

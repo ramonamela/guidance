@@ -41,14 +41,15 @@ public class TestFunction {
         String inputFile = args[0];
         String outputFile = args[1];
         String outputCondesedFile = args[2];
-        String mafThresholdS = args[3];
-        String infoThresholdS = args[4];
-        String hweCohortThresholdS = args[5];
-        String hweCasesThresholdS = args[6];
-        String hweControlsThresholdS = args[7];
+        String panelName = args[3];
+        String mafThresholdS = args[4];
+        String infoThresholdS = args[5];
+        String hweCohortThresholdS = args[6];
+        String hweCasesThresholdS = args[7];
+        String hweControlsThresholdS = args[8];
         String cmdToStore = "";
         try {
-            GuidanceImpl.filterByAll(inputFile, outputFile, outputCondesedFile, mafThresholdS, infoThresholdS, hweCohortThresholdS,
+            GuidanceImpl.filterByAll(inputFile, outputFile, outputCondesedFile, panelName, mafThresholdS, infoThresholdS, hweCohortThresholdS,
                     hweCasesThresholdS, hweControlsThresholdS, cmdToStore);
         } catch (GuidanceTaskException e) {
             e.printStackTrace();
@@ -118,7 +119,7 @@ public class TestFunction {
 
     public static void main(String[] args) throws Exception {
         System.out.println(Arrays.toString(args));
-        int option = 4;
+        int option = 3;
         switch (option) {
         case 0:
         	collectSummaryWrapper(args);

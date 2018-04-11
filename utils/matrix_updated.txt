@@ -27,30 +27,30 @@ IMPUTE tool is used             | T d n  a d t m  n y t p  m h B F  F p P m  F a
                                 | d t d  g s s e  c o S t  y s l s  s s s x  s x x x  x k k k |
 ---------------------------------------- --------- -----------------------------------
 until_convertFromBedToBed       | 1 1 0  0 0 0 0  0 0 0 0  0 0 0 0  0 0 0 0  0 0 0 0  0 0 0 0 | 0x6000000
-until_phasing			| 1 1 1  1 0 0 0  0 0 0 0  0 0 0 0  0 0 0 0  0 0 0 0  0 0 0 0 | 0x7800000
-until_imputation		| 1 1 1  1 0 0 1  0 0 0 0  0 0 0 0  0 0 0 0  0 0 0 0  0 0 0 0 | 0x7900000
-until_association		| 1 1 1  1 0 0 1  0 1 1 1  0 0 0 0  0 0 0 0  0 0 0 0  0 0 0 0 | 0x7970000
+until_phasing			        | 1 1 1  1 0 0 0  0 0 0 0  0 0 0 0  0 0 0 0  0 0 0 0  0 0 0 0 | 0x7800000
+until_imputation		        | 1 1 1  1 0 0 1  0 0 0 0  0 0 0 0  0 0 0 0  0 0 0 0  0 0 0 0 | 0x7900000
+until_association		        | 1 1 1  1 0 0 1  0 1 1 1  0 0 0 0  0 0 0 0  0 0 0 0  0 0 0 0 | 0x7970000
 until_filterByAll               | 1 1 1  1 0 0 1  0 1 1 1  1 1 1 0  0 0 0 0  0 0 0 0  0 0 0 0 | 0x797E000  NEW
-until_summary			| 1 1 1  1 0 0 1  0 1 1 1  1 1 1 1  1 1 1 1  1 0 0 0  0 0 0 0 | 0x797FF80
-whole_workflow			| 1 1 1  1 0 0 1  0 1 1 1  1 1 1 1  1 1 1 1  1 1 1 1  1 0 0 0 | 0x797FFF8   ***
-from_phasing			| 0 0 0  0 0 0 1  0 1 1 1  1 1 1 1  1 1 1 1  1 1 1 1  1 0 0 0 | 0x017FFF8   ***
-from_phasing_to_summary		| 0 0 0  0 0 0 1  0 1 1 1  1 1 1 1  1 1 1 1  1 0 0 0  0 0 0 0 | 0x017FF80
+until_summary			        | 1 1 1  1 0 0 1  0 1 1 1  1 1 1 1  1 1 1 1  1 0 0 0  0 0 0 0 | 0x797FF80
+whole_workflow			        | 1 1 1  1 0 0 1  0 1 1 1  1 1 1 1  1 1 1 1  1 1 1 1  1 0 0 0 | 0x797FFF8   ***
+from_phasing			        | 0 0 0  0 0 0 1  0 1 1 1  1 1 1 1  1 1 1 1  1 1 1 1  1 0 0 0 | 0x017FFF8   ***
+from_phasing_to_summary		    | 0 0 0  0 0 0 1  0 1 1 1  1 1 1 1  1 1 1 1  1 0 0 0  0 0 0 0 | 0x017FF80
 from_phasing_to_filterByAll     | 0 0 0  0 0 0 1  0 1 1 1  1 1 1 0  0 0 0 0  0 0 0 0  0 0 0 0 | 0x017E000  NEW
-from_phasing_to_association	| 0 0 0  0 0 0 1  0 1 1 1  0 0 0 0  0 0 0 0  0 0 0 0  0 0 0 0 | 0x0170000
-from_phasing_to_imputation	| 0 0 0  0 0 0 1  0 0 0 0  0 0 0 0  0 0 0 0  0 0 0 0  0 0 0 0 | 0x0100000
-from_imputation			| 0 0 0  0 0 0 0  0 1 1 1  1 1 1 1  1 1 1 1  1 1 1 1  1 0 0 0 | 0x007FFF8 ***
-from_imputation_to_summary	| 0 0 0  0 0 0 0  0 1 1 1  1 1 1 1  1 1 1 1  1 0 0 0  0 0 0 0 | 0x007FF80
+from_phasing_to_association	    | 0 0 0  0 0 0 1  0 1 1 1  0 0 0 0  0 0 0 0  0 0 0 0  0 0 0 0 | 0x0170000
+from_phasing_to_imputation	    | 0 0 0  0 0 0 1  0 0 0 0  0 0 0 0  0 0 0 0  0 0 0 0  0 0 0 0 | 0x0100000
+from_imputation			        | 0 0 0  0 0 0 0  0 1 1 1  1 1 1 1  1 1 1 1  1 1 1 1  1 0 0 0 | 0x007FFF8 ***
+from_imputation_to_summary	    | 0 0 0  0 0 0 0  0 1 1 1  1 1 1 1  1 1 1 1  1 0 0 0  0 0 0 0 | 0x007FF80
 from_imputation_to_filterByAll  | 0 0 0  0 0 0 0  0 1 1 1  1 1 1 0  0 0 0 0  0 0 0 0  0 0 0 0 | 0x007E000  NEW
 from_imputation_to_association	| 0 0 0  0 0 0 0  0 1 1 1  0 0 0 0  0 0 0 0  0 0 0 0  0 0 0 0 | 0x0070000
 from_imputation_to_filterByInfo | 0 0 0  0 0 0 0  0 1 0 0  0 0 0 0  0 0 0 0  0 0 0 0  0 0 0 0 | 0x0040000
 from_filterByInfo_to_qctoolS    | 0 0 0  0 0 0 0  0 0 1 0  0 0 0 0  0 0 0 0  0 0 0 0  0 0 0 0 | 0x0020000
 from_qctoolS_to_association     | 0 0 0  0 0 0 0  0 0 0 1  0 0 0 0  0 0 0 0  0 0 0 0  0 0 0 0 | 0x0010000
-from_association		| 0 0 0  0 0 0 0  0 0 0 0  1 1 1 1  1 1 1 1  1 1 1 1  1 0 0 0 | 0x000FFF8   ***
+from_association		        | 0 0 0  0 0 0 0  0 0 0 0  1 1 1 1  1 1 1 1  1 1 1 1  1 0 0 0 | 0x000FFF8   ***
 from_association_to_filterByAll | 0 0 0  0 0 0 0  0 0 0 0  1 1 1 0  0 0 0 0  0 0 0 0  0 0 0 0 | 0x000E000  NEW
-from_association_to_summary	| 0 0 0  0 0 0 0  0 0 0 0  1 1 1 1  1 1 1 1  1 0 0 0  0 0 0 0 | 0x000FF80
+from_association_to_summary	    | 0 0 0  0 0 0 0  0 0 0 0  1 1 1 1  1 1 1 1  1 0 0 0  0 0 0 0 | 0x000FF80
 from_filterByAll                | 0 0 0  0 0 0 0  0 0 0 0  0 0 0 1  1 1 1 1  1 1 1 1  1 0 0 0 | 0x0001FF8  NEW
 from_filterByAll_to_summary     | 0 0 0  0 0 0 0  0 0 0 0  0 0 0 1  1 1 1 1  1 0 0 0  0 0 0 0 | 0x0001F80  NEW
-from_summary			| 0 0 0  0 0 0 0  0 0 0 0  0 0 0 0  0 0 0 0  0 1 1 1  1 0 0 0 | 0x0000078  ***
+from_summary			        | 0 0 0  0 0 0 0  0 0 0 0  0 0 0 0  0 0 0 0  0 1 1 1  1 0 0 0 | 0x0000078  ***
 
 -------------------------------------------------------------------------------
 

@@ -54,6 +54,12 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.zip.GZIPInputStream;
 
+import es.bsc.compss.types.annotations.Constraints;
+import es.bsc.compss.types.annotations.Parameter;
+import es.bsc.compss.types.annotations.parameter.Direction;
+import es.bsc.compss.types.annotations.parameter.Type;
+import es.bsc.compss.types.annotations.task.Method;
+
 
 public class GuidanceImpl {
 
@@ -1641,7 +1647,7 @@ public class GuidanceImpl {
      * @throws InterruptedException
      * @throws Exception
      */
-    public static void filterByAll(String inputFile, String outputFile, String outputCondensedFile, String mafThresholdS,
+    public static void filterByAll(String inputFile, String outputFile, String outputCondensedFile, String rpanelName, String mafThresholdS,
             String infoThresholdS, String hweCohortThresholdS, String hweCasesThresholdS, String hweControlsThresholdS, String cmdToStore)
             throws GuidanceTaskException {
 
@@ -1684,7 +1690,7 @@ public class GuidanceImpl {
             // I read the header
             String line = br.readLine();
             // Put the header in the output file.
-            writerFiltered.write(line);
+            writerFiltered.write(line + "\trefpanel");
             writerFiltered.newLine();
 
             inputFileHashTableIndex = Headers.createHashWithHeader(line, TAB);
@@ -1745,7 +1751,7 @@ public class GuidanceImpl {
                     if (cases_maf >= mafThreshold && controls_maf >= mafThreshold && info >= infoThreshold
                             && hweCohort >= hweCohortThreshold && hweCases >= hweCasesThreshold && hweControls >= hweControlsThreshold) {
 
-                        writerFiltered.write(line);
+                        writerFiltered.write(line + "\t" + rpanelName);
                         writerFiltered.newLine();
 
                         writerCondensed.write(chrbpb);

@@ -238,6 +238,7 @@ public interface GuidanceItf {
       @Parameter(type = Type.FILE, direction = Direction.IN) String inputFile,
       @Parameter(type = Type.FILE, direction = Direction.OUT) String outputFile,
       @Parameter(type = Type.FILE, direction = Direction.OUT) String outputCondensedFile,
+      @Parameter(type = Type.STRING, direction = Direction.IN) String rpanelName,
       @Parameter(type = Type.STRING, direction = Direction.IN) String mafThresholdS,
       @Parameter(type = Type.STRING, direction = Direction.IN) String infoThresholdS,
       @Parameter(type = Type.STRING, direction = Direction.IN) String hweCohortThresholdS,

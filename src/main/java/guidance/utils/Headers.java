@@ -156,7 +156,7 @@ public class Headers {
         headerMixedBuilder.append("frequentist_het_info").append("\t");
         headerMixedBuilder.append("frequentist_het_beta_1").append("\t");
         headerMixedBuilder.append("frequentist_het_se_1").append("\t");
-        headerMixedBuilder.append("comment").append("\t");
+        headerMixedBuilder.append("comment");
         return headerMixedBuilder.toString();
     }
 
