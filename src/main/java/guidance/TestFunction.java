@@ -98,7 +98,7 @@ public class TestFunction {
         
         CombinedPanelsFiles combinedPanelsFilesInfo = new CombinedPanelsFiles(parsingArgs, outDir, rpanelTypes);
         
-        Guidance.makeCombinePanels(parsingArgs, assocFilesInfo, mergeFilesInfo, combinedPanelsFilesInfo, rpanelTypes, 0, listOfCommands);
+        Guidance.makeCombinePanels(parsingArgs, assocFilesInfo, mergeFilesInfo, combinedPanelsFilesInfo, rpanelTypes, 0);
         
         File listOfStages = new File("/gpfs/scratch/pr1ees00/pr1ees14/GCAT/SHAPEIT_IMPUTE/list.txt");
         try {

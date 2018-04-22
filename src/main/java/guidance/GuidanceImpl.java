@@ -4691,7 +4691,7 @@ public class GuidanceImpl {
     public static void copyFile(String fileA, String fileB) throws IOException {
         File srcFile = new File(fileA);
         File destFile = new File(fileB);
-
+        
         // Rename file (or directory)
         Files.copy(srcFile.toPath(), destFile.toPath());
     }
