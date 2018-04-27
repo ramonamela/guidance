@@ -320,7 +320,7 @@ public class Guidance {
 		setFinalStatusForImputationFiles(parsingArgs, imputationFilesInfo, rpanelTypes);
 		setFinalStatusForAssocFiles(parsingArgs, assocFilesInfo, rpanelTypes);
 
-		// COMPSs.barrier();
+		//COMPSs.barrier();
 
 		// The number of Chromos to process is endChr - startChr + 1;
 		for (int chr = startChr; chr <= endChr; chr++) {
@@ -384,9 +384,16 @@ public class Guidance {
 						mixedFilteredHaplotypesSampleFile, mixedFilteredHaplotypesLogFile,
 						mixedFilteredHaplotypesVcfFile, mixedFilteredListOfSnpsFile, exclCgatFlag, exclSVFlag);
 
-			} // End of inputFormat GEN
+			} // End of inputFormat GEN	
+		}
 
-			flushCommands();
+		flushCommands();
+		//COMPSs.barrier();
+		
+		// The number of Chromos to process is endChr - startChr + 1;
+		for (int chr = startChr; chr <= endChr; chr++) {
+			
+			String gmapFile = parsingArgs.getGmapDir() + "/" + parsingArgs.getGmapFileName(chr);
 			
 			// ***********************************************
 			// * Now perform the imputation tasks *
@@ -419,7 +426,7 @@ public class Guidance {
 		// * comment out following line to include the synchronization point *
 		// *******************************************************************
 		// COMPSs.waitForAllTasks();
-		// COMPSs.barrier();
+		//COMPSs.barrier();
 
 		// Now we continue with the association
 		int numberOfTestTypes = parsingArgs.getNumberOfTestTypeName();
@@ -514,6 +521,7 @@ public class Guidance {
 						qqPlotTiffFile, manhattanPlotTiffFile);
 				
 				flushCommands();
+				//COMPSs.barrier();
 
 			} // End for refPanels
 
