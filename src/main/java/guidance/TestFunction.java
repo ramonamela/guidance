@@ -80,7 +80,7 @@ public class TestFunction {
         }
     }
     
-    private static void printPaths(String[] args) throws IOException {
+    private static void printPaths(String[] args) throws IOException, GuidanceTaskException {
         
         ArrayList<String> listOfCommands = new ArrayList<>();
         

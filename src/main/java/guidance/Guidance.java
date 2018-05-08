@@ -261,8 +261,9 @@ public class Guidance {
 	 * @param generalChromoInfo
 	 * @param listOfCommands
 	 * @throws IOException
+	 * @throws GuidanceTaskException 
 	 */
-	private static void doMixed(ParseCmdLine parsingArgs, String outDir, List<String> rpanelTypes) throws IOException {
+	private static void doMixed(ParseCmdLine parsingArgs, String outDir, List<String> rpanelTypes) throws IOException, GuidanceTaskException {
 		// Create some general objects
 		int startChr = parsingArgs.getStart();
 		int endChr = parsingArgs.getEnd();
@@ -936,11 +937,11 @@ public class Guidance {
 				}
 
 				if (processedChunks == 2 * numberOfChunks - 4) {
-					doMergeTwoChunks(parsingArgs, reducedA, reducedB, filteredByAllFile);
+					doMergeTwoChunksUnconditional(parsingArgs, reducedA, reducedB, filteredByAllFile);
 					indexC++;
 				} else {
 					reducedC = mergeFilesInfo.getCombinedReducedFilteredFile(ttIndex, rpanelIndex, chr, indexC);
-					doMergeTwoChunks(parsingArgs, reducedA, reducedB, reducedC);
+					doMergeTwoChunksUnconditional(parsingArgs, reducedA, reducedB, reducedC);
 					indexC++;
 				}
 
@@ -975,11 +976,11 @@ public class Guidance {
 				}
 
 				if (processedChunks == 2 * numberOfChunks - 4) {
-					doMergeTwoChunks(parsingArgs, reducedA, reducedB, condensedFile);
+					doMergeTwoChunksUnconditional(parsingArgs, reducedA, reducedB, condensedFile);
 					indexC++;
 				} else {
 					reducedC = mergeFilesInfo.getCombinedReducedCondensedFile(ttIndex, rpanelIndex, chr, indexC);
-					doMergeTwoChunks(parsingArgs, reducedA, reducedB, reducedC);
+					doMergeTwoChunksUnconditional(parsingArgs, reducedA, reducedB, reducedC);
 					indexC++;
 				}
 
@@ -1161,10 +1162,10 @@ public class Guidance {
 	 * @throws GuidanceTaskException
 	 */
 	public static void makeCombinePanels(ParseCmdLine parsingArgs, AssocFiles assocFilesInfo, MergeFiles mergeFilesInfo,
-			CombinedPanelsFiles combinedPanelsFilesInfo, List<String> rpanelTypes, int ttIndex) throws IOException {
+			CombinedPanelsFiles combinedPanelsFilesInfo, List<String> rpanelTypes, int ttIndex) throws IOException, GuidanceTaskException {
 
 		final boolean refPanelCombine = parsingArgs.getRefPanelCombine();
-		if (!refPanelCombine) {
+		if (!refPanelCombine || parsingArgs.getStageStatus("combinePanelsComplex") != 1) {
 			// We are not asked to combine the panels. End
 			return;
 		}
@@ -1189,17 +1190,20 @@ public class Guidance {
 
 		// INITIALIZE THE FILES TO STORE ALL COMBINED INFORMATION (ADD HEADER AND
 		// COMPRESS)
-		final String filteredHeader = Headers.constructHeader();
-		final String plainfilteredCombineAll = filteredCombineAll.substring(0, filteredCombineAll.length() - 3);
-		try (BufferedWriter writer = new BufferedWriter(new FileWriter(plainfilteredCombineAll))) {
-			writer.write(filteredHeader);
-			writer.newLine();
-			writer.flush();
-		} catch (IOException ioe) {
-			LOGGER.error("[Guidance] Exception when initializing makeCombinePanel filtered ALL file", ioe);
+		String filteredHeader = null;
+		if (startChr < 23) {
+			filteredHeader = Headers.constructHeader();
+			final String plainfilteredCombineAll = filteredCombineAll.substring(0, filteredCombineAll.length() - 3);
+			try (BufferedWriter writer = new BufferedWriter(new FileWriter(plainfilteredCombineAll))) {
+				writer.write(filteredHeader);
+				writer.newLine();
+				writer.flush();
+			} catch (IOException ioe) {
+				LOGGER.error("[Guidance] Exception when initializing makeCombinePanel filtered ALL file", ioe);
+			}
+			FileUtils.gzipFile(plainfilteredCombineAll, filteredCombineAll);
+			new File(plainfilteredCombineAll).delete();
 		}
-		FileUtils.gzipFile(plainfilteredCombineAll, filteredCombineAll);
-		new File(plainfilteredCombineAll).delete();
 
 		String filteredXHeader = null;
 		if (endChr == 23) {
@@ -1460,8 +1464,13 @@ public class Guidance {
 
 		} // End for chromosomes
 
+		if(filteredCombined.size() == 1) {
+			String singleFilteredFile = filteredCombined.poll();
+			String destinationFilteredFile = filteredCombineAll;
+			doCopyFile(parsingArgs, singleFilteredFile, destinationFilteredFile);
+		}
+		
 		int reduceCounter = 0;
-
 		while (filteredCombined.size() > 1) {
 			String originFilteredFileA = filteredCombined.poll();
 			String originFilteredFileB = filteredCombined.poll();
@@ -1475,15 +1484,20 @@ public class Guidance {
 						+ Integer.toString(reduceCounter) + ".txt.gz";
 			}
 
-			doMergeTwoChunks(parsingArgs, originFilteredFileA, originFilteredFileB,
+			doMergeTwoChunksUnconditional(parsingArgs, originFilteredFileA, originFilteredFileB,
 					destinationFilteredFile);
 			filteredCombined.add(destinationFilteredFile);
 
 			reduceCounter += 1;
 		}
 		
-		reduceCounter = 0;
+		if(condensedCombined.size() == 1) {
+			String singleCondensedFile = condensedCombined.poll();
+			String destinationCondensedFile = condensedCombineAll;
+			doCopyFile(parsingArgs, singleCondensedFile, destinationCondensedFile);
+		}
 		
+		reduceCounter = 0;
 		while (condensedCombined.size() > 1) {
 			String originCondensedFileA = condensedCombined.poll();
 			String originCondensedFileB = condensedCombined.poll();
@@ -1497,7 +1511,7 @@ public class Guidance {
 						+ "_reduce_" + Integer.toString(reduceCounter) + ".txt.gz";
 			}
 
-			doMergeTwoChunks(parsingArgs, originCondensedFileA, originCondensedFileB,
+			doMergeTwoChunksUnconditional(parsingArgs, originCondensedFileA, originCondensedFileB,
 					destinationCondensedFile);
 			condensedCombined.add(destinationCondensedFile);
 
@@ -1516,6 +1530,7 @@ public class Guidance {
 
 		// Finally, we create topHits from filteredCombined, and QQ and Manhattan plots
 		// from condensedCombined
+
 		String topHitsCombinedResults = combinedPanelsFilesInfo.getTopHitsFile(ttIndex);
 		doGenerateTopHits(parsingArgs, filteredCombineAll, filteredCombineAllX, topHitsCombinedResults,
 				PVA_THRESHOLD_STR);
@@ -2253,18 +2268,16 @@ public class Guidance {
 	private static void doCombinePanelsComplex(ParseCmdLine parsingArgs,
 			String resultsPanelA, String resultsPanelB, int lim1, int lim2) {
 
-		if (parsingArgs.getStageStatus("combinePanelsComplex") == 1) {
-			String cmdToStore = JAVA_HOME + "/java combinePanelsComplex " + resultsPanelA + " " + resultsPanelB + " "
-					+ lim1 + " " + lim2;
-			listOfCommands.add(cmdToStore);
+		String cmdToStore = JAVA_HOME + "/java combinePanelsComplex " + resultsPanelA + " " + resultsPanelB + " "
+				+ lim1 + " " + lim2;
+		listOfCommands.add(cmdToStore);
 
-			try {
-				GuidanceImpl.combinePanelsComplex(resultsPanelA, resultsPanelB, lim1, lim2, cmdToStore);
-			} catch (GuidanceTaskException gte) {
-				LOGGER.error("[Guidance] Exception trying the execution of combinePanelsComplex task", gte);
-			}
-
+		try {
+			GuidanceImpl.combinePanelsComplex(resultsPanelA, resultsPanelB, lim1, lim2, cmdToStore);
+		} catch (GuidanceTaskException gte) {
+			LOGGER.error("[Guidance] Exception trying the execution of combinePanelsComplex task", gte);
 		}
+
 	}
 
 	/**
@@ -2294,6 +2307,32 @@ public class Guidance {
 			}
 
 		}
+	}
+	
+	/**
+	 * Method that wraps the mergeTwoChunks task and store the command in the
+	 * listOfCommands
+	 * 
+	 * @param parsingArgs
+	 * @param listOfCommands
+	 * @param reduceA
+	 * @param reduceB
+	 * @param reduceC
+	 * @param theChromo
+	 * @param type
+	 */
+	private static void doMergeTwoChunksUnconditional(ParseCmdLine parsingArgs, String reduceA,
+			String reduceB, String reduceC) {
+
+		String cmdToStore = JAVA_HOME + "/java mergeTwoChunksUnconditional " + reduceA + " " + reduceB + " " + reduceC;
+		listOfCommands.add(cmdToStore);
+
+		try {
+			GuidanceImpl.mergeTwoChunks(reduceA, reduceB, reduceC, cmdToStore);
+		} catch (GuidanceTaskException gte) {
+			LOGGER.error("[Guidance] Exception trying the execution of mergeTwoChunks task", gte);
+		}
+		
 	}
 
 	/**
@@ -2483,7 +2522,7 @@ public class Guidance {
 	}
 
 	private static void doCopyFile(ParseCmdLine parsingArgs, String originPath,
-			String destinationPath) throws IOException {
+			String destinationPath) throws IOException, GuidanceTaskException {
 		if (parsingArgs.getStageStatus("combinePanelsComplex") == 1) {
 			String cmdToStore = JAVA_HOME + "/java copyFile " + originPath + " " + destinationPath;
 

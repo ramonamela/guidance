@@ -45,6 +45,7 @@ import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.io.IOException;
+import java.nio.file.StandardCopyOption;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -4688,12 +4689,40 @@ public class GuidanceImpl {
         }
     }
     
-    public static void copyFile(String fileA, String fileB) throws IOException {
-        File srcFile = new File(fileA);
-        File destFile = new File(fileB);
+    public static void copyFile(String fileA, String fileB) throws IOException, GuidanceTaskException {
+        //File srcFile = new File(fileA);
+        //File destFile = new File(fileB);
         
         // Rename file (or directory)
-        Files.copy(srcFile.toPath(), destFile.toPath());
+        //Files.copy(srcFile.toPath(), destFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+    	
+        long startTime = System.currentTimeMillis();
+        
+        String command = "cp " + fileA + " " + fileB;
+    	
+        if (DEBUG) {
+            System.out.println("\n[DEBUG] Running copyFile with parameters:");
+            System.out.println("[DEBUG] \t- Origin file                 : " + fileA);
+            System.out.println("[DEBUG] \t- Destination file            : " + fileB);
+            System.out.println(NEW_LINE);
+            System.out.println("[DEBUG] \t- Command: " + command);
+            System.out.println("--------------------------------------");
+        }
+
+        try {
+            ProcessUtils.executeWithoutOutputs(command);
+        } catch (IOException ioe) {
+            throw new GuidanceTaskException(ioe);
+        } 
+        
+        long stopTime = System.currentTimeMillis();
+        long elapsedTime = (stopTime - startTime) / 1_000;
+        if (DEBUG) {
+            System.out.println("\n[DEBUG] mergeTwoChunks startTime: " + startTime);
+            System.out.println("\n[DEBUG] mergeTwoChunks endTime: " + stopTime);
+            System.out.println("\n[DEBUG] mergeTwoChunks elapsedTime: " + elapsedTime + " seconds");
+            System.out.println("\n[DEBUG] Finished execution of mergeTwoChunks.");
+        }
     }
 
 }
