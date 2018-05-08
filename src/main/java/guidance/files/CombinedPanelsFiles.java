@@ -160,18 +160,20 @@ public class CombinedPanelsFiles {
             if (startChr == endChr) {
                 tmpCombinedFilteredByAllFileName = prefixFilteredName + "_chr_" + startChrS + ".txt.gz";
             } else {
-                tmpCombinedFilteredByAllFileName = prefixFilteredName + "_chr_" + startChrS + "_to_" + endChrS + ".txt.gz";
+                tmpCombinedFilteredByAllFileName = prefixFilteredName + "_chr_" + startChrS + "_to_" + endChrNormal + ".txt.gz";
             }
             GenericFile myFilteredByAllFile = new GenericFile(testTypeOutDir, tmpCombinedFilteredByAllFileName, "compressed", "none");
             this.testTypeCombinedFilteredByAllFile.add(myFilteredByAllFile);
 
             if (endChr == 23) {
-                String tmpCombinedFilteredByAllXFileName = null;
+                String tmpCombinedFilteredByAllXFileName = prefixFilteredName + "_chr_" + startChrS + ".txt.gz";
+                /*
                 if (startChr == endChr) {
                     tmpCombinedFilteredByAllXFileName = prefixFilteredName + "_chr_" + startChrS + ".txt.gz";
                 } else {
                     tmpCombinedFilteredByAllXFileName = prefixFilteredName + "_chr_" + startChrS + "_to_" + endChrS + ".txt.gz";
                 }
+                */
                 GenericFile myFilteredByAllXFile = new GenericFile(testTypeOutDir, tmpCombinedFilteredByAllXFileName, "compressed", "none");
                 this.testTypeCombinedFilteredByAllXFile.add(myFilteredByAllXFile);
             }
