@@ -415,7 +415,7 @@ public interface GuidanceItf {
       @Parameter(type = Type.STRING, direction = Direction.IN) String cmdToStore);
 
    @Method(declaringClass = "guidance.GuidanceImpl")
-   @Constraints(computingUnits="1", memorySize = "1.0f")
+   @Constraints(computingUnits="1", memorySize = "${generateTopHitsMem}")
    void generateTopHits(
       @Parameter(type = Type.FILE, direction = Direction.IN) String resultsFile,
       @Parameter(type = Type.FILE, direction = Direction.OUT) String outputTopHitsFile,
@@ -424,7 +424,7 @@ public interface GuidanceItf {
 
 
    @Method(declaringClass = "guidance.GuidanceImpl")
-   @Constraints(computingUnits="1", memorySize = "1.0f")
+   @Constraints(computingUnits="1", memorySize = "${generateTopHitsAllMem}")
    void generateTopHitsAll(
       @Parameter(type = Type.FILE, direction = Direction.IN) String resultsAFile,
       @Parameter(type = Type.FILE, direction = Direction.IN) String resultsBFile,

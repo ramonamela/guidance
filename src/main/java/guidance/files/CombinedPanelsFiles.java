@@ -166,7 +166,7 @@ public class CombinedPanelsFiles {
             this.testTypeCombinedFilteredByAllFile.add(myFilteredByAllFile);
 
             if (endChr == 23) {
-                String tmpCombinedFilteredByAllXFileName = prefixFilteredName + "_chr_" + startChrS + ".txt.gz";
+                String tmpCombinedFilteredByAllXFileName = prefixFilteredName + "_chr_" + endChrS + ".txt.gz";
                 /*
                 if (startChr == endChr) {
                     tmpCombinedFilteredByAllXFileName = prefixFilteredName + "_chr_" + startChrS + ".txt.gz";
