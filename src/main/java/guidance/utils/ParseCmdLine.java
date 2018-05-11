@@ -81,9 +81,10 @@ public class ParseCmdLine {
     private String exclCgatSnp = null;
     private String exclSVSnp = "NO";
     private String imputationTool = null;
+    private String phasingTool = null;
 
     // chunkSize is always rewritten below.
-    private int chunkSize = 1_000_000;
+    private int chunkSize;
 
     private int refPanelNumber = 0;
     // By default we do not combine panels
@@ -377,6 +378,20 @@ public class ParseCmdLine {
             System.exit(1);
         }
 
+        tmpArg = argumentsArray.get(i++);
+        myArgument = tmpArg.split("=");
+        if ((myArgument.length > 0) && (myArgument.length < 3)) {
+            if (myArgument[0].equals("phasing_tool")) {
+                phasingTool = myArgument[1];
+            } else {
+                LOGGER.fatal(CLASS_HEADER + ERROR_PARAM_ORDER + myArgument[0]);
+                System.exit(1);
+            }
+        } else {
+            LOGGER.fatal(CLASS_HEADER + ERROR_SYNTAX + gwasConfigFile + ERROR_SYNTAX_SUFFIX + myArgument[0]);
+            System.exit(1);
+        }
+        
         tmpArg = argumentsArray.get(i++);
         myArgument = tmpArg.split("=");
         if ((myArgument.length > 0) && (myArgument.length < 3)) {
@@ -953,6 +968,15 @@ public class ParseCmdLine {
     }
 
     /**
+     * Method to get phasingTool flag
+     * 
+     * @return
+     */
+    public String getPhasingTool() {
+        return this.phasingTool;
+    }
+    
+    /**
      * Method to get imputationTool flag
      * 
      * @return
@@ -1345,6 +1369,7 @@ public class ParseCmdLine {
             String tmp_covariables = covariables.get(kk);
             LOGGER.info(tmp_test_type + " = " + tmp_responseVar + ":" + tmp_covariables);
         }
+        LOGGER.info("phasing_tool              = " + phasingTool);
         LOGGER.info("imputation_tool              = " + imputationTool);
         LOGGER.info("names_of_covariables         = " + covariables);
         LOGGER.info("chunk_size_analysis          = " + chunkSize);
