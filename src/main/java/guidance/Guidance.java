@@ -100,10 +100,13 @@ public class Guidance {
 	private static final String R_SCRIPT_BIN_DIR = System.getenv("RSCRIPTBINDIR");
 	private static final String R_SCRIPT_DIR = System.getenv("RSCRIPTDIR");
 	private static final String QCTOOL_BINARY = System.getenv("QCTOOLBINARY");
+	private static final String EAGLEBINARY = System.getenv("EAGLEBINARY");
+	private static final String PLINKBINARY = System.getenv("PLINKBINARY");
 	private static final String SHAPEIT_BINARY = System.getenv("SHAPEITBINARY");
 	private static final String IMPUTE2_BINARY = System.getenv("IMPUTE2BINARY");
 	private static final String SNPTEST_BINARY = System.getenv("SNPTESTBINARY");
 	private static final String JAVA_HOME = System.getenv("JAVA_HOME");
+	private static final String SAMTOOLSBINARY = System.getenv("SAMTOOLSBINARY");
 
 	private static File listOfStages;
 	private static ArrayList<String> listOfCommands = new ArrayList<>();
@@ -162,7 +165,7 @@ public class Guidance {
 			writer.print("");
 			writer.close();
 			LOGGER.info("\n[Guidance] File to store the tasks list (overwritten): " + listOfStagesFileName);
-			
+
 		}
 		if (!listOfStages.createNewFile()) {
 			LOGGER.error("[Guidance] Error on main cannot create list of stages file: " + listOfStages);
@@ -198,11 +201,11 @@ public class Guidance {
 		flushCommands();
 		LOGGER.info("[Guidance] Everything is working with Guidance, just wait...");
 	}
-	
+
 	private static void flushCommands() throws IOException {
-		
+
 		try (BufferedWriter writer = new BufferedWriter(new FileWriter(listOfStages, true))) {
-			while(!listOfCommands.isEmpty()) {
+			while (!listOfCommands.isEmpty()) {
 				String str = listOfCommands.get(0);
 				listOfCommands.remove(0);
 				writer.write(str);
@@ -250,7 +253,7 @@ public class Guidance {
 		LOGGER.debug("totalMemory in JVM shows current size of java heap : " + totalMemory);
 		LOGGER.debug("maxMemory in JVM: " + maxMemory);
 	}
-	
+
 	/**
 	 * Method that performs the complete work flow when "mixed" type of GWAS is
 	 * chosen.
@@ -261,16 +264,17 @@ public class Guidance {
 	 * @param generalChromoInfo
 	 * @param listOfCommands
 	 * @throws IOException
-	 * @throws GuidanceTaskException 
+	 * @throws GuidanceTaskException
 	 */
-	private static void doMixed(ParseCmdLine parsingArgs, String outDir, List<String> rpanelTypes) throws IOException, GuidanceTaskException {
+	private static void doMixed(ParseCmdLine parsingArgs, String outDir, List<String> rpanelTypes)
+			throws IOException, GuidanceTaskException {
 		// Create some general objects
 		int startChr = parsingArgs.getStart();
 		int endChr = parsingArgs.getEnd();
 		// int endChrNormal = parsingArgs.getEndNormal();
 
 		String exclCgatFlag = parsingArgs.getExclCgatSnp();
-		String exclSVFlag = parsingArgs.getExclSVSnp();
+		//String exclSVFlag = parsingArgs.getExclSVSnp();
 
 		// double mafThreshold = parsingArgs.getMafThreshold();
 		// double infoThreshold = parsingArgs.getInfoThreshold();
@@ -287,6 +291,9 @@ public class Guidance {
 		int chunkSize = parsingArgs.getChunkSize();
 
 		String inputFormat = null;
+		String sex = "";
+		String sex1 = "males";
+		String sex2 = "females";
 
 		// Create the names for the common files
 		CommonFiles commonFilesInfo = new CommonFiles(parsingArgs, outDir);
@@ -321,7 +328,7 @@ public class Guidance {
 		setFinalStatusForImputationFiles(parsingArgs, imputationFilesInfo, rpanelTypes);
 		setFinalStatusForAssocFiles(parsingArgs, assocFilesInfo, rpanelTypes);
 
-		//COMPSs.barrier();
+		// COMPSs.barrier();
 
 		// The number of Chromos to process is endChr - startChr + 1;
 		for (int chr = startChr; chr <= endChr; chr++) {
@@ -339,24 +346,51 @@ public class Guidance {
 			String mixedFamFile = null;
 			String mixedBedToBedLogFile = null;
 
-			String gmapFile = parsingArgs.getGmapDir() + "/" + parsingArgs.getGmapFileName(chr);
-			String mixedShapeitHapsFile = commonFilesInfo.getShapeitHapsFile(chr);
-			String mixedShapeitSampleFile = commonFilesInfo.getShapeitSampleFile(chr);
-			String mixedShapeitLogFile = commonFilesInfo.getShapeitLogFile(chr);
+			String gmapFile = "";
+			String phasingTool = parsingArgs.getPhasingTool();
+			//String imputationTool = parsingArgs.getImputationTool();
+
+			if (phasingTool.equals("shapeit")) {
+				gmapFile = parsingArgs.getGmapDir() + "/" + parsingArgs.getGmapFileName(chr);
+
+			} else if (phasingTool.equals("eagle")) {
+				gmapFile = parsingArgs.getGmapDir() + "/" + parsingArgs.getGmapFileNameEagle();
+
+				String mixedGmapFile = commonFilesInfo.getGmapFile(chr);
+
+				if (parsingArgs.getStageStatus("phasingBed") == 1) {
+					doCreateSplitedFiles(parsingArgs, listOfCommands, gmapFile, mixedGmapFile, theChromo);
+				}
+
+			}
+
+			String mixedPhasingHapsFile = commonFilesInfo.getPhasingHapsFile(chr);
+			String mixedPhasingSampleFile = commonFilesInfo.getPhasingSampleFile(chr);
+			String mixedPhasingLogFile = commonFilesInfo.getPhasingLogFile(chr);
 			String mixedExcludedSnpsFile = commonFilesInfo.getExcludedSnpsFile(chr);
 
-			String mixedFilteredHaplotypesFile = commonFilesInfo.getFilteredHaplotypesFile(chr);
-			String mixedFilteredHaplotypesSampleFile = commonFilesInfo.getFilteredHaplotypesSampleFile(chr);
 			String mixedFilteredHaplotypesLogFile = commonFilesInfo.getFilteredHaplotypesLogFile(chr);
 			String mixedFilteredHaplotypesVcfFile = commonFilesInfo.getFilteredHaplotypesVcfFile(chr);
-			String mixedFilteredListOfSnpsFile = commonFilesInfo.getListOfSnpsFile(chr);
+			String mixedFilteredHaplotypesVcfFileBgzip = commonFilesInfo.getFilteredHaplotypesVcfFileBgzip(chr);
+			String mixedFilteredHaplotypesVcfFileBgzipIndexed = commonFilesInfo
+					.getFilteredHaplotypesVcfFileBgzipIndexed(chr);
 
 			// Check if the input are in GEN o BED format
 			inputFormat = parsingArgs.getInputFormat();
 			if (inputFormat.equals("BED")) {
+
 				bedFile = commonFilesInfo.getBedFile();
 				bimFile = commonFilesInfo.getBimFile();
 				famFile = commonFilesInfo.getFamFile();
+
+				String mixedSplitChr23MalesLogFile = "";
+				String mixedSplitChr23FemalesLogFile = "";
+				String mixedChr23BedMalesFile = "";
+				String mixedChr23BimMalesFile = "";
+				String mixedChr23FamMalesFile = "";
+				String mixedChr23BedFemalesFile = "";
+				String mixedChr23BimFemalesFile = "";
+				String mixedChr23FamFemalesFile = "";
 
 				mixedBedFile = commonFilesInfo.getByChrBedFile(chr);
 				mixedBimFile = commonFilesInfo.getByChrBimFile(chr);
@@ -366,36 +400,112 @@ public class Guidance {
 				doConvertFromBedToBed(parsingArgs, bedFile, bimFile, famFile, mixedBedFile, mixedBimFile, mixedFamFile,
 						mixedBedToBedLogFile, theChromo);
 
+				if (theChromo.equals("23")) {
+
+					mixedSplitChr23MalesLogFile = commonFilesInfo.getSplitChr23MalesLogFile();
+					mixedSplitChr23FemalesLogFile = commonFilesInfo.getSplitChr23FemalesLogFile();
+					mixedChr23BedMalesFile = commonFilesInfo.getChr23BedMalesFile();
+					mixedChr23BimMalesFile = commonFilesInfo.getChr23BimMalesFile();
+					mixedChr23FamMalesFile = commonFilesInfo.getChr23FamMalesFile();
+					mixedChr23BedFemalesFile = commonFilesInfo.getChr23BedFemalesFile();
+					mixedChr23BimFemalesFile = commonFilesInfo.getChr23BimFemalesFile();
+					mixedChr23FamFemalesFile = commonFilesInfo.getChr23FamFemalesFile();
+
+					doSplitChr23(parsingArgs, mixedBedFile, mixedBimFile, mixedFamFile, mixedSplitChr23MalesLogFile,
+							mixedChr23BedMalesFile, mixedChr23BimMalesFile, mixedChr23FamMalesFile, sex1, theChromo);
+
+					doSplitChr23(parsingArgs, mixedBedFile, mixedBimFile, mixedFamFile, mixedSplitChr23FemalesLogFile,
+							mixedChr23BedFemalesFile, mixedChr23BimFemalesFile, mixedChr23FamFemalesFile, sex2,
+							theChromo);
+
+				}
+
 				// Create the RsId list of SNPs that are AT, TA, CG, or GC
 				// In that case, because inputType is BED we pass the newBimFile
+
 				doCreateRsIdList(parsingArgs, mixedBimFile, exclCgatFlag, mixedPairsFile, inputFormat);
 
-				doPhasingBed(parsingArgs, theChromo, mixedBedFile, mixedBimFile, mixedFamFile, gmapFile,
-						mixedExcludedSnpsFile, mixedShapeitHapsFile, mixedShapeitSampleFile, mixedShapeitLogFile,
-						mixedFilteredHaplotypesFile, mixedFilteredHaplotypesSampleFile, mixedFilteredHaplotypesLogFile,
-						mixedFilteredHaplotypesVcfFile, mixedFilteredListOfSnpsFile, exclCgatFlag, exclSVFlag);
+				String responseVar = parsingArgs.getResponseVar(0);
+				String covariables = parsingArgs.getCovariables(0);
+
+				if (!theChromo.equals("23")) {
+
+					doPhasingBed(parsingArgs, theChromo, mixedBedFile, mixedBimFile, mixedFamFile, gmapFile,
+							mixedSampleFile, covariables, responseVar, mixedExcludedSnpsFile, mixedPhasingHapsFile,
+							mixedPhasingSampleFile, mixedPhasingLogFile, mixedFilteredHaplotypesLogFile,
+							mixedFilteredHaplotypesVcfFile, mixedFilteredHaplotypesVcfFileBgzip,
+							mixedFilteredHaplotypesVcfFileBgzipIndexed, exclCgatFlag, sex);
+
+				} else if (theChromo.equals("23")) {
+
+					String mixedPhasingHapsMalesFile = commonFilesInfo.getPhasingHapsMalesFile();
+					String mixedPhasingHapsFemalesFile = commonFilesInfo.getPhasingHapsFemalesFile();
+
+					String mixedPhasingSampleMalesFile = commonFilesInfo.getPhasingSampleMalesFile();
+					String mixedPhasingSampleFemalesFile = commonFilesInfo.getPhasingSampleFemalesFile();
+
+					String mixedPhasingLogMalesFile = commonFilesInfo.getPhasingLogMalesFile();
+					String mixedPhasingLogFemalesFile = commonFilesInfo.getPhasingLogFemalesFile();
+
+					String mixedExcludedSnpsMalesFile = commonFilesInfo.getExcludedSnpsMalesFile();
+					String mixedExcludedSnpsFemalesFile = commonFilesInfo.getExcludedSnpsFemalesFile();
+
+					String mixedFilteredHaplotypesLogMalesFile = commonFilesInfo.getFilteredHaplotypesLogMalesFile();
+					String mixedFilteredHaplotypesLogFemalesFile = commonFilesInfo
+							.getFilteredHaplotypesLogFemalesFile();
+
+					String mixedFilteredHaplotypesVcfMalesFile = commonFilesInfo.getFilteredHaplotypesVcfMalesFile();
+					String mixedFilteredHaplotypesVcfFemalesFile = commonFilesInfo
+							.getFilteredHaplotypesVcfFemalesFile();
+
+					String mixedFilteredHaplotypesVcfMalesFileBgzip = commonFilesInfo
+							.getFilteredHaplotypesVcfMalesFileBgzip();
+					String mixedFilteredHaplotypesVcfFemalesFileBgzip = commonFilesInfo
+							.getFilteredHaplotypesVcfFemalesFileBgzip();
+
+					String mixedFilteredHaplotypesVcfMalesFileBgzipIndexed = commonFilesInfo
+							.getFilteredHaplotypesVcfMalesFileBgzipIndexed();
+					String mixedFilteredHaplotypesVcfFemalesFileBgzipIndexed = commonFilesInfo
+							.getFilteredHaplotypesVcfFemalesFileBgzipIndexed();
+
+					doPhasingBed(parsingArgs, theChromo, mixedChr23BedMalesFile, mixedChr23BimMalesFile,
+							mixedChr23FamMalesFile, gmapFile, mixedSampleFile, covariables, responseVar,
+							mixedExcludedSnpsMalesFile, mixedPhasingHapsMalesFile, mixedPhasingSampleMalesFile,
+							mixedPhasingLogMalesFile, mixedFilteredHaplotypesLogMalesFile,
+							mixedFilteredHaplotypesVcfMalesFile, mixedFilteredHaplotypesVcfMalesFileBgzip,
+							mixedFilteredHaplotypesVcfMalesFileBgzipIndexed, exclCgatFlag, sex1);
+
+					doPhasingBed(parsingArgs, theChromo, mixedChr23BedFemalesFile, mixedChr23BimFemalesFile,
+							mixedChr23FamFemalesFile, gmapFile, mixedSampleFile, covariables, responseVar,
+							mixedExcludedSnpsFemalesFile, mixedPhasingHapsFemalesFile, mixedPhasingSampleFemalesFile,
+							mixedPhasingLogFemalesFile, mixedFilteredHaplotypesLogFemalesFile,
+							mixedFilteredHaplotypesVcfFemalesFile, mixedFilteredHaplotypesVcfFemalesFileBgzip,
+							mixedFilteredHaplotypesVcfFemalesFileBgzipIndexed, exclCgatFlag, sex2);
+
+				}
 
 			} else { // The inputFormat is GEN
+
 				mixedGenFile = commonFilesInfo.getGenFile(chr);
 				// Task
 				doCreateRsIdList(parsingArgs, mixedGenFile, exclCgatFlag, mixedPairsFile, inputFormat);
 
-				doPhasing(parsingArgs, theChromo, mixedGenFile, mixedSampleFile, gmapFile, mixedExcludedSnpsFile,
-						mixedShapeitHapsFile, mixedShapeitSampleFile, mixedShapeitLogFile, mixedFilteredHaplotypesFile,
-						mixedFilteredHaplotypesSampleFile, mixedFilteredHaplotypesLogFile,
-						mixedFilteredHaplotypesVcfFile, mixedFilteredListOfSnpsFile, exclCgatFlag, exclSVFlag);
+				doPhasing(parsingArgs, theChromo, mixedGenFile, mixedSampleFile, gmapFile,
+						mixedExcludedSnpsFile, mixedPhasingHapsFile, mixedPhasingSampleFile, mixedPhasingLogFile,
+						mixedFilteredHaplotypesLogFile, mixedFilteredHaplotypesVcfFile,
+						mixedFilteredHaplotypesVcfFileBgzip, mixedFilteredHaplotypesVcfFileBgzipIndexed, exclCgatFlag);
 
-			} // End of inputFormat GEN	
+			} // End of inputFormat GEN
 		}
 
 		flushCommands();
-		//COMPSs.barrier();
-		
+		// COMPSs.barrier();
+
 		// The number of Chromos to process is endChr - startChr + 1;
 		for (int chr = startChr; chr <= endChr; chr++) {
-			
+
 			String gmapFile = parsingArgs.getGmapDir() + "/" + parsingArgs.getGmapFileName(chr);
-			
+
 			// ***********************************************
 			// * Now perform the imputation tasks *
 			// * over the data for the different reference *
@@ -417,7 +527,7 @@ public class Guidance {
 					lim2 = lim2 + chunkSize;
 				}
 			} // End for panel types
-			
+
 			flushCommands();
 
 		} // End for chromosomes
@@ -427,7 +537,7 @@ public class Guidance {
 		// * comment out following line to include the synchronization point *
 		// *******************************************************************
 		// COMPSs.waitForAllTasks();
-		//COMPSs.barrier();
+		// COMPSs.barrier();
 
 		// Now we continue with the association
 		int numberOfTestTypes = parsingArgs.getNumberOfTestTypeName();
@@ -471,7 +581,7 @@ public class Guidance {
 						lim1 = lim1 + chunkSize;
 						lim2 = lim2 + chunkSize;
 					}
-					
+
 					flushCommands();
 
 					// Now we perform the merge of chunks for each chromosome
@@ -520,9 +630,9 @@ public class Guidance {
 
 				doGenerateQQManhattanPlots(parsingArgs, lastCondensedFile, qqPlotPdfFile, manhattanPlotPdfFile,
 						qqPlotTiffFile, manhattanPlotTiffFile);
-				
+
 				flushCommands();
-				//COMPSs.barrier();
+				// COMPSs.barrier();
 
 			} // End for refPanels
 
@@ -630,8 +740,8 @@ public class Guidance {
 			String legendFile = rpanelDir + File.separator + legendFileName;
 
 			// String mixedSampleFile = commonFilesInfo.getSampleFile(chrNumber);
-			String mixedShapeitHapsFile = commonFilesInfo.getShapeitHapsFile(chrNumber);
-			String mixedShapeitSampleFile = commonFilesInfo.getShapeitSampleFile(chrNumber);
+			String mixedShapeitHapsFile = commonFilesInfo.getPhasingHapsFile(chrNumber);
+			String mixedShapeitSampleFile = commonFilesInfo.getPhasingSampleFile(chrNumber);
 			String mixedPairsFile = commonFilesInfo.getPairsFile(chrNumber);
 			String mixedImputeFile = imputationFilesInfo.getImputedFile(panelIndex, chrNumber, lim1, lim2, chunkSize);
 			String mixedImputeFileInfo = imputationFilesInfo.getImputedInfoFile(panelIndex, chrNumber, lim1, lim2,
@@ -654,14 +764,13 @@ public class Guidance {
 			String mixedFilteredRsIdFile = imputationFilesInfo.getFilteredRsIdFile(panelIndex, chrNumber, lim1, lim2,
 					chunkSize);
 
-			doImputationWithImpute(parsingArgs, chrS, gmapFile, knownHapFile, legendFile,
-					mixedShapeitHapsFile, mixedShapeitSampleFile, lim1S, lim2S, mixedPairsFile, mixedImputeFile,
-					mixedImputeFileInfo, mixedImputeFileSummary, mixedImputeFileWarnings);
+			doImputationWithImpute(parsingArgs, chrS, gmapFile, knownHapFile, legendFile, mixedShapeitHapsFile,
+					mixedShapeitSampleFile, lim1S, lim2S, mixedPairsFile, mixedImputeFile, mixedImputeFileInfo,
+					mixedImputeFileSummary, mixedImputeFileWarnings);
 
 			doFilterByInfo(parsingArgs, mixedImputeFileInfo, mixedFilteredRsIdFile, infoThresholdS);
 
-			doQctoolS(parsingArgs, mixedImputeFile, mixedFilteredRsIdFile, mixedFilteredFile,
-					mixedFilteredLogFile);
+			doQctoolS(parsingArgs, mixedImputeFile, mixedFilteredRsIdFile, mixedFilteredFile, mixedFilteredLogFile);
 		} else if (imputationTool.equals("minimac")) {
 			String mixedFilteredHaplotypesFile = commonFilesInfo.getFilteredHaplotypesFile(chrNumber);
 			String mixedFilteredHaplotypesSampleFile = commonFilesInfo.getFilteredHaplotypesSampleFile(chrNumber);
@@ -744,13 +853,13 @@ public class Guidance {
 		// String inputFormat = parsingArgs.getInputFormat();
 		// String exclCgatFlag = parsingArgs.getExclCgatSnp();
 
-		doSnptest(parsingArgs, chrS, mixedFilteredFile, mixedSampleFile, snptestOutFile, snptestLogFile,
-				responseVar, covariables);
+		doSnptest(parsingArgs, chrS, mixedFilteredFile, mixedSampleFile, snptestOutFile, snptestLogFile, responseVar,
+				covariables);
 
 		String summaryFile = assocFilesInfo.getSummaryFile(testTypeIndex, panelIndex, chrNumber, lim1, lim2, chunkSize);
 
-		doCollectSummary(parsingArgs, chrS, mixedImputeFileInfo, snptestOutFile, summaryFile,
-				mafThresholdS, infoThresholdS, hweCohortThresholdS, hweCasesThresholdS, hweControlsThresholdS);
+		doCollectSummary(parsingArgs, chrS, mixedImputeFileInfo, snptestOutFile, summaryFile, mafThresholdS,
+				infoThresholdS, hweCohortThresholdS, hweCasesThresholdS, hweControlsThresholdS);
 
 		String assocFilteredByAll = assocFilesInfo.getSummaryFilteredFile(testTypeIndex, panelIndex, chrNumber, lim1,
 				lim2, chunkSize);
@@ -908,17 +1017,19 @@ public class Guidance {
 		String reducedC = null;
 
 		String filteredByAllFile;
-		filteredByAllFile = mergeFilesInfo.getCombinedFilteredByAllFile(ttIndex, rpanelIndex, chr);	
+		filteredByAllFile = mergeFilesInfo.getCombinedFilteredByAllFile(ttIndex, rpanelIndex, chr);
 		String condensedFile = mergeFilesInfo.getCombinedCondensedFile(ttIndex, rpanelIndex, chr);
 
 		if (type.equals(FILTERED)) {
 			// LOGGER.info("Number of chunks for testType " + ttIndex + " | rpanel " +
 			// rpanelIndex + " |chr " +
 			// chr + " " + numberOfChunks);
-			System.out.println("Number of chunks for testType " + ttIndex + " | rpanel " + rpanelIndex + " |chr " + chr + " numberOfChunks: " + numberOfChunks);
+			System.out.println("Number of chunks for testType " + ttIndex + " | rpanel " + rpanelIndex + " |chr " + chr
+					+ " numberOfChunks: " + numberOfChunks);
 			for (int processedChunks = 0; processedChunks < 2 * numberOfChunks - 2; processedChunks = processedChunks
 					+ 2) {
-				System.out.println("Number of chunks for testType " + ttIndex + " | rpanel " + rpanelIndex + " |chr " + chr + " processedChunks: " + processedChunks);
+				System.out.println("Number of chunks for testType " + ttIndex + " | rpanel " + rpanelIndex + " |chr "
+						+ chr + " processedChunks: " + processedChunks);
 				if (processedChunks < numberOfChunks) {
 					reducedA = assocFilesInfo.getCombinedFilteredFile(ttIndex, rpanelIndex, chr, lim1, lim2, chunkSize);
 					lim1 = lim1 + chunkSize;
@@ -1098,8 +1209,7 @@ public class Guidance {
 
 			filteredC = mergeFilesInfo.getAdditionalFilteredByAllFile(ttIndex, rpanelIndex, indexC);
 			if (startChr != 23) {
-				doJointFilteredByAllFiles(parsingArgs, filteredA, filteredB, filteredC, rpanelName,
-						rpanelFlag);
+				doJointFilteredByAllFiles(parsingArgs, filteredA, filteredB, filteredC, rpanelName, rpanelFlag);
 			}
 		} else {
 			for (processedFiltered = 0; processedFiltered < 2 * numberOfChrs - 2; processedFiltered = processedFiltered
@@ -1122,8 +1232,7 @@ public class Guidance {
 				}
 				filteredC = mergeFilesInfo.getAdditionalFilteredByAllFile(ttIndex, rpanelIndex, indexC);
 
-				doJointFilteredByAllFiles(parsingArgs, filteredA, filteredB, filteredC, rpanelName,
-						rpanelFlag);
+				doJointFilteredByAllFiles(parsingArgs, filteredA, filteredB, filteredC, rpanelName, rpanelFlag);
 				indexC++;
 			} // End for fitlered chromosomes
 				// processedFiltered +2)
@@ -1135,8 +1244,7 @@ public class Guidance {
 			filteredA = mergeFilesInfo.getFilteredByAllFile(ttIndex, rpanelIndex, endChr);
 			filteredC = mergeFilesInfo.getAdditionalFilteredByAllXFile(ttIndex, rpanelIndex, 0);
 
-			doJointFilteredByAllFiles(parsingArgs, filteredA, filteredA, filteredC, rpanelName,
-					rpanelFlag);
+			doJointFilteredByAllFiles(parsingArgs, filteredA, filteredA, filteredC, rpanelName, rpanelFlag);
 		}
 
 		// Clean intermediate files
@@ -1162,7 +1270,8 @@ public class Guidance {
 	 * @throws GuidanceTaskException
 	 */
 	public static void makeCombinePanels(ParseCmdLine parsingArgs, AssocFiles assocFilesInfo, MergeFiles mergeFilesInfo,
-			CombinedPanelsFiles combinedPanelsFilesInfo, List<String> rpanelTypes, int ttIndex) throws IOException, GuidanceTaskException {
+			CombinedPanelsFiles combinedPanelsFilesInfo, List<String> rpanelTypes, int ttIndex)
+			throws IOException, GuidanceTaskException {
 
 		final boolean refPanelCombine = parsingArgs.getRefPanelCombine();
 		if (!refPanelCombine || parsingArgs.getStageStatus("combinePanelsComplex") != 1) {
@@ -1259,9 +1368,9 @@ public class Guidance {
 					}
 					filteredPanelsToCombine.add(filteredPanel);
 				}
-				
+
 				flushCommands();
-				
+
 				// Combine all the filtered panels 2 by 2 until there are no remaining panels
 				while (!filteredPanelsToCombine.isEmpty()) {
 					String filteredPanelA = filteredPanelsToCombine.poll();
@@ -1283,7 +1392,7 @@ public class Guidance {
 						doCopyFile(parsingArgs, filteredPanelA, destFilteredPanel);
 					}
 				}
-				
+
 				flushCommands();
 
 				// -- CONDENSED PART --
@@ -1306,8 +1415,7 @@ public class Guidance {
 						if (DEBUG) {
 							LOGGER.debug("[Guidance] Combining " + condensedPanelA + " and " + condensedPanelB);
 						}
-						doCombinePanelsComplex(parsingArgs, condensedPanelA, condensedPanelB, lim1,
-								lim2);
+						doCombinePanelsComplex(parsingArgs, condensedPanelA, condensedPanelB, lim1, lim2);
 						// Adds A to the queue again
 						condensedPanelsToCombine.add(condensedPanelA);
 
@@ -1319,7 +1427,7 @@ public class Guidance {
 						doCopyFile(parsingArgs, condensedPanelA, destCondensedPanel);
 					}
 				}
-				
+
 				flushCommands();
 
 				// -- COMBINE FILTERED TO FINAL CHUNK AND ALL FILES
@@ -1445,7 +1553,7 @@ public class Guidance {
 				lim1 = lim1 + chunkSize;
 				lim2 = lim2 + chunkSize;
 			} // End for chunk
-			
+
 			makeMergeOfChunksCombined(parsingArgs, ttIndex, 0, chr, minSize, maxSize, chunkSize, assocFilesInfo,
 					mergeFilesInfo, FILTERED);
 
@@ -1455,7 +1563,7 @@ public class Guidance {
 			String filteredByAllCurrentFile = mergeFilesInfo.getCombinedFilteredByAllFile(ttIndex, 0, chr);
 			String condensedCurrentFile = mergeFilesInfo.getCombinedCondensedFile(ttIndex, 0, chr);
 
-			if(chr != 23) {
+			if (chr != 23) {
 				filteredCombined.add(filteredByAllCurrentFile);
 			} else {
 				doCopyFile(parsingArgs, filteredByAllCurrentFile, filteredCombineAllX);
@@ -1464,12 +1572,12 @@ public class Guidance {
 
 		} // End for chromosomes
 
-		if(filteredCombined.size() == 1) {
+		if (filteredCombined.size() == 1) {
 			String singleFilteredFile = filteredCombined.poll();
 			String destinationFilteredFile = filteredCombineAll;
 			doCopyFile(parsingArgs, singleFilteredFile, destinationFilteredFile);
 		}
-		
+
 		int reduceCounter = 0;
 		while (filteredCombined.size() > 1) {
 			String originFilteredFileA = filteredCombined.poll();
@@ -1490,13 +1598,13 @@ public class Guidance {
 
 			reduceCounter += 1;
 		}
-		
-		if(condensedCombined.size() == 1) {
+
+		if (condensedCombined.size() == 1) {
 			String singleCondensedFile = condensedCombined.poll();
 			String destinationCondensedFile = condensedCombineAll;
 			doCopyFile(parsingArgs, singleCondensedFile, destinationCondensedFile);
 		}
-		
+
 		reduceCounter = 0;
 		while (condensedCombined.size() > 1) {
 			String originCondensedFileA = condensedCombined.poll();
@@ -1610,8 +1718,7 @@ public class Guidance {
 				// phenomeFileB = phenomeAnalysisFilesInfo.getPhenotypeFile(phenoIndex);
 				phenomeFileB = phenomeAnalysisFilesInfo.getPhenotypeIntermediateFile(phenoIndex);
 
-				doAddToPhenoMatrix(parsingArgs, phenomeFileA, topHitsFile, ttName, rpName,
-						phenomeFileB);
+				doAddToPhenoMatrix(parsingArgs, phenomeFileA, topHitsFile, ttName, rpName, phenomeFileB);
 
 				phenomeFileA = phenomeFileB;
 				phenoIndex++;
@@ -1636,8 +1743,8 @@ public class Guidance {
 
 				phenomeFileB = phenomeAnalysisFilesInfo.getPhenotypeFile(phenoIndex);
 
-				doFilloutPhenoMatrix(parsingArgs, phenomeFileA, filteredByAllFile, filteredByAllXFile,
-						endChrS, ttName, rpName, phenomeFileB);
+				doFilloutPhenoMatrix(parsingArgs, phenomeFileA, filteredByAllFile, filteredByAllXFile, endChrS, ttName,
+						rpName, phenomeFileB);
 
 				// phenomeFileA = phenomeFileB;
 				phenoIndex++;
@@ -1670,14 +1777,37 @@ public class Guidance {
 				phenomeFileC = phenomeAnalysisFilesInfo.getPhenotypeFinalFile(phenoIndex);
 				// LOGGER.info("\t[makeImputationPerChunk]: phenomeFileC " + phenomeFileC);
 
-				doFinalizePhenoMatrix(parsingArgs, phenomeFileA, phenomeFileB, ttName, rpName,
-						phenomeFileC);
+				doFinalizePhenoMatrix(parsingArgs, phenomeFileA, phenomeFileB, ttName, rpName, phenomeFileC);
 
 				phenomeFileA = phenomeFileC;
 				phenoIndex++;
 			}
 		}
 
+	}
+
+	/**
+	 * Method the wraps the execution of createSplitedFiles tasks and store the
+	 * command in the listOfCommands
+	 */
+
+	private static void doCreateSplitedFiles(ParseCmdLine parsingArgs, ArrayList<String> listOfCommands,
+			String gmapFile, String gmapFileChr, String theChromo) {
+
+		String cmdToStore = null;
+
+		// if(parsingArgs.getStageStatus("imputeWithImpute")==1) {
+
+		cmdToStore = JAVA_HOME + "/java createSplitedFiles.jar " + gmapFile + " " + gmapFileChr + " " + theChromo;
+		listOfCommands.add(cmdToStore);
+
+		try {
+			GuidanceImpl.createSplitedFiles(gmapFile, gmapFileChr, theChromo, cmdToStore);
+		} catch (Exception e) {
+			System.err.println("[Guidance] Exception trying the execution of createSplitedFiles task");
+			System.err.println(e.getMessage());
+		}
+		// }
 	}
 
 	/**
@@ -1715,6 +1845,44 @@ public class Guidance {
 	}
 
 	/**
+	 * Method the wraps the execution of doSplitChr23 tasks and store the command in
+	 * the listOfCommands
+	 */
+
+	private static void doSplitChr23(ParseCmdLine parsingArgs, String bedFile, String bimFile, String famFile,
+			String logFile, String bedChr23File, String bimChr23File, String famChr23File, String sex,
+			String theChromo) {
+
+		String cmdToStore = null;
+		String[] myPrefix = null;
+
+		if (parsingArgs.getStageStatus("convertFromBedToBed") == 1) {
+
+			if (sex.equals("males")) {
+				myPrefix = bedChr23File.split("\\.");
+
+				cmdToStore = PLINKBINARY + " --noweb --bed " + bedFile + " --bim " + bimFile + " --fam " + famFile
+						+ " --filter-males --out " + myPrefix[0] + " --make-bed";
+			} else if (sex.equals("females")) {
+				myPrefix = bedChr23File.split("\\.");
+
+				cmdToStore = PLINKBINARY + " --noweb --bed " + bedFile + " --bim " + bimFile + " --fam " + famFile
+						+ " --filter-females --out " + myPrefix[0] + " --make-bed";
+			}
+
+			listOfCommands.add(cmdToStore);
+			try {
+				GuidanceImpl.splitChr23(myPrefix[0], bedFile, bimFile, famFile, bedChr23File, bimChr23File,
+						famChr23File, logFile, sex, theChromo, cmdToStore);
+			} catch (Exception e) {
+				System.err.println("[Guidance] Exception trying the execution of splitChr23 task");
+				System.err.println(e.getMessage());
+			}
+		}
+
+	}
+
+	/**
 	 * Method the wraps the execution of createRsIdList task and store the command
 	 * in the listOfCommands
 	 * 
@@ -1725,7 +1893,8 @@ public class Guidance {
 	 * @param mixedPairsFile
 	 * @param inputFormat
 	 */
-	private static void doCreateRsIdList(ParseCmdLine parsingArgs, String mixedBimOrGenFile, String exclCgatFlag, String mixedPairsFile, String inputFormat) {
+	private static void doCreateRsIdList(ParseCmdLine parsingArgs, String mixedBimOrGenFile, String exclCgatFlag,
+			String mixedPairsFile, String inputFormat) {
 
 		if (parsingArgs.getStageStatus("createRsIdList") == 1) {
 			// Task
@@ -1763,61 +1932,142 @@ public class Guidance {
 	 * @param exclCgatFlag
 	 * @param exclSVFlag
 	 */
-	private static void doPhasingBed(ParseCmdLine parsingArgs, String theChromo,
-			String bedFile, String bimFile, String famFile, String gmapFile, String excludedSnpsFile,
-			String shapeitHapsFile, String shapeitSampleFile, String shapeitLogFile, String filteredHaplotypesFile,
-			String filteredHaplotypesSampleFile, String filteredHaplotypesLogFile, String filteredHaplotypesVcfFile,
-			String listOfSnpsFile, String exclCgatFlag, String exclSVFlag) {
+	private static void doPhasingBed(ParseCmdLine parsingArgs, String theChromo, String bedFile, String bimFile,
+			String famFile, String gmapFile, String sampleFile, String covariables, String responseVar,
+			String excludedSnpsFile, String phasingHapsFile, String phasingSampleFile, String phasingLogFile,
+			String filteredHaplotypesLogFile, String filteredHaplotypesVcfFile, String filteredHaplotypesVcfFileBgzip,
+			String filteredHaplotypesVcfFileBgzipIndexed, String exclCgatFlag, String sex) {
+
+		String phasingTool = parsingArgs.getPhasingTool();
+		String myPrefix = phasingHapsFile.split("\\.")[0];
+		String cmd;
 
 		if (parsingArgs.getStageStatus("phasingBed") == 1) {
-			// If we process chromoso X (23) then we change the cmdToStore
-			String cmdToStore;
-			if (theChromo.equals("23")) {
-				cmdToStore = SHAPEIT_BINARY + " --input-bed " + bedFile + " " + bimFile + " " + famFile
-						+ " --input-map " + gmapFile + " --chrX --output-max " + shapeitHapsFile + " "
-						+ shapeitSampleFile + " --thread 47 --effective-size 20000 --output-log " + shapeitLogFile;
+
+			if (phasingTool.equals("shapeit")) {
+
+				// If we process chromoso X (23) then we change the cmdToStore
+				if (theChromo.equals("23")) {
+					cmd = SHAPEIT_BINARY + " --input-bed " + bedFile + " " + bimFile + " " + famFile + " --input-map "
+							+ gmapFile + " --chrX --output-max " + phasingHapsFile + " " + phasingSampleFile
+							+ " --thread 16 --effective-size 20000 --output-log " + phasingLogFile;
+
+					if (sex.equals("males")) {
+						cmd = SHAPEIT_BINARY + " --input-bed " + bedFile + " " + bimFile + " " + famFile
+								+ " --input-map " + gmapFile + " --chrX --output-max " + phasingHapsFile + " "
+								+ phasingSampleFile + " --thread 16 --effective-size 20000 --output-log "
+								+ phasingLogFile;
+					} else if (sex.equals("females")) {
+						cmd = SHAPEIT_BINARY + " --input-bed " + bedFile + " " + bimFile + " " + famFile
+								+ " --input-map " + gmapFile + " --chrX --output-max " + phasingHapsFile + " "
+								+ phasingSampleFile + " --thread 16 --effective-size 20000 --output-log "
+								+ phasingLogFile;
+					}
+
+				} else {
+					cmd = SHAPEIT_BINARY + " --input-bed " + bedFile + " " + bimFile + " " + famFile + " --input-map "
+							+ gmapFile + " --output-max " + phasingHapsFile + " " + phasingSampleFile
+							+ " --thread 16 --effective-size 20000 --output-log " + phasingLogFile;
+				}
+
+				listOfCommands.add(new String(cmd));
+				try {
+					GuidanceImpl.phasingBed(theChromo, bedFile, bimFile, famFile, gmapFile, phasingHapsFile,
+							phasingSampleFile, phasingLogFile, myPrefix, sex, phasingTool, cmd);
+				} catch (Exception e) {
+					System.err.println("[Guidance] Exception trying the execution of phasing task");
+					System.err.println(e.getMessage());
+				}
+
+			} else if (phasingTool.equals("eagle")) {
+
+				if (parsingArgs.getStageStatus("phasingBed") == 1) {
+					// If we process chromoso X (23) then we change the cmdToStore
+					if (theChromo.equals("23")) {
+						cmd = EAGLEBINARY + " --bed " + bedFile + " --bim " + bimFile + " --fam " + famFile
+								+ " --chrom " + theChromo + " --geneticMapFile " + gmapFile
+								+ " --numThreads 16 --outPrefix " + myPrefix;
+						if (sex.equals("males")) {
+							cmd = EAGLEBINARY + " --bed " + bedFile + " --bim " + bimFile + " --fam " + famFile
+									+ " --chrom " + theChromo + " --geneticMapFile " + gmapFile
+									+ " --numThreads 16 --outPrefix " + myPrefix;
+						} else if (sex.equals("females")) {
+							cmd = EAGLEBINARY + " --bed " + bedFile + " --bim " + bimFile + " --fam " + famFile
+									+ " --chrom " + theChromo + " --geneticMapFile " + gmapFile
+									+ " --numThreads 16 --outPrefix " + myPrefix;
+						}
+					} else {
+						cmd = EAGLEBINARY + " --bed " + bedFile + " --bim " + bimFile + " --fam " + famFile
+								+ " --chrom " + theChromo + " --geneticMapFile " + gmapFile
+								+ " --numThreads 16 --outPrefix " + myPrefix;
+					}
+
+					listOfCommands.add(cmd);
+					try {
+						GuidanceImpl.phasingBed(theChromo, bedFile, bimFile, famFile, gmapFile, phasingHapsFile,
+								phasingSampleFile, phasingLogFile, myPrefix, sex, phasingTool, cmd);
+					} catch (Exception e) {
+						System.err.println("[Guidance] Exception trying the execution of phasing task");
+						System.err.println(e.getMessage());
+					}
+				}
 			} else {
-				cmdToStore = SHAPEIT_BINARY + " --input-bed " + bedFile + " " + bimFile + " " + famFile
-						+ " --input-map " + gmapFile + " --output-max " + shapeitHapsFile + " " + shapeitSampleFile
-						+ " --thread 47 --effective-size 20000 --output-log " + shapeitLogFile;
+				System.err.println("[Guidance] Only Eagle and Shapeit are available for phasing haplotypes");
+
 			}
 
-			listOfCommands.add(cmdToStore);
+			cmd = JAVA_HOME + " newSample.jar " + sampleFile + " " + phasingSampleFile + " " + covariables + " "
+					+ responseVar;
+
+			listOfCommands.add(new String(cmd));
 			try {
-				GuidanceImpl.phasingBed(theChromo, bedFile, bimFile, famFile, gmapFile, shapeitHapsFile,
-						shapeitSampleFile, shapeitLogFile, cmdToStore);
-			} catch (GuidanceTaskException gte) {
-				LOGGER.error("[Guidance] Exception trying the execution of phasing task", gte);
+				GuidanceImpl.newSample(sampleFile, phasingSampleFile, responseVar, covariables, cmd);
+			} catch (Exception e) {
+				System.err.println("[Guidance] Exception trying the execution of phasing task");
+				System.err.println(e.getMessage());
 			}
+
 		}
 
 		if (parsingArgs.getStageStatus("createListOfExcludedSnps") == 1) {
-			String cmdToStore = JAVA_HOME + "/java createListOfExcludedSnps.jar " + shapeitHapsFile + " "
-					+ excludedSnpsFile + " " + exclCgatFlag + " " + exclSVFlag;
+			cmd = JAVA_HOME + "/java createListOfExcludedSnps.jar " + phasingHapsFile + " " + excludedSnpsFile + " "
+					+ exclCgatFlag;
 
-			listOfCommands.add(cmdToStore);
+			listOfCommands.add(new String(cmd));
 			try {
-				GuidanceImpl.createListOfExcludedSnps(shapeitHapsFile, excludedSnpsFile, exclCgatFlag, exclSVFlag,
-						cmdToStore);
-			} catch (GuidanceTaskException gte) {
-				LOGGER.error("[Guidance] Exception trying the execution of createListOfExcludedSnps task", gte);
+				GuidanceImpl.createListOfExcludedSnps(phasingHapsFile, excludedSnpsFile, exclCgatFlag, cmd);
+			} catch (Exception e) {
+				System.err.println("[Guidance] Exception trying the execution of createListOfExcludedSnps task");
+				System.err.println(e.getMessage());
 			}
 		}
 
 		if (parsingArgs.getStageStatus("filterHaplotypes") == 1) {
-			String cmdToStore = JAVA_HOME + "/java filterHaplotypes.jar " + shapeitHapsFile + " " + shapeitSampleFile
-					+ " " + excludedSnpsFile + " " + filteredHaplotypesFile + " " + filteredHaplotypesSampleFile + " "
-					+ filteredHaplotypesLogFile + " " + filteredHaplotypesVcfFile + " " + listOfSnpsFile;
 
-			listOfCommands.add(cmdToStore);
+			cmd = SHAPEIT_BINARY + " -convert --input-haps " + phasingHapsFile + " " + phasingSampleFile
+					+ " --exclude-snp " + excludedSnpsFile + " " + " --output-log " + filteredHaplotypesLogFile
+					+ " --output-vcf " + filteredHaplotypesVcfFile;
+
+			listOfCommands.add(new String(cmd));
 			try {
-				GuidanceImpl.filterHaplotypes(shapeitHapsFile, shapeitSampleFile, excludedSnpsFile,
-						filteredHaplotypesFile, filteredHaplotypesSampleFile, filteredHaplotypesLogFile,
-						filteredHaplotypesVcfFile, listOfSnpsFile, cmdToStore);
-			} catch (GuidanceTaskException gte) {
-				LOGGER.error("[Guidance] Exception trying the execution of createListOfExcludedSnps task", gte);
+				GuidanceImpl.filterHaplotypes(phasingHapsFile, phasingSampleFile, excludedSnpsFile,
+						filteredHaplotypesLogFile, filteredHaplotypesVcfFile, cmd);
+			} catch (Exception e) {
+				System.err.println("[Guidance] Exception trying the execution of filterHaplotypes task");
+				System.err.println(e.getMessage());
+			}
+
+			cmd = SAMTOOLSBINARY + "/bgzip " + filteredHaplotypesVcfFile;
+
+			listOfCommands.add(new String(cmd));
+			try {
+				GuidanceImpl.samtoolsBgzip(filteredHaplotypesVcfFile, cmd);
+			} catch (Exception e) {
+				System.err.println("[Guidance] Exception trying the execution of samtoolsBgzip task");
+				System.err.println(e.getMessage());
 			}
 		}
+
 	}
 
 	/**
@@ -1843,59 +2093,82 @@ public class Guidance {
 	 * @param exclSVFlag
 	 */
 	private static void doPhasing(ParseCmdLine parsingArgs, String theChromo,
-			String genFile, String sampleFile, String gmapFile, String excludedSnpsFile, String shapeitHapsFile,
-			String shapeitSampleFile, String shapeitLogFile, String filteredHaplotypesFile,
-			String filteredHaplotypesSampleFile, String filteredHaplotypesLogFile, String filteredHaplotypesVcfFile,
-			String listOfSnpsFile, String exclCgatFlag, String exclSVFlag) {
+			String genFile, String sampleFile, String gmapFile, String excludedSnpsFile, String phasingHapsFile,
+			String phasingSampleFile, String phasingLogFile, String filteredHaplotypesLogFile,
+			String filteredHaplotypesVcfFile, String filteredHaplotypesVcfFileBgzip,
+			String filteredHaplotypesVcfFileBgzipIndexed, String exclCgatFlag) {
+
+		String phasingTool = parsingArgs.getPhasingTool();
+		// String myPrefix = phasingHapsFile.split("\\.")[0];
+		String cmd;
 
 		if (parsingArgs.getStageStatus("pashing") == 1) {
-			String cmdToStore;
-			if (theChromo.equals("23")) {
-				// If we process chromoso X (23) then we change the cmdToStore
-				cmdToStore = SHAPEIT_BINARY + " --input-gen " + genFile + " " + sampleFile + " --input-map " + gmapFile
-						+ " --chrX --output-max " + shapeitHapsFile + " " + shapeitSampleFile
-						+ " --thread 15 --effective-size 20000 --output-log " + shapeitLogFile;
+			if (phasingTool.equals("shapeit")) {
+				String cmdToStore = null;
+				if (theChromo.equals("23")) {
+					// If we process chromoso X (23) then we change the cmdToStore
+					cmdToStore = SHAPEIT_BINARY + " --input-gen " + genFile + " " + sampleFile + " --input-map "
+							+ gmapFile + " --chrX --output-max " + phasingHapsFile + " " + phasingSampleFile
+							+ " --thread 16 --effective-size 20000 --output-log " + phasingLogFile;
+				} else {
+					cmdToStore = SHAPEIT_BINARY + " --input-gen " + genFile + " " + sampleFile + " --input-map "
+							+ gmapFile + " --output-max " + phasingHapsFile + " " + phasingSampleFile
+							+ " --thread 16 --effective-size 20000 --output-log " + phasingLogFile;
+				}
+				listOfCommands.add(cmdToStore);
+				try {
+					GuidanceImpl.phasing(theChromo, genFile, sampleFile, gmapFile, phasingHapsFile, phasingSampleFile,
+							phasingLogFile, phasingTool, cmdToStore);
+
+				} catch (Exception e) {
+					System.err.println("[Guidance] Exception trying the execution of phasing task");
+					System.err.println(e.getMessage());
+				}
+			} else if (phasingTool.equals("eagle")) {
+				System.err.println("[Guidance] Eagle does not take input in GEN format");
 			} else {
-				cmdToStore = SHAPEIT_BINARY + " --input-gen " + genFile + " " + sampleFile + " --input-map " + gmapFile
-						+ " --output-max " + shapeitHapsFile + " " + shapeitSampleFile
-						+ " --thread 15 --effective-size 20000 --output-log " + shapeitLogFile;
-			}
-			listOfCommands.add(cmdToStore);
-			try {
-				GuidanceImpl.phasing(theChromo, genFile, sampleFile, gmapFile, shapeitHapsFile, shapeitSampleFile,
-						shapeitLogFile, cmdToStore);
-			} catch (GuidanceTaskException gte) {
-				LOGGER.error("[Guidance] Exception trying the execution of phasing task", gte);
+				System.err.println("[Guidance] Only Eagle and Shapeit are available for phasing haplotypes");
 			}
 		}
 
 		if (parsingArgs.getStageStatus("createListOfExcludedSnps") == 1) {
-			String cmdToStore = JAVA_HOME + "/java createListOfExcludedSnps.jar " + shapeitHapsFile + " "
-					+ excludedSnpsFile + " " + exclCgatFlag + " " + exclSVFlag;
+			cmd = JAVA_HOME + "/java createListOfExcludedSnps " + phasingHapsFile + " " + excludedSnpsFile + " "
+					+ exclCgatFlag;
 
-			listOfCommands.add(cmdToStore);
+			listOfCommands.add(new String(cmd));
 			try {
-				GuidanceImpl.createListOfExcludedSnps(shapeitHapsFile, excludedSnpsFile, exclCgatFlag, exclSVFlag,
-						cmdToStore);
+				GuidanceImpl.createListOfExcludedSnps(phasingHapsFile, excludedSnpsFile, exclCgatFlag, cmd);
 			} catch (GuidanceTaskException gte) {
 				LOGGER.error("[Guidance] Exception trying the execution of createListOfExcludedSnps task", gte);
 			}
 		}
 
 		if (parsingArgs.getStageStatus("filterHaplotypes") == 1) {
-			String cmdToStore = JAVA_HOME + "/java filterHaplotypes.jar " + shapeitHapsFile + " " + shapeitSampleFile
-					+ " " + excludedSnpsFile + " " + filteredHaplotypesFile + " " + filteredHaplotypesSampleFile + " "
-					+ filteredHaplotypesLogFile + " " + filteredHaplotypesVcfFile + " " + listOfSnpsFile;
 
-			listOfCommands.add(cmdToStore);
+			cmd = SHAPEIT_BINARY + " -convert --input-haps " + phasingHapsFile + " " + phasingSampleFile
+					+ " --exclude-snp " + excludedSnpsFile + " " + " --output-log " + filteredHaplotypesLogFile
+					+ " --output-vcf " + filteredHaplotypesVcfFile;
+
+			listOfCommands.add(new String(cmd));
 			try {
-				GuidanceImpl.filterHaplotypes(shapeitHapsFile, shapeitSampleFile, excludedSnpsFile,
-						filteredHaplotypesFile, filteredHaplotypesSampleFile, filteredHaplotypesLogFile,
-						filteredHaplotypesVcfFile, listOfSnpsFile, cmdToStore);
-			} catch (GuidanceTaskException gte) {
-				LOGGER.error("[Guidance] Exception trying the execution of createListOfExcludedSnps task", gte);
+				GuidanceImpl.filterHaplotypes(phasingHapsFile, phasingSampleFile, excludedSnpsFile,
+						filteredHaplotypesLogFile, filteredHaplotypesVcfFile, cmd);
+			} catch (Exception e) {
+				System.err.println("[Guidance] Exception trying the execution of filterHaplotypes task");
+				System.err.println(e.getMessage());
+			}
+
+			cmd = SAMTOOLSBINARY + "/bgzip " + filteredHaplotypesVcfFile;
+
+			listOfCommands.add(new String(cmd));
+			try {
+				GuidanceImpl.samtoolsBgzip(filteredHaplotypesVcfFile, cmd);
+			} catch (Exception e) {
+				System.err.println("[Guidance] Exception trying the execution of samtoolsBgzip task");
+				System.err.println(e.getMessage());
 			}
 		}
+
 	}
 
 	/**
@@ -1918,10 +2191,10 @@ public class Guidance {
 	 * @param imputeFileSummary
 	 * @param imputeFileWarnings
 	 */
-	private static void doImputationWithImpute(ParseCmdLine parsingArgs, String chrS,
-			String gmapFile, String knownHapFile, String legendFile, String shapeitHapsFile, String shapeitSampleFile,
-			String lim1S, String lim2S, String pairsFile, String imputeFile, String imputeFileInfo,
-			String imputeFileSummary, String imputeFileWarnings) {
+	private static void doImputationWithImpute(ParseCmdLine parsingArgs, String chrS, String gmapFile,
+			String knownHapFile, String legendFile, String shapeitHapsFile, String shapeitSampleFile, String lim1S,
+			String lim2S, String pairsFile, String imputeFile, String imputeFileInfo, String imputeFileSummary,
+			String imputeFileWarnings) {
 
 		if (parsingArgs.getStageStatus("imputeWithImpute") == 1) {
 			// Submitting the impute task per chunk
@@ -1970,10 +2243,10 @@ public class Guidance {
 	 * @param lim1S
 	 * @param lim2S
 	 */
-	private static void doImputationWithMinimac(ParseCmdLine parsingArgs,
-			String knownHapFile, String filteredHapsFile, String filteredSampleFile, String filteredListOfSnpsFile,
-			String imputedMMFileName, String imputedMMInfoFile, String imputedMMErateFile, String imputedMMRecFile,
-			String imputedMMDoseFile, String imputedMMLogFile, String chrS, String lim1S, String lim2S) {
+	private static void doImputationWithMinimac(ParseCmdLine parsingArgs, String knownHapFile, String filteredHapsFile,
+			String filteredSampleFile, String filteredListOfSnpsFile, String imputedMMFileName,
+			String imputedMMInfoFile, String imputedMMErateFile, String imputedMMRecFile, String imputedMMDoseFile,
+			String imputedMMLogFile, String chrS, String lim1S, String lim2S) {
 
 		if (parsingArgs.getStageStatus("imputeWithMinimac") == 1) {
 			// Submitting the impute task per chunk
@@ -2007,8 +2280,8 @@ public class Guidance {
 	 * @param filteredRsIdFile
 	 * @param infoThresholdS
 	 */
-	private static void doFilterByInfo(ParseCmdLine parsingArgs,
-			String imputeFileInfo, String filteredRsIdFile, String infoThresholdS) {
+	private static void doFilterByInfo(ParseCmdLine parsingArgs, String imputeFileInfo, String filteredRsIdFile,
+			String infoThresholdS) {
 
 		if (parsingArgs.getStageStatus("filterByInfo") == 1) {
 			// We create the list of rsId that are greater than or equal to the
@@ -2035,8 +2308,8 @@ public class Guidance {
 	 * @param filteredFile
 	 * @param filteredLogFile
 	 */
-	private static void doQctoolS(ParseCmdLine parsingArgs, String imputeFile,
-			String filteredRsIdFile, String filteredFile, String filteredLogFile) {
+	private static void doQctoolS(ParseCmdLine parsingArgs, String imputeFile, String filteredRsIdFile,
+			String filteredFile, String filteredLogFile) {
 
 		double mafThreshold = parsingArgs.getMafThreshold();
 		String mafThresholdS = Double.toString(mafThreshold);
@@ -2069,9 +2342,8 @@ public class Guidance {
 	 * @param responseVar
 	 * @param covariables
 	 */
-	private static void doSnptest(ParseCmdLine parsingArgs, String chrS,
-			String mergedGenFile, String mergedSampleFile, String snptestOutFile, String snptestLogFile,
-			String responseVar, String covariables) {
+	private static void doSnptest(ParseCmdLine parsingArgs, String chrS, String mergedGenFile, String mergedSampleFile,
+			String snptestOutFile, String snptestLogFile, String responseVar, String covariables) {
 
 		String newStr = covariables.replace(',', ' ');
 		if (parsingArgs.getStageStatus("snptest") == 1) {
@@ -2120,10 +2392,9 @@ public class Guidance {
 	 * @param hweCasesThresholdS
 	 * @param hweControlsThresholdS
 	 */
-	private static void doCollectSummary(ParseCmdLine parsingArgs, String chrS,
-			String imputeFileInfo, String snptestOutFile, String summaryFile, String mafThresholdS,
-			String infoThresholdS, String hweCohortThresholdS, String hweCasesThresholdS,
-			String hweControlsThresholdS) {
+	private static void doCollectSummary(ParseCmdLine parsingArgs, String chrS, String imputeFileInfo,
+			String snptestOutFile, String summaryFile, String mafThresholdS, String infoThresholdS,
+			String hweCohortThresholdS, String hweCasesThresholdS, String hweControlsThresholdS) {
 
 		if (parsingArgs.getStageStatus("collectSummary") == 1) {
 			// Submitting the collect_summary task per this chunk
@@ -2152,8 +2423,8 @@ public class Guidance {
 	 * @param condensedB
 	 * @param condensedC
 	 */
-	private static void doJointCondenseFiles(ParseCmdLine parsingArgs,
-			String condensedA, String condensedB, String condensedC) {
+	private static void doJointCondenseFiles(ParseCmdLine parsingArgs, String condensedA, String condensedB,
+			String condensedC) {
 
 		if (parsingArgs.getStageStatus("jointCondensedFiles") == 1) {
 			String cmdToStore = JAVA_HOME + "/java jointCondensedFiles " + condensedA + " " + condensedB + " "
@@ -2180,8 +2451,8 @@ public class Guidance {
 	 * @param rpanelName
 	 * @param rpanelFlag
 	 */
-	private static void doJointFilteredByAllFiles(ParseCmdLine parsingArgs,
-			String filteredByAllA, String filteredByAllB, String filteredByAllC, String rpanelName, String rpanelFlag) {
+	private static void doJointFilteredByAllFiles(ParseCmdLine parsingArgs, String filteredByAllA,
+			String filteredByAllB, String filteredByAllC, String rpanelName, String rpanelFlag) {
 
 		if (parsingArgs.getStageStatus("jointFilteredByAllFiles") == 1) {
 			String cmdToStore = JAVA_HOME + "/java jointFilteredByAllFiles " + filteredByAllA + " " + filteredByAllB
@@ -2207,8 +2478,8 @@ public class Guidance {
 	 * @param topHitsResults
 	 * @param pvaThrS
 	 */
-	private static void doGenerateTopHits(ParseCmdLine parsingArgs,
-			String filteredFile, String filteredXFile, String topHitsResults, String pvaThrS) {
+	private static void doGenerateTopHits(ParseCmdLine parsingArgs, String filteredFile, String filteredXFile,
+			String topHitsResults, String pvaThrS) {
 
 		if (parsingArgs.getStageStatus("generateTopHits") == 1) {
 			String cmdToStore = JAVA_HOME + "/java generateTopHits " + filteredFile + " " + filteredXFile + " "
@@ -2235,9 +2506,8 @@ public class Guidance {
 	 * @param manhattanPlotTiffFile
 	 * @param correctedPvaluesFile
 	 */
-	private static void doGenerateQQManhattanPlots(ParseCmdLine parsingArgs,
-			String condensedFile, String qqPlotFile, String manhattanPlotFile, String qqPlotTiffFile,
-			String manhattanPlotTiffFile) {
+	private static void doGenerateQQManhattanPlots(ParseCmdLine parsingArgs, String condensedFile, String qqPlotFile,
+			String manhattanPlotFile, String qqPlotTiffFile, String manhattanPlotTiffFile) {
 
 		if (parsingArgs.getStageStatus("generateQQManhattanPlots") == 1) {
 			String cmdToStore = R_SCRIPT_BIN_DIR + "/Rscript " + R_SCRIPT_DIR + "/qqplot_manhattan.R " + condensedFile
@@ -2265,11 +2535,11 @@ public class Guidance {
 	 * @param lim1
 	 * @param lim2
 	 */
-	private static void doCombinePanelsComplex(ParseCmdLine parsingArgs,
-			String resultsPanelA, String resultsPanelB, int lim1, int lim2) {
+	private static void doCombinePanelsComplex(ParseCmdLine parsingArgs, String resultsPanelA, String resultsPanelB,
+			int lim1, int lim2) {
 
-		String cmdToStore = JAVA_HOME + "/java combinePanelsComplex " + resultsPanelA + " " + resultsPanelB + " "
-				+ lim1 + " " + lim2;
+		String cmdToStore = JAVA_HOME + "/java combinePanelsComplex " + resultsPanelA + " " + resultsPanelB + " " + lim1
+				+ " " + lim2;
 		listOfCommands.add(cmdToStore);
 
 		try {
@@ -2292,8 +2562,7 @@ public class Guidance {
 	 * @param theChromo
 	 * @param type
 	 */
-	private static void doMergeTwoChunks(ParseCmdLine parsingArgs, String reduceA,
-			String reduceB, String reduceC) {
+	private static void doMergeTwoChunks(ParseCmdLine parsingArgs, String reduceA, String reduceB, String reduceC) {
 
 		if (parsingArgs.getStageStatus("mergeTwoChunks") == 1) {
 			// Task
@@ -2308,7 +2577,7 @@ public class Guidance {
 
 		}
 	}
-	
+
 	/**
 	 * Method that wraps the mergeTwoChunks task and store the command in the
 	 * listOfCommands
@@ -2321,8 +2590,8 @@ public class Guidance {
 	 * @param theChromo
 	 * @param type
 	 */
-	private static void doMergeTwoChunksUnconditional(ParseCmdLine parsingArgs, String reduceA,
-			String reduceB, String reduceC) {
+	private static void doMergeTwoChunksUnconditional(ParseCmdLine parsingArgs, String reduceA, String reduceB,
+			String reduceC) {
 
 		String cmdToStore = JAVA_HOME + "/java mergeTwoChunksUnconditional " + reduceA + " " + reduceB + " " + reduceC;
 		listOfCommands.add(cmdToStore);
@@ -2332,7 +2601,7 @@ public class Guidance {
 		} catch (GuidanceTaskException gte) {
 			LOGGER.error("[Guidance] Exception trying the execution of mergeTwoChunks task", gte);
 		}
-		
+
 	}
 
 	/**
@@ -2347,23 +2616,21 @@ public class Guidance {
 	 * @param theChromo
 	 * @param type
 	 */
-	private static void doMergeTwoChunksInTheFirst(ParseCmdLine parsingArgs,
-			String reduceA, String reduceB, String theChromo, String type) {
-
-		if (parsingArgs.getStageStatus("mergeTwoChunks") == 1) {
-			// Task
-			String cmdToStore = JAVA_HOME + "/java mergeTwoChunksInTheFirst " + reduceA + " " + reduceB + " "
-					+ theChromo;
-			listOfCommands.add(cmdToStore);
-
-			try {
-				GuidanceImpl.mergeTwoChunksInTheFirst(reduceA, reduceB, cmdToStore);
-			} catch (GuidanceTaskException gte) {
-				LOGGER.error("[Guidance] Exception trying the execution of mergeTwoChunks task", gte);
-			}
-
-		}
-	}
+	/*
+	 * private static void doMergeTwoChunksInTheFirst(ParseCmdLine parsingArgs,
+	 * String reduceA, String reduceB, String theChromo, String type) {
+	 * 
+	 * if (parsingArgs.getStageStatus("mergeTwoChunks") == 1) { // Task String
+	 * cmdToStore = JAVA_HOME + "/java mergeTwoChunksInTheFirst " + reduceA + " " +
+	 * reduceB + " " + theChromo; listOfCommands.add(cmdToStore);
+	 * 
+	 * try { GuidanceImpl.mergeTwoChunksInTheFirst(reduceA, reduceB, cmdToStore); }
+	 * catch (GuidanceTaskException gte) { LOGGER.
+	 * error("[Guidance] Exception trying the execution of mergeTwoChunks task",
+	 * gte); }
+	 * 
+	 * } }
+	 */
 
 	/**
 	 * Method that wraps the filterByAll task and store the command in the
@@ -2375,8 +2642,8 @@ public class Guidance {
 	 * @param outputFile
 	 * @param outputCondensedFile
 	 */
-	private static void doFilterByAll(ParseCmdLine parsingArgs, String inputFile,
-			String outputFile, String outputCondensedFile, String rpanelName) {
+	private static void doFilterByAll(ParseCmdLine parsingArgs, String inputFile, String outputFile,
+			String outputCondensedFile, String rpanelName) {
 
 		double mafThreshold = parsingArgs.getMafThreshold();
 		double infoThreshold = parsingArgs.getInfoThreshold();
@@ -2417,8 +2684,8 @@ public class Guidance {
 	 * @param rpName
 	 * @param phenomeFile
 	 */
-	private static void doInitPhenoMatrix(ParseCmdLine parsingArgs,
-			String topHitsFile, String ttName, String rpName, String phenomeFile) {
+	private static void doInitPhenoMatrix(ParseCmdLine parsingArgs, String topHitsFile, String ttName, String rpName,
+			String phenomeFile) {
 
 		if (parsingArgs.getStageStatus("initPhenoMatrix") == 1) {
 			String cmdToStore = JAVA_HOME + "/java initPhenoMatrix " + topHitsFile + " " + ttName + " " + rpName + " "
@@ -2445,8 +2712,8 @@ public class Guidance {
 	 * @param rpName
 	 * @param phenomeFileB
 	 */
-	private static void doAddToPhenoMatrix(ParseCmdLine parsingArgs,
-			String phenomeFileA, String topHitsFile, String ttName, String rpName, String phenomeFileB) {
+	private static void doAddToPhenoMatrix(ParseCmdLine parsingArgs, String phenomeFileA, String topHitsFile,
+			String ttName, String rpName, String phenomeFileB) {
 
 		if (parsingArgs.getStageStatus("addToPhenoMatrix") == 1) {
 			String cmdToStore = JAVA_HOME + "/java addToPhenoMatrix " + phenomeFileA + " " + topHitsFile + " " + ttName
@@ -2475,9 +2742,8 @@ public class Guidance {
 	 * @param rpName
 	 * @param phenomeFileB
 	 */
-	private static void doFilloutPhenoMatrix(ParseCmdLine parsingArgs,
-			String phenomeFileA, String filteredByAllFile, String filteredByAllXFile, String endChrS, String ttName,
-			String rpName, String phenomeFileB) {
+	private static void doFilloutPhenoMatrix(ParseCmdLine parsingArgs, String phenomeFileA, String filteredByAllFile,
+			String filteredByAllXFile, String endChrS, String ttName, String rpName, String phenomeFileB) {
 
 		if (parsingArgs.getStageStatus("filloutPhenoMatrix") == 1) {
 			String cmdToStore = JAVA_HOME + "/java filloutPhenoMatrix " + phenomeFileA + " " + filteredByAllFile + " "
@@ -2505,8 +2771,8 @@ public class Guidance {
 	 * @param rpName
 	 * @param phenomeFileC
 	 */
-	private static void doFinalizePhenoMatrix(ParseCmdLine parsingArgs,
-			String phenomeFileA, String phenomeFileB, String ttName, String rpName, String phenomeFileC) {
+	private static void doFinalizePhenoMatrix(ParseCmdLine parsingArgs, String phenomeFileA, String phenomeFileB,
+			String ttName, String rpName, String phenomeFileC) {
 
 		if (parsingArgs.getStageStatus("finalizePhenoMatrix") == 1) {
 			String cmdToStore = JAVA_HOME + "/java finalizePhenoMatrix " + phenomeFileA + " " + phenomeFileB + " "
@@ -2521,8 +2787,8 @@ public class Guidance {
 		}
 	}
 
-	private static void doCopyFile(ParseCmdLine parsingArgs, String originPath,
-			String destinationPath) throws IOException, GuidanceTaskException {
+	private static void doCopyFile(ParseCmdLine parsingArgs, String originPath, String destinationPath)
+			throws IOException, GuidanceTaskException {
 		if (parsingArgs.getStageStatus("combinePanelsComplex") == 1) {
 			String cmdToStore = JAVA_HOME + "/java copyFile " + originPath + " " + destinationPath;
 
@@ -2562,8 +2828,8 @@ public class Guidance {
 		int endChr = parsingArgs.getEnd();
 		for (int i = startChr; i <= endChr; i++) {
 			commonFilesInfo.setPairsFileFinalStatus(i, finalStatus);
-			commonFilesInfo.setShapeitHapsFileFinalStatus(i, finalStatus);
-			commonFilesInfo.setShapeitSampleFileFinalStatus(i, finalStatus);
+			commonFilesInfo.setPhasingHapsFileFinalStatus(i, finalStatus);
+			commonFilesInfo.setPhasingSampleFileFinalStatus(i, finalStatus);
 		}
 	}
 
