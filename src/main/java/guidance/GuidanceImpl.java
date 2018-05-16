@@ -126,6 +126,14 @@ public class GuidanceImpl {
 
 	/**
 	 * Method to split the gmapFile in case of eagle/impute combination
+	 * 
+	 * @param gmapFile
+	 * @param gmapFileChr
+	 * @param chromo
+	 * @param cmdToStore
+	 * @throws IOException
+	 * @throws InterruptedException
+	 * @throws Exception
 	 */
 	public static void createSplitedFiles(String gmapFile, String gmapFileChr, String chromo, String cmdToStore)
 			throws IOException, InterruptedException, Exception {
@@ -195,7 +203,7 @@ public class GuidanceImpl {
 	}
 
 	/**
-	 * Method to perform the conversion from Bed to Ped Format file
+	 * Method to perform the conversion from Bed to Bed Format file
 	 * 
 	 * @param bedFile
 	 * @param bimFile
@@ -304,9 +312,23 @@ public class GuidanceImpl {
 	}
 
 	/**
-	 * Method to peform split chr 23 in males and females
+	 * Method to perform split chr 23 in males and females
+	 *
+	 * @param myPrefix
+	 * @param bedFile
+	 * @param bimFile
+	 * @param famFile
+	 * @param bedChr23File
+	 * @param bimChr23File
+	 * @param famChr23File
+	 * @param logFile
+	 * @param sex
+	 * @param theChromo
+	 * @param cmdToStore
+	 * @throws IOException
+	 * @throws InterruptedException
+	 * @throws Exception
 	 */
-
 	public static void splitChr23(String myPrefix, String bedFile, String bimFile, String famFile, String bedChr23File,
 			String bimChr23File, String famChr23File, String logFile, String sex, String theChromo, String cmdToStore)
 			throws IOException, InterruptedException, Exception {
@@ -314,11 +336,12 @@ public class GuidanceImpl {
 		String plinkBinary = System.getenv("PLINKBINARY");
 		if (plinkBinary == null) {
 			throw new Exception(
-					"[convertFromBedToBed] Error, PLINKBINARY environment variable is not defined in .bashrc!!!");
+					"[splitChr23] Error, PLINKBINARY environment variable is not defined in .bashrc!!!");
 		}
 
 		if (DEBUG) {
-			System.out.println("\n[DEBUG] Running convertFromBedToBed with parameters:");
+			System.out.println("\n[DEBUG] Running splitChr23 with parameters:");
+			System.out.println("[DEBUG] \t- Input prefix    : " + myPrefix);
 			System.out.println("[DEBUG] \t- Input bedFile   : " + bedFile);
 			System.out.println("[DEBUG] \t- Input bimFile   : " + bimFile);
 			System.out.println("[DEBUG] \t- Input famFile   : " + famFile);
@@ -326,8 +349,8 @@ public class GuidanceImpl {
 			System.out.println("[DEBUG] \t- Output newBimFile  : " + bimChr23File);
 			System.out.println("[DEBUG] \t- Output newFamFile  : " + famChr23File);
 			System.out.println("[DEBUG] \t- Output logFile  : " + logFile);
+			System.out.println("[DEBUG] \t- Gender          : " + sex);
 			System.out.println("[DEBUG] \t- Chromosome      : " + theChromo);
-			System.out.println("[DEBUG] \t- Gender                  : " + sex);
 			System.out.println("\n");
 			System.out.println("[DEBUG] \t- Command: " + cmdToStore);
 
@@ -349,7 +372,7 @@ public class GuidanceImpl {
 
 		} else if (sex.equals("females")) {
 			cmd = plinkBinary + " --noweb --bed " + bedFile + " --bim " + bimFile + " --fam " + famFile
-					+ " --filter-females  --out " + myPrefix + " --make-bed";
+					+ " --filter-females --out " + myPrefix + " --make-bed";
 
 		}
 
@@ -364,7 +387,7 @@ public class GuidanceImpl {
 		} catch (IOException ioe) {
 			throw new GuidanceTaskException(ioe);
 		}
-
+		
 		// Check process exit value
 		if (exitValue != 0) {
 			throw new GuidanceTaskException(HEADER_CONVERT_FROM_BED_TO_BED + ERROR_BINARY_EXEC + exitValue);
@@ -1259,6 +1282,8 @@ public class GuidanceImpl {
 			System.out.println("\n[DEBUG] Running newSample with parameters:");
 			System.out.println("[DEBUG] \t- Input sampleFile               : " + sampleFile);
 			System.out.println("[DEBUG] \t- Input/Output phasingSampleFile : " + phasingSampleFile);
+			System.out.println("[DEBUG] \t- Input responseVar              : " + responseVar);
+			System.out.println("[DEBUG] \t- Input covariables              : " + covariables);
 			System.out.println("\n");
 			System.out.println("[DEBUG] \t- Command: " + cmdToStore);
 		}
@@ -1493,7 +1518,7 @@ public class GuidanceImpl {
 		} catch (IOException ioe) {
 			throw new GuidanceTaskException(ioe);
 		}
-		
+
 		if (exitValue != 0) {
 			System.err.println("[phasing] Warning executing phasingProc job, exit value is: " + exitValue);
 			System.err.println("[phasing]                         (This warning is not fatal).");
@@ -1504,7 +1529,8 @@ public class GuidanceImpl {
 
 			boolean success = FileUtils.move(input + ".gz", input);
 			if (!success) {
-				throw new GuidanceTaskException("[samtoolsBgzip] Error, the file " + input + ".gz was not succesfully renamed to " + input);
+				throw new GuidanceTaskException(
+						"[samtoolsBgzip] Error, the file " + input + ".gz was not succesfully renamed to " + input);
 				// File was not successfully renamed
 			}
 		} else {
@@ -1623,7 +1649,7 @@ public class GuidanceImpl {
 		String imputeGZFile = imputeFile + ".gz";
 		if (!new File(imputeGZFile).exists()) {
 			try {
-				if (!new File(imputeFile).createNewFile()) {
+				if (!FileUtils.createEmptyFile(imputeFile, HEADER_IMPUTE)) {
 					throw new IOException(HEADER_IMPUTE + ERROR_FILE_CREATION + imputeFile + FILE_SUFFIX);
 				}
 			} catch (IOException ioe) {
@@ -1631,6 +1657,7 @@ public class GuidanceImpl {
 			}
 			FileUtils.gzipFile(imputeFile, imputeGZFile);
 		}
+		
 		boolean success = FileUtils.move(imputeGZFile, imputeFile);
 		if (!success) {
 			throw new GuidanceTaskException(HEADER_IMPUTE + ERROR_ON_FILE + imputeGZFile);
@@ -1651,6 +1678,20 @@ public class GuidanceImpl {
 			System.out.println("\n[DEBUG] imputeWithImpute endTime: " + stopTime);
 			System.out.println("\n[DEBUG] imputeWithImpute elapsedTime: " + elapsedTime + " seconds");
 			System.out.println("\n[DEBUG] Finished execution of imputeWithImpute with parameters:");
+			System.out.println("[DEBUG] \t- impute2Binary             : " + impute2Binary);
+			System.out.println("[DEBUG] \t- Input gmapFile            : " + gmapFile);
+			System.out.println("[DEBUG] \t- Input knownHapFile        : " + knownHapFile);
+			System.out.println("[DEBUG] \t- Input legendHapFile       : " + legendFile);
+			System.out.println("[DEBUG] \t- Input shapeitHapsFile     : " + shapeitHapsFile);
+			System.out.println("[DEBUG] \t- Input shapeitSampleFile   : " + shapeitSampleFile);
+			System.out.println("[DEBUG] \t- Input lim1S               : " + lim1S);
+			System.out.println("[DEBUG] \t- Input lim2S               : " + lim2S);
+			System.out.println("[DEBUG] \t- Input pairsFile           : " + pairsFile);
+			System.out.println("[DEBUG] \t- Output imputeFile         : " + imputeFile);
+			System.out.println("[DEBUG] \t- Output imputeFileInfo     : " + imputeFileInfo);
+			System.out.println("[DEBUG] \t- Output imputeFileSummary  : " + imputeFileSummary);
+			System.out.println("[DEBUG] \t- Output imputeFileWarnings : " + imputeFileWarnings);
+			System.out.println("[DEBUG] \t- Input  theChromo          : " + theChromo);
 		}
 
 	}
