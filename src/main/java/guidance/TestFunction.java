@@ -50,7 +50,7 @@ public class TestFunction {
         String cmdToStore = "";
         try {
             GuidanceImpl.filterByAll(inputFile, outputFile, outputCondesedFile, panelName, mafThresholdS, infoThresholdS, hweCohortThresholdS,
-                    hweCasesThresholdS, hweControlsThresholdS, cmdToStore);
+                    hweCasesThresholdS, hweControlsThresholdS, "", "", cmdToStore);
         } catch (GuidanceTaskException e) {
             e.printStackTrace();
         }

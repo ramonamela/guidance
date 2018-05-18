@@ -410,6 +410,7 @@ public class ImputationFiles {
 					imputedSummaryFile.add(chromoListImputedSummaryFile);
 					imputedWarningsFile.add(chromoListImputedWarningsFile);
 					imputedLogFile.add(chromoListImputedLogFile);
+					
 					filteredFile.add(chromoListFilteredFile);
 					filteredFileLogFile.add(chromoListFilteredLogFile);
 					filteredFileRsIdFile.add(chromoListFilteredRsIdFile);
@@ -420,6 +421,7 @@ public class ImputationFiles {
 					imputedSummaryMalesFile.add(chromoListImputedSummaryMalesFile);
 					imputedWarningsMalesFile.add(chromoListImputedWarningsMalesFile);
 					imputedLogMalesFile.add(chromoListImputedLogMalesFile);
+					
 					filteredMalesFile.add(chromoListFilteredMalesFile);
 					filteredLogMalesFile.add(chromoListFilteredLogMalesFile);
 					filteredRsIdMalesFile.add(chromoListFilteredRsIdMalesFile);
@@ -430,6 +432,7 @@ public class ImputationFiles {
 					imputedSummaryFemalesFile.add(chromoListImputedSummaryFemalesFile);
 					imputedWarningsFemalesFile.add(chromoListImputedWarningsFemalesFile);
 					imputedLogFemalesFile.add(chromoListImputedLogFemalesFile);
+					
 					filteredFemalesFile.add(chromoListFilteredFemalesFile);
 					filteredLogFemalesFile.add(chromoListFilteredLogFemalesFile);
 					filteredRsIdFemalesFile.add(chromoListFilteredRsIdFemalesFile);
@@ -1024,14 +1027,8 @@ public class ImputationFiles {
 	 * @param chunkSize
 	 * @param finalStatus
 	 */
-	public void setImputedMalesFileFinalStatus(int rPanelIndex, int chromo, int lim1, int lim2, int chunkSize,
+	public void setImputedMalesFileFinalStatus(int rPanelIndex, int lim1, int lim2, int chunkSize,
 			String finalStatus) {
-		// Check that chromo index is within the bounds
-		checkChromoIndex(chromo);
-
-		// Check limits are within the bounds
-		checkLimits(chromo, lim1, lim2);
-
 		int indexChunk = lim1 / chunkSize;
 		this.imputedMalesFile.get(rPanelIndex).get(0).get(indexChunk).setFinalStatus(finalStatus);
 	}
@@ -1046,14 +1043,8 @@ public class ImputationFiles {
 	 * @param chunkSize
 	 * @param finalStatus
 	 */
-	public void setImputedFemalesFileFinalStatus(int rPanelIndex, int chromo, int lim1, int lim2, int chunkSize,
+	public void setImputedFemalesFileFinalStatus(int rPanelIndex, int lim1, int lim2, int chunkSize,
 			String finalStatus) {
-		// Check that chromo index is within the bounds
-		checkChromoIndex(chromo);
-
-		// Check limits are within the bounds
-		checkLimits(chromo, lim1, lim2);
-
 		int indexChunk = lim1 / chunkSize;
 		this.imputedFemalesFile.get(rPanelIndex).get(0).get(indexChunk).setFinalStatus(finalStatus);
 	}
@@ -1091,14 +1082,8 @@ public class ImputationFiles {
 	 * @param chunkSize
 	 * @param finalStatus
 	 */
-	public void setImputedMalesInfoFileFinalStatus(int rPanelIndex, int chromo, int lim1, int lim2, int chunkSize,
+	public void setImputedMalesInfoFileFinalStatus(int rPanelIndex, int lim1, int lim2, int chunkSize,
 			String finalStatus) {
-		// Check that chromo index is within the bounds
-		checkChromoIndex(chromo);
-
-		// Check limits are within the bounds
-		checkLimits(chromo, lim1, lim2);
-
 		int indexChunk = lim1 / chunkSize;
 		this.imputedInfoMalesFile.get(rPanelIndex).get(0).get(indexChunk).setFinalStatus(finalStatus);
 	}
@@ -1113,14 +1098,8 @@ public class ImputationFiles {
 	 * @param chunkSize
 	 * @param finalStatus
 	 */
-	public void setImputedFemalesInfoFileFinalStatus(int rPanelIndex, int chromo, int lim1, int lim2, int chunkSize,
+	public void setImputedFemalesInfoFileFinalStatus(int rPanelIndex, int lim1, int lim2, int chunkSize,
 			String finalStatus) {
-		// Check that chromo index is within the bounds
-		checkChromoIndex(chromo);
-
-		// Check limits are within the bounds
-		checkLimits(chromo, lim1, lim2);
-
 		int indexChunk = lim1 / chunkSize;
 		this.imputedInfoFemalesFile.get(rPanelIndex).get(0).get(indexChunk).setFinalStatus(finalStatus);
 	}
@@ -2726,16 +2705,10 @@ public class ImputationFiles {
 	 * @param chunkSize
 	 * @param finalStatus
 	 */
-	public void setFilteredMalesFileFinalStatus(int rPanelIndex, int chromo, int lim1, int lim2, int chunkSize,
+	public void setFilteredMalesFileFinalStatus(int rPanelIndex, int lim1, int lim2, int chunkSize,
 			String finalStatus) {
-		// Check that chromo index is within the bounds
-		checkChromoIndex(chromo);
-
-		// Check limits are within the bounds
-		checkLimits(chromo, lim1, lim2);
-
 		int indexChunk = lim1 / chunkSize;
-		this.filteredFile.get(rPanelIndex).get(0).get(indexChunk).setFinalStatus(finalStatus);
+		this.filteredMalesFile.get(rPanelIndex).get(0).get(indexChunk).setFinalStatus(finalStatus);
 	}
 	
 	/**
@@ -2748,16 +2721,10 @@ public class ImputationFiles {
 	 * @param chunkSize
 	 * @param finalStatus
 	 */
-	public void setFilteredFemalesFileFinalStatus(int rPanelIndex, int chromo, int lim1, int lim2, int chunkSize,
+	public void setFilteredFemalesFileFinalStatus(int rPanelIndex, int lim1, int lim2, int chunkSize,
 			String finalStatus) {
-		// Check that chromo index is within the bounds
-		checkChromoIndex(chromo);
-
-		// Check limits are within the bounds
-		checkLimits(chromo, lim1, lim2);
-
 		int indexChunk = lim1 / chunkSize;
-		this.filteredFile.get(rPanelIndex).get(0).get(indexChunk).setFinalStatus(finalStatus);
+		this.filteredFemalesFile.get(rPanelIndex).get(0).get(indexChunk).setFinalStatus(finalStatus);
 	}
 
 	/**

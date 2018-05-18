@@ -152,23 +152,26 @@ public class ProcessUtils {
      * @throws IOException
      */
     private static void readOutputAndError(InputStream in, String outputPath, InputStream error, String errorPath) throws IOException {
+    	
         try (BufferedInputStream bisInp = new BufferedInputStream(in);
-                BufferedOutputStream bosInp = new BufferedOutputStream(new FileOutputStream(outputPath))) {
+             BufferedOutputStream bosInp = new BufferedOutputStream(new FileOutputStream(outputPath));
+				BufferedInputStream bisErr = new BufferedInputStream(error);
+				BufferedOutputStream bosErr = new BufferedOutputStream(new FileOutputStream(errorPath))
+        		) {
 
-            byte[] b = new byte[1024];
-            int read;
-            while ((read = bisInp.read(b)) >= 0) {
-                bosInp.write(b, 0, read);
-            }
-        }
-
-        try (BufferedInputStream bisErr = new BufferedInputStream(error);
-                BufferedOutputStream bosErr = new BufferedOutputStream(new FileOutputStream(errorPath))) {
-
-            byte[] b = new byte[1024];
-            int read;
-            while ((read = bisErr.read(b)) >= 0) {
-                bosErr.write(b, 0, read);
+            byte[] bOut = new byte[1024];
+            byte[] bErr = new byte[1024];
+            int readOut = -1;
+            int readErr = -1;
+            while ((readOut = bisInp.read(bOut)) >= 0 || (readErr = bisErr.read(bErr)) >= 0) {
+                if(readOut >= 0) {
+                	bosInp.write(bOut, 0, readOut);
+                	readOut = -1;
+                }
+                if(readErr >= 0) {
+                	bosErr.write(bErr, 0, readErr);
+                	readErr = -1;
+                }
             }
         }
     }

@@ -74,6 +74,9 @@ public class ParseCmdLine {
 	private String mixedSampleFileName = null;
 	private String mixedSampleFile = null;
 
+	private ArrayList<String> mixedGenLogFileName = new ArrayList<String>();
+	private ArrayList<String> mixedGenLogFile = new ArrayList<String>();
+
 	private String gmapDir = null;
 	private ArrayList<String> gmapFileName = new ArrayList<>();
 
@@ -93,6 +96,7 @@ public class ParseCmdLine {
 
 	private ArrayList<ArrayList<String>> rpanelHapFileName = new ArrayList<>();
 	private ArrayList<ArrayList<String>> rpanelLegFileName = new ArrayList<>();
+	private ArrayList<ArrayList<String>> rpanelVCFFileName = new ArrayList<>();
 
 	// testTypes will be organized as follows:
 	// Each string will have: ["test_type_name","response_variable", "covariables"]
@@ -108,6 +112,8 @@ public class ParseCmdLine {
 	private int end = 0;
 	private int endNormal = 0;
 
+	private boolean doChr23independently = false;
+
 	private String wfDeepRequired = null;
 	private HashMap<String, Integer> wfPossibleDeeps = new HashMap<>();
 	private HashMap<String, Integer> wfAllStages = new HashMap<>();
@@ -122,7 +128,10 @@ public class ParseCmdLine {
 	private String removeTemporalFiles = "NO";
 	private String compressFiles = "NO";
 
+	private int procsPerChromo = 1;
+
 	private String inputFormat = null;
+	private String outputfile = null;
 
 	/**
 	 * Parse CMD Args into internal values
@@ -685,15 +694,34 @@ public class ParseCmdLine {
 			System.exit(1);
 		}
 
-		for (int kk = start; kk <= end; kk++) {
+		if (phasingTool.equals("shapeit")) {
+			for (int kk = start; kk <= end; kk++) {
+				tmpArg = argumentsArray.get(i++);
+				myArgument = tmpArg.split("=");
+				if ((myArgument.length > 0) && (myArgument.length < 3)) {
+					String chromo = Integer.toString(kk);
+					String tmpfile = "genmap_file_chr_" + chromo;
+					if (myArgument[0].equals(tmpfile)) {
+						gmapFileName.add(myArgument[1]);
+						checkExistence(gmapDir + "/" + myArgument[1]);
+					} else {
+						LOGGER.fatal(CLASS_HEADER + ERROR_PARAM_ORDER + myArgument[0]);
+						System.exit(1);
+					}
+				} else {
+					LOGGER.fatal(CLASS_HEADER + ERROR_SYNTAX + gwasConfigFile + ERROR_SYNTAX_SUFFIX + myArgument[0]);
+					System.exit(1);
+				}
+			}
+
+		} else if (phasingTool.equals("eagle")) {
 			tmpArg = argumentsArray.get(i++);
 			myArgument = tmpArg.split("=");
 			if ((myArgument.length > 0) && (myArgument.length < 3)) {
-				String chromo = Integer.toString(kk);
-				String tmpfile = "genmap_file_chr_" + chromo;
+				String tmpfile = "genmap_file";
 				if (myArgument[0].equals(tmpfile)) {
 					gmapFileName.add(myArgument[1]);
-					checkExistence(gmapDir + File.separator + myArgument[1]);
+					checkExistence(gmapDir + "/" + myArgument[1]);
 				} else {
 					LOGGER.fatal(CLASS_HEADER + ERROR_PARAM_ORDER + myArgument[0]);
 					System.exit(1);
@@ -702,6 +730,7 @@ public class ParseCmdLine {
 				LOGGER.fatal(CLASS_HEADER + ERROR_SYNTAX + gwasConfigFile + ERROR_SYNTAX_SUFFIX + myArgument[0]);
 				System.exit(1);
 			}
+
 		}
 
 		tmpArg = argumentsArray.get(i++);
@@ -771,33 +800,32 @@ public class ParseCmdLine {
 					rpanelDir.add(myArgument[1]);
 					checkExistence(myArgument[1]);
 					String tmpRpanelDir = myArgument[1];
-					ArrayList<String> chromoListRpanelHapFileName = new ArrayList<>();
-					for (int j = start; j <= end; j++) {
-						tmpArg = argumentsArray.get(i++);
-						myArgument = tmpArg.split("=");
-						if ((myArgument.length > 0) && (myArgument.length < 3)) {
-							String chromo = Integer.toString(j);
-							String tmpfile = "refpanel_hap_file_chr_" + chromo;
-							if (myArgument[0].equals(tmpfile)) {
-								chromoListRpanelHapFileName.add(myArgument[1]);
-								checkExistence(tmpRpanelDir + File.separator + myArgument[1]);
+
+					if (imputationTool.equals("impute")) {
+
+						ArrayList<String> chromoListRpanelHapFileName = new ArrayList<>();
+						for (int j = start; j <= end; j++) {
+							tmpArg = argumentsArray.get(i++);
+							myArgument = tmpArg.split("=");
+							if ((myArgument.length > 0) && (myArgument.length < 3)) {
+								String chromo = Integer.toString(j);
+								String tmpfile = "refpanel_hap_file_chr_" + chromo;
+								if (myArgument[0].equals(tmpfile)) {
+									chromoListRpanelHapFileName.add(myArgument[1]);
+									checkExistence(tmpRpanelDir + File.separator + myArgument[1]);
+								} else {
+									LOGGER.fatal(CLASS_HEADER + ERROR_PARAM_ORDER + myArgument[0]);
+									System.exit(1);
+								}
 							} else {
-								LOGGER.fatal(CLASS_HEADER + ERROR_PARAM_ORDER + myArgument[0]);
+								LOGGER.fatal(CLASS_HEADER + ERROR_SYNTAX + gwasConfigFile + ERROR_SYNTAX_SUFFIX
+										+ myArgument[0]);
 								System.exit(1);
 							}
-						} else {
-							LOGGER.fatal(
-									CLASS_HEADER + ERROR_SYNTAX + gwasConfigFile + ERROR_SYNTAX_SUFFIX + myArgument[0]);
-							System.exit(1);
 						}
-					}
-					rpanelHapFileName.add(chromoListRpanelHapFileName);
+						rpanelHapFileName.add(chromoListRpanelHapFileName);
 
-					// We have to know which is the imputaton tool, because:
-					// if we are going to use impute, then we need the legendfiles,
-					// if we are going to use minimac, we do not need legendfiles
-					if (imputationTool.equals("impute")) {
-						exclSVSnp = "NO";
+						// exclSVSnp = "NO";
 						LOGGER.info(CLASS_HEADER + " We are going to use 'impute' tool for imputation stage... ");
 						ArrayList<String> chromoListRpanelLegFileName = new ArrayList<>();
 						for (int j = start; j <= end; j++) {
@@ -821,7 +849,30 @@ public class ParseCmdLine {
 						}
 						rpanelLegFileName.add(chromoListRpanelLegFileName);
 					} else if (imputationTool.equals("minimac")) {
-						exclSVSnp = "YES";
+						// exclSVSnp = "YES";
+						LOGGER.fatal("[ParseCmdLine] We are going to use 'minimac' tool for imputation stage... ");
+						ArrayList<String> chromoListRpanelVCFFileName = new ArrayList<String>();
+						for (int j = start; j <= end; j++) {
+							tmpArg = argumentsArray.get(i++);
+							myArgument = tmpArg.split("=");
+							if ((myArgument.length > 0) && (myArgument.length < 3)) {
+								String chromo = Integer.toString(j);
+								String tmpfile = "refpanel_vcf_file_chr_" + chromo;
+								if (myArgument[0].equals(tmpfile)) {
+									chromoListRpanelVCFFileName.add(myArgument[1]);
+									checkExistence(tmpRpanelDir + "/" + myArgument[1]);
+								} else {
+									LOGGER.fatal("[ParseCmdLine.java] Error in the order of parameters in parameter: "
+											+ myArgument[0]);
+									System.exit(1);
+								}
+							} else {
+								LOGGER.fatal("[ParseCmdLine.java] Error of sintax in " + gwasConfigFile
+										+ ", in parameter: " + myArgument[0]);
+								System.exit(1);
+							}
+						}
+						rpanelVCFFileName.add(chromoListRpanelVCFFileName);
 						LOGGER.info(CLASS_HEADER + " We are going to use 'minimac' tool for imputation stage... ");
 					} else {
 						LOGGER.fatal(CLASS_HEADER
@@ -1225,8 +1276,8 @@ public class ParseCmdLine {
 	}
 
 	/**
-	 * Method to get the gmapFileName in case we use EAGLE 
-	 * It has to be taken into account that there is only one file in this case
+	 * Method to get the gmapFileName in case we use EAGLE It has to be taken into
+	 * account that there is only one file in this case
 	 * 
 	 * @param chromo
 	 * @return
@@ -1331,6 +1382,32 @@ public class ParseCmdLine {
 		}
 
 		return this.rpanelLegFileName.get(indexRpanel).get(index);
+	}
+
+	/**
+	 * Method to get the rpanelVCFFileName
+	 * 
+	 * @param indexRpanel
+	 * @param chromo
+	 * @return
+	 */
+	public String getRpanelVCFFileName(int indexRpanel, int chromo) {
+		int index = chromo - getStart();
+		if (chromo < getStart() || chromo > getEnd()) {
+			System.err.println("[ParseCmdLine.java] Error, the chromosome number should be " + getStart()
+					+ " <= chromo <= " + getEnd());
+			System.exit(1);
+			return "none";
+		}
+
+		if ((indexRpanel < 0) || (indexRpanel > rpanelTypes.size())) {
+			System.err.println(
+					"[ParseCmdLine.java] Error, the indexRpanel should be  0<= indexRpanel<=" + rpanelTypes.size());
+			System.exit(1);
+			return "none";
+		}
+
+		return rpanelVCFFileName.get(indexRpanel).get(index);
 	}
 
 	/**

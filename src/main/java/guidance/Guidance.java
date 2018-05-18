@@ -104,13 +104,14 @@ public class Guidance {
 	private static final String PLINKBINARY = System.getenv("PLINKBINARY");
 	private static final String SHAPEIT_BINARY = System.getenv("SHAPEITBINARY");
 	private static final String IMPUTE2_BINARY = System.getenv("IMPUTE2BINARY");
+	private final static String MINIMAC_BINARY = System.getenv("MINIMACBINARY");
 	private static final String SNPTEST_BINARY = System.getenv("SNPTESTBINARY");
 	private static final String JAVA_HOME = System.getenv("JAVA_HOME");
 	private static final String SAMTOOLSBINARY = System.getenv("SAMTOOLSBINARY");
 
-	private static final String SEX1 = "males";
-	private static final String SEX2 = "females";
-	private static final String NO_SEX = "";
+	private static final String SEX1 = GuidanceImpl.getSex1();
+	private static final String SEX2 = GuidanceImpl.getSex2();
+	private static final String NO_SEX = GuidanceImpl.getNoSex();
 
 	private static File listOfStages;
 	private static ArrayList<String> listOfCommands = new ArrayList<>();
@@ -168,6 +169,7 @@ public class Guidance {
 			PrintWriter writer = new PrintWriter(listOfStages);
 			writer.print("");
 			writer.close();
+			listOfStages.delete();
 			LOGGER.info("\n[Guidance] File to store the tasks list (overwritten): " + listOfStagesFileName);
 
 		}
@@ -323,11 +325,21 @@ public class Guidance {
 
 		PhenomeAnalysisFiles phenomeAnalysisFilesInfo = new PhenomeAnalysisFiles(parsingArgs, outDir, rpanelTypes);
 
+		LOGGER.info("[Guidance] Directory structures have been created...");
+
 		// Create all file names used in the workflow.
 		// Also, define which of them will be temporal or permanent.
 		setFinalStatusForCommonFiles(parsingArgs, commonFilesInfo);
+
+		LOGGER.info("[Guidance] All the common file names used during the workflow have been defined...");
+
 		setFinalStatusForImputationFiles(parsingArgs, imputationFilesInfo, rpanelTypes);
+
+		LOGGER.info("[Guidance] All the imputation file names used during the workflow have been defined...");
+
 		setFinalStatusForAssocFiles(parsingArgs, assocFilesInfo, rpanelTypes);
+
+		LOGGER.info("[Guidance] All the names used during the workflow have been defined...");
 
 		// COMPSs.barrier();
 
@@ -360,7 +372,7 @@ public class Guidance {
 				String mixedGmapFile = commonFilesInfo.getGmapFile(chr);
 
 				if (parsingArgs.getStageStatus("phasingBed") == 1) {
-					doCreateSplitedFiles(parsingArgs, listOfCommands, gmapFile, mixedGmapFile, theChromo);
+					doCreateSplitedFiles(parsingArgs, gmapFile, mixedGmapFile, theChromo);
 				}
 
 			}
@@ -497,6 +509,8 @@ public class Guidance {
 						mixedFilteredHaplotypesVcfFileBgzip, mixedFilteredHaplotypesVcfFileBgzipIndexed, exclCgatFlag);
 
 			} // End of inputFormat GEN
+
+			flushCommands();
 		}
 
 		flushCommands();
@@ -506,6 +520,7 @@ public class Guidance {
 		for (int chr = startChr; chr <= endChr; chr++) {
 
 			String gmapFile = parsingArgs.getGmapDir() + "/" + parsingArgs.getGmapFileName(chr);
+			String mixedGmapFile = commonFilesInfo.getGmapFile(chr);
 
 			// ***********************************************
 			// * Now perform the imputation tasks *
@@ -522,8 +537,8 @@ public class Guidance {
 				int lim1 = minSize;
 				int lim2 = lim1 + chunkSize - 1;
 				for (int j = minSize; j < maxSize; j = j + chunkSize) {
-					makeImputationPerChunk(parsingArgs, chr, lim1, lim2, panel, gmapFile, imputationFilesInfo,
-							commonFilesInfo);
+					makeImputationPerChunk(parsingArgs, chr, lim1, lim2, panel, gmapFile, mixedGmapFile,
+							imputationFilesInfo, commonFilesInfo);
 					lim1 = lim1 + chunkSize;
 					lim2 = lim2 + chunkSize;
 				}
@@ -727,9 +742,7 @@ public class Guidance {
 		int chunkSize = parsingArgs.getChunkSize();
 		double infoThreshold = parsingArgs.getInfoThreshold();
 
-		String knownHapFileName = parsingArgs.getRpanelHapFileName(panelIndex, chrNumber);
 		String rpanelDir = parsingArgs.getRpanelDir(panelIndex);
-		String knownHapFile = rpanelDir + File.separator + knownHapFileName;
 
 		String lim1S = Integer.toString(lim1);
 		String lim2S = Integer.toString(lim2);
@@ -739,6 +752,9 @@ public class Guidance {
 		String phasingTool = parsingArgs.getPhasingTool();
 
 		if (imputationTool.equals("impute")) {
+			String knownHapFileName = parsingArgs.getRpanelHapFileName(panelIndex, chrNumber);
+			String knownHapFile = rpanelDir + File.separator + knownHapFileName;
+
 			String legendFileName = parsingArgs.getRpanelLegFileName(panelIndex, chrNumber);
 			String legendFile = rpanelDir + File.separator + legendFileName;
 
@@ -750,7 +766,7 @@ public class Guidance {
 			String mixedImputeFileInfo = "";
 			String mixedImputeFileSummary = "";
 			String mixedImputeFileWarnings = "";
-			String mixedImputeLogFile = "";
+			// String mixedImputeLogFile = "";
 			String mixedFilteredFile = "";
 			String mixedFilteredLogFile = "";
 			String mixedFilteredRsIdFile = "";
@@ -767,8 +783,10 @@ public class Guidance {
 						chunkSize);
 				mixedImputeFileWarnings = imputationFilesInfo.getImputedWarningsFile(panelIndex, chrNumber, lim1, lim2,
 						chunkSize);
-				mixedImputeLogFile = imputationFilesInfo.getImputedLogFile(panelIndex, chrNumber, lim1, lim2,
-						chunkSize);
+				/*
+				 * mixedImputeLogFile = imputationFilesInfo.getImputedLogFile(panelIndex,
+				 * chrNumber, lim1, lim2, chunkSize);
+				 */
 				mixedFilteredFile = imputationFilesInfo.getFilteredFile(panelIndex, chrNumber, lim1, lim2, chunkSize);
 				mixedFilteredLogFile = imputationFilesInfo.getFilteredLogFile(panelIndex, chrNumber, lim1, lim2,
 						chunkSize);
@@ -781,13 +799,12 @@ public class Guidance {
 			if (phasingTool.equals("eagle")) {
 
 				if (!chrS.equals("23")) {
-					doImputationWithImpute(parsingArgs, listOfCommands, chrS, mixedGmapFile, knownHapFile, legendFile,
+					doImputationWithImpute(parsingArgs, chrS, mixedGmapFile, knownHapFile, legendFile,
 							mixedPhasingHapsFile, mixedSampleFile, lim1S, lim2S, mixedPairsFile, mixedImputeFile,
-							mixedImputeFileInfo, mixedImputeFileSummary, mixedImputeFileWarnings, sex);
-					doFilterByInfo(parsingArgs, listOfCommands, mixedImputeFileInfo, mixedFilteredRsIdFile,
-							infoThresholdS, sex);
-					doQctoolS(parsingArgs, listOfCommands, mixedImputeFile, mixedFilteredRsIdFile, mixedFilteredFile,
-							mixedFilteredLogFile, sex);
+							mixedImputeFileInfo, mixedImputeFileSummary, mixedImputeFileWarnings, NO_SEX);
+					doFilterByInfo(parsingArgs, mixedImputeFileInfo, mixedFilteredRsIdFile, infoThresholdS, NO_SEX);
+					doQctoolS(parsingArgs, mixedImputeFile, mixedFilteredRsIdFile, mixedFilteredFile,
+							mixedFilteredLogFile, NO_SEX);
 
 				} else if (chrS.equals("23")) {
 
@@ -817,10 +834,13 @@ public class Guidance {
 					String mixedImputeFemalesFileWarnings = imputationFilesInfo
 							.getImputedWarningsFemalesFile(panelIndex, chrNumber, lim1, lim2, chunkSize);
 
-					String mixedImputeLogMalesFile = imputationFilesInfo.getImputedLogMalesFile(panelIndex, chrNumber,
-							lim1, lim2, chunkSize);
-					String mixedImputeLogFemalesFile = imputationFilesInfo.getImputedLogFemalesFile(panelIndex,
-							chrNumber, lim1, lim2, chunkSize);
+					/*
+					 * String mixedImputeLogMalesFile =
+					 * imputationFilesInfo.getImputedLogMalesFile(panelIndex, chrNumber, lim1, lim2,
+					 * chunkSize); String mixedImputeLogFemalesFile =
+					 * imputationFilesInfo.getImputedLogFemalesFile(panelIndex, chrNumber, lim1,
+					 * lim2, chunkSize);
+					 */
 
 					String mixedFilteredMalesFile = imputationFilesInfo.getFilteredMalesFile(panelIndex, chrNumber,
 							lim1, lim2, chunkSize);
@@ -837,38 +857,37 @@ public class Guidance {
 					String mixedFilteredRsIdFemalesFile = imputationFilesInfo.getFilteredRsIdFemalesFile(panelIndex,
 							chrNumber, lim1, lim2, chunkSize);
 
-					doImputationWithImpute(parsingArgs, listOfCommands, chrS, mixedGmapFile, knownHapFile, legendFile,
+					doImputationWithImpute(parsingArgs, chrS, mixedGmapFile, knownHapFile, legendFile,
 							mixedPhasingHapsMalesFile, mixedPhasingSampleMalesFile, lim1S, lim2S, mixedPairsFile,
 							mixedImputeMalesFile, mixedImputeMalesFileInfo, mixedImputeMalesFileSummary,
-							mixedImputeMalesFileWarnings, sex1);
+							mixedImputeMalesFileWarnings, SEX1);
 
-					doFilterByInfo(parsingArgs, listOfCommands, mixedImputeMalesFileInfo, mixedFilteredRsIdMalesFile,
-							infoThresholdS, sex1);
+					doFilterByInfo(parsingArgs, mixedImputeMalesFileInfo, mixedFilteredRsIdMalesFile, infoThresholdS,
+							SEX1);
 
-					doQctoolS(parsingArgs, listOfCommands, mixedImputeMalesFile, mixedFilteredRsIdMalesFile,
-							mixedFilteredMalesFile, mixedFilteredLogMalesFile, sex1);
+					doQctoolS(parsingArgs, mixedImputeMalesFile, mixedFilteredRsIdMalesFile, mixedFilteredMalesFile,
+							mixedFilteredLogMalesFile, SEX1);
 
-					doImputationWithImpute(parsingArgs, listOfCommands, chrS, mixedGmapFile, knownHapFile, legendFile,
+					doImputationWithImpute(parsingArgs, chrS, mixedGmapFile, knownHapFile, legendFile,
 							mixedPhasingHapsFemalesFile, mixedPhasingSampleFemalesFile, lim1S, lim2S, mixedPairsFile,
 							mixedImputeFemalesFile, mixedImputeFemalesFileInfo, mixedImputeFemalesFileSummary,
-							mixedImputeFemalesFileWarnings, sex2);
+							mixedImputeFemalesFileWarnings, SEX2);
 
-					doFilterByInfo(parsingArgs, listOfCommands, mixedImputeFemalesFileInfo,
-							mixedFilteredRsIdFemalesFile, infoThresholdS, sex2);
+					doFilterByInfo(parsingArgs, mixedImputeFemalesFileInfo, mixedFilteredRsIdFemalesFile,
+							infoThresholdS, SEX2);
 
-					doQctoolS(parsingArgs, listOfCommands, mixedImputeFemalesFile, mixedFilteredRsIdFemalesFile,
-							mixedFilteredFemalesFile, mixedFilteredLogFemalesFile, sex2);
+					doQctoolS(parsingArgs, mixedImputeFemalesFile, mixedFilteredRsIdFemalesFile,
+							mixedFilteredFemalesFile, mixedFilteredLogFemalesFile, SEX2);
 				}
 
 			} else if (phasingTool.equals("shapeit")) {
 				if (!chrS.equals("23")) {
-					doImputationWithImpute(parsingArgs, listOfCommands, chrS, gmapFile, knownHapFile, legendFile,
-							mixedPhasingHapsFile, mixedPhasingSampleFile, lim1S, lim2S, mixedPairsFile, mixedImputeFile,
-							mixedImputeFileInfo, mixedImputeFileSummary, mixedImputeFileWarnings, sex);
-					doFilterByInfo(parsingArgs, listOfCommands, mixedImputeFileInfo, mixedFilteredRsIdFile,
-							infoThresholdS, sex);
-					doQctoolS(parsingArgs, listOfCommands, mixedImputeFile, mixedFilteredRsIdFile, mixedFilteredFile,
-							mixedFilteredLogFile, sex);
+					doImputationWithImpute(parsingArgs, chrS, gmapFile, knownHapFile, legendFile, mixedPhasingHapsFile,
+							mixedPhasingSampleFile, lim1S, lim2S, mixedPairsFile, mixedImputeFile, mixedImputeFileInfo,
+							mixedImputeFileSummary, mixedImputeFileWarnings, NO_SEX);
+					doFilterByInfo(parsingArgs, mixedImputeFileInfo, mixedFilteredRsIdFile, infoThresholdS, NO_SEX);
+					doQctoolS(parsingArgs, mixedImputeFile, mixedFilteredRsIdFile, mixedFilteredFile,
+							mixedFilteredLogFile, NO_SEX);
 
 				} else if (chrS.equals("23")) {
 					String mixedPhasingHapsMalesFile = commonFilesInfo.getPhasingHapsMalesFile();
@@ -897,10 +916,13 @@ public class Guidance {
 					String mixedImputeFemalesFileWarnings = imputationFilesInfo
 							.getImputedWarningsFemalesFile(panelIndex, chrNumber, lim1, lim2, chunkSize);
 
-					String mixedImputeLogMalesFile = imputationFilesInfo.getImputedLogMalesFile(panelIndex, chrNumber,
-							lim1, lim2, chunkSize);
-					String mixedImputeLogFemalesFile = imputationFilesInfo.getImputedLogFemalesFile(panelIndex,
-							chrNumber, lim1, lim2, chunkSize);
+					/*
+					 * String mixedImputeLogMalesFile =
+					 * imputationFilesInfo.getImputedLogMalesFile(panelIndex, chrNumber, lim1, lim2,
+					 * chunkSize); String mixedImputeLogFemalesFile =
+					 * imputationFilesInfo.getImputedLogFemalesFile(panelIndex, chrNumber, lim1,
+					 * lim2, chunkSize);
+					 */
 
 					String mixedFilteredMalesFile = imputationFilesInfo.getFilteredMalesFile(panelIndex, chrNumber,
 							lim1, lim2, chunkSize);
@@ -917,27 +939,27 @@ public class Guidance {
 					String mixedFilteredRsIdFemalesFile = imputationFilesInfo.getFilteredRsIdFemalesFile(panelIndex,
 							chrNumber, lim1, lim2, chunkSize);
 
-					doImputationWithImpute(parsingArgs, listOfCommands, chrS, gmapFile, knownHapFile, legendFile,
+					doImputationWithImpute(parsingArgs, chrS, gmapFile, knownHapFile, legendFile,
 							mixedPhasingHapsMalesFile, mixedPhasingSampleMalesFile, lim1S, lim2S, mixedPairsFile,
 							mixedImputeMalesFile, mixedImputeMalesFileInfo, mixedImputeMalesFileSummary,
-							mixedImputeMalesFileWarnings, sex1);
+							mixedImputeMalesFileWarnings, SEX1);
 
-					doFilterByInfo(parsingArgs, listOfCommands, mixedImputeMalesFileInfo, mixedFilteredRsIdMalesFile,
-							infoThresholdS, sex1);
+					doFilterByInfo(parsingArgs, mixedImputeMalesFileInfo, mixedFilteredRsIdMalesFile, infoThresholdS,
+							SEX1);
 
-					doQctoolS(parsingArgs, listOfCommands, mixedImputeMalesFile, mixedFilteredRsIdMalesFile,
-							mixedFilteredMalesFile, mixedFilteredLogMalesFile, sex1);
+					doQctoolS(parsingArgs, mixedImputeMalesFile, mixedFilteredRsIdMalesFile, mixedFilteredMalesFile,
+							mixedFilteredLogMalesFile, SEX1);
 
-					doImputationWithImpute(parsingArgs, listOfCommands, chrS, gmapFile, knownHapFile, legendFile,
+					doImputationWithImpute(parsingArgs, chrS, gmapFile, knownHapFile, legendFile,
 							mixedPhasingHapsFemalesFile, mixedPhasingSampleFemalesFile, lim1S, lim2S, mixedPairsFile,
 							mixedImputeFemalesFile, mixedImputeFemalesFileInfo, mixedImputeFemalesFileSummary,
-							mixedImputeFemalesFileWarnings, sex2);
+							mixedImputeFemalesFileWarnings, SEX2);
 
-					doFilterByInfo(parsingArgs, listOfCommands, mixedImputeFemalesFileInfo,
-							mixedFilteredRsIdFemalesFile, infoThresholdS, sex2);
+					doFilterByInfo(parsingArgs, mixedImputeFemalesFileInfo, mixedFilteredRsIdFemalesFile,
+							infoThresholdS, SEX2);
 
-					doQctoolS(parsingArgs, listOfCommands, mixedImputeFemalesFile, mixedFilteredRsIdFemalesFile,
-							mixedFilteredFemalesFile, mixedFilteredLogFemalesFile, sex2);
+					doQctoolS(parsingArgs, mixedImputeFemalesFile, mixedFilteredRsIdFemalesFile,
+							mixedFilteredFemalesFile, mixedFilteredLogFemalesFile, SEX2);
 				}
 			}
 
@@ -1005,16 +1027,15 @@ public class Guidance {
 				String mixedImputeFileTbi = imputationFilesInfo.getImputedFileTbi(panelIndex, chrNumber, lim1, lim2,
 						chunkSize);
 
-				doImputationWithMinimac(parsingArgs, listOfCommands, refVcfFile, mixedFilteredHaplotypesVcfFileBgzip,
-						chrS, lim1S, lim2S, mixedImputeMMDoseVCFFile, mixedImputeMMInfoFile, mixedImputeMMErateFile,
+				doImputationWithMinimac(parsingArgs, refVcfFile, mixedFilteredHaplotypesVcfFileBgzip, chrS, lim1S,
+						lim2S, mixedImputeMMDoseVCFFile, mixedImputeMMInfoFile, mixedImputeMMErateFile,
 						mixedImputeMMRecFile, mixedImputeMMM3VCFFile, mixedImputeMMLogFile, mixedImputeFileBgzip,
-						mixedImputeMMM3VCFFileBgzip, mixedImputeFileTbi, sex);
+						mixedImputeMMM3VCFFileBgzip, mixedImputeFileTbi, NO_SEX);
 
-				doFilterByInfo(parsingArgs, listOfCommands, mixedImputeMMInfoFile, mixedFilteredRsIdFile,
-						infoThresholdS, sex);
+				doFilterByInfo(parsingArgs, mixedImputeMMInfoFile, mixedFilteredRsIdFile, infoThresholdS, NO_SEX);
 
-				doQctoolS(parsingArgs, listOfCommands, mixedImputeFileBgzip, mixedFilteredRsIdFile, mixedFilteredFile,
-						mixedFilteredLogFile, sex);
+				doQctoolS(parsingArgs, mixedImputeFileBgzip, mixedFilteredRsIdFile, mixedFilteredFile,
+						mixedFilteredLogFile, NO_SEX);
 
 			}
 
@@ -1085,28 +1106,27 @@ public class Guidance {
 				String mixedImputeFemalesFileTbi = imputationFilesInfo.getImputedFemalesFileTbi(panelIndex, chrNumber,
 						lim1, lim2, chunkSize);
 
-				doImputationWithMinimac(parsingArgs, listOfCommands, refVcfFile,
-						mixedFilteredHaplotypesVcfMalesFileBgzip, chrS, lim1S, lim2S, mixedImputeMMDoseVCFMalesFile,
-						mixedImputeMMInfoMalesFile, mixedImputeMMErateMalesFile, mixedImputeMMRecMalesFile,
-						mixedImputeMMM3VCFMalesFile, mixedImputeMMLogMalesFile, mixedImputeMalesFileBgzip,
-						mixedImputeMMM3VCFMalesFileBgzip, mixedImputeMalesFileTbi, SEX1);
+				doImputationWithMinimac(parsingArgs, refVcfFile, mixedFilteredHaplotypesVcfMalesFileBgzip, chrS, lim1S,
+						lim2S, mixedImputeMMDoseVCFMalesFile, mixedImputeMMInfoMalesFile, mixedImputeMMErateMalesFile,
+						mixedImputeMMRecMalesFile, mixedImputeMMM3VCFMalesFile, mixedImputeMMLogMalesFile,
+						mixedImputeMalesFileBgzip, mixedImputeMMM3VCFMalesFileBgzip, mixedImputeMalesFileTbi, SEX1);
 
-				doFilterByInfo(parsingArgs, listOfCommands, mixedImputeMMInfoMalesFile, mixedFilteredRsIdMalesFile,
-						infoThresholdS, SEX1);
+				doFilterByInfo(parsingArgs, mixedImputeMMInfoMalesFile, mixedFilteredRsIdMalesFile, infoThresholdS,
+						SEX1);
 
-				doQctoolS(parsingArgs, mixedImputeMalesFileBgzip, mixedFilteredRsIdMalesFile,
-						mixedFilteredMalesFile, mixedFilteredLogMalesFile, SEX1);
+				doQctoolS(parsingArgs, mixedImputeMalesFileBgzip, mixedFilteredRsIdMalesFile, mixedFilteredMalesFile,
+						mixedFilteredLogMalesFile, SEX1);
 
-				doImputationWithMinimac(parsingArgs, refVcfFile,
-						mixedFilteredHaplotypesVcfFemalesFileBgzip, chrS, lim1S, lim2S, mixedImputeMMDoseVCFFemalesFile,
-						mixedImputeMMInfoFemalesFile, mixedImputeMMErateFemalesFile, mixedImputeMMRecFemalesFile,
-						mixedImputeMMM3VCFFemalesFile, mixedImputeMMLogFemalesFile, mixedImputeFemalesFileBgzip,
-						mixedImputeMMM3VCFFemalesFileBgzip, mixedImputeFemalesFileTbi, SEX2);
+				doImputationWithMinimac(parsingArgs, refVcfFile, mixedFilteredHaplotypesVcfFemalesFileBgzip, chrS,
+						lim1S, lim2S, mixedImputeMMDoseVCFFemalesFile, mixedImputeMMInfoFemalesFile,
+						mixedImputeMMErateFemalesFile, mixedImputeMMRecFemalesFile, mixedImputeMMM3VCFFemalesFile,
+						mixedImputeMMLogFemalesFile, mixedImputeFemalesFileBgzip, mixedImputeMMM3VCFFemalesFileBgzip,
+						mixedImputeFemalesFileTbi, SEX2);
 
-				doFilterByInfo(parsingArgs, mixedImputeMMInfoFemalesFile, mixedFilteredRsIdFemalesFile,
-						infoThresholdS, SEX2);
+				doFilterByInfo(parsingArgs, mixedImputeMMInfoFemalesFile, mixedFilteredRsIdFemalesFile, infoThresholdS,
+						SEX2);
 
-				doQctoolS(parsingArgs, listOfCommands, mixedImputeFemalesFileBgzip, mixedFilteredRsIdFemalesFile,
+				doQctoolS(parsingArgs, mixedImputeFemalesFileBgzip, mixedFilteredRsIdFemalesFile,
 						mixedFilteredFemalesFile, mixedFilteredLogFemalesFile, SEX2);
 
 			}
@@ -1137,6 +1157,8 @@ public class Guidance {
 			String rpanelName, int chrNumber, int lim1, int lim2, ImputationFiles imputationFilesInfo,
 			CommonFiles commonFilesInfo, AssocFiles assocFilesInfo) {
 
+		String imputationTool = parsingArgs.getImputationTool();
+
 		int chunkSize = parsingArgs.getChunkSize();
 		double mafThreshold = parsingArgs.getMafThreshold();
 		double infoThreshold = parsingArgs.getInfoThreshold();
@@ -1155,34 +1177,154 @@ public class Guidance {
 		String hweCasesThresholdS = Double.toString(hweCasesThreshold);
 		String hweControlsThresholdS = Double.toString(hweControlsThreshold);
 
-		String snptestOutFile = assocFilesInfo.getSnptestOutFile(testTypeIndex, panelIndex, chrNumber, lim1, lim2,
-				chunkSize);
-		String snptestLogFile = assocFilesInfo.getSnptestLogFile(testTypeIndex, panelIndex, chrNumber, lim1, lim2,
-				chunkSize);
+		// String inputFormat = parsingArgs.getInputFormat();
 
-		String mixedSampleFile = commonFilesInfo.getSampleFile(chrNumber);
-		String mixedImputeFileInfo = imputationFilesInfo.getImputedInfoFile(panelIndex, chrNumber, lim1, lim2,
-				chunkSize);
-
-		String mixedFilteredFile = imputationFilesInfo.getFilteredFile(panelIndex, chrNumber, lim1, lim2, chunkSize);
+		// String mixedBimFile = null;
+		// String mixedGenFile = null;
+		// String exclCgatFlag = parsingArgs.getExclCgatSnp();
 
 		// String inputFormat = parsingArgs.getInputFormat();
 		// String exclCgatFlag = parsingArgs.getExclCgatSnp();
 
-		doSnptest(parsingArgs, chrS, mixedFilteredFile, mixedSampleFile, snptestOutFile, snptestLogFile, responseVar,
-				covariables);
+		if (chrNumber == 23) {
+			String snptestOutMalesFile = assocFilesInfo.getSnptestOutMalesFile(testTypeIndex, panelIndex, lim1, lim2,
+					chunkSize);
+			String snptestOutFemalesFile = assocFilesInfo.getSnptestOutFemalesFile(testTypeIndex, panelIndex, lim1,
+					lim2, chunkSize);
+			String snptestLogMalesFile = assocFilesInfo.getSnptestLogMalesFile(testTypeIndex, panelIndex, lim1, lim2,
+					chunkSize);
+			String snptestLogFemalesFile = assocFilesInfo.getSnptestLogFemalesFile(testTypeIndex, panelIndex, lim1,
+					lim2, chunkSize);
+			String mixedFilteredMalesFile = imputationFilesInfo.getFilteredMalesFile(panelIndex, chrNumber, lim1, lim2,
+					chunkSize);
+			String mixedFilteredFemalesFile = imputationFilesInfo.getFilteredFemalesFile(panelIndex, chrNumber, lim1,
+					lim2, chunkSize);
+			String mixedPhasingSampleMalesFile = commonFilesInfo.getPhasingSampleMalesFile();
+			String mixedPhasingSampleFemalesFile = commonFilesInfo.getPhasingSampleFemalesFile();
 
-		String summaryFile = assocFilesInfo.getSummaryFile(testTypeIndex, panelIndex, chrNumber, lim1, lim2, chunkSize);
+			doSnptest(parsingArgs, chrS, mixedFilteredMalesFile, mixedPhasingSampleMalesFile, snptestOutMalesFile,
+					snptestLogMalesFile, responseVar, covariables);
 
-		doCollectSummary(parsingArgs, chrS, mixedImputeFileInfo, snptestOutFile, summaryFile, mafThresholdS,
-				infoThresholdS, hweCohortThresholdS, hweCasesThresholdS, hweControlsThresholdS);
+			doSnptest(parsingArgs, chrS, mixedFilteredFemalesFile, mixedPhasingSampleFemalesFile, snptestOutFemalesFile,
+					snptestLogFemalesFile, responseVar, covariables);
 
-		String assocFilteredByAll = assocFilesInfo.getSummaryFilteredFile(testTypeIndex, panelIndex, chrNumber, lim1,
-				lim2, chunkSize);
-		String assocCondensed = assocFilesInfo.getSummaryCondensedFile(testTypeIndex, panelIndex, chrNumber, lim1, lim2,
-				chunkSize);
+			if (imputationTool.equals("impute")) {
+				String mixedImputeMalesFileInfo = imputationFilesInfo.getImputedInfoMalesFile(panelIndex, chrNumber,
+						lim1, lim2, chunkSize);
+				String mixedImputeFemalesFileInfo = imputationFilesInfo.getImputedInfoFemalesFile(panelIndex, chrNumber,
+						lim1, lim2, chunkSize);
+				String summaryMalesFile = assocFilesInfo.getSummaryMalesFile(testTypeIndex, panelIndex, chrNumber, lim1,
+						lim2, chunkSize);
+				String summaryFemalesFile = assocFilesInfo.getSummaryFemalesFile(testTypeIndex, panelIndex, chrNumber,
+						lim1, lim2, chunkSize);
 
-		doFilterByAll(parsingArgs, summaryFile, assocFilteredByAll, assocCondensed, rpanelName);
+				doCollectSummary(parsingArgs, chrS, mixedImputeMalesFileInfo, snptestOutMalesFile, summaryMalesFile,
+						mafThresholdS, infoThresholdS, hweCohortThresholdS, hweCasesThresholdS, hweControlsThresholdS);
+
+				doCollectSummary(parsingArgs, chrS, mixedImputeFemalesFileInfo, snptestOutFemalesFile,
+						summaryFemalesFile, mafThresholdS, infoThresholdS, hweCohortThresholdS, hweCasesThresholdS,
+						hweControlsThresholdS);
+
+				// TODO
+
+				String assocMalesFilteredByAll = assocFilesInfo.getSummaryFilteredMalesFile(testTypeIndex, panelIndex,
+						lim1, lim2, chunkSize);
+				String assocMalesCondensed = assocFilesInfo.getSummaryCondensedMalesFile(testTypeIndex, panelIndex,
+						lim1, lim2, chunkSize);
+
+				doFilterByAll(parsingArgs, summaryFemalesFile, assocMalesFilteredByAll, assocMalesCondensed, SEX1,
+						rpanelName);
+
+				String assocFemalesFilteredByAll = assocFilesInfo.getSummaryFilteredFemalesFile(testTypeIndex,
+						panelIndex, lim1, lim2, chunkSize);
+				String assocFemalesCondensed = assocFilesInfo.getSummaryCondensedFemalesFile(testTypeIndex, panelIndex,
+						lim1, lim2, chunkSize);
+
+				doFilterByAll(parsingArgs, summaryFemalesFile, assocFemalesFilteredByAll, assocFemalesCondensed, SEX2,
+						rpanelName);
+
+			} else if (imputationTool.equals("minimac")) {
+				String mixedImputedMMInfoMalesFile = imputationFilesInfo.getImputedMMInfoMalesFile(panelIndex,
+						chrNumber, lim1, lim2, chunkSize);
+				String mixedImputedMMInfoFemalesFile = imputationFilesInfo.getImputedMMInfoFemalesFile(panelIndex,
+						chrNumber, lim1, lim2, chunkSize);
+				String summaryMalesFile = assocFilesInfo.getSummaryMalesFile(testTypeIndex, panelIndex, chrNumber, lim1,
+						lim2, chunkSize);
+				String summaryFemalesFile = assocFilesInfo.getSummaryFemalesFile(testTypeIndex, panelIndex, chrNumber,
+						lim1, lim2, chunkSize);
+
+				doCollectSummary(parsingArgs, chrS, mixedImputedMMInfoMalesFile, snptestOutMalesFile, summaryMalesFile,
+						mafThresholdS, infoThresholdS, hweCohortThresholdS, hweCasesThresholdS, hweControlsThresholdS);
+
+				doCollectSummary(parsingArgs, chrS, mixedImputedMMInfoFemalesFile, snptestOutFemalesFile,
+						summaryFemalesFile, mafThresholdS, infoThresholdS, hweCohortThresholdS, hweCasesThresholdS,
+						hweControlsThresholdS);
+				// TODO
+
+				String assocMalesFilteredByAll = assocFilesInfo.getSummaryFilteredMalesFile(testTypeIndex, panelIndex,
+						lim1, lim2, chunkSize);
+				String assocMalesCondensed = assocFilesInfo.getSummaryCondensedMalesFile(testTypeIndex, panelIndex,
+						lim1, lim2, chunkSize);
+
+				doFilterByAll(parsingArgs, summaryFemalesFile, assocMalesFilteredByAll, assocMalesCondensed, SEX1,
+						rpanelName);
+
+				String assocFemalesFilteredByAll = assocFilesInfo.getSummaryFilteredFemalesFile(testTypeIndex,
+						panelIndex, lim1, lim2, chunkSize);
+				String assocFemalesCondensed = assocFilesInfo.getSummaryCondensedFemalesFile(testTypeIndex, panelIndex,
+						lim1, lim2, chunkSize);
+
+				doFilterByAll(parsingArgs, summaryFemalesFile, assocFemalesFilteredByAll, assocFemalesCondensed, SEX2,
+						rpanelName);
+			}
+
+		} else {
+			String snptestOutFile = assocFilesInfo.getSnptestOutFile(testTypeIndex, panelIndex, chrNumber, lim1, lim2,
+					chunkSize);
+			String snptestLogFile = assocFilesInfo.getSnptestLogFile(testTypeIndex, panelIndex, chrNumber, lim1, lim2,
+					chunkSize);
+			String mixedFilteredFile = imputationFilesInfo.getFilteredFile(panelIndex, chrNumber, lim1, lim2,
+					chunkSize);
+			String mixedPhasingSampleFile = commonFilesInfo.getPhasingSampleFile(chrNumber);
+
+			doSnptest(parsingArgs, chrS, mixedFilteredFile, mixedPhasingSampleFile, snptestOutFile, snptestLogFile,
+					responseVar, covariables);
+
+			if (imputationTool.equals("impute")) {
+				String mixedImputeFileInfo = imputationFilesInfo.getImputedInfoFile(panelIndex, chrNumber, lim1, lim2,
+						chunkSize);
+				String summaryFile = assocFilesInfo.getSummaryFile(testTypeIndex, panelIndex, chrNumber, lim1, lim2,
+						chunkSize);
+
+				doCollectSummary(parsingArgs, chrS, mixedImputeFileInfo, snptestOutFile, summaryFile, mafThresholdS,
+						infoThresholdS, hweCohortThresholdS, hweCasesThresholdS, hweControlsThresholdS);
+
+				String assocFilteredByAll = assocFilesInfo.getSummaryFilteredFile(testTypeIndex, panelIndex, chrNumber,
+						lim1, lim2, chunkSize);
+				String assocCondensed = assocFilesInfo.getSummaryCondensedFile(testTypeIndex, panelIndex, chrNumber,
+						lim1, lim2, chunkSize);
+
+				doFilterByAll(parsingArgs, summaryFile, assocFilteredByAll, assocCondensed, NO_SEX, rpanelName);
+
+			} else if (imputationTool.equals("minimac")) {
+				String mixedImputedMMInfoFile = imputationFilesInfo.getImputedMMInfoFile(panelIndex, chrNumber, lim1,
+						lim2, chunkSize);
+				String summaryFile = assocFilesInfo.getSummaryFile(testTypeIndex, panelIndex, chrNumber, lim1, lim2,
+						chunkSize);
+
+				doCollectSummary(parsingArgs, chrS, mixedImputedMMInfoFile, snptestOutFile, summaryFile, mafThresholdS,
+						infoThresholdS, hweCohortThresholdS, hweCasesThresholdS, hweControlsThresholdS);
+
+				String assocFilteredByAll = assocFilesInfo.getSummaryFilteredFile(testTypeIndex, panelIndex, chrNumber,
+						lim1, lim2, chunkSize);
+				String assocCondensed = assocFilesInfo.getSummaryCondensedFile(testTypeIndex, panelIndex, chrNumber,
+						lim1, lim2, chunkSize);
+
+				doFilterByAll(parsingArgs, summaryFile, assocFilteredByAll, assocCondensed, NO_SEX, rpanelName);
+			}
+
+		}
+
 	}
 
 	/**
@@ -2107,8 +2249,8 @@ public class Guidance {
 	 * command in the listOfCommands
 	 */
 
-	private static void doCreateSplitedFiles(ParseCmdLine parsingArgs, ArrayList<String> listOfCommands,
-			String gmapFile, String gmapFileChr, String theChromo) {
+	private static void doCreateSplitedFiles(ParseCmdLine parsingArgs, String gmapFile, String gmapFileChr,
+			String theChromo) {
 
 		String cmdToStore = null;
 
@@ -2119,6 +2261,7 @@ public class Guidance {
 
 		try {
 			GuidanceImpl.createSplitedFiles(gmapFile, gmapFileChr, theChromo, cmdToStore);
+			System.out.println("Executing command " + cmdToStore);
 		} catch (Exception e) {
 			System.err.println("[Guidance] Exception trying the execution of createSplitedFiles task");
 			System.err.println(e.getMessage());
@@ -2507,35 +2650,54 @@ public class Guidance {
 	 * @param imputeFileWarnings
 	 */
 	private static void doImputationWithImpute(ParseCmdLine parsingArgs, String chrS, String gmapFile,
-			String knownHapFile, String legendFile, String shapeitHapsFile, String shapeitSampleFile, String lim1S,
+			String knownHapFile, String legendFile, String phasingHapsFile, String phasingSampleFile, String lim1S,
 			String lim2S, String pairsFile, String imputeFile, String imputeFileInfo, String imputeFileSummary,
-			String imputeFileWarnings) {
+			String imputeFileWarnings, String sex) {
 
+		String cmdToStore = null;
 		if (parsingArgs.getStageStatus("imputeWithImpute") == 1) {
 			// Submitting the impute task per chunk
-			String cmdToStore;
+
 			if (chrS.equals("23")) {
 				cmdToStore = IMPUTE2_BINARY + " -use_prephased_g -m " + gmapFile + " -h " + knownHapFile + " -l "
-						+ legendFile + " -known_haps_g " + shapeitHapsFile + " -sample_g " + shapeitSampleFile
+						+ legendFile + " -known_haps_g " + phasingHapsFile + " -sample_g " + phasingSampleFile
 						+ " -int " + lim1S + " " + lim2S + " -chrX -exclude_snps_g " + pairsFile
 						+ " -impute_excluded -Ne 20000 -o " + imputeFile + " -i " + imputeFileInfo + " -r "
 						+ imputeFileSummary + " -w " + imputeFileWarnings + " -no_sample_qc_info -o_gz ";
+
+				if (sex.equals("males")) {
+					cmdToStore = IMPUTE2_BINARY + " -use_prephased_g -m " + gmapFile + " -h " + knownHapFile + " -l "
+							+ legendFile + " -known_haps_g " + phasingHapsFile + " -sample_g " + phasingSampleFile
+							+ " -int " + lim1S + " " + lim2S + " -chrX -exclude_snps_g " + pairsFile
+							+ " -impute_excluded -Ne 20000 -o " + imputeFile + " -i " + imputeFileInfo + " -r "
+							+ imputeFileSummary + " -w " + imputeFileWarnings + " -no_sample_qc_info -o_gz ";
+				} else if (sex.equals("females")) {
+					cmdToStore = IMPUTE2_BINARY + " -use_prephased_g -m " + gmapFile + " -h " + knownHapFile + " -l "
+							+ legendFile + " -known_haps_g " + phasingHapsFile + " -sample_g " + phasingSampleFile
+							+ " -int " + lim1S + " " + lim2S + " -chrX -exclude_snps_g " + pairsFile
+							+ " -impute_excluded -Ne 20000 -o " + imputeFile + " -i " + imputeFileInfo + " -r "
+							+ imputeFileSummary + " -w " + imputeFileWarnings + " -no_sample_qc_info -o_gz ";
+				}
+
 			} else {
 				cmdToStore = IMPUTE2_BINARY + " -use_prephased_g -m " + gmapFile + " -h " + knownHapFile + " -l "
-						+ legendFile + " -known_haps_g " + shapeitHapsFile + " -int " + lim1S + " " + lim2S
+						+ legendFile + " -known_haps_g " + phasingHapsFile + " -int " + lim1S + " " + lim2S
 						+ " -exclude_snps_g " + pairsFile + " -impute_excluded -Ne 20000 -o " + imputeFile + " -i "
 						+ imputeFileInfo + " -r " + imputeFileSummary + " -w " + imputeFileWarnings
 						+ " -no_sample_qc_info -o_gz";
 			}
 			listOfCommands.add(cmdToStore);
 			try {
-				GuidanceImpl.imputeWithImpute(gmapFile, knownHapFile, legendFile, shapeitHapsFile, shapeitSampleFile,
+				GuidanceImpl.imputeWithImpute(gmapFile, knownHapFile, legendFile, phasingHapsFile, phasingSampleFile,
 						lim1S, lim2S, pairsFile, imputeFile, imputeFileInfo, imputeFileSummary, imputeFileWarnings,
-						chrS, cmdToStore);
-			} catch (GuidanceTaskException gte) {
-				LOGGER.error("[Guidance] Exception trying the execution of impute task", gte);
+						chrS, sex, cmdToStore);
+
+			} catch (Exception e) {
+				System.err.println("[Guidance] Exception trying the execution of impute task");
+				System.err.println(e.getMessage());
 			}
 		}
+
 	}
 
 	/**
@@ -2558,30 +2720,65 @@ public class Guidance {
 	 * @param lim1S
 	 * @param lim2S
 	 */
-	private static void doImputationWithMinimac(ParseCmdLine parsingArgs, String knownHapFile, String filteredHapsFile,
-			String filteredSampleFile, String filteredListOfSnpsFile, String imputedMMFileName,
-			String imputedMMInfoFile, String imputedMMErateFile, String imputedMMRecFile, String imputedMMDoseFile,
-			String imputedMMLogFile, String chrS, String lim1S, String lim2S) {
+	private static void doImputationWithMinimac(ParseCmdLine parsingArgs, String refVcfFile,
+			String filteredHaplotypesVcfFileBgzip, String chrS, String lim1S, String lim2S, String imputeFile,
+			String imputeFileInfo, String imputeFileErate, String imputeFileRec, String imputeFileM3vcf,
+			String imputeFileLog, String imputeFileBgzip, String imputeMMM3VCFFileBgzip, String imputeFileTbi,
+			String sex) {
 
 		if (parsingArgs.getStageStatus("imputeWithMinimac") == 1) {
 			// Submitting the impute task per chunk
 			// We don't distinguish chrS 23 since the cmdToStore is the same
-			String cmdToStore = JAVA_HOME + "/java imputationWithMinimac --vcfReference --refHaps " + knownHapFile
-					+ " --shape_haps " + filteredHapsFile + " --sample " + filteredSampleFile + " --snps "
-					+ filteredListOfSnpsFile + " --vcfstart " + lim1S + " --vcfend " + lim2S + " --chr " + chrS
-					+ " --vcfwindow --rounds 5 --states 200 --outInfo " + imputedMMInfoFile + " --outErate "
-					+ imputedMMErateFile + " --outRec " + imputedMMRecFile + " --outDose " + imputedMMDoseFile
-					+ " --outLog " + imputedMMLogFile;
+			String cmdToStore = null;
+			String myPrefix = imputeFile.split("\\.")[0];
+
+			if (chrS.equals("23")) {
+				if (sex.equals(SEX1)) {
+					cmdToStore = MINIMAC_BINARY + " --refHaps " + refVcfFile + " --haps "
+							+ filteredHaplotypesVcfFileBgzip + " --start " + lim1S + " --end " + lim2S
+							+ " --chr X  --window 500000 --prefix " + myPrefix
+							+ " --log --allTypedSites --noPhoneHome --format GT,DS,GP --nobgzip";
+				} else if (sex.equals(SEX2)) {
+					cmdToStore = MINIMAC_BINARY + " --refHaps " + refVcfFile + " --haps "
+							+ filteredHaplotypesVcfFileBgzip + " --start " + lim1S + " --end " + lim2S
+							+ " --chr X --window 500000 --prefix " + myPrefix
+							+ " --log --allTypedSites --noPhoneHome --format GT,DS,GP --nobgzip";
+				}
+			} else {
+
+				cmdToStore = MINIMAC_BINARY + " --refHaps " + refVcfFile + " --haps " + filteredHaplotypesVcfFileBgzip
+						+ " --start " + lim1S + " --end " + lim2S + " --chr " + chrS + " --window 500000 --prefix "
+						+ myPrefix + " --log --allTypedSites --noPhoneHome --format GT,DS,GP --nobgzip";
+			}
 
 			listOfCommands.add(cmdToStore);
 
 			try {
-				GuidanceImpl.imputeWithMinimac(knownHapFile, filteredHapsFile, filteredSampleFile,
-						filteredListOfSnpsFile, imputedMMFileName, imputedMMInfoFile, imputedMMErateFile,
-						imputedMMRecFile, imputedMMDoseFile, imputedMMLogFile, chrS, lim1S, lim2S, cmdToStore);
+				GuidanceImpl.imputeWithMinimac(refVcfFile, filteredHaplotypesVcfFileBgzip, imputeFile, imputeFileInfo,
+						imputeFileErate, imputeFileRec, imputeFileM3vcf, imputeFileLog, chrS, lim1S, lim2S, myPrefix,
+						sex, cmdToStore);
 			} catch (GuidanceTaskException gte) {
 				LOGGER.error("[Guidance] Exception trying the execution of imputationWithMinimac task", gte);
 			}
+
+			cmdToStore = SAMTOOLSBINARY + "/bgzip " + imputeFile;
+
+			listOfCommands.add(cmdToStore);
+			try {
+				GuidanceImpl.samtoolsBgzip(imputeFile, cmdToStore);
+			} catch (Exception e) {
+				LOGGER.error("[Guidance] Exception trying the execution of samtoolsBgzip task");
+			}
+
+			cmdToStore = SAMTOOLSBINARY + "/tabix -p vcf -f " + imputeFileBgzip;
+
+			listOfCommands.add(cmdToStore);
+			try {
+				GuidanceImpl.samtoolsTabix(imputeFileBgzip, imputeFileTbi, cmdToStore);
+			} catch (Exception e) {
+				LOGGER.error("[Guidance] Exception trying the execution of samtoolsTabix task");
+			}
+
 		}
 	}
 
@@ -2596,19 +2793,23 @@ public class Guidance {
 	 * @param infoThresholdS
 	 */
 	private static void doFilterByInfo(ParseCmdLine parsingArgs, String imputeFileInfo, String filteredRsIdFile,
-			String infoThresholdS) {
+			String infoThresholdS, String sex) {
 
 		if (parsingArgs.getStageStatus("filterByInfo") == 1) {
+			String imputationTool = parsingArgs.getImputationTool();
+			String cmdToStore = null;
 			// We create the list of rsId that are greater than or equal to the
 			// infoThreshold value
-			String cmdToStore = JAVA_HOME + "/java filterByInfo " + imputeFileInfo + " " + filteredRsIdFile + " "
+			cmdToStore = JAVA_HOME + "/java filterByInfo " + imputeFileInfo + " " + filteredRsIdFile + " "
 					+ infoThresholdS;
 			listOfCommands.add(cmdToStore);
 			try {
-				GuidanceImpl.filterByInfo(imputeFileInfo, filteredRsIdFile, infoThresholdS, cmdToStore);
-			} catch (GuidanceTaskException gte) {
-				LOGGER.error("[Guidance] Exception trying the execution of filterByInfo tasks for controls", gte);
+				GuidanceImpl.filterByInfo(imputationTool, imputeFileInfo, filteredRsIdFile, infoThresholdS, cmdToStore);
+			} catch (Exception e) {
+				System.err.println("[Guidance] Exception trying the execution of filterByInfo task");
+				System.err.println(e.getMessage());
 			}
+
 		}
 	}
 
@@ -2624,22 +2825,36 @@ public class Guidance {
 	 * @param filteredLogFile
 	 */
 	private static void doQctoolS(ParseCmdLine parsingArgs, String imputeFile, String filteredRsIdFile,
-			String filteredFile, String filteredLogFile) {
+			String filteredFile, String filteredLogFile, String sex) {
 
 		double mafThreshold = parsingArgs.getMafThreshold();
 		String mafThresholdS = Double.toString(mafThreshold);
+		String imputationTool = parsingArgs.getImputationTool();
 
 		if (parsingArgs.getStageStatus("qctoolS") == 1) {
-			String cmdToStore = QCTOOL_BINARY + " -g " + imputeFile + " -og " + filteredFile + " -incl-rsids "
-					+ filteredRsIdFile + " -omit-chromosome -force -log " + filteredLogFile + " -maf " + mafThresholdS
-					+ " 1";
+			String cmdToStore = null;
+
+			if (imputationTool.equals("impute")) {
+
+				cmdToStore = QCTOOL_BINARY + " -g " + imputeFile + " -og " + filteredFile + " -incl-rsids "
+						+ filteredRsIdFile + " -omit-chromosome -force -log " + filteredLogFile + " -maf "
+						+ mafThresholdS + " 1";
+
+			} else if (imputationTool.equals("minimac")) {
+
+				cmdToStore = QCTOOL_BINARY + " -g " + imputeFile + " -og " + filteredFile + " -incl-rsids "
+						+ filteredRsIdFile + " -omit-chromosome -force -log " + filteredLogFile + " -maf "
+						+ mafThresholdS + " 1 " + "-vcf-genotype-field GP";
+			}
+
 			listOfCommands.add(cmdToStore);
 			try {
-				GuidanceImpl.qctoolS(imputeFile, filteredRsIdFile, mafThresholdS, filteredFile, filteredLogFile,
-						cmdToStore);
-			} catch (GuidanceTaskException gte) {
+				GuidanceImpl.qctoolS(imputationTool, imputeFile, filteredRsIdFile, mafThresholdS, filteredFile,
+						filteredLogFile, cmdToStore);
+			} catch (Exception gte) {
 				LOGGER.error("[Guidance] Exception trying the execution of qctoolS tasks for controls", gte);
 			}
+
 		}
 	}
 
@@ -2958,8 +3173,9 @@ public class Guidance {
 	 * @param outputCondensedFile
 	 */
 	private static void doFilterByAll(ParseCmdLine parsingArgs, String inputFile, String outputFile,
-			String outputCondensedFile, String rpanelName) {
+			String outputCondensedFile, String sex, String rpanelName) {
 
+		String imputationTool = parsingArgs.getImputationTool();
 		double mafThreshold = parsingArgs.getMafThreshold();
 		double infoThreshold = parsingArgs.getInfoThreshold();
 		double hweCohortThreshold = parsingArgs.getHweCohortThreshold();
@@ -2975,17 +3191,20 @@ public class Guidance {
 		// Task
 		if (parsingArgs.getStageStatus("filterByAll") == 1) {
 			String cmdToStore = JAVA_HOME + "/java filterByAll " + inputFile + " " + outputFile + " "
-					+ outputCondensedFile + " " + rpanelName + " " + mafThresholdS + " " + infoThresholdS + " "
-					+ hweCohortThresholdS + " " + hweCasesThresholdS + " " + hweControlsThresholdS;
+					+ outputCondensedFile + " " + mafThresholdS + " " + infoThresholdS + " " + hweCohortThresholdS + " "
+					+ hweCasesThresholdS + " " + hweControlsThresholdS;
 
 			listOfCommands.add(cmdToStore);
 			try {
-				GuidanceImpl.filterByAll(inputFile, outputFile, outputCondensedFile, rpanelName, mafThresholdS,
-						infoThresholdS, hweCohortThresholdS, hweCasesThresholdS, hweControlsThresholdS, cmdToStore);
-			} catch (GuidanceTaskException gte) {
-				LOGGER.error("[Guidance] Exception trying the execution of filterByAll task", gte);
+				GuidanceImpl.filterByAll(imputationTool, inputFile, outputFile, outputCondensedFile, mafThresholdS,
+						infoThresholdS, hweCohortThresholdS, hweCasesThresholdS, hweControlsThresholdS, sex, rpanelName,
+						cmdToStore);
+			} catch (Exception e) {
+				System.err.println("[Guidance] Exception trying the execution of filterByAll task");
+				System.err.println(e.getMessage());
 			}
 		}
+
 	}
 
 	/**
@@ -3195,11 +3414,27 @@ public class Guidance {
 						numberOfChunks++;
 
 					for (int k = 0; k < numberOfChunks; k++) {
-						imputationFilesInfo.setImputedFileFinalStatus(j, chromo, lim1, lim2, chunkSize, finalStatus);
-						imputationFilesInfo.setFilteredFileFinalStatus(j, chromo, lim1, lim2, chunkSize, finalStatus);
-						imputationFilesInfo.setImputedInfoFileFinalStatus(j, chromo, lim1, lim2, chunkSize,
-								finalStatus);
-
+						if (chromo == 23) {							
+							imputationFilesInfo.setImputedMalesFileFinalStatus(j, lim1, lim2, chunkSize,
+									finalStatus);
+							imputationFilesInfo.setFilteredMalesFileFinalStatus(j, lim1, lim2, chunkSize,
+									finalStatus);
+							imputationFilesInfo.setImputedMalesInfoFileFinalStatus(j, lim1, lim2, chunkSize,
+									finalStatus);
+							imputationFilesInfo.setImputedFemalesFileFinalStatus(j, lim1, lim2, chunkSize,
+									finalStatus);
+							imputationFilesInfo.setFilteredFemalesFileFinalStatus(j, lim1, lim2, chunkSize,
+									finalStatus);
+							imputationFilesInfo.setImputedFemalesInfoFileFinalStatus(j, lim1, lim2, chunkSize,
+									finalStatus);
+						} else {
+							imputationFilesInfo.setImputedFileFinalStatus(j, chromo, lim1, lim2, chunkSize,
+									finalStatus);
+							imputationFilesInfo.setFilteredFileFinalStatus(j, chromo, lim1, lim2, chunkSize,
+									finalStatus);
+							imputationFilesInfo.setImputedInfoFileFinalStatus(j, chromo, lim1, lim2, chunkSize,
+									finalStatus);
+						}
 						lim1 = lim1 + chunkSize;
 						lim2 = lim2 + chunkSize;
 					}
@@ -3218,8 +3453,15 @@ public class Guidance {
 						numberOfChunks++;
 
 					for (int k = 0; k < numberOfChunks; k++) {
-						imputationFilesInfo.setImputedMMInfoFileFinalStatus(j, chromo, lim1, lim2, chunkSize,
-								finalStatus);
+						if (chromo == 23) {
+							imputationFilesInfo.setImputedMMInfoMalesFileFinalStatus(j, chromo, lim1, lim2, chunkSize,
+									finalStatus);
+							imputationFilesInfo.setImputedMMInfoFemalesFileFinalStatus(j, chromo, lim1, lim2, chunkSize,
+									finalStatus);
+						} else {
+							imputationFilesInfo.setImputedMMInfoFileFinalStatus(j, chromo, lim1, lim2, chunkSize,
+									finalStatus);
+						}
 						lim1 = lim1 + chunkSize;
 						lim2 = lim2 + chunkSize;
 					}
@@ -3269,6 +3511,7 @@ public class Guidance {
 			for (int j = 0; j < refPanels.size(); j++) {
 				// String rPanel = refPanels.get(j);
 				for (int i = startChr; i <= endChr; i++) {
+					LOGGER.info("[Guidance] Chromosome " + i);
 					int chromo = i;
 
 					int maxSize = ChromoInfo.getMaxSize(chromo);
@@ -3277,8 +3520,24 @@ public class Guidance {
 					int lim2 = lim1 + chunkSize - 1;
 
 					for (int k = 0; k < total_chunks; k++) {
-						assocFilesInfo.setSnptestOutFileFinalStatus(tt, j, chromo, lim1, lim2, chunkSize, finalStatus);
-						assocFilesInfo.setSummaryFileFinalStatus(tt, j, chromo, lim1, lim2, chunkSize, finalStatus);
+						LOGGER.info("[Guidance] Chunk " + k);
+						if (chromo == 23) {
+							LOGGER.info("[Guidance] State 1");
+							assocFilesInfo.setSnptestOutMalesFileFinalStatus(tt, j, lim1, lim2, chunkSize, finalStatus);
+							LOGGER.info("[Guidance] State 2");
+							assocFilesInfo.setSummaryMalesFileFinalStatus(tt, j, lim1, lim2, chunkSize, finalStatus);
+							LOGGER.info("[Guidance] State 3");
+							assocFilesInfo.setSnptestOutFemalesFileFinalStatus(tt, j, lim1, lim2, chunkSize,
+									finalStatus);
+							LOGGER.info("[Guidance] State 4");
+							assocFilesInfo.setSummaryFemalesFileFinalStatus(tt, j, lim1, lim2, chunkSize, finalStatus);
+
+						} else {
+							assocFilesInfo.setSnptestOutFileFinalStatus(tt, j, chromo, lim1, lim2, chunkSize,
+									finalStatus);
+							assocFilesInfo.setSummaryFileFinalStatus(tt, j, chromo, lim1, lim2, chunkSize, finalStatus);
+
+						}
 
 						lim1 = lim1 + chunkSize;
 						lim2 = lim2 + chunkSize;
