@@ -2676,14 +2676,15 @@ public class GuidanceImpl {
 	 * @throws InterruptedException
 	 * @throws Exception
 	 */
-	public static void combinePanelsComplex(String resultsPanelA, String resultsPanelB, String resultsPanelC, int lim1, int lim2,
+	public static void combinePanelsComplex(String resultsPanelA, String resultsPanelB, int lim1, int lim2,
 			String cmdToStore) throws GuidanceTaskException {
+		
+		String resultsPanelC = resultsPanelA;
 
 		if (DEBUG) {
 			System.out.println("\n[DEBUG] Running combinePanelsComplex with parameters:");
 			System.out.println("[DEBUG] \t- resultsPanelA             : " + resultsPanelA);
 			System.out.println("[DEBUG] \t- resultsPanelB             : " + resultsPanelB);
-			System.out.println("[DEBUG] \t- resultsPanelC             : " + resultsPanelC);
 			System.out.println("[DEBUG] \t- lim1               : " + lim1);
 			System.out.println("[DEBUG] \t- lim2                 : " + lim2);
 			System.out.println(NEW_LINE);

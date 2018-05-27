@@ -2298,7 +2298,7 @@ public class Guidance {
 							if (DEBUG) {
 								LOGGER.debug("[Guidance] Combining " + filteredPanelA + " and " + filteredPanelB);
 							}
-							doCombinePanelsComplex(parsingArgs, filteredPanelA, filteredPanelB, filteredPanelA, lim1,
+							doCombinePanelsComplex(parsingArgs, filteredPanelA, filteredPanelB, lim1,
 									lim2);
 							// Adds A to the queue again
 							filteredPanelsToCombineMales.add(filteredPanelA);
@@ -2320,7 +2320,7 @@ public class Guidance {
 							if (DEBUG) {
 								LOGGER.debug("[Guidance] Combining " + filteredPanelA + " and " + filteredPanelB);
 							}
-							doCombinePanelsComplex(parsingArgs, filteredPanelA, filteredPanelB, filteredPanelA, lim1,
+							doCombinePanelsComplex(parsingArgs, filteredPanelA, filteredPanelB, lim1,
 									lim2);
 							// Adds A to the queue again
 							filteredPanelsToCombineFemales.add(filteredPanelA);
@@ -2342,7 +2342,7 @@ public class Guidance {
 							if (DEBUG) {
 								LOGGER.debug("[Guidance] Combining " + filteredPanelA + " and " + filteredPanelB);
 							}
-							doCombinePanelsComplex(parsingArgs, filteredPanelA, filteredPanelB, filteredPanelA, lim1,
+							doCombinePanelsComplex(parsingArgs, filteredPanelA, filteredPanelB, lim1,
 									lim2);
 							// Adds A to the queue again
 							filteredPanelsToCombine.add(filteredPanelA);
@@ -3623,14 +3623,14 @@ public class Guidance {
 	 * @param lim2
 	 */
 	private static void doCombinePanelsComplex(ParseCmdLine parsingArgs, String resultsPanelA, String resultsPanelB,
-			String resultsPanelC, int lim1, int lim2) {
+			int lim1, int lim2) {
 
 		String cmdToStore = JAVA_HOME + "/java combinePanelsComplex " + resultsPanelA + " " + resultsPanelB + " "
-				+ resultsPanelC + " " + lim1 + " " + lim2;
+				+ lim1 + " " + lim2;
 		listOfCommands.add(cmdToStore);
 
 		try {
-			GuidanceImpl.combinePanelsComplex(resultsPanelA, resultsPanelB, resultsPanelC, lim1, lim2, cmdToStore);
+			GuidanceImpl.combinePanelsComplex(resultsPanelA, resultsPanelB, lim1, lim2, cmdToStore);
 		} catch (GuidanceTaskException gte) {
 			LOGGER.error("[Guidance] Exception trying the execution of combinePanelsComplex task", gte);
 		}

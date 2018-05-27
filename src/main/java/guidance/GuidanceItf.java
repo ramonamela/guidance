@@ -355,9 +355,8 @@ public interface GuidanceItf {
 
 	@Method(declaringClass = "guidance.GuidanceImpl")
 	@Constraints(computingUnits = "1", memorySize = "1.0f")
-	void combinePanelsComplex(@Parameter(type = Type.FILE, direction = Direction.IN) String resultsFileA,
+	void combinePanelsComplex(@Parameter(type = Type.FILE, direction = Direction.INOUT) String resultsFileA,
 			@Parameter(type = Type.FILE, direction = Direction.IN) String resultsFileB,
-			@Parameter(type = Type.FILE, direction = Direction.OUT) String resultsFileC,
 			@Parameter(type = Type.INT, direction = Direction.IN) int lim1,
 			@Parameter(type = Type.INT, direction = Direction.IN) int lim2,
 			@Parameter(type = Type.STRING, direction = Direction.IN) String cmdToStore);
