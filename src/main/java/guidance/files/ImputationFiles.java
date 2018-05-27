@@ -811,11 +811,12 @@ public class ImputationFiles {
 					filteredFile.add(chromoListFilteredFile);
 					filteredFileLogFile.add(chromoListFilteredLogFile);
 					filteredFileRsIdFile.add(chromoListFilteredRsIdFile);
-
+					/*
 					System.out.println("mon :: INIT i :: " + i + "\n");
 					System.out.println("mon :: i :: " + i + " size :: " + imputedMMInfoFile.size());
 					System.out.println("mon :: startChr :: " + startChr + " endChr :: " + endChr);
 					System.out.println("");
+					*/
 
 				} else if (chromo == 23) {
 
@@ -2627,7 +2628,7 @@ public class ImputationFiles {
 
 		int indexChr = chromo - this.startChr;
 		int indexChunk = lim1 / chunkSize;
-		return this.filteredFile.get(rPanelIndex).get(indexChr).get(indexChunk).getFullName() + ".gz";
+		return this.filteredFile.get(rPanelIndex).get(indexChr).get(indexChunk).getFullName();
 	}
 	
 	/**
@@ -2640,15 +2641,9 @@ public class ImputationFiles {
 	 * @param chunkSize
 	 * @return
 	 */
-	public String getFilteredMalesFile(int rPanelIndex, int chromo, int lim1, int lim2, int chunkSize) {
-		// Check that chromo index is within the bounds
-		checkChromoIndex(chromo);
-
-		// Check limits are within the bounds
-		checkLimits(chromo, lim1, lim2);
-
+	public String getFilteredMalesFile(int rPanelIndex, int lim1, int lim2, int chunkSize) {
 		int indexChunk = lim1 / chunkSize;
-		return this.filteredMalesFile.get(rPanelIndex).get(0).get(indexChunk).getFullName() + ".gz";
+		return this.filteredMalesFile.get(rPanelIndex).get(0).get(indexChunk).getFullName();
 	}
 	
 	/**
@@ -2661,15 +2656,9 @@ public class ImputationFiles {
 	 * @param chunkSize
 	 * @return
 	 */
-	public String getFilteredFemalesFile(int rPanelIndex, int chromo, int lim1, int lim2, int chunkSize) {
-		// Check that chromo index is within the bounds
-		checkChromoIndex(chromo);
-
-		// Check limits are within the bounds
-		checkLimits(chromo, lim1, lim2);
-
+	public String getFilteredFemalesFile(int rPanelIndex, int lim1, int lim2, int chunkSize) {
 		int indexChunk = lim1 / chunkSize;
-		return this.filteredFemalesFile.get(rPanelIndex).get(0).get(indexChunk).getFullName() + ".gz";
+		return this.filteredFemalesFile.get(rPanelIndex).get(0).get(indexChunk).getFullName();
 	}
 
 	/**

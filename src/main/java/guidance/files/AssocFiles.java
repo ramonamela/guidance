@@ -70,13 +70,18 @@ public class AssocFiles {
 	private ArrayList<ArrayList<ArrayList<ArrayList<GenericFile>>>> summaryFilteredFile = new ArrayList<>();
 	private ArrayList<ArrayList<ArrayList<ArrayList<GenericFile>>>> summaryFilteredMalesFile = new ArrayList<>();
 	private ArrayList<ArrayList<ArrayList<ArrayList<GenericFile>>>> summaryFilteredFemalesFile = new ArrayList<>();
-	
+
 	private ArrayList<ArrayList<ArrayList<ArrayList<GenericFile>>>> summaryCondensedFile = new ArrayList<>();
 	private ArrayList<ArrayList<ArrayList<ArrayList<GenericFile>>>> summaryCondensedMalesFile = new ArrayList<>();
 	private ArrayList<ArrayList<ArrayList<ArrayList<GenericFile>>>> summaryCondensedFemalesFile = new ArrayList<>();
 
 	private ArrayList<ArrayList<ArrayList<ArrayList<GenericFile>>>> combinedFilteredFile = new ArrayList<>();
+	private ArrayList<ArrayList<ArrayList<ArrayList<GenericFile>>>> combinedFilteredMalesFile = new ArrayList<>();
+	private ArrayList<ArrayList<ArrayList<ArrayList<GenericFile>>>> combinedFilteredFemalesFile = new ArrayList<>();
+
 	private ArrayList<ArrayList<ArrayList<ArrayList<GenericFile>>>> combinedCondensedFile = new ArrayList<>();
+	private ArrayList<ArrayList<ArrayList<ArrayList<GenericFile>>>> combinedCondensedMalesFile = new ArrayList<>();
+	private ArrayList<ArrayList<ArrayList<ArrayList<GenericFile>>>> combinedCondensedFemalesFile = new ArrayList<>();
 
 	private int startChr = 0;
 	private int endChr = 0;
@@ -121,13 +126,18 @@ public class AssocFiles {
 			ArrayList<ArrayList<ArrayList<GenericFile>>> rpanelListSummaryFilteredFile = new ArrayList<>();
 			ArrayList<ArrayList<ArrayList<GenericFile>>> rpanelListSummaryFilteredMalesFile = new ArrayList<>();
 			ArrayList<ArrayList<ArrayList<GenericFile>>> rpanelListSummaryFilteredFemalesFile = new ArrayList<>();
-			
+
 			ArrayList<ArrayList<ArrayList<GenericFile>>> rpanelListSummaryCondensedFile = new ArrayList<>();
 			ArrayList<ArrayList<ArrayList<GenericFile>>> rpanelListSummaryCondensedMalesFile = new ArrayList<>();
 			ArrayList<ArrayList<ArrayList<GenericFile>>> rpanelListSummaryCondensedFemalesFile = new ArrayList<>();
-			
+
 			ArrayList<ArrayList<ArrayList<GenericFile>>> rpanelListCombinedFilteredFile = new ArrayList<>();
+			ArrayList<ArrayList<ArrayList<GenericFile>>> rpanelListCombinedFilteredMalesFile = new ArrayList<>();
+			ArrayList<ArrayList<ArrayList<GenericFile>>> rpanelListCombinedFilteredFemalesFile = new ArrayList<>();
+			
 			ArrayList<ArrayList<ArrayList<GenericFile>>> rpanelListCombinedCondensedFile = new ArrayList<>();
+			ArrayList<ArrayList<ArrayList<GenericFile>>> rpanelListCombinedCondensedMalesFile = new ArrayList<>();
+			ArrayList<ArrayList<ArrayList<GenericFile>>> rpanelListCombinedCondensedFemalesFile = new ArrayList<>();
 
 			String rPanel = null;
 			String testTypeOutDir2 = baseOutDir + File.separator + "associations" + File.separator + testTypeName
@@ -148,10 +158,14 @@ public class AssocFiles {
 				prefixCondensedName = prefixCondensedName + "_" + rPanel;
 
 				ArrayList<ArrayList<GenericFile>> chromoListCombinedFilteredFile = new ArrayList<>();
+				ArrayList<ArrayList<GenericFile>> chromoListCombinedFilteredMalesFile = new ArrayList<>();
+				ArrayList<ArrayList<GenericFile>> chromoListCombinedFilteredFemalesFile = new ArrayList<>();
+				
 				ArrayList<ArrayList<GenericFile>> chromoListCombinedCondensedFile = new ArrayList<>();
+				ArrayList<ArrayList<GenericFile>> chromoListCombinedCondensedMalesFile = new ArrayList<>();
+				ArrayList<ArrayList<GenericFile>> chromoListCombinedCondensedFemalesFile = new ArrayList<>();
 
-				for (int i = this.startChr; i <= this.endChr; i++) {
-					int chromo = i;
+				for (int chromo = this.startChr; chromo <= this.endChr; chromo++) {
 					int maxSize = ChromoInfo.getMaxSize(chromo);
 					int totalChunks = maxSize / chunkSize;
 					int module = maxSize % chunkSize;
@@ -162,37 +176,88 @@ public class AssocFiles {
 					int lim2 = lim1 + chunkSize - 1;
 
 					ArrayList<GenericFile> chunkListCombinedFilteredFile = new ArrayList<>();
+					ArrayList<GenericFile> chunkListCombinedFilteredMalesFile = new ArrayList<>();
+					ArrayList<GenericFile> chunkListCombinedFilteredFemalesFile = new ArrayList<>();
+
 					ArrayList<GenericFile> chunkListCombinedCondensedFile = new ArrayList<>();
+					ArrayList<GenericFile> chunkListCombinedCondensedMalesFile = new ArrayList<>();
+					ArrayList<GenericFile> chunkListCombinedCondensedFemalesFile = new ArrayList<>();
 
 					for (int k = 0; k < totalChunks; k++) {
-						String tmpCombinedFilteredFileName = prefixFilteredName + "_chr_" + chromo + "_" + lim1 + "_"
-								+ lim2 + "_combined.txt.gz";
-						GenericFile myChunkListCombinedFilteredFile = new GenericFile(testTypeOutDir2,
-								tmpCombinedFilteredFileName, UNCOMPRESSED, "none");
-						chunkListCombinedFilteredFile.add(myChunkListCombinedFilteredFile);
+						if (chromo == 23) {
+							String tmpCombinedFilteredMalesFileName = prefixFilteredName + "_chr_" + chromo + "_" + lim1
+									+ "_" + lim2 + "_combined_males.txt.gz";
+							GenericFile myChunkListCombinedFilteredMalesFile = new GenericFile(testTypeOutDir2,
+									tmpCombinedFilteredMalesFileName, UNCOMPRESSED, "none");
+							chunkListCombinedFilteredMalesFile.add(myChunkListCombinedFilteredMalesFile);
 
-						String tmpCombinedCondensedFileName = prefixCondensedName + "_chr_" + chromo + "_" + lim1 + "_"
-								+ lim2 + "_combined.txt.gz";
-						GenericFile myChunkListCombinedCondensedFile = new GenericFile(testTypeOutDir2,
-								tmpCombinedCondensedFileName, UNCOMPRESSED, "none");
-						chunkListCombinedCondensedFile.add(myChunkListCombinedCondensedFile);
+							String tmpCombinedCondensedMalesFileName = prefixCondensedName + "_chr_" + chromo + "_"
+									+ lim1 + "_" + lim2 + "_combined_males.txt.gz";
+							GenericFile myChunkListCombinedCondensedMalesFile = new GenericFile(testTypeOutDir2,
+									tmpCombinedCondensedMalesFileName, UNCOMPRESSED, "none");
+							chunkListCombinedCondensedMalesFile.add(myChunkListCombinedCondensedMalesFile);
+
+							String tmpCombinedFilteredFemalesFileName = prefixFilteredName + "_chr_" + chromo + "_"
+									+ lim1 + "_" + lim2 + "_combined_females.txt.gz";
+							GenericFile myChunkListCombinedFilteredFemalesFile = new GenericFile(testTypeOutDir2,
+									tmpCombinedFilteredFemalesFileName, UNCOMPRESSED, "none");
+							chunkListCombinedFilteredFemalesFile.add(myChunkListCombinedFilteredFemalesFile);
+
+							String tmpCombinedCondensedFemalesFileName = prefixCondensedName + "_chr_" + chromo + "_"
+									+ lim1 + "_" + lim2 + "_combined_females.txt.gz";
+							GenericFile myChunkListCombinedCondensedFemalesFile = new GenericFile(testTypeOutDir2,
+									tmpCombinedCondensedFemalesFileName, UNCOMPRESSED, "none");
+							chunkListCombinedCondensedFemalesFile.add(myChunkListCombinedCondensedFemalesFile);
+						} else {
+							String tmpCombinedFilteredFileName = prefixFilteredName + "_chr_" + chromo + "_" + lim1
+									+ "_" + lim2 + "_combined.txt.gz";
+							GenericFile myChunkListCombinedFilteredFile = new GenericFile(testTypeOutDir2,
+									tmpCombinedFilteredFileName, UNCOMPRESSED, "none");
+							chunkListCombinedFilteredFile.add(myChunkListCombinedFilteredFile);
+
+							String tmpCombinedCondensedFileName = prefixCondensedName + "_chr_" + chromo + "_" + lim1
+									+ "_" + lim2 + "_combined.txt.gz";
+							GenericFile myChunkListCombinedCondensedFile = new GenericFile(testTypeOutDir2,
+									tmpCombinedCondensedFileName, UNCOMPRESSED, "none");
+							chunkListCombinedCondensedFile.add(myChunkListCombinedCondensedFile);
+						}
 
 						lim1 = lim1 + chunkSize;
 						lim2 = lim2 + chunkSize;
 					}
 
-					chromoListCombinedFilteredFile.add(chunkListCombinedFilteredFile);
-					chromoListCombinedCondensedFile.add(chunkListCombinedCondensedFile);
+					if (chromo == 23) {
+						chromoListCombinedFilteredMalesFile.add(chunkListCombinedFilteredMalesFile);
+						chromoListCombinedFilteredFemalesFile.add(chunkListCombinedFilteredFemalesFile);
+						
+						chromoListCombinedCondensedMalesFile.add(chunkListCombinedCondensedMalesFile);
+						chromoListCombinedCondensedFemalesFile.add(chunkListCombinedCondensedFemalesFile);
+					} else {
+						chromoListCombinedFilteredFile.add(chunkListCombinedFilteredFile);
+						chromoListCombinedCondensedFile.add(chunkListCombinedCondensedFile);
+					}
+
+					
 
 				} // End for Chromo
 
 				rpanelListCombinedFilteredFile.add(chromoListCombinedFilteredFile);
+				rpanelListCombinedFilteredMalesFile.add(chromoListCombinedFilteredMalesFile);
+				rpanelListCombinedFilteredFemalesFile.add(chromoListCombinedFilteredFemalesFile);
+
 				rpanelListCombinedCondensedFile.add(chromoListCombinedCondensedFile);
+				rpanelListCombinedCondensedMalesFile.add(chromoListCombinedCondensedMalesFile);
+				rpanelListCombinedCondensedFemalesFile.add(chromoListCombinedCondensedFemalesFile);
 
 			} // End of for refPanels
 
 			this.combinedFilteredFile.add(rpanelListCombinedFilteredFile);
+			this.combinedFilteredMalesFile.add(rpanelListCombinedFilteredMalesFile);
+			this.combinedFilteredFemalesFile.add(rpanelListCombinedFilteredFemalesFile);
+
 			this.combinedCondensedFile.add(rpanelListCombinedCondensedFile);
+			this.combinedCondensedMalesFile.add(rpanelListCombinedCondensedMalesFile);
+			this.combinedCondensedFemalesFile.add(rpanelListCombinedCondensedFemalesFile);
 
 			for (int j = 0; j < refPanels.size(); j++) {
 				// String rpanel = refPanels.get(j);
@@ -215,7 +280,7 @@ public class AssocFiles {
 				ArrayList<ArrayList<GenericFile>> chromoListSummaryFilteredFile = new ArrayList<>();
 				ArrayList<ArrayList<GenericFile>> chromoListSummaryFilteredMalesFile = new ArrayList<>();
 				ArrayList<ArrayList<GenericFile>> chromoListSummaryFilteredFemalesFile = new ArrayList<>();
-				
+
 				ArrayList<ArrayList<GenericFile>> chromoListSummaryCondensedFile = new ArrayList<>();
 				ArrayList<ArrayList<GenericFile>> chromoListSummaryCondensedMalesFile = new ArrayList<>();
 				ArrayList<ArrayList<GenericFile>> chromoListSummaryCondensedFemalesFile = new ArrayList<>();
@@ -231,6 +296,7 @@ public class AssocFiles {
 					int module = maxSize % chunkSize;
 					if (module != 0)
 						totalChunks++;
+					
 					int lim1 = 1;
 					int lim2 = lim1 + chunkSize - 1;
 
@@ -249,12 +315,15 @@ public class AssocFiles {
 					ArrayList<GenericFile> chunkListSummaryFilteredFile = new ArrayList<>();
 					ArrayList<GenericFile> chunkListSummaryFilteredMalesFile = new ArrayList<>();
 					ArrayList<GenericFile> chunkListSummaryFilteredFemalesFile = new ArrayList<>();
-					
+
 					ArrayList<GenericFile> chunkListSummaryCondensedFile = new ArrayList<>();
 					ArrayList<GenericFile> chunkListSummaryCondensedMalesFile = new ArrayList<>();
 					ArrayList<GenericFile> chunkListSummaryCondensedFemalesFile = new ArrayList<>();
 
 					for (int k = 0; k < totalChunks; k++) {
+						
+						System.out.println("Generating assoc files for chromosome " + i + " for chunk " + lim1 + " to " + lim2);
+						
 						if (chromo == 23) {
 							// Now we have to create the impute files for this iteration
 							String tmpSnptestOutMalesFileName = "chr_" + chromo + "_" + testTypeName + "_" + rPanel
@@ -311,21 +380,21 @@ public class AssocFiles {
 							GenericFile myChunkListSummaryFilteredMalesFile = new GenericFile(tmpChrDir,
 									tmpSummaryFilteredMalesFileName, UNCOMPRESSED, "none");
 							chunkListSummaryFilteredMalesFile.add(myChunkListSummaryFilteredMalesFile);
-							
-							String tmpSummaryFilteredFemalesFileName = "chr_" + chromo + "_" + testTypeName + "_" + rPanel
-									+ "_" + lim1 + "_" + lim2 + "_females_summary_filtered.txt.gz";
+
+							String tmpSummaryFilteredFemalesFileName = "chr_" + chromo + "_" + testTypeName + "_"
+									+ rPanel + "_" + lim1 + "_" + lim2 + "_females_summary_filtered.txt.gz";
 							GenericFile myChunkListSummaryFilteredFemalesFile = new GenericFile(tmpChrDir,
 									tmpSummaryFilteredFemalesFileName, UNCOMPRESSED, "none");
 							chunkListSummaryFilteredFemalesFile.add(myChunkListSummaryFilteredFemalesFile);
 
-							String tmpSummaryCondensedMalesFileName = "chr_" + chromo + "_" + testTypeName + "_" + rPanel
-									+ "_" + lim1 + "_" + lim2 + "_males_summary_condensed.txt.gz";
+							String tmpSummaryCondensedMalesFileName = "chr_" + chromo + "_" + testTypeName + "_"
+									+ rPanel + "_" + lim1 + "_" + lim2 + "_males_summary_condensed.txt.gz";
 							GenericFile myChunkListSummaryCondensedMalesFile = new GenericFile(tmpChrDir,
 									tmpSummaryCondensedMalesFileName, UNCOMPRESSED, "none");
 							chunkListSummaryCondensedMalesFile.add(myChunkListSummaryCondensedMalesFile);
-							
-							String tmpSummaryCondensedFemalesFileName = "chr_" + chromo + "_" + testTypeName + "_" + rPanel
-									+ "_" + lim1 + "_" + lim2 + "_females_summary_condensed.txt.gz";
+
+							String tmpSummaryCondensedFemalesFileName = "chr_" + chromo + "_" + testTypeName + "_"
+									+ rPanel + "_" + lim1 + "_" + lim2 + "_females_summary_condensed.txt.gz";
 							GenericFile myChunkListSummaryCondensedFemalesFile = new GenericFile(tmpChrDir,
 									tmpSummaryCondensedFemalesFileName, UNCOMPRESSED, "none");
 							chunkListSummaryCondensedFemalesFile.add(myChunkListSummaryCondensedFemalesFile);
@@ -406,7 +475,7 @@ public class AssocFiles {
 				rpanelListSummaryFilteredFile.add(chromoListSummaryFilteredFile);
 				rpanelListSummaryFilteredMalesFile.add(chromoListSummaryFilteredMalesFile);
 				rpanelListSummaryFilteredFemalesFile.add(chromoListSummaryFilteredFemalesFile);
-				
+
 				rpanelListSummaryCondensedFile.add(chromoListSummaryCondensedFile);
 				rpanelListSummaryCondensedMalesFile.add(chromoListSummaryCondensedMalesFile);
 				rpanelListSummaryCondensedFemalesFile.add(chromoListSummaryCondensedFemalesFile);
@@ -428,7 +497,7 @@ public class AssocFiles {
 			this.summaryFilteredFile.add(rpanelListSummaryFilteredFile);
 			this.summaryFilteredMalesFile.add(rpanelListSummaryFilteredMalesFile);
 			this.summaryFilteredFemalesFile.add(rpanelListSummaryFilteredFemalesFile);
-			
+
 			this.summaryCondensedFile.add(rpanelListSummaryCondensedFile);
 			this.summaryCondensedMalesFile.add(rpanelListSummaryCondensedMalesFile);
 			this.summaryCondensedFemalesFile.add(rpanelListSummaryCondensedFemalesFile);
@@ -655,7 +724,7 @@ public class AssocFiles {
 		int index = lim1 / chunkSize;
 		return this.summaryFilteredFile.get(testTypeIndex).get(rPanelIndex).get(i).get(index).getFullName();
 	}
-	
+
 	/**
 	 * Method to access summaryFilteredFileName
 	 * 
@@ -667,12 +736,11 @@ public class AssocFiles {
 	 * @param chunkSize
 	 * @return
 	 */
-	public String getSummaryFilteredMalesFile(int testTypeIndex, int rPanelIndex, int lim1, int lim2,
-			int chunkSize) {
+	public String getSummaryFilteredMalesFile(int testTypeIndex, int rPanelIndex, int lim1, int lim2, int chunkSize) {
 		int index = lim1 / chunkSize;
 		return this.summaryFilteredMalesFile.get(testTypeIndex).get(rPanelIndex).get(0).get(index).getFullName();
 	}
-	
+
 	/**
 	 * Method to access summaryFilteredFileName
 	 * 
@@ -684,8 +752,7 @@ public class AssocFiles {
 	 * @param chunkSize
 	 * @return
 	 */
-	public String getSummaryFilteredFemalesFile(int testTypeIndex, int rPanelIndex, int lim1, int lim2,
-			int chunkSize) {
+	public String getSummaryFilteredFemalesFile(int testTypeIndex, int rPanelIndex, int lim1, int lim2, int chunkSize) {
 		int index = lim1 / chunkSize;
 		return this.summaryFilteredFemalesFile.get(testTypeIndex).get(rPanelIndex).get(0).get(index).getFullName();
 	}
@@ -767,6 +834,39 @@ public class AssocFiles {
 	}
 
 	/**
+	 * Method to access combinedFilteredFile
+	 * 
+	 * @param testTypeIndex
+	 * @param rPanelIndex
+	 * @param chromo
+	 * @param lim1
+	 * @param lim2
+	 * @param chunkSize
+	 * @return
+	 */
+	public String getCombinedFilteredMalesFile(int testTypeIndex, int rPanelIndex, int lim1, int lim2, int chunkSize) {
+		int index = lim1 / chunkSize;
+		return this.combinedFilteredMalesFile.get(testTypeIndex).get(rPanelIndex).get(0).get(index).getFullName();
+	}
+
+	/**
+	 * Method to access combinedFilteredFile
+	 * 
+	 * @param testTypeIndex
+	 * @param rPanelIndex
+	 * @param chromo
+	 * @param lim1
+	 * @param lim2
+	 * @param chunkSize
+	 * @return
+	 */
+	public String getCombinedFilteredFemalesFile(int testTypeIndex, int rPanelIndex, int lim1, int lim2,
+			int chunkSize) {
+		int index = lim1 / chunkSize;
+		return this.combinedFilteredFemalesFile.get(testTypeIndex).get(rPanelIndex).get(0).get(index).getFullName();
+	}
+
+	/**
 	 * Method to set the finalStatus of combinedFilteredFile
 	 * 
 	 * @param testTypeIndex
@@ -843,7 +943,7 @@ public class AssocFiles {
 		int index = lim1 / chunkSize;
 		return this.summaryCondensedFile.get(testTypeIndex).get(rPanelIndex).get(i).get(index).getFullName();
 	}
-	
+
 	/**
 	 * Method to access summaryCondensedFile
 	 * 
@@ -855,12 +955,11 @@ public class AssocFiles {
 	 * @param chunkSize
 	 * @return
 	 */
-	public String getSummaryCondensedMalesFile(int testTypeIndex, int rPanelIndex, int lim1, int lim2,
-			int chunkSize) {
+	public String getSummaryCondensedMalesFile(int testTypeIndex, int rPanelIndex, int lim1, int lim2, int chunkSize) {
 		int index = lim1 / chunkSize;
 		return this.summaryCondensedMalesFile.get(testTypeIndex).get(rPanelIndex).get(0).get(index).getFullName();
 	}
-	
+
 	/**
 	 * Method to access summaryCondensedFile
 	 * 
@@ -953,6 +1052,40 @@ public class AssocFiles {
 		int index = lim1 / chunkSize;
 		return this.combinedCondensedFile.get(testTypeIndex).get(rPanelIndex).get(i).get(index).getFullName();
 	}
+	
+	/**
+	 * Method to access combinedCondensedFile
+	 * 
+	 * @param testTypeIndex
+	 * @param rPanelIndex
+	 * @param chromo
+	 * @param lim1
+	 * @param lim2
+	 * @param chunkSize
+	 * @return
+	 */
+	public String getCombinedCondensedMalesFile(int testTypeIndex, int rPanelIndex, int lim1, int lim2,
+			int chunkSize) {
+		int index = lim1 / chunkSize;
+		return this.combinedCondensedMalesFile.get(testTypeIndex).get(rPanelIndex).get(0).get(index).getFullName();
+	}
+	
+	/**
+	 * Method to access combinedCondensedFile
+	 * 
+	 * @param testTypeIndex
+	 * @param rPanelIndex
+	 * @param chromo
+	 * @param lim1
+	 * @param lim2
+	 * @param chunkSize
+	 * @return
+	 */
+	public String getCombinedCondensedFemalesFile(int testTypeIndex, int rPanelIndex, int lim1, int lim2,
+			int chunkSize) {
+		int index = lim1 / chunkSize;
+		return this.combinedCondensedFemalesFile.get(testTypeIndex).get(rPanelIndex).get(0).get(index).getFullName();
+	}
 
 	/**
 	 * Method to set the finalStatus of combinedCondensedFile
@@ -1042,7 +1175,7 @@ public class AssocFiles {
 	 */
 	public String getSnptestLogMalesFile(int testTypeIndex, int rPanelIndex, int lim1, int lim2, int chunkSize) {
 		int index = lim1 / chunkSize;
-		return this.snptestLogFile.get(testTypeIndex).get(rPanelIndex).get(0).get(index).getFullName();
+		return this.snptestLogMalesFile.get(testTypeIndex).get(rPanelIndex).get(0).get(index).getFullName();
 	}
 
 	/**
@@ -1058,7 +1191,7 @@ public class AssocFiles {
 	 */
 	public String getSnptestLogFemalesFile(int testTypeIndex, int rPanelIndex, int lim1, int lim2, int chunkSize) {
 		int index = lim1 / chunkSize;
-		return this.snptestLogFile.get(testTypeIndex).get(rPanelIndex).get(0).get(index).getFullName();
+		return this.snptestLogFemalesFile.get(testTypeIndex).get(rPanelIndex).get(0).get(index).getFullName();
 	}
 
 	/**
@@ -1096,10 +1229,10 @@ public class AssocFiles {
 	 * @param chunkSize
 	 * @return
 	 */
-	public String getSummaryMalesFile(int testTypeIndex, int rPanelIndex, int chromo, int lim1, int lim2,
+	public String getSummaryMalesFile(int testTypeIndex, int rPanelIndex, int lim1, int lim2,
 			int chunkSize) {
 		int index = lim1 / chunkSize;
-		return this.summaryFile.get(testTypeIndex).get(rPanelIndex).get(0).get(index).getFullName();
+		return this.summaryMalesFile.get(testTypeIndex).get(rPanelIndex).get(0).get(index).getFullName();
 	}
 
 	/**
@@ -1113,10 +1246,10 @@ public class AssocFiles {
 	 * @param chunkSize
 	 * @return
 	 */
-	public String getSummaryFemalesFile(int testTypeIndex, int rPanelIndex, int chromo, int lim1, int lim2,
+	public String getSummaryFemalesFile(int testTypeIndex, int rPanelIndex, int lim1, int lim2,
 			int chunkSize) {
 		int index = lim1 / chunkSize;
-		return this.summaryFile.get(testTypeIndex).get(rPanelIndex).get(0).get(index).getFullName();
+		return this.summaryFemalesFile.get(testTypeIndex).get(rPanelIndex).get(0).get(index).getFullName();
 	}
 
 	/**

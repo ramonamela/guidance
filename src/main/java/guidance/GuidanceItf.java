@@ -114,10 +114,11 @@ public interface GuidanceItf {
 
 	@Method(declaringClass = "guidance.GuidanceImpl")
 	@Constraints(computingUnits = "1", memorySize = "${qctoolSMem}")
-	void qctoolS(@Parameter(type = Type.FILE, direction = Direction.IN) String imputeFile,
+	void qctoolS(@Parameter(type = Type.STRING, direction = Direction.IN) String imputationTool,
+			@Parameter(type = Type.FILE, direction = Direction.IN) String imputeFile,
 			@Parameter(type = Type.FILE, direction = Direction.IN) String inclusionRsIdFile,
 			@Parameter(type = Type.STRING, direction = Direction.IN) String mafThresholdS,
-			@Parameter(type = Type.FILE, direction = Direction.OUT) String filteredFileGz,
+			@Parameter(type = Type.FILE, direction = Direction.OUT) String filteredFile,
 			@Parameter(type = Type.FILE, direction = Direction.OUT) String filteredLogFile,
 			@Parameter(type = Type.STRING, direction = Direction.IN) String cmdToStore);
 
@@ -173,8 +174,15 @@ public interface GuidanceItf {
 			@Parameter(type = Type.STRING, direction = Direction.IN) String cmdToStore);
 
 	@Method(declaringClass = "guidance.GuidanceImpl")
+	@Constraints(computingUnits = "1", memorySize = "${samtoolsBgzipMem}")
+	void samtoolsBgzip(@Parameter(type = Type.FILE, direction = Direction.IN) String input,
+			@Parameter(type = Type.FILE, direction = Direction.OUT) String output,
+			@Parameter(type = Type.STRING, direction = Direction.IN) String cmdToStore);
+
+	@Method(declaringClass = "guidance.GuidanceImpl")
 	@Constraints(computingUnits = "1", memorySize = "1.0f")
-	void samtoolsBgzip(@Parameter(type = Type.FILE, direction = Direction.INOUT) String input,
+	void samtoolsTabix(@Parameter(type = Type.FILE, direction = Direction.IN) String inputGz,
+			@Parameter(type = Type.FILE, direction = Direction.OUT) String outputTbi,
 			@Parameter(type = Type.STRING, direction = Direction.IN) String cmdToStore);
 
 	@Method(declaringClass = "guidance.GuidanceImpl")
@@ -192,44 +200,46 @@ public interface GuidanceItf {
 			@Parameter(type = Type.FILE, direction = Direction.OUT) String imputeFileSummary,
 			@Parameter(type = Type.FILE, direction = Direction.OUT) String imputeFileWarnings,
 			@Parameter(type = Type.STRING, direction = Direction.IN) String theChromo,
+			@Parameter(type = Type.STRING, direction = Direction.IN) String sex,
 			@Parameter(type = Type.STRING, direction = Direction.IN) String cmdToStore);
 
 	@Method(declaringClass = "guidance.GuidanceImpl")
 	@Constraints(computingUnits = "1", memorySize = "${imputeWithMinimacMem}")
-	void imputeWithMinimac(@Parameter(type = Type.FILE, direction = Direction.IN) String knownHapFile,
-			@Parameter(type = Type.FILE, direction = Direction.IN) String filteredHapsFile,
-			@Parameter(type = Type.FILE, direction = Direction.IN) String filteredSampleFile,
-			@Parameter(type = Type.FILE, direction = Direction.IN) String filteredListOfSnpsFile,
-			@Parameter(type = Type.STRING, direction = Direction.IN) String imputedMMFileName,
-			@Parameter(type = Type.FILE, direction = Direction.OUT) String imputedMMInfoFile,
-			// @Parameter(type = Type.FILE, direction = Direction.OUT) String
-			// imputedMMDraftFile,
-			@Parameter(type = Type.FILE, direction = Direction.OUT) String imputedMMErateFile,
-			@Parameter(type = Type.FILE, direction = Direction.OUT) String imputedMMRecFile,
-			@Parameter(type = Type.FILE, direction = Direction.OUT) String imputedMMDoseFile,
-			@Parameter(type = Type.FILE, direction = Direction.OUT) String imputedMMLogFile,
-			@Parameter(type = Type.STRING, direction = Direction.IN) String theChromo,
+	void imputeWithMinimac(@Parameter(type = Type.FILE, direction = Direction.IN) String vcfFile,
+			@Parameter(type = Type.FILE, direction = Direction.IN) String filteredHapsVcfFileBgzip,
+			@Parameter(type = Type.FILE, direction = Direction.OUT) String imputeFile,
+			@Parameter(type = Type.FILE, direction = Direction.OUT) String imputeFileInfo,
+			@Parameter(type = Type.FILE, direction = Direction.OUT) String imputeFileErate,
+			@Parameter(type = Type.FILE, direction = Direction.OUT) String imputeFileRec,
+			@Parameter(type = Type.FILE, direction = Direction.OUT) String imputeFileM3vcf,
+			@Parameter(type = Type.FILE, direction = Direction.OUT) String imputeFileLog,
+			@Parameter(type = Type.STRING, direction = Direction.IN) String chrS,
 			@Parameter(type = Type.STRING, direction = Direction.IN) String lim1S,
 			@Parameter(type = Type.STRING, direction = Direction.IN) String lim2S,
+			@Parameter(type = Type.STRING, direction = Direction.IN) String myPrefix,
+			@Parameter(type = Type.STRING, direction = Direction.IN) String sex,
 			@Parameter(type = Type.STRING, direction = Direction.IN) String cmdToStore);
 
 	@Method(declaringClass = "guidance.GuidanceImpl")
 	@Constraints(computingUnits = "1", memorySize = "${filterByAllMem}")
-	void filterByAll(@Parameter(type = Type.FILE, direction = Direction.IN) String inputFile,
+	void filterByAll(@Parameter(type = Type.STRING, direction = Direction.IN) String imputationTool,
+			@Parameter(type = Type.FILE, direction = Direction.IN) String inputFile,
 			@Parameter(type = Type.FILE, direction = Direction.OUT) String outputFile,
 			@Parameter(type = Type.FILE, direction = Direction.OUT) String outputCondensedFile,
-			@Parameter(type = Type.STRING, direction = Direction.IN) String rpanelName,
 			@Parameter(type = Type.STRING, direction = Direction.IN) String mafThresholdS,
 			@Parameter(type = Type.STRING, direction = Direction.IN) String infoThresholdS,
 			@Parameter(type = Type.STRING, direction = Direction.IN) String hweCohortThresholdS,
-			@Parameter(type = Type.STRING, direction = Direction.IN) String hweCasesThreshold,
-			@Parameter(type = Type.STRING, direction = Direction.IN) String mafControlsThreshold,
+			@Parameter(type = Type.STRING, direction = Direction.IN) String hweCasesThresholdS,
+			@Parameter(type = Type.STRING, direction = Direction.IN) String hweControlsThresholdS,
+			@Parameter(type = Type.STRING, direction = Direction.IN) String sex,
+			@Parameter(type = Type.STRING, direction = Direction.IN) String rpanelName,
 			@Parameter(type = Type.STRING, direction = Direction.IN) String cmdToStore);
 
 	@Method(declaringClass = "guidance.GuidanceImpl")
 	@Constraints(computingUnits = "1", memorySize = "${filterByInfoMem}")
-	void filterByInfo(@Parameter(type = Type.FILE, direction = Direction.IN) String imputeFileInfo,
-			@Parameter(type = Type.FILE, direction = Direction.OUT) String filteredFile,
+	void filterByInfo(@Parameter(type = Type.STRING, direction = Direction.IN) String imputationTool,
+			@Parameter(type = Type.FILE, direction = Direction.IN) String imputeFileInfo,
+			@Parameter(type = Type.FILE, direction = Direction.OUT) String inclusionRsIdFile,
 			@Parameter(type = Type.STRING, direction = Direction.IN) String threshold,
 			@Parameter(type = Type.STRING, direction = Direction.IN) String cmdToStore);
 
@@ -344,16 +354,10 @@ public interface GuidanceItf {
 			@Parameter(type = Type.STRING, direction = Direction.IN) String cmdToStore);
 
 	@Method(declaringClass = "guidance.GuidanceImpl")
-	@Constraints(computingUnits = "1", memorySize = "${combinePanelsMem}")
-	void combinePanels(@Parameter(type = Type.FILE, direction = Direction.IN) String resultsFileA,
+	@Constraints(computingUnits = "1", memorySize = "1.0f")
+	void combinePanelsComplex(@Parameter(type = Type.FILE, direction = Direction.IN) String resultsFileA,
 			@Parameter(type = Type.FILE, direction = Direction.IN) String resultsFileB,
 			@Parameter(type = Type.FILE, direction = Direction.OUT) String resultsFileC,
-			@Parameter(type = Type.STRING, direction = Direction.IN) String cmdToStore);
-
-	@Method(declaringClass = "guidance.GuidanceImpl")
-	@Constraints(computingUnits = "1", memorySize = "1.0f")
-	void combinePanelsComplex(@Parameter(type = Type.FILE, direction = Direction.INOUT) String resultsFileA,
-			@Parameter(type = Type.FILE, direction = Direction.IN) String resultsFileB,
 			@Parameter(type = Type.INT, direction = Direction.IN) int lim1,
 			@Parameter(type = Type.INT, direction = Direction.IN) int lim2,
 			@Parameter(type = Type.STRING, direction = Direction.IN) String cmdToStore);

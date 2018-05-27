@@ -74,7 +74,7 @@ public class TestFunction {
         String topHitsResults = args[2];
         String pvaThrS = args[3];
         try {
-            GuidanceImpl.generateTopHitsAll(filteredFile, filteredFile, topHitsResults, pvaThrS, "");
+            GuidanceImpl.generateTopHitsAll(filteredFile, filteredFile, filteredFile, topHitsResults, pvaThrS, "");
         } catch (GuidanceTaskException e) {
             e.printStackTrace();
         }

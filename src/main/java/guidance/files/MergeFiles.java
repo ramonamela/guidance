@@ -60,23 +60,43 @@ public class MergeFiles {
 
 	private ArrayList<ArrayList<ArrayList<ArrayList<GenericFile>>>> testTypeReducedFile = new ArrayList<>();
 	private ArrayList<ArrayList<ArrayList<ArrayList<GenericFile>>>> testTypeReducedFilteredFile = new ArrayList<>();
+	private ArrayList<ArrayList<ArrayList<ArrayList<GenericFile>>>> testTypeReducedFilteredMalesFile = new ArrayList<>();
+	private ArrayList<ArrayList<ArrayList<ArrayList<GenericFile>>>> testTypeReducedFilteredFemalesFile = new ArrayList<>();
+
 	private ArrayList<ArrayList<ArrayList<ArrayList<GenericFile>>>> testTypeReducedCondensedFile = new ArrayList<>();
+	private ArrayList<ArrayList<ArrayList<ArrayList<GenericFile>>>> testTypeReducedCondensedMalesFile = new ArrayList<>();
+	private ArrayList<ArrayList<ArrayList<ArrayList<GenericFile>>>> testTypeReducedCondensedFemalesFile = new ArrayList<>();
 
 	private ArrayList<ArrayList<ArrayList<GenericFile>>> testTypeFilteredByAllFile = new ArrayList<>();
+	private ArrayList<ArrayList<ArrayList<GenericFile>>> testTypeFilteredByAllMalesFile = new ArrayList<>();
+	private ArrayList<ArrayList<ArrayList<GenericFile>>> testTypeFilteredByAllFemalesFile = new ArrayList<>();
+
 	private ArrayList<ArrayList<ArrayList<GenericFile>>> testTypeCondensedFile = new ArrayList<>();
+	private ArrayList<ArrayList<ArrayList<GenericFile>>> testTypeCondensedMalesFile = new ArrayList<>();
+	private ArrayList<ArrayList<ArrayList<GenericFile>>> testTypeCondensedFemalesFile = new ArrayList<>();
 
 	private ArrayList<ArrayList<ArrayList<GenericFile>>> testTypeAdditionalCondensedFile = new ArrayList<>();
+
 	private ArrayList<ArrayList<ArrayList<GenericFile>>> testTypeAdditionalFilteredByAllFile = new ArrayList<>();
-	private ArrayList<ArrayList<ArrayList<GenericFile>>> testTypeAdditionalFilteredByAllXFile = new ArrayList<>();
+	private ArrayList<ArrayList<ArrayList<GenericFile>>> testTypeAdditionalFilteredByAllMalesFile = new ArrayList<>();
+	private ArrayList<ArrayList<ArrayList<GenericFile>>> testTypeAdditionalFilteredByAllFemalesFile = new ArrayList<>();
 
 	private ArrayList<ArrayList<Integer>> testTypeAdditionalCondensedIndex = new ArrayList<>();
 	private ArrayList<ArrayList<Integer>> testTypeAdditionalFilteredByAllIndex = new ArrayList<>();
 
 	private ArrayList<ArrayList<ArrayList<ArrayList<GenericFile>>>> testTypeCombinedReducedFilteredFile = new ArrayList<>();
+	private ArrayList<ArrayList<ArrayList<ArrayList<GenericFile>>>> testTypeCombinedReducedFilteredMalesFile = new ArrayList<>();
+	private ArrayList<ArrayList<ArrayList<ArrayList<GenericFile>>>> testTypeCombinedReducedFilteredFemalesFile = new ArrayList<>();
+
 	private ArrayList<ArrayList<ArrayList<ArrayList<GenericFile>>>> testTypeCombinedReducedCondensedFile = new ArrayList<>();
 
 	private ArrayList<ArrayList<ArrayList<GenericFile>>> testTypeCombinedFilteredByAllFile = new ArrayList<>();
+	private ArrayList<ArrayList<ArrayList<GenericFile>>> testTypeCombinedFilteredByAllMalesFile = new ArrayList<>();
+	private ArrayList<ArrayList<ArrayList<GenericFile>>> testTypeCombinedFilteredByAllFemalesFile = new ArrayList<>();
+
 	private ArrayList<ArrayList<ArrayList<GenericFile>>> testTypeCombinedCondensedFile = new ArrayList<>();
+	private ArrayList<ArrayList<ArrayList<GenericFile>>> testTypeCombinedCondensedMalesFile = new ArrayList<>();
+	private ArrayList<ArrayList<ArrayList<GenericFile>>> testTypeCombinedCondensedFemalesFile = new ArrayList<>();
 
 	private int startChr = 0;
 	private int endChr = 0;
@@ -112,25 +132,47 @@ public class MergeFiles {
 
 			ArrayList<ArrayList<String>> rpanelListOutDir = new ArrayList<>();
 			ArrayList<ArrayList<ArrayList<GenericFile>>> rpanelReducedFile = new ArrayList<>();
+
 			ArrayList<ArrayList<ArrayList<GenericFile>>> rpanelReducedFilteredFile = new ArrayList<>();
+			ArrayList<ArrayList<ArrayList<GenericFile>>> rpanelReducedFilteredMalesFile = new ArrayList<>();
+			ArrayList<ArrayList<ArrayList<GenericFile>>> rpanelReducedFilteredFemalesFile = new ArrayList<>();
+
 			ArrayList<ArrayList<ArrayList<GenericFile>>> rpanelReducedCondensedFile = new ArrayList<>();
+			ArrayList<ArrayList<ArrayList<GenericFile>>> rpanelReducedCondensedMalesFile = new ArrayList<>();
+			ArrayList<ArrayList<ArrayList<GenericFile>>> rpanelReducedCondensedFemalesFile = new ArrayList<>();
 
 			ArrayList<ArrayList<GenericFile>> rpanelFilteredByAllFile = new ArrayList<>();
+			ArrayList<ArrayList<GenericFile>> rpanelFilteredByAllMalesFile = new ArrayList<>();
+			ArrayList<ArrayList<GenericFile>> rpanelFilteredByAllFemalesFile = new ArrayList<>();
+
 			ArrayList<ArrayList<GenericFile>> rpanelCondensedFile = new ArrayList<>();
+			ArrayList<ArrayList<GenericFile>> rpanelCondensedMalesFile = new ArrayList<>();
+			ArrayList<ArrayList<GenericFile>> rpanelCondensedFemalesFile = new ArrayList<>();
 
 			ArrayList<ArrayList<GenericFile>> rpanelAdditionalCondensedFile = new ArrayList<>();
+
 			ArrayList<ArrayList<GenericFile>> rpanelAdditionalFilteredByAllFile = new ArrayList<>();
-			ArrayList<ArrayList<GenericFile>> rpanelAdditionalFilteredByAllXFile = new ArrayList<>();
+			ArrayList<ArrayList<GenericFile>> rpanelAdditionalFilteredByAllMalesFile = new ArrayList<>();
+			ArrayList<ArrayList<GenericFile>> rpanelAdditionalFilteredByAllFemalesFile = new ArrayList<>();
 
 			ArrayList<Integer> rpanelAdditionalCondensedIndex = new ArrayList<>();
 			ArrayList<Integer> rpanelAdditionalFilteredByAllIndex = new ArrayList<>();
 
 			ArrayList<ArrayList<ArrayList<GenericFile>>> rpanelCombinedReducedFilteredFile = new ArrayList<>();
-			ArrayList<ArrayList<ArrayList<GenericFile>>> rpanelCombinedReducedCondensedFile = new ArrayList<>();
+			ArrayList<ArrayList<ArrayList<GenericFile>>> rpanelCombinedReducedFilteredMalesFile = new ArrayList<>();
+			ArrayList<ArrayList<ArrayList<GenericFile>>> rpanelCombinedReducedFilteredFemalesFile = new ArrayList<>();
 
-			ArrayList<ArrayList<GenericFile>> rpanelCombinedFilteredByAllXFile = new ArrayList<>();
+			ArrayList<ArrayList<ArrayList<GenericFile>>> rpanelCombinedReducedCondensedFile = new ArrayList<>();
+			ArrayList<ArrayList<ArrayList<GenericFile>>> rpanelCombinedReducedCondensedMalesFile = new ArrayList<>();
+			ArrayList<ArrayList<ArrayList<GenericFile>>> rpanelCombinedReducedCondensedFemalesFile = new ArrayList<>();
+
 			ArrayList<ArrayList<GenericFile>> rpanelCombinedFilteredByAllFile = new ArrayList<>();
+			ArrayList<ArrayList<GenericFile>> rpanelCombinedFilteredByAllMalesFile = new ArrayList<>();
+			ArrayList<ArrayList<GenericFile>> rpanelCombinedFilteredByAllFemalesFile = new ArrayList<>();
+
 			ArrayList<ArrayList<GenericFile>> rpanelCombinedCondensedFile = new ArrayList<>();
+			ArrayList<ArrayList<GenericFile>> rpanelCombinedCondensedMalesFile = new ArrayList<>();
+			ArrayList<ArrayList<GenericFile>> rpanelCombinedCondensedFemalesFile = new ArrayList<>();
 
 			for (int j = 0; j < refPanels.size(); j++) {
 				rPanel = refPanels.get(j);
@@ -140,29 +182,50 @@ public class MergeFiles {
 
 				ArrayList<String> chromoListOutDir = new ArrayList<>();
 				ArrayList<ArrayList<GenericFile>> chromoListReducedFile = new ArrayList<>();
+
 				ArrayList<ArrayList<GenericFile>> chromoListReducedFilteredFile = new ArrayList<>();
+				ArrayList<ArrayList<GenericFile>> chromoListReducedFilteredMalesFile = new ArrayList<>();
+				ArrayList<ArrayList<GenericFile>> chromoListReducedFilteredFemalesFile = new ArrayList<>();
+
 				ArrayList<ArrayList<GenericFile>> chromoListReducedCondensedFile = new ArrayList<>();
+				ArrayList<ArrayList<GenericFile>> chromoListReducedCondensedMalesFile = new ArrayList<>();
+				ArrayList<ArrayList<GenericFile>> chromoListReducedCondensedFemalesFile = new ArrayList<>();
 
 				ArrayList<GenericFile> chromoFilteredByAllFile = new ArrayList<>();
+				ArrayList<GenericFile> chromoFilteredByAllMalesFile = new ArrayList<>();
+				ArrayList<GenericFile> chromoFilteredByAllFemalesFile = new ArrayList<>();
+
 				ArrayList<GenericFile> chromoCondensedFile = new ArrayList<>();
+				ArrayList<GenericFile> chromoCondensedMalesFile = new ArrayList<>();
+				ArrayList<GenericFile> chromoCondensedFemalesFile = new ArrayList<>();
 
 				ArrayList<GenericFile> additionalCondensedFile = new ArrayList<>();
+
 				ArrayList<GenericFile> additionalFilteredByAllFile = new ArrayList<>();
-				ArrayList<GenericFile> additionalFilteredByAllXFile = new ArrayList<>();
+				ArrayList<GenericFile> additionalFilteredByAllMalesFile = new ArrayList<>();
+				ArrayList<GenericFile> additionalFilteredByAllFemalesFile = new ArrayList<>();
 
 				ArrayList<ArrayList<GenericFile>> chromoListCombinedReducedFilteredFile = new ArrayList<>();
-				ArrayList<ArrayList<GenericFile>> chromoListCombinedReducedCondensedFile = new ArrayList<>();
+				ArrayList<ArrayList<GenericFile>> chromoListCombinedReducedFilteredMalesFile = new ArrayList<>();
+				ArrayList<ArrayList<GenericFile>> chromoListCombinedReducedFilteredFemalesFile = new ArrayList<>();
 
-				ArrayList<GenericFile> chromoCombinedFilteredByAllXFile = new ArrayList<>();
+				ArrayList<ArrayList<GenericFile>> chromoListCombinedReducedCondensedFile = new ArrayList<>();
+				ArrayList<ArrayList<GenericFile>> chromoListCombinedReducedCondensedMalesFile = new ArrayList<>();
+				ArrayList<ArrayList<GenericFile>> chromoListCombinedReducedCondensedFemalesFile = new ArrayList<>();
+
 				ArrayList<GenericFile> chromoCombinedFilteredByAllFile = new ArrayList<>();
+				ArrayList<GenericFile> chromoCombinedFilteredByAllMalesFile = new ArrayList<>();
+				ArrayList<GenericFile> chromoCombinedFilteredByAllFemalesFile = new ArrayList<>();
+
 				ArrayList<GenericFile> chromoCombinedCondensedFile = new ArrayList<>();
+				ArrayList<GenericFile> chromoCombinedCondensedMalesFile = new ArrayList<>();
+				ArrayList<GenericFile> chromoCombinedCondensedFemalesFile = new ArrayList<>();
 
 				boolean addExtraCount = false;
 				for (int i = this.startChr; i <= this.endChr; i++) {
 					int chromo = i;
 
 					if (i != this.startChr) {
-						LOGGER.info("mon :: TRUE :: i = " + i);
 						addExtraCount = true;
 					}
 
@@ -171,140 +234,307 @@ public class MergeFiles {
 
 					int maxSize = ChromoInfo.getMaxSize(chromo);
 					int total_chunks = maxSize / chunkSize;
-					int module = maxSize % chunkSize;
-					if (module != 0) {
+					if (maxSize % chunkSize != 0) {
 						total_chunks++;
 					}
 
-					ArrayList<GenericFile> listReducedFile = new ArrayList<>();
+					// ArrayList<GenericFile> listReducedFile = new ArrayList<>();
 					ArrayList<GenericFile> listReducedFilteredFile = new ArrayList<>();
+					ArrayList<GenericFile> listReducedFilteredMalesFile = new ArrayList<>();
+					ArrayList<GenericFile> listReducedFilteredFemalesFile = new ArrayList<>();
+
 					ArrayList<GenericFile> listReducedCondensedFile = new ArrayList<>();
+					ArrayList<GenericFile> listReducedCondensedMalesFile = new ArrayList<>();
+					ArrayList<GenericFile> listReducedCondensedFemalesFile = new ArrayList<>();
 
 					ArrayList<GenericFile> listCombinedReducedFilteredFile = new ArrayList<>();
+					ArrayList<GenericFile> listCombinedReducedFilteredMalesFile = new ArrayList<>();
+					ArrayList<GenericFile> listCombinedReducedFilteredFemalesFile = new ArrayList<>();
+
 					ArrayList<GenericFile> listCombinedReducedCondensedFile = new ArrayList<>();
+					ArrayList<GenericFile> listCombinedReducedCondensedMalesFile = new ArrayList<>();
+					ArrayList<GenericFile> listCombinedReducedCondensedFemalesFile = new ArrayList<>();
 
 					// Now we have to create the rest of file names that will be used to reduce
 					// files
 					int counter = 0;
 					for (int deep = 0; deep < total_chunks - 1; deep++) {
-						String tmpReducedFileName = "chr_" + chromo + "_" + testTypeName + "_" + rPanel
-								+ "_reduce_file_" + counter + EXT_TXT_GZ;
-						String tmpReducedFilteredFileName = "chr_" + chromo + "_" + testTypeName + "_" + rPanel
-								+ REDUCE_FILTERED_FILENAME + counter + EXT_TXT_GZ;
-						String tmpReducedCondensedFileName = "chr_" + chromo + "_" + testTypeName + "_" + rPanel
-								+ REDUCE_CONDENSED_FILENAME + counter + EXT_TXT_GZ;
+						if (chromo == 23) {
 
-						GenericFile myReducedFile = new GenericFile(tmpChrDir, tmpReducedFileName, UNCOMPRESSED_FILE,
-								"none");
-						GenericFile myReducedFilteredFile = new GenericFile(tmpChrDir, tmpReducedFilteredFileName,
-								UNCOMPRESSED_FILE, "none");
-						GenericFile myReducedCondensedFile = new GenericFile(tmpChrDir, tmpReducedCondensedFileName,
-								UNCOMPRESSED_FILE, "none");
+							String tmpReducedFilteredMalesFileName = "chr_" + chromo + "_" + testTypeName + "_males_"
+									+ rPanel + REDUCE_FILTERED_FILENAME + counter + EXT_TXT_GZ;
+							String tmpReducedCondensedMalesFileName = "chr_" + chromo + "_" + testTypeName + "_males_"
+									+ rPanel + REDUCE_CONDENSED_FILENAME + counter + EXT_TXT_GZ;
 
-						listReducedFile.add(myReducedFile);
-						listReducedFilteredFile.add(myReducedFilteredFile);
-						listReducedCondensedFile.add(myReducedCondensedFile);
+							GenericFile myReducedFilteredMalesFile = new GenericFile(tmpChrDir,
+									tmpReducedFilteredMalesFileName, UNCOMPRESSED_FILE, "none");
+							GenericFile myReducedCondensedMalesFile = new GenericFile(tmpChrDir,
+									tmpReducedCondensedMalesFileName, UNCOMPRESSED_FILE, "none");
+
+							String tmpReducedFilteredFemalesFileName = "chr_" + chromo + "_" + testTypeName
+									+ "_females_" + rPanel + REDUCE_FILTERED_FILENAME + counter + EXT_TXT_GZ;
+							String tmpReducedCondensedFemalesFileName = "chr_" + chromo + "_" + testTypeName
+									+ "_females_" + rPanel + REDUCE_CONDENSED_FILENAME + counter + EXT_TXT_GZ;
+
+							GenericFile myReducedFilteredFemalesFile = new GenericFile(tmpChrDir,
+									tmpReducedFilteredFemalesFileName, UNCOMPRESSED_FILE, "none");
+							GenericFile myReducedCondensedFemalesFile = new GenericFile(tmpChrDir,
+									tmpReducedCondensedFemalesFileName, UNCOMPRESSED_FILE, "none");
+
+							listReducedFilteredMalesFile.add(myReducedFilteredMalesFile);
+							listReducedCondensedMalesFile.add(myReducedCondensedMalesFile);
+
+							listReducedFilteredFemalesFile.add(myReducedFilteredFemalesFile);
+							listReducedCondensedFemalesFile.add(myReducedCondensedFemalesFile);
+
+							System.out.println(
+									"Filling name for reduced males file with " + tmpReducedFilteredMalesFileName);
+							System.out.println(
+									"Filling name for reduced males file with " + tmpReducedCondensedMalesFileName);
+						} else {
+							String tmpReducedFilteredFileName = "chr_" + chromo + "_" + testTypeName + "_" + rPanel
+									+ REDUCE_FILTERED_FILENAME + counter + EXT_TXT_GZ;
+							String tmpReducedCondensedFileName = "chr_" + chromo + "_" + testTypeName + "_" + rPanel
+									+ REDUCE_CONDENSED_FILENAME + counter + EXT_TXT_GZ;
+
+							GenericFile myReducedFilteredFile = new GenericFile(tmpChrDir, tmpReducedFilteredFileName,
+									UNCOMPRESSED_FILE, "none");
+							GenericFile myReducedCondensedFile = new GenericFile(tmpChrDir, tmpReducedCondensedFileName,
+									UNCOMPRESSED_FILE, "none");
+
+							listReducedFilteredFile.add(myReducedFilteredFile);
+							listReducedCondensedFile.add(myReducedCondensedFile);
+						}
+
+						// listReducedFile.add(myReducedFile);
 
 						if (j == 0) {
-							String tmpCombinedReducedFilteredFileName = "chr_" + chromo + "_" + testTypeName
-									+ REDUCE_FILTERED_FILENAME + counter + EXT_TXT_GZ;
-							GenericFile myCombinedReducedFilteredFile = new GenericFile(testTypeOutDir2,
-									tmpCombinedReducedFilteredFileName, UNCOMPRESSED_FILE, "none");
+							if (chromo == 23) {
+								String tmpCombinedReducedFilteredMalesFileName = "chr_" + chromo + "_males_"
+										+ testTypeName + REDUCE_FILTERED_FILENAME + counter + EXT_TXT_GZ;
+								GenericFile myCombinedReducedFilteredMalesFile = new GenericFile(testTypeOutDir2,
+										tmpCombinedReducedFilteredMalesFileName, UNCOMPRESSED_FILE, "none");
 
-							listCombinedReducedFilteredFile.add(myCombinedReducedFilteredFile);
+								listCombinedReducedFilteredMalesFile.add(myCombinedReducedFilteredMalesFile);
 
-							String tmpCombinedReducedCondensedFileName = "chr_" + chromo + "_" + testTypeName
-									+ REDUCE_CONDENSED_FILENAME + counter + EXT_TXT_GZ;
-							GenericFile myCombinedReducedCondensedFile = new GenericFile(testTypeOutDir2,
-									tmpCombinedReducedCondensedFileName, UNCOMPRESSED_FILE, "none");
-							listCombinedReducedCondensedFile.add(myCombinedReducedCondensedFile);
+								String tmpCombinedReducedCondensedMalesFileName = "chr_" + chromo + "_males_"
+										+ testTypeName + REDUCE_CONDENSED_FILENAME + counter + EXT_TXT_GZ;
+								GenericFile myCombinedReducedCondensedMalesFile = new GenericFile(testTypeOutDir2,
+										tmpCombinedReducedCondensedMalesFileName, UNCOMPRESSED_FILE, "none");
+								listCombinedReducedCondensedMalesFile.add(myCombinedReducedCondensedMalesFile);
+
+								String tmpCombinedReducedFilteredFemalesFileName = "chr_" + chromo + "_females_"
+										+ testTypeName + REDUCE_FILTERED_FILENAME + counter + EXT_TXT_GZ;
+								GenericFile myCombinedReducedFilteredFemalesFile = new GenericFile(testTypeOutDir2,
+										tmpCombinedReducedFilteredFemalesFileName, UNCOMPRESSED_FILE, "none");
+
+								listCombinedReducedFilteredFemalesFile.add(myCombinedReducedFilteredFemalesFile);
+
+								String tmpCombinedReducedCondensedFemalesFileName = "chr_" + chromo + "_females_"
+										+ testTypeName + REDUCE_CONDENSED_FILENAME + counter + EXT_TXT_GZ;
+								GenericFile myCombinedReducedCondensedFemalesFile = new GenericFile(testTypeOutDir2,
+										tmpCombinedReducedCondensedFemalesFileName, UNCOMPRESSED_FILE, "none");
+								listCombinedReducedCondensedFemalesFile.add(myCombinedReducedCondensedFemalesFile);
+							} else {
+								String tmpCombinedReducedFilteredFileName = "chr_" + chromo + "_" + testTypeName
+										+ REDUCE_FILTERED_FILENAME + counter + EXT_TXT_GZ;
+								GenericFile myCombinedReducedFilteredFile = new GenericFile(testTypeOutDir2,
+										tmpCombinedReducedFilteredFileName, UNCOMPRESSED_FILE, "none");
+
+								listCombinedReducedFilteredFile.add(myCombinedReducedFilteredFile);
+
+								String tmpCombinedReducedCondensedFileName = "chr_" + chromo + "_" + testTypeName
+										+ REDUCE_CONDENSED_FILENAME + counter + EXT_TXT_GZ;
+								GenericFile myCombinedReducedCondensedFile = new GenericFile(testTypeOutDir2,
+										tmpCombinedReducedCondensedFileName, UNCOMPRESSED_FILE, "none");
+								listCombinedReducedCondensedFile.add(myCombinedReducedCondensedFile);
+							}
 						}
 						counter++;
 					}
 
-					LOGGER.info("mon :: ABANS F :: chr " + chromo + " ::  size = "
-							+ listCombinedReducedFilteredFile.size());
-
-					LOGGER.info("mon :: ABANS C :: chr " + chromo + " ::  size = "
-							+ listCombinedReducedCondensedFile.size());
-
 					if (addExtraCount) {
-						LOGGER.info("mon :: DINS EXTRA :: chr " + chromo + " ::  counter " + counter);
+						if (chromo == 23) {
+							String tmpCombinedReducedFilteredMalesFileName = "chr_" + chromo + "_males_" + testTypeName
+									+ REDUCE_FILTERED_FILENAME + counter + EXT_TXT_GZ;
+							String tmpCombinedReducedCondensedMalesFileName = "chr_" + chromo + "_males_" + testTypeName
+									+ REDUCE_CONDENSED_FILENAME + counter + EXT_TXT_GZ;
+							GenericFile myCombinedReducedFilteredMalesFile = new GenericFile(testTypeOutDir2,
+									tmpCombinedReducedFilteredMalesFileName, UNCOMPRESSED_FILE, "none");
+							GenericFile myCombinedReducedCondensedMalesFile = new GenericFile(testTypeOutDir2,
+									tmpCombinedReducedCondensedMalesFileName, UNCOMPRESSED_FILE, "none");
 
-						String tmpCombinedReducedFilteredFileName = "chr_" + chromo + "_" + testTypeName
-								+ REDUCE_FILTERED_FILENAME + counter + EXT_TXT_GZ;
-						String tmpCombinedReducedCondensedFileName = "chr_" + chromo + "_" + testTypeName
-								+ REDUCE_CONDENSED_FILENAME + counter + EXT_TXT_GZ;
-						GenericFile myCombinedReducedFilteredFile = new GenericFile(testTypeOutDir2,
-								tmpCombinedReducedFilteredFileName, UNCOMPRESSED_FILE, "none");
-						GenericFile myCombinedReducedCondensedFile = new GenericFile(testTypeOutDir2,
-								tmpCombinedReducedCondensedFileName, UNCOMPRESSED_FILE, "none");
+							listCombinedReducedFilteredMalesFile.add(myCombinedReducedFilteredMalesFile);
+							listCombinedReducedCondensedFemalesFile.add(myCombinedReducedCondensedMalesFile);
 
-						listCombinedReducedFilteredFile.add(myCombinedReducedFilteredFile);
-						listCombinedReducedCondensedFile.add(myCombinedReducedCondensedFile);
+							String tmpCombinedReducedFilteredFemalesFileName = "chr_" + chromo + "_females_"
+									+ testTypeName + REDUCE_FILTERED_FILENAME + counter + EXT_TXT_GZ;
+							String tmpCombinedReducedCondensedFemalesFileName = "chr_" + chromo + "_females_"
+									+ testTypeName + REDUCE_CONDENSED_FILENAME + counter + EXT_TXT_GZ;
+							GenericFile myCombinedReducedFilteredFemalesFile = new GenericFile(testTypeOutDir2,
+									tmpCombinedReducedFilteredFemalesFileName, UNCOMPRESSED_FILE, "none");
+							GenericFile myCombinedReducedCondensedFemalesFile = new GenericFile(testTypeOutDir2,
+									tmpCombinedReducedCondensedFemalesFileName, UNCOMPRESSED_FILE, "none");
+
+							listCombinedReducedFilteredFemalesFile.add(myCombinedReducedFilteredFemalesFile);
+							listCombinedReducedCondensedFemalesFile.add(myCombinedReducedCondensedFemalesFile);
+
+						} else {
+							String tmpCombinedReducedFilteredFileName = "chr_" + chromo + "_" + testTypeName
+									+ REDUCE_FILTERED_FILENAME + counter + EXT_TXT_GZ;
+							String tmpCombinedReducedCondensedFileName = "chr_" + chromo + "_" + testTypeName
+									+ REDUCE_CONDENSED_FILENAME + counter + EXT_TXT_GZ;
+							GenericFile myCombinedReducedFilteredFile = new GenericFile(testTypeOutDir2,
+									tmpCombinedReducedFilteredFileName, UNCOMPRESSED_FILE, "none");
+							GenericFile myCombinedReducedCondensedFile = new GenericFile(testTypeOutDir2,
+									tmpCombinedReducedCondensedFileName, UNCOMPRESSED_FILE, "none");
+
+							listCombinedReducedFilteredFile.add(myCombinedReducedFilteredFile);
+							listCombinedReducedCondensedFile.add(myCombinedReducedCondensedFile);
+
+						}
 
 						addExtraCount = false;
 					}
 
-					LOGGER.info("mon :: DESPRES F :: chr " + chromo + " ::  size = "
-							+ listCombinedReducedFilteredFile.size());
+					if (chromo == 23) {
+						String tmpFilteredByAllMalesFileName = "chr_" + chromo + "_" + testTypeName + "_" + rPanel
+								+ "_filtered_by_maf_info_hwe_males.txt.gz";
+						GenericFile myFilteredByAllMalesFile = new GenericFile(tmpChrDir, tmpFilteredByAllMalesFileName,
+								UNCOMPRESSED_FILE, "none");
+						chromoFilteredByAllMalesFile.add(myFilteredByAllMalesFile);
 
-					LOGGER.info("mon :: DESPRES C :: chr " + chromo + " ::  size = "
-							+ listCombinedReducedCondensedFile.size());
+						String tmpFilteredByAllFemalesFileName = "chr_" + chromo + "_" + testTypeName + "_" + rPanel
+								+ "_filtered_by_maf_info_hwe_females.txt.gz";
+						GenericFile myFilteredByAllFemalesFile = new GenericFile(tmpChrDir,
+								tmpFilteredByAllFemalesFileName, UNCOMPRESSED_FILE, "none");
+						chromoFilteredByAllFemalesFile.add(myFilteredByAllFemalesFile);
 
-					LOGGER.info("\n\n");
+						String tmpCombinedCondensedMalesFileName = "chr_" + chromo + "_" + testTypeName + "_" + rPanel
+								+ "_combined_condensed_males.txt.gz";
+						GenericFile myCombinedCondensedMalesFile = new GenericFile(testTypeOutDir2,
+								tmpCombinedCondensedMalesFileName, UNCOMPRESSED_FILE, "none");
+						chromoCombinedCondensedMalesFile.add(myCombinedCondensedMalesFile);
 
-					// Now we have built the list of reduce file for this chromosome. We store this
-					// list
-					chromoListReducedFile.add(listReducedFile);
-					chromoListReducedFilteredFile.add(listReducedFilteredFile);
-					chromoListReducedCondensedFile.add(listReducedCondensedFile);
+						String tmpCombinedCondensedFemalesFileName = "chr_" + chromo + "_" + testTypeName + "_" + rPanel
+								+ "_combined_condensed_females.txt.gz";
+						GenericFile myCombinedCondensedFemalesFile = new GenericFile(testTypeOutDir2,
+								tmpCombinedCondensedFemalesFileName, UNCOMPRESSED_FILE, "none");
+						chromoCombinedCondensedFemalesFile.add(myCombinedCondensedFemalesFile);
 
-					chromoListCombinedReducedFilteredFile.add(listCombinedReducedFilteredFile);
-					chromoListCombinedReducedCondensedFile.add(listCombinedReducedCondensedFile);
+						chromoListReducedFilteredMalesFile.add(listReducedFilteredMalesFile);
+						chromoListReducedFilteredFemalesFile.add(listReducedFilteredFemalesFile);
 
-					String tmpCombinedFilteredByAllFileName = "chr_" + chromo + "_" + testTypeName + "_" + rPanel
-							+ "_combined_filtered_by_maf_info_hwe.txt.gz";
-					
-					GenericFile myCombinedFilteredByAllFile = new GenericFile(testTypeOutDir2,
-							tmpCombinedFilteredByAllFileName, UNCOMPRESSED_FILE, "none");
-					
-					chromoCombinedFilteredByAllFile.add(myCombinedFilteredByAllFile);
-					
+						chromoListReducedCondensedMalesFile.add(listReducedCondensedMalesFile);
+						chromoListReducedCondensedFemalesFile.add(listReducedCondensedFemalesFile);
 
-					String tmpCombinedCondensedFileName = "chr_" + chromo + "_" + testTypeName + "_" + rPanel
-							+ "_combined_condensed.txt.gz";
-					GenericFile myCombinedCondensedFile = new GenericFile(testTypeOutDir2, tmpCombinedCondensedFileName,
-							UNCOMPRESSED_FILE, "none");
-					chromoCombinedCondensedFile.add(myCombinedCondensedFile);
+						chromoListCombinedReducedFilteredMalesFile.add(listCombinedReducedFilteredMalesFile);
+						chromoListCombinedReducedFilteredFemalesFile.add(listCombinedReducedFilteredFemalesFile);
 
-					String tmpFilteredByAllFileName = "chr_" + chromo + "_" + testTypeName + "_" + rPanel
-							+ "_filtered_by_maf_info_hwe.txt.gz";
-					GenericFile myFilteredByAllFile = new GenericFile(tmpChrDir, tmpFilteredByAllFileName,
-							UNCOMPRESSED_FILE, "none");
-					chromoFilteredByAllFile.add(myFilteredByAllFile);
+						chromoListCombinedReducedCondensedMalesFile.add(listCombinedReducedCondensedMalesFile);
+						chromoListCombinedReducedCondensedFemalesFile.add(listCombinedReducedCondensedFemalesFile);
 
-					String tmpCondensedFileName = "chr_" + chromo + "_" + testTypeName + "_" + rPanel
-							+ "_condensed.txt.gz";
-					GenericFile myCondensedFile = new GenericFile(tmpChrDir, tmpCondensedFileName, UNCOMPRESSED_FILE,
-							"none");
-					chromoCondensedFile.add(myCondensedFile);
+						String tmpCombinedFilteredByAllMalesFileName = "chr_" + chromo + "_" + testTypeName + "_"
+								+ rPanel + "_males_combined_filtered_by_maf_info_hwe.txt.gz";
+
+						GenericFile myCombinedFilteredByAllMalesFile = new GenericFile(testTypeOutDir2,
+								tmpCombinedFilteredByAllMalesFileName, UNCOMPRESSED_FILE, "none");
+
+						chromoCombinedFilteredByAllMalesFile.add(myCombinedFilteredByAllMalesFile);
+
+						String tmpCombinedFilteredByAllFemalesFileName = "chr_" + chromo + "_" + testTypeName + "_"
+								+ rPanel + "_females_combined_filtered_by_maf_info_hwe.txt.gz";
+
+						GenericFile myCombinedFilteredByAllFemalesFile = new GenericFile(testTypeOutDir2,
+								tmpCombinedFilteredByAllFemalesFileName, UNCOMPRESSED_FILE, "none");
+
+						chromoCombinedFilteredByAllFemalesFile.add(myCombinedFilteredByAllFemalesFile);
+
+						String tmpCondensedMalesFileName = "chr_" + chromo + "_" + testTypeName + "_" + rPanel
+								+ "_condensed_males.txt.gz";
+						GenericFile myCondensedMalesFile = new GenericFile(tmpChrDir, tmpCondensedMalesFileName,
+								UNCOMPRESSED_FILE, "none");
+						chromoCondensedMalesFile.add(myCondensedMalesFile);
+
+						String tmpCondensedFemalesFileName = "chr_" + chromo + "_" + testTypeName + "_" + rPanel
+								+ "_condensed_females.txt.gz";
+						GenericFile myCondensedFemalesFile = new GenericFile(tmpChrDir, tmpCondensedFemalesFileName,
+								UNCOMPRESSED_FILE, "none");
+						chromoCondensedFemalesFile.add(myCondensedFemalesFile);
+						
+						chromoCondensedFile.add(myCondensedMalesFile);
+						chromoCondensedFile.add(myCondensedFemalesFile);
+
+					} else {
+						String tmpFilteredByAllFileName = "chr_" + chromo + "_" + testTypeName + "_" + rPanel
+								+ "_filtered_by_maf_info_hwe.txt.gz";
+						GenericFile myFilteredByAllFile = new GenericFile(tmpChrDir, tmpFilteredByAllFileName,
+								UNCOMPRESSED_FILE, "none");
+						chromoFilteredByAllFile.add(myFilteredByAllFile);
+
+						String tmpCombinedCondensedFileName = "chr_" + chromo + "_" + testTypeName + "_" + rPanel
+								+ "_combined_condensed.txt.gz";
+						GenericFile myCombinedCondensedFile = new GenericFile(testTypeOutDir2,
+								tmpCombinedCondensedFileName, UNCOMPRESSED_FILE, "none");
+						chromoCombinedCondensedFile.add(myCombinedCondensedFile);
+
+						chromoListReducedFilteredFile.add(listReducedFilteredFile);
+						chromoListReducedCondensedFile.add(listReducedCondensedFile);
+						chromoListCombinedReducedFilteredFile.add(listCombinedReducedFilteredFile);
+						chromoListCombinedReducedCondensedFile.add(listCombinedReducedCondensedFile);
+
+						String tmpCombinedFilteredByAllFileName = "chr_" + chromo + "_" + testTypeName + "_" + rPanel
+								+ "_combined_filtered_by_maf_info_hwe.txt.gz";
+
+						GenericFile myCombinedFilteredByAllFile = new GenericFile(testTypeOutDir2,
+								tmpCombinedFilteredByAllFileName, UNCOMPRESSED_FILE, "none");
+
+						chromoCombinedFilteredByAllFile.add(myCombinedFilteredByAllFile);
+
+						String tmpCondensedFileName = "chr_" + chromo + "_" + testTypeName + "_" + rPanel
+								+ "_condensed.txt.gz";
+						GenericFile myCondensedFile = new GenericFile(tmpChrDir, tmpCondensedFileName,
+								UNCOMPRESSED_FILE, "none");
+						chromoCondensedFile.add(myCondensedFile);
+					}
 
 				} // End for Chromo
 				rpanelListOutDir.add(chromoListOutDir);
 				rpanelReducedFile.add(chromoListReducedFile);
+
 				rpanelReducedFilteredFile.add(chromoListReducedFilteredFile);
+				rpanelReducedFilteredMalesFile.add(chromoListReducedFilteredMalesFile);
+				rpanelReducedFilteredFemalesFile.add(chromoListReducedFilteredFemalesFile);
+
 				rpanelReducedCondensedFile.add(chromoListReducedCondensedFile);
+				rpanelReducedCondensedMalesFile.add(chromoListReducedCondensedMalesFile);
+				rpanelReducedCondensedFemalesFile.add(chromoListReducedCondensedFemalesFile);
+
 				rpanelFilteredByAllFile.add(chromoFilteredByAllFile);
+				rpanelFilteredByAllMalesFile.add(chromoFilteredByAllMalesFile);
+				rpanelFilteredByAllFemalesFile.add(chromoFilteredByAllFemalesFile);
+
 				rpanelCondensedFile.add(chromoCondensedFile);
+				rpanelCondensedMalesFile.add(chromoCondensedMalesFile);
+				rpanelCondensedFemalesFile.add(chromoCondensedFemalesFile);
 
 				// Only for all the panels combined
 				if (j == 0) {
 					rpanelCombinedReducedFilteredFile.add(chromoListCombinedReducedFilteredFile);
+					rpanelCombinedReducedFilteredMalesFile.add(chromoListCombinedReducedFilteredMalesFile);
+					rpanelCombinedReducedFilteredFemalesFile.add(chromoListCombinedReducedFilteredFemalesFile);
+
 					rpanelCombinedReducedCondensedFile.add(chromoListCombinedReducedCondensedFile);
-					rpanelCombinedFilteredByAllXFile.add(chromoCombinedFilteredByAllXFile);
+					rpanelCombinedReducedCondensedMalesFile.add(chromoListCombinedReducedCondensedMalesFile);
+					rpanelCombinedReducedCondensedFemalesFile.add(chromoListCombinedReducedCondensedFemalesFile);
+
 					rpanelCombinedFilteredByAllFile.add(chromoCombinedFilteredByAllFile);
+					rpanelCombinedFilteredByAllMalesFile.add(chromoCombinedFilteredByAllMalesFile);
+					rpanelCombinedFilteredByAllFemalesFile.add(chromoCombinedFilteredByAllFemalesFile);
+
 					rpanelCombinedCondensedFile.add(chromoCombinedCondensedFile);
+					rpanelCombinedCondensedMalesFile.add(chromoCombinedCondensedMalesFile);
+					rpanelCombinedCondensedFemalesFile.add(chromoCombinedCondensedFemalesFile);
 				}
 
 				// Here we have to create an additional list of condensed files that will be
@@ -312,9 +542,16 @@ public class MergeFiles {
 				// jointCondensedFiles Task, for all chromosomes.
 				// The number of additional files is the number of chromosomes minus 1.
 				int addCondensed = 0;
-				for (int deep = this.startChr; deep < this.endChr; deep++) {
+				int limit = 0;
+				if(this.endChr == 23) {
+					limit = this.endChr + 1;
+				} else {
+					limit = this.endChr;
+				}
+				
+				for (int deep = this.startChr; deep < limit; deep++) {
 					String tmpAdditionalCondensedFileName = null;
-					if (deep == (this.endChr - 1)) {
+					if (deep == (limit - 1)) {
 						tmpAdditionalCondensedFileName = testTypeName + "_" + rPanel + "_condensed_chr_" + this.startChr
 								+ "_to_" + this.endChr + EXT_TXT_GZ;
 					} else {
@@ -345,9 +582,8 @@ public class MergeFiles {
 				// used when we execute
 				// jointFilteredByAllFile task for all chromosomes.
 				// Unlike the previous case with condensed files, we can not include chromosome
-				// 23. (Chr 23 format fo
-				// filteredByAllFile is different to the rest of chromosomes (thanks to
-				// snptest).
+				// 23. (Chr 23 format of filteredByAllFile is different to the rest of
+				// chromosomes (because of snptest).
 
 				// The number of additional files is the number of chromosomes minus 1.
 				int addFiltered = 0;
@@ -392,15 +628,25 @@ public class MergeFiles {
 
 				// If there is chr 23:
 				if (this.endChr == 23) {
-					String tmpAdditionalFilteredByAllXFileName = testTypeName + "_" + rPanel + FILTER_BY_ALL_FILENAME
-							+ this.endChr + EXT_TXT_GZ;
-					GenericFile myAdditionalFilteredByAllXFile = new GenericFile(rpanelOutDirSummary,
-							tmpAdditionalFilteredByAllXFileName, UNCOMPRESSED_FILE, "none");
+					String tmpAdditionalFilteredByAllMalesFileName = testTypeName + "_" + rPanel
+							+ FILTER_BY_ALL_FILENAME + this.endChr + "_males" + EXT_TXT_GZ;
+					GenericFile myAdditionalFilteredByAllMalesFile = new GenericFile(rpanelOutDirSummary,
+							tmpAdditionalFilteredByAllMalesFileName, UNCOMPRESSED_FILE, "none");
 
-					additionalFilteredByAllXFile.add(myAdditionalFilteredByAllXFile);
+					additionalFilteredByAllMalesFile.add(myAdditionalFilteredByAllMalesFile);
 					// LOGGER.info("\t[MergeFiles.java] " + tmpAdditionalFilteredByAllXFile);
 
-					rpanelAdditionalFilteredByAllXFile.add(additionalFilteredByAllXFile);
+					rpanelAdditionalFilteredByAllMalesFile.add(additionalFilteredByAllMalesFile);
+
+					String tmpAdditionalFilteredByAllFemalesFileName = testTypeName + "_" + rPanel
+							+ FILTER_BY_ALL_FILENAME + this.endChr + "_females" + EXT_TXT_GZ;
+					GenericFile myAdditionalFilteredByAllFemalesFile = new GenericFile(rpanelOutDirSummary,
+							tmpAdditionalFilteredByAllFemalesFileName, UNCOMPRESSED_FILE, "none");
+
+					additionalFilteredByAllFemalesFile.add(myAdditionalFilteredByAllFemalesFile);
+					// LOGGER.info("\t[MergeFiles.java] " + tmpAdditionalFilteredByAllXFile);
+
+					rpanelAdditionalFilteredByAllFemalesFile.add(additionalFilteredByAllFemalesFile);
 				}
 			} // End of for refPanels
 
@@ -408,23 +654,42 @@ public class MergeFiles {
 			// this list
 			this.testTypeReducedOutDir.add(rpanelListOutDir);
 			this.testTypeReducedFile.add(rpanelReducedFile);
+
 			this.testTypeReducedFilteredFile.add(rpanelReducedFilteredFile);
+			this.testTypeReducedFilteredMalesFile.add(rpanelReducedFilteredMalesFile);
+			this.testTypeReducedFilteredFemalesFile.add(rpanelReducedFilteredFemalesFile);
+
 			this.testTypeReducedCondensedFile.add(rpanelReducedCondensedFile);
+			this.testTypeReducedCondensedMalesFile.add(rpanelReducedCondensedMalesFile);
+			this.testTypeReducedCondensedFemalesFile.add(rpanelReducedCondensedFemalesFile);
 
 			this.testTypeCombinedReducedFilteredFile.add(rpanelCombinedReducedFilteredFile);
+			this.testTypeCombinedReducedFilteredMalesFile.add(rpanelCombinedReducedFilteredMalesFile);
+			this.testTypeCombinedReducedFilteredFemalesFile.add(rpanelCombinedReducedFilteredFemalesFile);
 			this.testTypeCombinedReducedCondensedFile.add(rpanelCombinedReducedCondensedFile);
 
 			this.testTypeFilteredByAllFile.add(rpanelFilteredByAllFile);
+			this.testTypeFilteredByAllFemalesFile.add(rpanelFilteredByAllFemalesFile);
+			this.testTypeFilteredByAllMalesFile.add(rpanelFilteredByAllMalesFile);
+
 			this.testTypeCondensedFile.add(rpanelCondensedFile);
+			this.testTypeCondensedFemalesFile.add(rpanelCondensedFemalesFile);
+			this.testTypeCondensedMalesFile.add(rpanelCondensedMalesFile);
 
 			this.testTypeCombinedFilteredByAllFile.add(rpanelCombinedFilteredByAllFile);
+			this.testTypeCombinedFilteredByAllMalesFile.add(rpanelCombinedFilteredByAllMalesFile);
+			this.testTypeCombinedFilteredByAllFemalesFile.add(rpanelCombinedFilteredByAllFemalesFile);
+
 			this.testTypeCombinedCondensedFile.add(rpanelCombinedCondensedFile);
+			this.testTypeCombinedCondensedMalesFile.add(rpanelCombinedCondensedMalesFile);
+			this.testTypeCombinedCondensedFemalesFile.add(rpanelCombinedCondensedFemalesFile);
 
 			this.testTypeAdditionalCondensedFile.add(rpanelAdditionalCondensedFile);
 			this.testTypeAdditionalFilteredByAllFile.add(rpanelAdditionalFilteredByAllFile);
 
 			if (this.endChr == 23) {
-				this.testTypeAdditionalFilteredByAllXFile.add(rpanelAdditionalFilteredByAllXFile);
+				this.testTypeAdditionalFilteredByAllMalesFile.add(rpanelAdditionalFilteredByAllMalesFile);
+				this.testTypeAdditionalFilteredByAllFemalesFile.add(rpanelAdditionalFilteredByAllFemalesFile);
 			}
 
 			this.testTypeAdditionalCondensedIndex.add(rpanelAdditionalCondensedIndex);
@@ -447,28 +712,6 @@ public class MergeFiles {
 
 		int i = chromo - this.startChr;
 		return this.testTypeReducedOutDir.get(testTypeIndex).get(rPanelIndex).get(i);
-	}
-
-	/**
-	 * Method to access reducedFileName
-	 * 
-	 * @param testTypeIndex
-	 * @param rPanelIndex
-	 * @param chromo
-	 * @param index
-	 * @return
-	 */
-	public String getReducedFileName(int testTypeIndex, int rPanelIndex, int chromo, int index) {
-		// Check that chromo index is within the bounds
-		checkChromoIndex(chromo);
-
-		int i = chromo - this.startChr;
-
-		// Check the index
-		int maxIndex = this.testTypeReducedFile.get(testTypeIndex).get(rPanelIndex).get(i).size();
-		checkIndex(index, maxIndex, chromo);
-
-		return this.testTypeReducedFile.get(testTypeIndex).get(rPanelIndex).get(i).get(index).getFullName();
 	}
 
 	/**
@@ -539,7 +782,7 @@ public class MergeFiles {
 	}
 
 	/**
-	 * Method to access reducedFilteredFileName
+	 * Method to access reducedFilteredFile
 	 * 
 	 * @param testTypeIndex
 	 * @param rPanelIndex
@@ -547,7 +790,7 @@ public class MergeFiles {
 	 * @param index
 	 * @return
 	 */
-	public String getReducedFilteredFileName(int testTypeIndex, int rPanelIndex, int chromo, int index) {
+	public String getReducedFilteredFile(int testTypeIndex, int rPanelIndex, int chromo, int index) {
 		// Check that chromo index is within the bounds
 		checkChromoIndex(chromo);
 
@@ -569,17 +812,32 @@ public class MergeFiles {
 	 * @param index
 	 * @return
 	 */
-	public String getReducedFilteredFile(int testTypeIndex, int rPanelIndex, int chromo, int index) {
-		// Check that chromo index is within the bounds
-		checkChromoIndex(chromo);
+	public String getReducedFilteredMalesFile(int testTypeIndex, int rPanelIndex, int index) {
+		System.out.println(testTypeIndex + " " + rPanelIndex + " " + index);
+		System.out.println("Size 1: " + this.testTypeReducedFilteredMalesFile.size());
+		System.out.println("Size 2: " + this.testTypeReducedFilteredMalesFile.get(testTypeIndex).size());
+		System.out
+				.println("Size 3: " + this.testTypeReducedFilteredMalesFile.get(testTypeIndex).get(rPanelIndex).size());
+		System.out.println(
+				"Size 4: " + this.testTypeReducedFilteredMalesFile.get(testTypeIndex).get(rPanelIndex).get(0).size());
+		System.out
+				.println("Size 5: " + this.testTypeReducedFilteredMalesFile.get(testTypeIndex).get(rPanelIndex).get(0));
+		return this.testTypeReducedFilteredMalesFile.get(testTypeIndex).get(rPanelIndex).get(0).get(index)
+				.getFullName();
+	}
 
-		int i = chromo - this.startChr;
-
-		// Check the index
-		int maxIndex = this.testTypeReducedFilteredFile.get(testTypeIndex).get(rPanelIndex).get(i).size();
-		checkIndex(index, maxIndex, chromo);
-
-		return this.testTypeReducedFilteredFile.get(testTypeIndex).get(rPanelIndex).get(i).get(index).getFullName();
+	/**
+	 * Method to access reducedFilteredFile
+	 * 
+	 * @param testTypeIndex
+	 * @param rPanelIndex
+	 * @param chromo
+	 * @param index
+	 * @return
+	 */
+	public String getReducedFilteredFemalesFile(int testTypeIndex, int rPanelIndex, int index) {
+		return this.testTypeReducedFilteredFemalesFile.get(testTypeIndex).get(rPanelIndex).get(0).get(index)
+				.getFullName();
 	}
 
 	/**
@@ -629,7 +887,7 @@ public class MergeFiles {
 	}
 
 	/**
-	 * Method to access reducedCondensedFileName
+	 * Method to access reducedCondensedFile
 	 * 
 	 * @param testTypeIndex
 	 * @param rPanelIndex
@@ -637,7 +895,7 @@ public class MergeFiles {
 	 * @param index
 	 * @return
 	 */
-	public String getReducedCondensedFileName(int testTypeIndex, int rPanelIndex, int chromo, int index) {
+	public String getReducedCondensedFile(int testTypeIndex, int rPanelIndex, int chromo, int index) {
 		// Check that chromo index is within the bounds
 		checkChromoIndex(chromo);
 
@@ -659,17 +917,23 @@ public class MergeFiles {
 	 * @param index
 	 * @return
 	 */
-	public String getReducedCondensedFile(int testTypeIndex, int rPanelIndex, int chromo, int index) {
-		// Check that chromo index is within the bounds
-		checkChromoIndex(chromo);
+	public String getReducedCondensedMalesFile(int testTypeIndex, int rPanelIndex, int index) {
+		return this.testTypeReducedCondensedMalesFile.get(testTypeIndex).get(rPanelIndex).get(0).get(index)
+				.getFullName();
+	}
 
-		int i = chromo - this.startChr;
-
-		// Check the index
-		int maxIndex = this.testTypeReducedCondensedFile.get(testTypeIndex).get(rPanelIndex).get(i).size();
-		checkIndex(index, maxIndex, chromo);
-
-		return this.testTypeReducedCondensedFile.get(testTypeIndex).get(rPanelIndex).get(i).get(index).getFullName();
+	/**
+	 * Method to access reducedCondensedFile
+	 * 
+	 * @param testTypeIndex
+	 * @param rPanelIndex
+	 * @param chromo
+	 * @param index
+	 * @return
+	 */
+	public String getReducedCondensedFemalesFile(int testTypeIndex, int rPanelIndex, int index) {
+		return this.testTypeReducedCondensedFemalesFile.get(testTypeIndex).get(rPanelIndex).get(0).get(index)
+				.getFullName();
 	}
 
 	/**
@@ -719,7 +983,7 @@ public class MergeFiles {
 	}
 
 	/**
-	 * Method to access reducedCombinedReducedFilteredFileName
+	 * Method to access reducedCombinedReducedFilteredFile
 	 * 
 	 * @param testTypeIndex
 	 * @param rPanelIndex
@@ -727,7 +991,7 @@ public class MergeFiles {
 	 * @param index
 	 * @return
 	 */
-	public String getCombinedReducedFilteredFileName(int testTypeIndex, int rPanelIndex, int chromo, int index) {
+	public String getCombinedReducedFilteredFile(int testTypeIndex, int rPanelIndex, int chromo, int index) {
 		// Check that chromo index is within the bounds
 		checkChromoIndex(chromo);
 
@@ -750,17 +1014,22 @@ public class MergeFiles {
 	 * @param index
 	 * @return
 	 */
-	public String getCombinedReducedFilteredFile(int testTypeIndex, int rPanelIndex, int chromo, int index) {
-		// Check that chromo index is within the bounds
-		checkChromoIndex(chromo);
+	public String getCombinedReducedFilteredMalesFile(int testTypeIndex, int rPanelIndex, int index) {
+		return this.testTypeCombinedReducedFilteredMalesFile.get(testTypeIndex).get(rPanelIndex).get(0).get(index)
+				.getFullName();
+	}
 
-		int i = chromo - this.startChr;
-
-		// Check the index
-		int maxIndex = this.testTypeCombinedReducedFilteredFile.get(testTypeIndex).get(rPanelIndex).get(i).size();
-		checkIndex(index, maxIndex, chromo);
-
-		return this.testTypeCombinedReducedFilteredFile.get(testTypeIndex).get(rPanelIndex).get(i).get(index)
+	/**
+	 * Method to access reducedCombinedReducedFilteredFile
+	 * 
+	 * @param testTypeIndex
+	 * @param rPanelIndex
+	 * @param chromo
+	 * @param index
+	 * @return
+	 */
+	public String getCombinedReducedFilteredFemalesFile(int testTypeIndex, int rPanelIndex, int index) {
+		return this.testTypeCombinedReducedFilteredFemalesFile.get(testTypeIndex).get(rPanelIndex).get(0).get(index)
 				.getFullName();
 	}
 
@@ -812,7 +1081,7 @@ public class MergeFiles {
 	}
 
 	/**
-	 * Method to access reducedCombinedReducedCondensedFileName
+	 * Method to access reducedCombinedReducedCondensedFile
 	 * 
 	 * @param testTypeIndex
 	 * @param rPanelIndex
@@ -820,7 +1089,7 @@ public class MergeFiles {
 	 * @param index
 	 * @return
 	 */
-	public String getCombinedReducedCondensedFileName(int testTypeIndex, int rPanelIndex, int chromo, int index) {
+	public String getCombinedReducedCondensedFile(int testTypeIndex, int rPanelIndex, int chromo, int index) {
 		// Check that chromo index is within the bounds
 		checkChromoIndex(chromo);
 
@@ -843,17 +1112,22 @@ public class MergeFiles {
 	 * @param index
 	 * @return
 	 */
-	public String getCombinedReducedCondensedFile(int testTypeIndex, int rPanelIndex, int chromo, int index) {
-		// Check that chromo index is within the bounds
-		checkChromoIndex(chromo);
+	public String getCombinedReducedCondensedMalesFile(int testTypeIndex, int rPanelIndex, int index) {
+		return this.testTypeCombinedReducedCondensedFile.get(testTypeIndex).get(rPanelIndex).get(0).get(index)
+				.getFullName();
+	}
 
-		int i = chromo - this.startChr;
-
-		// Check the index
-		int maxIndex = this.testTypeCombinedReducedCondensedFile.get(testTypeIndex).get(rPanelIndex).get(i).size();
-		checkIndex(index, maxIndex, chromo);
-
-		return this.testTypeCombinedReducedCondensedFile.get(testTypeIndex).get(rPanelIndex).get(i).get(index)
+	/**
+	 * Method to access reducedCombinedReducedCondensedFile
+	 * 
+	 * @param testTypeIndex
+	 * @param rPanelIndex
+	 * @param chromo
+	 * @param index
+	 * @return
+	 */
+	public String getCombinedReducedCondensedFemalesFile(int testTypeIndex, int rPanelIndex, int index) {
+		return this.testTypeCombinedReducedCondensedFile.get(testTypeIndex).get(rPanelIndex).get(0).get(index)
 				.getFullName();
 	}
 
@@ -960,14 +1234,14 @@ public class MergeFiles {
 	}
 
 	/**
-	 * Method to access filterByAllFileName
+	 * Method to access filteredByAllFile
 	 * 
 	 * @param testTypeIndex
 	 * @param rPanelIndex
 	 * @param chromo
 	 * @return
 	 */
-	public String getFilterByAllFileName(int testTypeIndex, int rPanelIndex, int chromo) {
+	public String getFilteredByAllFile(int testTypeIndex, int rPanelIndex, int chromo) {
 		// Check that chromo index is within the bounds
 		checkChromoIndex(chromo);
 
@@ -988,17 +1262,20 @@ public class MergeFiles {
 	 * @param chromo
 	 * @return
 	 */
-	public String getFilteredByAllFile(int testTypeIndex, int rPanelIndex, int chromo) {
-		// Check that chromo index is within the bounds
-		checkChromoIndex(chromo);
+	public String getFilteredByAllMalesFile(int testTypeIndex, int rPanelIndex) {
+		return this.testTypeFilteredByAllMalesFile.get(testTypeIndex).get(rPanelIndex).get(0).getFullName();
+	}
 
-		int i = chromo - this.startChr;
-
-		// Check the index
-		int maxIndex = this.testTypeFilteredByAllFile.get(testTypeIndex).get(rPanelIndex).size();
-		checkIndex(i, maxIndex, chromo);
-
-		return this.testTypeFilteredByAllFile.get(testTypeIndex).get(rPanelIndex).get(i).getFullName();
+	/**
+	 * Method to access filteredByAllFile
+	 * 
+	 * @param testTypeIndex
+	 * @param rPanelIndex
+	 * @param chromo
+	 * @return
+	 */
+	public String getFilteredByAllFemalesFile(int testTypeIndex, int rPanelIndex) {
+		return this.testTypeFilteredByAllFemalesFile.get(testTypeIndex).get(rPanelIndex).get(0).getFullName();
 	}
 
 	/**
@@ -1041,27 +1318,6 @@ public class MergeFiles {
 		checkIndex(i, maxIndex, chromo);
 
 		return this.testTypeFilteredByAllFile.get(testTypeIndex).get(rPanelIndex).get(i).getFinalStatus();
-	}	
-
-	/**
-	 * Method to access filterByAllFileName
-	 * 
-	 * @param testTypeIndex
-	 * @param rPanelIndex
-	 * @param chromo
-	 * @return
-	 */
-	public String getCombinedFilterByAllFileName(int testTypeIndex, int rPanelIndex, int chromo) {
-		// Check that chromo index is within the bounds
-		checkChromoIndex(chromo);
-
-		int i = chromo - this.startChr;
-
-		// Check the index
-		int maxIndex = this.testTypeCombinedFilteredByAllFile.get(testTypeIndex).get(rPanelIndex).size();
-		checkIndex(i, maxIndex, chromo);
-
-		return this.testTypeCombinedFilteredByAllFile.get(testTypeIndex).get(rPanelIndex).get(i).getFullName();
 	}
 
 	/**
@@ -1083,6 +1339,30 @@ public class MergeFiles {
 		checkIndex(i, maxIndex, chromo);
 
 		return this.testTypeCombinedFilteredByAllFile.get(testTypeIndex).get(rPanelIndex).get(i).getFullName();
+	}
+
+	/**
+	 * Method to access filteredByAllFile
+	 * 
+	 * @param testTypeIndex
+	 * @param rPanelIndex
+	 * @param chromo
+	 * @return
+	 */
+	public String getCombinedFilteredByAllMalesFile(int testTypeIndex, int rPanelIndex) {
+		return this.testTypeCombinedFilteredByAllMalesFile.get(testTypeIndex).get(rPanelIndex).get(0).getFullName();
+	}
+
+	/**
+	 * Method to access filteredByAllFile
+	 * 
+	 * @param testTypeIndex
+	 * @param rPanelIndex
+	 * @param chromo
+	 * @return
+	 */
+	public String getCombinedFilteredByAllFemalesFile(int testTypeIndex, int rPanelIndex) {
+		return this.testTypeCombinedFilteredByAllFemalesFile.get(testTypeIndex).get(rPanelIndex).get(0).getFullName();
 	}
 
 	/**
@@ -1129,14 +1409,14 @@ public class MergeFiles {
 	}
 
 	/**
-	 * Method to access condensedFileName
+	 * Method to access condensedFile
 	 * 
 	 * @param testTypeIndex
 	 * @param rPanelIndex
 	 * @param chromo
 	 * @return
 	 */
-	public String getCondensedFileName(int testTypeIndex, int rPanelIndex, int chromo) {
+	public String getCondensedFile(int testTypeIndex, int rPanelIndex, int chromo) {
 		// Check that chromo index is within the bounds
 		checkChromoIndex(chromo);
 
@@ -1157,17 +1437,20 @@ public class MergeFiles {
 	 * @param chromo
 	 * @return
 	 */
-	public String getCondensedFile(int testTypeIndex, int rPanelIndex, int chromo) {
-		// Check that chromo index is within the bounds
-		checkChromoIndex(chromo);
+	public String getCondensedMalesFile(int testTypeIndex, int rPanelIndex) {
+		return this.testTypeCondensedMalesFile.get(testTypeIndex).get(rPanelIndex).get(0).getFullName();
+	}
 
-		int i = chromo - this.startChr;
-
-		// Check the index
-		int maxIndex = this.testTypeCondensedFile.get(testTypeIndex).get(rPanelIndex).size();
-		checkIndex(i, maxIndex, chromo);
-
-		return this.testTypeCondensedFile.get(testTypeIndex).get(rPanelIndex).get(i).getFullName();
+	/**
+	 * Method to access condensedFile
+	 * 
+	 * @param testTypeIndex
+	 * @param rPanelIndex
+	 * @param chromo
+	 * @return
+	 */
+	public String getCondensedFemalesFile(int testTypeIndex, int rPanelIndex) {
+		return this.testTypeCondensedFemalesFile.get(testTypeIndex).get(rPanelIndex).get(0).getFullName();
 	}
 
 	/**
@@ -1213,27 +1496,6 @@ public class MergeFiles {
 	}
 
 	/**
-	 * Method to access condensedFileName
-	 * 
-	 * @param testTypeIndex
-	 * @param rPanelIndex
-	 * @param chromo
-	 * @return
-	 */
-	public String getCombinedCondensedFileName(int testTypeIndex, int rPanelIndex, int chromo) {
-		// Check that chromo index is within the bounds
-		checkChromoIndex(chromo);
-
-		int i = chromo - this.startChr;
-
-		// Check the index
-		int maxIndex = this.testTypeCombinedCondensedFile.get(testTypeIndex).get(rPanelIndex).size();
-		checkIndex(i, maxIndex, chromo);
-
-		return this.testTypeCombinedCondensedFile.get(testTypeIndex).get(rPanelIndex).get(i).getFullName();
-	}
-
-	/**
 	 * Method to access condensedFile
 	 * 
 	 * @param testTypeIndex
@@ -1255,25 +1517,27 @@ public class MergeFiles {
 	}
 
 	/**
-	 * Method to set the finalStatus of the condensedFile
+	 * Method to access condensedFile
 	 * 
 	 * @param testTypeIndex
 	 * @param rPanelIndex
 	 * @param chromo
-	 * @param finalStatus
+	 * @return
 	 */
-	public void setCombinedCondensedFileFinalStatus(int testTypeIndex, int rPanelIndex, int chromo,
-			String finalStatus) {
-		// Check that chromo index is within the bounds
-		checkChromoIndex(chromo);
+	public String getCombinedCondensedMalesFile(int testTypeIndex, int rPanelIndex) {
+		return this.testTypeCombinedCondensedMalesFile.get(testTypeIndex).get(rPanelIndex).get(0).getFullName();
+	}
 
-		int i = chromo - this.startChr;
-
-		// Check the index
-		int maxIndex = this.testTypeCombinedCondensedFile.get(testTypeIndex).get(rPanelIndex).size();
-		checkIndex(i, maxIndex, chromo);
-
-		this.testTypeCombinedCondensedFile.get(testTypeIndex).get(rPanelIndex).get(i).setFinalStatus(finalStatus);
+	/**
+	 * Method to access condensedFile
+	 * 
+	 * @param testTypeIndex
+	 * @param rPanelIndex
+	 * @param chromo
+	 * @return
+	 */
+	public String getCombinedCondensedFemalesFile(int testTypeIndex, int rPanelIndex) {
+		return this.testTypeCombinedCondensedFemalesFile.get(testTypeIndex).get(rPanelIndex).get(0).getFullName();
 	}
 
 	/**
@@ -1295,22 +1559,6 @@ public class MergeFiles {
 		checkIndex(i, maxIndex, chromo);
 
 		return this.testTypeCombinedCondensedFile.get(testTypeIndex).get(rPanelIndex).get(i).getFinalStatus();
-	}
-
-	/**
-	 * Method to access additionalCondensedFileName
-	 * 
-	 * @param testTypeIndex
-	 * @param rPanelIndex
-	 * @param index
-	 * @return
-	 */
-	public String getAdditionalCondensedFileName(int testTypeIndex, int rPanelIndex, int index) {
-		// Check the index
-		int maxIndex = this.testTypeAdditionalCondensedFile.get(testTypeIndex).get(rPanelIndex).size();
-		checkIndex(index, maxIndex, index);
-
-		return this.testTypeAdditionalCondensedFile.get(testTypeIndex).get(rPanelIndex).get(index).getFullName();
 	}
 
 	/**
@@ -1363,14 +1611,14 @@ public class MergeFiles {
 	}
 
 	/**
-	 * Method to access additionalFilteredByAllFileName
+	 * Method to access additionalFilteredByAllFile
 	 * 
 	 * @param testTypeIndex
 	 * @param rPanelIndex
 	 * @param index
 	 * @return
 	 */
-	public String getAdditionalFilteredByAllFileName(int testTypeIndex, int rPanelIndex, int index) {
+	public String getAdditionalFilteredByAllFile(int testTypeIndex, int rPanelIndex, int index) {
 		// Check the index
 		int maxIndex = this.testTypeAdditionalFilteredByAllFile.get(testTypeIndex).get(rPanelIndex).size();
 		checkIndex(index, maxIndex, index);
@@ -1386,12 +1634,20 @@ public class MergeFiles {
 	 * @param index
 	 * @return
 	 */
-	public String getAdditionalFilteredByAllFile(int testTypeIndex, int rPanelIndex, int index) {
-		// Check the index
-		int maxIndex = this.testTypeAdditionalFilteredByAllFile.get(testTypeIndex).get(rPanelIndex).size();
-		checkIndex(index, maxIndex, index);
+	public String getAdditionalFilteredByAllMalesFile(int testTypeIndex, int rPanelIndex) {
+		return this.testTypeAdditionalFilteredByAllMalesFile.get(testTypeIndex).get(rPanelIndex).get(0).getFullName();
+	}
 
-		return this.testTypeAdditionalFilteredByAllFile.get(testTypeIndex).get(rPanelIndex).get(index).getFullName();
+	/**
+	 * Method to access additionalFilteredByAllFile
+	 * 
+	 * @param testTypeIndex
+	 * @param rPanelIndex
+	 * @param index
+	 * @return
+	 */
+	public String getAdditionalFilteredByAllFemalesFile(int testTypeIndex, int rPanelIndex) {
+		return this.testTypeAdditionalFilteredByAllFemalesFile.get(testTypeIndex).get(rPanelIndex).get(0).getFullName();
 	}
 
 	/**
@@ -1429,19 +1685,20 @@ public class MergeFiles {
 	}
 
 	/**
-	 * Method to access additionalFilteredByAllXFileName
+	 * Method to access additionalFilteredByAllXFile
 	 * 
 	 * @param testTypeIndex
 	 * @param rPanelIndex
 	 * @param index
 	 * @return
 	 */
-	public String getAdditionalFilteredByAllXFileName(int testTypeIndex, int rPanelIndex, int index) {
+	public String getAdditionalFilteredByAllXMalesFile(int testTypeIndex, int rPanelIndex, int index) {
 		// Check the index
-		int maxIndex = this.testTypeAdditionalFilteredByAllXFile.get(testTypeIndex).get(rPanelIndex).size();
+		int maxIndex = this.testTypeAdditionalFilteredByAllMalesFile.get(testTypeIndex).get(rPanelIndex).size();
 		checkIndex(index, maxIndex, index);
 
-		return this.testTypeAdditionalFilteredByAllXFile.get(testTypeIndex).get(rPanelIndex).get(index).getFullName();
+		return this.testTypeAdditionalFilteredByAllMalesFile.get(testTypeIndex).get(rPanelIndex).get(index)
+				.getFullName();
 	}
 
 	/**
@@ -1452,12 +1709,13 @@ public class MergeFiles {
 	 * @param index
 	 * @return
 	 */
-	public String getAdditionalFilteredByAllXFile(int testTypeIndex, int rPanelIndex, int index) {
+	public String getAdditionalFilteredByAllXFemalesFile(int testTypeIndex, int rPanelIndex, int index) {
 		// Check the index
-		int maxIndex = this.testTypeAdditionalFilteredByAllXFile.get(testTypeIndex).get(rPanelIndex).size();
+		int maxIndex = this.testTypeAdditionalFilteredByAllFemalesFile.get(testTypeIndex).get(rPanelIndex).size();
 		checkIndex(index, maxIndex, index);
 
-		return this.testTypeAdditionalFilteredByAllXFile.get(testTypeIndex).get(rPanelIndex).get(index).getFullName();
+		return this.testTypeAdditionalFilteredByAllFemalesFile.get(testTypeIndex).get(rPanelIndex).get(index)
+				.getFullName();
 	}
 
 	/**
@@ -1468,13 +1726,31 @@ public class MergeFiles {
 	 * @param index
 	 * @param finalStatus
 	 */
-	public void setAdditionalFilteredByAllXFileFinalStatus(int testTypeIndex, int rPanelIndex, int index,
+	public void setAdditionalFilteredByAllXMalesFileFinalStatus(int testTypeIndex, int rPanelIndex, int index,
 			String finalStatus) {
 		// Check the index
-		int maxIndex = this.testTypeAdditionalFilteredByAllXFile.get(testTypeIndex).get(rPanelIndex).size();
+		int maxIndex = this.testTypeAdditionalFilteredByAllMalesFile.get(testTypeIndex).get(rPanelIndex).size();
 		checkIndex(index, maxIndex, index);
 
-		this.testTypeAdditionalFilteredByAllXFile.get(testTypeIndex).get(rPanelIndex).get(index)
+		this.testTypeAdditionalFilteredByAllMalesFile.get(testTypeIndex).get(rPanelIndex).get(index)
+				.setFinalStatus(finalStatus);
+	}
+
+	/**
+	 * Method to set the finalStatus of the additionalCondensedFile
+	 * 
+	 * @param testTypeIndex
+	 * @param rPanelIndex
+	 * @param index
+	 * @param finalStatus
+	 */
+	public void setAdditionalFilteredByAllXFemalesFileFinalStatus(int testTypeIndex, int rPanelIndex, int index,
+			String finalStatus) {
+		// Check the index
+		int maxIndex = this.testTypeAdditionalFilteredByAllFemalesFile.get(testTypeIndex).get(rPanelIndex).size();
+		checkIndex(index, maxIndex, index);
+
+		this.testTypeAdditionalFilteredByAllFemalesFile.get(testTypeIndex).get(rPanelIndex).get(index)
 				.setFinalStatus(finalStatus);
 	}
 
@@ -1486,12 +1762,29 @@ public class MergeFiles {
 	 * @param index
 	 * @return
 	 */
-	public String getAdditionalFilteredByAllXFileFinalStatus(int testTypeIndex, int rPanelIndex, int index) {
+	public String getAdditionalFilteredByAllXMalesFileFinalStatus(int testTypeIndex, int rPanelIndex, int index) {
 		// Check the index
-		int maxIndex = this.testTypeAdditionalFilteredByAllXFile.get(testTypeIndex).get(rPanelIndex).size();
+		int maxIndex = this.testTypeAdditionalFilteredByAllMalesFile.get(testTypeIndex).get(rPanelIndex).size();
 		checkIndex(index, maxIndex, index);
 
-		return this.testTypeAdditionalFilteredByAllXFile.get(testTypeIndex).get(rPanelIndex).get(index)
+		return this.testTypeAdditionalFilteredByAllMalesFile.get(testTypeIndex).get(rPanelIndex).get(index)
+				.getFinalStatus();
+	}
+
+	/**
+	 * Method to access the finalStatus of the additionalFilteredByAllXFile
+	 * 
+	 * @param testTypeIndex
+	 * @param rPanelIndex
+	 * @param index
+	 * @return
+	 */
+	public String getAdditionalFilteredByAllXFemalesFileFinalStatus(int testTypeIndex, int rPanelIndex, int index) {
+		// Check the index
+		int maxIndex = this.testTypeAdditionalFilteredByAllFemalesFile.get(testTypeIndex).get(rPanelIndex).size();
+		checkIndex(index, maxIndex, index);
+
+		return this.testTypeAdditionalFilteredByAllFemalesFile.get(testTypeIndex).get(rPanelIndex).get(index)
 				.getFinalStatus();
 	}
 

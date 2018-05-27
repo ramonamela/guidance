@@ -138,6 +138,8 @@ public class CommonFiles {
 		String tmpOutDir = myOutDir + File.separator + cohort + File.separator + "common" + File.separator + "mixed";
 		startChr = parsingArgs.getStart();
 		endChr = parsingArgs.getEnd();
+		
+		LOGGER.info("Creating common files for chromosomes from  " + startChr + " to " + endChr);
 
 		/* We create the input bed file names for the mixed */
 		if (inputFormat.equals("BED")) {
@@ -248,6 +250,7 @@ public class CommonFiles {
 			// We create the output pairs file name for mixed
 			GenericFile myMixedPairsFile = new GenericFile(theOutputDir, "mixed_chr_" + chromo + ".pairs",
 					"decompressed", "none");
+			
 			mixedPairsFile.add(myMixedPairsFile);
 
 			GenericFile myMixedPhasingHapsFile = new GenericFile(theOutputDir,
@@ -330,7 +333,7 @@ public class CommonFiles {
 				mixedFilteredHaplotypesLogMalesFile.add(myMixedFilteredHapsLogMalesFile);
 
 				GenericFile myMixedFilteredHapsVcfMalesFile = new GenericFile(theOutputDir,
-						"mixed_phasing_filtered_chr_" + chromo + "_males.vcf.gz", "decompressed", "none");
+						"mixed_phasing_filtered_chr_" + chromo + "_males.vcf", "decompressed", "none");
 				mixedFilteredHaplotypesVcfMalesFile.add(myMixedFilteredHapsVcfMalesFile);
 
 				GenericFile myMixedFilteredHapsVcfMalesFileBgzip = new GenericFile(theOutputDir,
@@ -375,7 +378,7 @@ public class CommonFiles {
 				mixedFilteredHaplotypesLogFemalesFile.add(myMixedFilteredHapsLogFemalesFile);
 
 				GenericFile myMixedFilteredHapsVcfFemalesFile = new GenericFile(theOutputDir,
-						"mixed_phasing_filtered_chr_" + chromo + "_females.vcf.gz", "decompressed", "none");
+						"mixed_phasing_filtered_chr_" + chromo + "_females.vcf", "decompressed", "none");
 				mixedFilteredHaplotypesVcfFemalesFile.add(myMixedFilteredHapsVcfFemalesFile);
 
 				GenericFile myMixedFilteredHapsVcfFemalesFileBgzip = new GenericFile(theOutputDir,
@@ -612,6 +615,7 @@ public class CommonFiles {
 		checkChromoIndex(chromo);
 
 		int index = chromo - startChr;
+		System.out.println("Serving " + mixedPairsFile.get(index).getFullName());
 		return mixedPairsFile.get(index).getFullName();
 	}
 

@@ -171,13 +171,13 @@ public class Headers {
         condensedHeaderBuilder.append("position").append("\t");
         condensedHeaderBuilder.append("alleleA").append("\t");
         condensedHeaderBuilder.append("alleleB").append("\t");
-        condensedHeaderBuilder.append("pvalue").append("\t");
+        condensedHeaderBuilder.append("frequentist_add_pvalue").append("\t");
         condensedHeaderBuilder.append("info_all");
         return condensedHeaderBuilder.toString();
     }
 
     /**
-     * Method to create a HashMap from the header of particular files
+     * Method to create a HashMap from the header of particular files -> from header to index
      * 
      * @param line
      * @param separator
@@ -194,7 +194,7 @@ public class Headers {
     }
 
     /**
-     * Method to create a HashMap from the header of particular files
+     * Method to create a HashMap from the header of particular files -> from index to header
      * 
      * @param line
      * @param separator

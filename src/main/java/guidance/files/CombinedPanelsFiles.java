@@ -46,12 +46,14 @@ public class CombinedPanelsFiles {
 
     // Test-combined files per chromosome
     private ArrayList<ArrayList<GenericFile>> testTypeCombinedFilteredByAllChromoFile = new ArrayList<>();
-    private ArrayList<ArrayList<GenericFile>> testTypeCombinedFilteredByAllXChromoFile = new ArrayList<>();
+    private ArrayList<ArrayList<GenericFile>> testTypeCombinedFilteredByAllXMalesChromoFile = new ArrayList<>();
+    private ArrayList<ArrayList<GenericFile>> testTypeCombinedFilteredByAllXFemalesChromoFile = new ArrayList<>();
     private ArrayList<ArrayList<GenericFile>> testTypeCombinedCondensedChromoFile = new ArrayList<>();
 
     // Test-combined global files
     private ArrayList<GenericFile> testTypeCombinedFilteredByAllFile = new ArrayList<>();
-    private ArrayList<GenericFile> testTypeCombinedFilteredByAllXFile = new ArrayList<>();
+    private ArrayList<GenericFile> testTypeCombinedFilteredByAllXMalesFile = new ArrayList<>();
+    private ArrayList<GenericFile> testTypeCombinedFilteredByAllXFemalesFile = new ArrayList<>();
     private ArrayList<GenericFile> testTypeCombinedCondensedFile = new ArrayList<>();
 
     private ArrayList<GenericFile> testTypeTopHitsFile = new ArrayList<>();
@@ -92,7 +94,8 @@ public class CombinedPanelsFiles {
                     + mixedCohort + "_combined_panels";
 
             ArrayList<GenericFile> combinedFilteredByAllFile = new ArrayList<>();
-            ArrayList<GenericFile> combinedFilteredByAllXFile = new ArrayList<>();
+            ArrayList<GenericFile> combinedFilteredByAllXMalesFile = new ArrayList<>();
+            ArrayList<GenericFile> combinedFilteredByAllXFemalesFile = new ArrayList<>();
             ArrayList<GenericFile> combinedCondensedAllFile = new ArrayList<>();
 
             String rPanel = null;
@@ -129,10 +132,15 @@ public class CombinedPanelsFiles {
 
                     // If we are going to process chr 23, then prepare file names for it.
                     if (chr == 23) {
-                        String tmpCombinedFilteredByAllXFileName = prefixFilteredName + "_chr_" + chr + "_chunk" + j + ".txt.gz";
-                        GenericFile myCombinedFilteredByAllXFile = new GenericFile(testTypeOutDir, tmpCombinedFilteredByAllXFileName,
+                        String tmpCombinedFilteredByAllXMalesFileName = prefixFilteredName + "_chr_" + chr + "_chunk" + j + ".txt.gz";
+                        GenericFile myCombinedFilteredByAllXMalesFile = new GenericFile(testTypeOutDir, tmpCombinedFilteredByAllXMalesFileName,
                                 "compressed", "none");
-                        combinedFilteredByAllXFile.add(myCombinedFilteredByAllXFile);
+                        combinedFilteredByAllXMalesFile.add(myCombinedFilteredByAllXMalesFile);
+                        
+                        String tmpCombinedFilteredByAllXFemalesFileName = prefixFilteredName + "_chr_" + chr + "_chunk" + j + ".txt.gz";
+                        GenericFile myCombinedFilteredByAllXFemalesFile = new GenericFile(testTypeOutDir, tmpCombinedFilteredByAllXFemalesFileName,
+                                "compressed", "none");
+                        combinedFilteredByAllXFemalesFile.add(myCombinedFilteredByAllXFemalesFile);
                     }
 
                     String tmpCombinedCondensedFileName = null;
@@ -152,7 +160,8 @@ public class CombinedPanelsFiles {
             this.testTypeListOutDir.add(testTypeOutDir);
             this.testTypeCombinedFilteredByAllChromoFile.add(combinedFilteredByAllFile);
             if (endChr == 23) {
-                this.testTypeCombinedFilteredByAllXChromoFile.add(combinedFilteredByAllXFile);
+                this.testTypeCombinedFilteredByAllXMalesChromoFile.add(combinedFilteredByAllXMalesFile);
+                this.testTypeCombinedFilteredByAllXFemalesChromoFile.add(combinedFilteredByAllXFemalesFile);
             }
             this.testTypeCombinedCondensedChromoFile.add(combinedCondensedAllFile);
 
@@ -166,16 +175,13 @@ public class CombinedPanelsFiles {
             this.testTypeCombinedFilteredByAllFile.add(myFilteredByAllFile);
 
             if (endChr == 23) {
-                String tmpCombinedFilteredByAllXFileName = prefixFilteredName + "_chr_" + endChrS + ".txt.gz";
-                /*
-                if (startChr == endChr) {
-                    tmpCombinedFilteredByAllXFileName = prefixFilteredName + "_chr_" + startChrS + ".txt.gz";
-                } else {
-                    tmpCombinedFilteredByAllXFileName = prefixFilteredName + "_chr_" + startChrS + "_to_" + endChrS + ".txt.gz";
-                }
-                */
-                GenericFile myFilteredByAllXFile = new GenericFile(testTypeOutDir, tmpCombinedFilteredByAllXFileName, "compressed", "none");
-                this.testTypeCombinedFilteredByAllXFile.add(myFilteredByAllXFile);
+                String tmpCombinedFilteredByAllXMalesFileName = prefixFilteredName + "_chr_" + endChrS + "_males.txt.gz";
+                GenericFile myFilteredByAllXMalesFile = new GenericFile(testTypeOutDir, tmpCombinedFilteredByAllXMalesFileName, "compressed", "none");
+                this.testTypeCombinedFilteredByAllXMalesFile.add(myFilteredByAllXMalesFile);
+                
+                String tmpCombinedFilteredByAllXFemalesFileName = prefixFilteredName + "_chr_" + endChrS + "_females.txt.gz";
+                GenericFile myFilteredByAllXFemalesFile = new GenericFile(testTypeOutDir, tmpCombinedFilteredByAllXFemalesFileName, "compressed", "none");
+                this.testTypeCombinedFilteredByAllXFemalesFile.add(myFilteredByAllXFemalesFile);
             }
 
             String tmpCombinedCondensedFileName = null;
@@ -295,8 +301,19 @@ public class CombinedPanelsFiles {
      * @param index
      * @return
      */
-    public String getCombinedFilteredByAllXFile(int testTypeIndex) {
-        return this.testTypeCombinedFilteredByAllXFile.get(testTypeIndex).getFullName();
+    public String getCombinedFilteredByAllXMalesFile(int testTypeIndex) {
+        return this.testTypeCombinedFilteredByAllXMalesFile.get(testTypeIndex).getFullName();
+    }
+    
+    /**
+     * Method to access testTypeCombinedFilteredByAllFile
+     * 
+     * @param testTypeIndex
+     * @param index
+     * @return
+     */
+    public String getCombinedFilteredByAllXFemalesFile(int testTypeIndex) {
+        return this.testTypeCombinedFilteredByAllXFemalesFile.get(testTypeIndex).getFullName();
     }
 
     /**
@@ -306,19 +323,19 @@ public class CombinedPanelsFiles {
      * @param index
      * @param finalStatus
      */
-    public void setCombinedFilteredByAllXFileFinalStatus(int testTypeIndex, String finalStatus) {
-        this.testTypeCombinedFilteredByAllXFile.get(testTypeIndex).setFinalStatus(finalStatus);
+    public void setCombinedFilteredByAllXMalesFileFinalStatus(int testTypeIndex, String finalStatus) {
+        this.testTypeCombinedFilteredByAllXMalesFile.get(testTypeIndex).setFinalStatus(finalStatus);
     }
-
+    
     /**
-     * Method to access the finalStatus of the testTypeCombinedFilteredByAllFile
+     * Method to set the finalStatus of the testTypeCorrectedPvaluesFile
      * 
      * @param testTypeIndex
      * @param index
-     * @return
+     * @param finalStatus
      */
-    public String getCombinedFilteredByAllXFileFinalStatus(int testTypeIndex) {
-        return this.testTypeCombinedFilteredByAllXFile.get(testTypeIndex).getFinalStatus();
+    public void setCombinedFilteredByAllXFemalesFileFinalStatus(int testTypeIndex, String finalStatus) {
+        this.testTypeCombinedFilteredByAllXFemalesFile.get(testTypeIndex).setFinalStatus(finalStatus);
     }
 
     /**
@@ -391,8 +408,19 @@ public class CombinedPanelsFiles {
      * @param index
      * @return
      */
-    public String getCombinedFilteredByAllXChromoFile(int testTypeIndex, int index) {
-        return this.testTypeCombinedFilteredByAllXChromoFile.get(testTypeIndex).get(index).getFullName();
+    public String getCombinedFilteredByAllXMalesChromoFile(int testTypeIndex, int index) {
+        return this.testTypeCombinedFilteredByAllXMalesChromoFile.get(testTypeIndex).get(index).getFullName();
+    }
+    
+    /**
+     * Method to access testTypeCombinedFilteredByAllFile
+     * 
+     * @param testTypeIndex
+     * @param index
+     * @return
+     */
+    public String getCombinedFilteredByAllXFemalesChromoFile(int testTypeIndex, int index) {
+        return this.testTypeCombinedFilteredByAllXFemalesChromoFile.get(testTypeIndex).get(index).getFullName();
     }
 
     /**
@@ -402,8 +430,19 @@ public class CombinedPanelsFiles {
      * @param index
      * @param finalStatus
      */
-    public void setCombinedFilteredByAllXChromoFileFinalStatus(int testTypeIndex, int index, String finalStatus) {
-        this.testTypeCombinedFilteredByAllXChromoFile.get(testTypeIndex).get(index).setFinalStatus(finalStatus);
+    public void setCombinedFilteredByAllXMalesChromoFileFinalStatus(int testTypeIndex, int index, String finalStatus) {
+        this.testTypeCombinedFilteredByAllXMalesChromoFile.get(testTypeIndex).get(index).setFinalStatus(finalStatus);
+    }
+    
+    /**
+     * Method to set the finalStatus of the testTypeCorrectedPvaluesFile
+     * 
+     * @param testTypeIndex
+     * @param index
+     * @param finalStatus
+     */
+    public void setCombinedFilteredByAllXFemalesChromoFileFinalStatus(int testTypeIndex, int index, String finalStatus) {
+        this.testTypeCombinedFilteredByAllXFemalesChromoFile.get(testTypeIndex).get(index).setFinalStatus(finalStatus);
     }
 
     /**
@@ -413,8 +452,19 @@ public class CombinedPanelsFiles {
      * @param index
      * @return
      */
-    public String getCombinedFilteredByAllXChromoFileFinalStatus(int testTypeIndex, int index) {
-        return this.testTypeCombinedFilteredByAllXChromoFile.get(testTypeIndex).get(index).getFinalStatus();
+    public String getCombinedFilteredByAllXMalesChromoFileFinalStatus(int testTypeIndex, int index) {
+        return this.testTypeCombinedFilteredByAllXMalesChromoFile.get(testTypeIndex).get(index).getFinalStatus();
+    }
+    
+    /**
+     * Method to access the finalStatus of the testTypeCombinedFilteredByAllFile
+     * 
+     * @param testTypeIndex
+     * @param index
+     * @return
+     */
+    public String getCombinedFilteredByAllXFemalesChromoFileFinalStatus(int testTypeIndex, int index) {
+        return this.testTypeCombinedFilteredByAllXFemalesChromoFile.get(testTypeIndex).get(index).getFinalStatus();
     }
 
     /**
