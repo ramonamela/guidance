@@ -39,602 +39,624 @@ import java.io.File;
 import guidance.utils.ChromoInfo;
 import guidance.utils.ParseCmdLine;
 
-
 public class CombinedPanelsFiles {
 
-    private ArrayList<String> testTypeListOutDir = new ArrayList<>();
+	private ArrayList<String> testTypeListOutDir = new ArrayList<>();
 
-    // Test-combined files per chromosome
-    private ArrayList<ArrayList<GenericFile>> testTypeCombinedFilteredByAllChromoFile = new ArrayList<>();
-    private ArrayList<ArrayList<GenericFile>> testTypeCombinedFilteredByAllXMalesChromoFile = new ArrayList<>();
-    private ArrayList<ArrayList<GenericFile>> testTypeCombinedFilteredByAllXFemalesChromoFile = new ArrayList<>();
-    private ArrayList<ArrayList<GenericFile>> testTypeCombinedCondensedChromoFile = new ArrayList<>();
+	// Test-combined files per chromosome
+	private ArrayList<ArrayList<GenericFile>> testTypeCombinedFilteredByAllChromoFile = new ArrayList<>();
+	private ArrayList<ArrayList<GenericFile>> testTypeCombinedFilteredByAllXMalesChromoFile = new ArrayList<>();
+	private ArrayList<ArrayList<GenericFile>> testTypeCombinedFilteredByAllXFemalesChromoFile = new ArrayList<>();
+	private ArrayList<ArrayList<GenericFile>> testTypeCombinedCondensedChromoFile = new ArrayList<>();
 
-    // Test-combined global files
-    private ArrayList<GenericFile> testTypeCombinedFilteredByAllFile = new ArrayList<>();
-    private ArrayList<GenericFile> testTypeCombinedFilteredByAllXMalesFile = new ArrayList<>();
-    private ArrayList<GenericFile> testTypeCombinedFilteredByAllXFemalesFile = new ArrayList<>();
-    private ArrayList<GenericFile> testTypeCombinedCondensedFile = new ArrayList<>();
+	// Test-combined global files
+	private ArrayList<GenericFile> testTypeCombinedFilteredByAllFile = new ArrayList<>();
+	private ArrayList<GenericFile> testTypeCombinedFilteredByAllXMalesFile = new ArrayList<>();
+	private ArrayList<GenericFile> testTypeCombinedFilteredByAllXFemalesFile = new ArrayList<>();
+	private ArrayList<GenericFile> testTypeCombinedCondensedFile = new ArrayList<>();
 
-    private ArrayList<GenericFile> testTypeTopHitsFile = new ArrayList<>();
-    private ArrayList<GenericFile> testTypeCorrectedPvaluesFile = new ArrayList<>();
-    private ArrayList<GenericFile> testTypeQqPlotPdfFile = new ArrayList<>();
-    private ArrayList<GenericFile> testTypeManhattanPdfFile = new ArrayList<>();
-    private ArrayList<GenericFile> testTypeQqPlotTiffFile = new ArrayList<>();
-    private ArrayList<GenericFile> testTypeManhattanTiffFile = new ArrayList<>();
+	private ArrayList<GenericFile> testTypeTopHitsFile = new ArrayList<>();
+	private ArrayList<GenericFile> testTypeCorrectedPvaluesFile = new ArrayList<>();
+	private ArrayList<GenericFile> testTypeQqPlotPdfFile = new ArrayList<>();
+	private ArrayList<GenericFile> testTypeManhattanPdfFile = new ArrayList<>();
+	private ArrayList<GenericFile> testTypeQqPlotTiffFile = new ArrayList<>();
+	private ArrayList<GenericFile> testTypeManhattanTiffFile = new ArrayList<>();
 
+	/**
+	 * CombinedPanelsFiles new Instance
+	 * 
+	 * @param parsingArgs
+	 * @param baseOutDir
+	 * @param refPanels
+	 */
+	public CombinedPanelsFiles(ParseCmdLine parsingArgs, String baseOutDir, List<String> refPanels) {
+		int startChr = parsingArgs.getStart();
+		int endChr = parsingArgs.getEnd();
+		int endChrNormal = endChr;
+		if (endChr == 23) {
+			endChrNormal = 22;
+		}
 
-    /**
-     * CombinedPanelsFiles new Instance
-     * 
-     * @param parsingArgs
-     * @param baseOutDir
-     * @param refPanels
-     */
-    public CombinedPanelsFiles(ParseCmdLine parsingArgs, String baseOutDir, List<String> refPanels) {
-        int startChr = parsingArgs.getStart();
-        int endChr = parsingArgs.getEnd();
-        int endChrNormal = endChr;
-        if (endChr == 23) {
-            endChrNormal = 22;
-        }
+		String startChrS = Integer.toString(startChr);
+		String endChrS = Integer.toString(endChr);
+		String endChrNormalS = Integer.toString(endChrNormal);
 
-        String startChrS = Integer.toString(startChr);
-        String endChrS = Integer.toString(endChr);
-        String endChrNormalS = Integer.toString(endChrNormal);
+		int numberOfTestTypesNames = parsingArgs.getNumberOfTestTypeName();
 
-        int numberOfTestTypesNames = parsingArgs.getNumberOfTestTypeName();
+		// We create the first directory name: the cohort directory
+		String mixedCohort = parsingArgs.getCohort();
 
-        // We create the first directory name: the cohort directory
-        String mixedCohort = parsingArgs.getCohort();
+		for (int tt = 0; tt < numberOfTestTypesNames; tt++) {
+			String testTypeName = parsingArgs.getTestTypeName(tt);
+			String testTypeOutDir = baseOutDir + File.separator + "associations" + File.separator + testTypeName
+					+ File.separator + mixedCohort + "_combined_panels";
 
-        for (int tt = 0; tt < numberOfTestTypesNames; tt++) {
-            String testTypeName = parsingArgs.getTestTypeName(tt);
-            String testTypeOutDir = baseOutDir + File.separator + "associations" + File.separator + testTypeName + File.separator
-                    + mixedCohort + "_combined_panels";
+			ArrayList<GenericFile> combinedFilteredByAllFile = new ArrayList<>();
+			ArrayList<GenericFile> combinedFilteredByAllXMalesFile = new ArrayList<>();
+			ArrayList<GenericFile> combinedFilteredByAllXFemalesFile = new ArrayList<>();
+			ArrayList<GenericFile> combinedCondensedAllFile = new ArrayList<>();
 
-            ArrayList<GenericFile> combinedFilteredByAllFile = new ArrayList<>();
-            ArrayList<GenericFile> combinedFilteredByAllXMalesFile = new ArrayList<>();
-            ArrayList<GenericFile> combinedFilteredByAllXFemalesFile = new ArrayList<>();
-            ArrayList<GenericFile> combinedCondensedAllFile = new ArrayList<>();
+			String rPanel = null;
+			for (int j = 0; j < refPanels.size(); j++) {
+				rPanel = refPanels.get(j);
+				testTypeOutDir = testTypeOutDir + "_" + rPanel;
+			}
 
-            String rPanel = null;
-            for (int j = 0; j < refPanels.size(); j++) {
-                rPanel = refPanels.get(j);
-                testTypeOutDir = testTypeOutDir + "_" + rPanel;
-            }
+			rPanel = refPanels.get(0);
+			String prefixFilteredName = "filteredByAll_results_" + testTypeName + "_" + mixedCohort;
+			String prefixCondensedName = "condensed_results_" + testTypeName + "_" + mixedCohort;
+			String prefixTopHitsName = "tophits_" + testTypeName + "_" + mixedCohort;
+			String prefixQqPlotName = "QQplot_" + testTypeName + "_" + mixedCohort;
+			String prefixManhattanName = "manhattan_" + testTypeName + "_" + mixedCohort;
+			String prefixCorrectedPvaluesName = "corrected_pvalues_" + testTypeName + "_" + mixedCohort;
 
-            rPanel = refPanels.get(0);
-            String prefixFilteredName = "filteredByAll_results_" + testTypeName + "_" + mixedCohort;
-            String prefixCondensedName = "condensed_results_" + testTypeName + "_" + mixedCohort;
-            String prefixTopHitsName = "tophits_" + testTypeName + "_" + mixedCohort;
-            String prefixQqPlotName = "QQplot_" + testTypeName + "_" + mixedCohort;
-            String prefixManhattanName = "manhattan_" + testTypeName + "_" + mixedCohort;
-            String prefixCorrectedPvaluesName = "corrected_pvalues_" + testTypeName + "_" + mixedCohort;
+			for (int chr = startChr; chr <= endChr; ++chr) {
+				int minSize = ChromoInfo.getMinSize(chr);
+				int maxSize = ChromoInfo.getMaxSize(chr);
+				int chunkSize = parsingArgs.getChunkSize();
 
-            for (int chr = startChr; chr <= endChr; ++chr) {
-                int minSize = ChromoInfo.getMinSize(chr);
-                int maxSize = ChromoInfo.getMaxSize(chr);
-                int chunkSize = parsingArgs.getChunkSize();
+				for (int j = minSize; j < maxSize; j = j + chunkSize) {
 
-                for (int j = minSize; j < maxSize; j = j + chunkSize) {
+					String tmpCombinedFilteredByAllFileName = null;
+					if (startChr == endChrNormal) {
+						tmpCombinedFilteredByAllFileName = prefixFilteredName + "_chr_" + startChrS + "_chunk" + j
+								+ ".txt.gz";
+					} else {
+						tmpCombinedFilteredByAllFileName = prefixFilteredName + "_chr_" + startChrS + "_to_"
+								+ endChrNormalS + "_chunk" + j + ".txt.gz";
+					}
+					GenericFile myCombinedFilteredByAllFile = new GenericFile(testTypeOutDir,
+							tmpCombinedFilteredByAllFileName, "compressed", "none");
+					combinedFilteredByAllFile.add(myCombinedFilteredByAllFile);
 
-                    String tmpCombinedFilteredByAllFileName = null;
-                    if (startChr == endChrNormal) {
-                        tmpCombinedFilteredByAllFileName = prefixFilteredName + "_chr_" + startChrS + "_chunk" + j + ".txt.gz";
-                    } else {
-                        tmpCombinedFilteredByAllFileName = prefixFilteredName + "_chr_" + startChrS + "_to_" + endChrNormalS + "_chunk" + j
-                                + ".txt.gz";
-                    }
-                    GenericFile myCombinedFilteredByAllFile = new GenericFile(testTypeOutDir, tmpCombinedFilteredByAllFileName,
-                            "compressed", "none");
-                    combinedFilteredByAllFile.add(myCombinedFilteredByAllFile);
+					// If we are going to process chr 23, then prepare file names for it.
+					if (chr == 23) {
+						String tmpCombinedFilteredByAllXMalesFileName = prefixFilteredName + "_chr_" + chr + "_chunk"
+								+ j + ".txt.gz";
+						GenericFile myCombinedFilteredByAllXMalesFile = new GenericFile(testTypeOutDir,
+								tmpCombinedFilteredByAllXMalesFileName, "compressed", "none");
+						combinedFilteredByAllXMalesFile.add(myCombinedFilteredByAllXMalesFile);
 
-                    // If we are going to process chr 23, then prepare file names for it.
-                    if (chr == 23) {
-                        String tmpCombinedFilteredByAllXMalesFileName = prefixFilteredName + "_chr_" + chr + "_chunk" + j + ".txt.gz";
-                        GenericFile myCombinedFilteredByAllXMalesFile = new GenericFile(testTypeOutDir, tmpCombinedFilteredByAllXMalesFileName,
-                                "compressed", "none");
-                        combinedFilteredByAllXMalesFile.add(myCombinedFilteredByAllXMalesFile);
-                        
-                        String tmpCombinedFilteredByAllXFemalesFileName = prefixFilteredName + "_chr_" + chr + "_chunk" + j + ".txt.gz";
-                        GenericFile myCombinedFilteredByAllXFemalesFile = new GenericFile(testTypeOutDir, tmpCombinedFilteredByAllXFemalesFileName,
-                                "compressed", "none");
-                        combinedFilteredByAllXFemalesFile.add(myCombinedFilteredByAllXFemalesFile);
-                    }
+						String tmpCombinedFilteredByAllXFemalesFileName = prefixFilteredName + "_chr_" + chr + "_chunk"
+								+ j + ".txt.gz";
+						GenericFile myCombinedFilteredByAllXFemalesFile = new GenericFile(testTypeOutDir,
+								tmpCombinedFilteredByAllXFemalesFileName, "compressed", "none");
+						combinedFilteredByAllXFemalesFile.add(myCombinedFilteredByAllXFemalesFile);
+					}
 
-                    String tmpCombinedCondensedFileName = null;
-                    if (startChr == endChrNormal) {
-                        tmpCombinedCondensedFileName = prefixCondensedName + "_chr_" + startChrS + "_chunk" + j + ".txt.gz";
-                    } else {
-                        tmpCombinedCondensedFileName = prefixCondensedName + "_chr_" + startChrS + "_to_" + endChrNormalS + "_chunk" + j
-                                + ".txt.gz";
-                    }
-                    GenericFile myCombinedCondensedFile = new GenericFile(testTypeOutDir, tmpCombinedCondensedFileName, "compressed",
-                            "none");
-                    combinedCondensedAllFile.add(myCombinedCondensedFile);
-                } // End of for chunk
-            } // End of for chromo
+					String tmpCombinedCondensedFileName = null;
+					if (startChr == endChrNormal) {
+						tmpCombinedCondensedFileName = prefixCondensedName + "_chr_" + startChrS + "_chunk" + j
+								+ ".txt.gz";
+					} else {
+						tmpCombinedCondensedFileName = prefixCondensedName + "_chr_" + startChrS + "_to_"
+								+ endChrNormalS + "_chunk" + j + ".txt.gz";
+					}
+					GenericFile myCombinedCondensedFile = new GenericFile(testTypeOutDir, tmpCombinedCondensedFileName,
+							"compressed", "none");
+					combinedCondensedAllFile.add(myCombinedCondensedFile);
+				} // End of for chunk
+			} // End of for chromo
 
-            // Now we have to build the list of reduced files for the type of Test. We store this list
-            this.testTypeListOutDir.add(testTypeOutDir);
-            this.testTypeCombinedFilteredByAllChromoFile.add(combinedFilteredByAllFile);
-            if (endChr == 23) {
-                this.testTypeCombinedFilteredByAllXMalesChromoFile.add(combinedFilteredByAllXMalesFile);
-                this.testTypeCombinedFilteredByAllXFemalesChromoFile.add(combinedFilteredByAllXFemalesFile);
-            }
-            this.testTypeCombinedCondensedChromoFile.add(combinedCondensedAllFile);
+			// Now we have to build the list of reduced files for the type of Test. We store
+			// this list
+			this.testTypeListOutDir.add(testTypeOutDir);
+			this.testTypeCombinedFilteredByAllChromoFile.add(combinedFilteredByAllFile);
+			if (endChr == 23) {
+				this.testTypeCombinedFilteredByAllXMalesChromoFile.add(combinedFilteredByAllXMalesFile);
+				this.testTypeCombinedFilteredByAllXFemalesChromoFile.add(combinedFilteredByAllXFemalesFile);
+			}
+			this.testTypeCombinedCondensedChromoFile.add(combinedCondensedAllFile);
 
-            String tmpCombinedFilteredByAllFileName = null;
-            if (startChr == endChr) {
-                tmpCombinedFilteredByAllFileName = prefixFilteredName + "_chr_" + startChrS + ".txt.gz";
-            } else {
-                tmpCombinedFilteredByAllFileName = prefixFilteredName + "_chr_" + startChrS + "_to_" + endChrNormal + ".txt.gz";
-            }
-            GenericFile myFilteredByAllFile = new GenericFile(testTypeOutDir, tmpCombinedFilteredByAllFileName, "compressed", "none");
-            this.testTypeCombinedFilteredByAllFile.add(myFilteredByAllFile);
+			String tmpCombinedFilteredByAllFileName = null;
+			if (startChr == endChr) {
+				tmpCombinedFilteredByAllFileName = prefixFilteredName + "_chr_" + startChrS + ".txt.gz";
+			} else {
+				tmpCombinedFilteredByAllFileName = prefixFilteredName + "_chr_" + startChrS + "_to_" + endChrNormal
+						+ ".txt.gz";
+			}
 
-            if (endChr == 23) {
-                String tmpCombinedFilteredByAllXMalesFileName = prefixFilteredName + "_chr_" + endChrS + "_males.txt.gz";
-                GenericFile myFilteredByAllXMalesFile = new GenericFile(testTypeOutDir, tmpCombinedFilteredByAllXMalesFileName, "compressed", "none");
-                this.testTypeCombinedFilteredByAllXMalesFile.add(myFilteredByAllXMalesFile);
-                
-                String tmpCombinedFilteredByAllXFemalesFileName = prefixFilteredName + "_chr_" + endChrS + "_females.txt.gz";
-                GenericFile myFilteredByAllXFemalesFile = new GenericFile(testTypeOutDir, tmpCombinedFilteredByAllXFemalesFileName, "compressed", "none");
-                this.testTypeCombinedFilteredByAllXFemalesFile.add(myFilteredByAllXFemalesFile);
-            }
+			String tmpCombinedFilteredByAllXMalesFileName = prefixFilteredName + "_chr_" + endChrS + "_males.txt.gz";
 
-            String tmpCombinedCondensedFileName = null;
-            if (startChr == endChr) {
-                tmpCombinedCondensedFileName = prefixCondensedName + "_chr_" + startChrS + ".txt.gz";
-            } else {
-                tmpCombinedCondensedFileName = prefixCondensedName + "_chr_" + startChrS + "_to_" + endChrS + ".txt.gz";
-            }
-            GenericFile myCombinedCondensedFile = new GenericFile(testTypeOutDir, tmpCombinedCondensedFileName, "compressed", "none");
-            this.testTypeCombinedCondensedFile.add(myCombinedCondensedFile);
+			if (startChr == 23) {
+				GenericFile myFilteredByAllFile = new GenericFile(testTypeOutDir,
+						tmpCombinedFilteredByAllXMalesFileName, "compressed", "none");
+				this.testTypeCombinedFilteredByAllFile.add(myFilteredByAllFile);
+			} else {
+				GenericFile myFilteredByAllFile = new GenericFile(testTypeOutDir, tmpCombinedFilteredByAllFileName,
+						"compressed", "none");
+				this.testTypeCombinedFilteredByAllFile.add(myFilteredByAllFile);
+			}
 
-            String tmpTopHitsFileName = null;
-            if (startChr == endChr) {
-                tmpTopHitsFileName = prefixTopHitsName + "_chr_" + startChrS + ".txt.gz";
-            } else {
-                tmpTopHitsFileName = prefixTopHitsName + "_chr_" + startChrS + "_to_" + endChrS + ".txt.gz";
-            }
-            GenericFile myTopHitsFile = new GenericFile(testTypeOutDir, tmpTopHitsFileName, "compressed", "none");
-            this.testTypeTopHitsFile.add(myTopHitsFile);
+			if (endChr == 23) {
+				GenericFile myFilteredByAllXMalesFile = new GenericFile(testTypeOutDir,
+						tmpCombinedFilteredByAllXMalesFileName, "compressed", "none");
+				this.testTypeCombinedFilteredByAllXMalesFile.add(myFilteredByAllXMalesFile);
 
-            String tmpQqPlotPdfFileName = null;
-            if (startChr == endChr) {
-                tmpQqPlotPdfFileName = prefixQqPlotName + "_chr_" + startChrS + ".pdf";
-            } else {
-                tmpQqPlotPdfFileName = prefixQqPlotName + "_chr_" + startChrS + "_to_" + endChrS + ".pdf";
-            }
-            GenericFile myQqPlotPdfFile = new GenericFile(testTypeOutDir, tmpQqPlotPdfFileName, "compressed", "none");
-            this.testTypeQqPlotPdfFile.add(myQqPlotPdfFile);
+				String tmpCombinedFilteredByAllXFemalesFileName = prefixFilteredName + "_chr_" + endChrS
+						+ "_females.txt.gz";
+				GenericFile myFilteredByAllXFemalesFile = new GenericFile(testTypeOutDir,
+						tmpCombinedFilteredByAllXFemalesFileName, "compressed", "none");
+				this.testTypeCombinedFilteredByAllXFemalesFile.add(myFilteredByAllXFemalesFile);
+			}
 
-            String tmpQqPlotTiffFileName = null;
-            if (startChr == endChr) {
-                tmpQqPlotTiffFileName = prefixQqPlotName + "_chr_" + startChrS + ".tiff";
-            } else {
-                tmpQqPlotTiffFileName = prefixQqPlotName + "_chr_" + startChrS + "_to_" + endChrS + ".tiff";
-            }
-            GenericFile myQqPlotTiffFile = new GenericFile(testTypeOutDir, tmpQqPlotTiffFileName, "compressed", "none");
-            this.testTypeQqPlotTiffFile.add(myQqPlotTiffFile);
+			String tmpCombinedCondensedFileName = null;
+			if (startChr == endChr) {
+				tmpCombinedCondensedFileName = prefixCondensedName + "_chr_" + startChrS + ".txt.gz";
+			} else {
+				tmpCombinedCondensedFileName = prefixCondensedName + "_chr_" + startChrS + "_to_" + endChrS + ".txt.gz";
+			}
+			GenericFile myCombinedCondensedFile = new GenericFile(testTypeOutDir, tmpCombinedCondensedFileName,
+					"compressed", "none");
+			this.testTypeCombinedCondensedFile.add(myCombinedCondensedFile);
 
-            String tmpManhattanPdfFileName = null;
-            if (startChr == endChr) {
-                tmpManhattanPdfFileName = prefixManhattanName + "_chr_" + startChrS + ".pdf";
-            } else {
-                tmpManhattanPdfFileName = prefixManhattanName + "_chr_" + startChrS + "_to_" + endChrS + ".pdf";
-            }
-            GenericFile myManhattanPdfFile = new GenericFile(testTypeOutDir, tmpManhattanPdfFileName, "compressed", "none");
-            this.testTypeManhattanPdfFile.add(myManhattanPdfFile);
+			String tmpTopHitsFileName = null;
+			if (startChr == endChr) {
+				tmpTopHitsFileName = prefixTopHitsName + "_chr_" + startChrS + ".txt.gz";
+			} else {
+				tmpTopHitsFileName = prefixTopHitsName + "_chr_" + startChrS + "_to_" + endChrS + ".txt.gz";
+			}
+			GenericFile myTopHitsFile = new GenericFile(testTypeOutDir, tmpTopHitsFileName, "compressed", "none");
+			this.testTypeTopHitsFile.add(myTopHitsFile);
 
-            String tmpManhattanTiffFileName = null;
-            if (startChr == endChr) {
-                tmpManhattanTiffFileName = prefixManhattanName + "_chr_" + startChrS + ".tiff";
-            } else {
-                tmpManhattanTiffFileName = prefixManhattanName + "_chr_" + startChrS + "_to_" + endChrS + ".tiff";
-            }
-            GenericFile myManhattanTiffFile = new GenericFile(testTypeOutDir, tmpManhattanTiffFileName, "compressed", "none");
-            this.testTypeManhattanTiffFile.add(myManhattanTiffFile);
+			String tmpQqPlotPdfFileName = null;
+			if (startChr == endChr) {
+				tmpQqPlotPdfFileName = prefixQqPlotName + "_chr_" + startChrS + ".pdf";
+			} else {
+				tmpQqPlotPdfFileName = prefixQqPlotName + "_chr_" + startChrS + "_to_" + endChrS + ".pdf";
+			}
+			GenericFile myQqPlotPdfFile = new GenericFile(testTypeOutDir, tmpQqPlotPdfFileName, "compressed", "none");
+			this.testTypeQqPlotPdfFile.add(myQqPlotPdfFile);
 
-            String tmpCorrectedPvaluesFileName = null;
-            if (startChr == endChr) {
-                tmpCorrectedPvaluesFileName = prefixCorrectedPvaluesName + "_chr_" + startChrS + ".txt";
-            } else {
-                tmpCorrectedPvaluesFileName = prefixCorrectedPvaluesName + "_chr_" + startChrS + "_to_" + endChrS + ".txt";
-            }
+			String tmpQqPlotTiffFileName = null;
+			if (startChr == endChr) {
+				tmpQqPlotTiffFileName = prefixQqPlotName + "_chr_" + startChrS + ".tiff";
+			} else {
+				tmpQqPlotTiffFileName = prefixQqPlotName + "_chr_" + startChrS + "_to_" + endChrS + ".tiff";
+			}
+			GenericFile myQqPlotTiffFile = new GenericFile(testTypeOutDir, tmpQqPlotTiffFileName, "compressed", "none");
+			this.testTypeQqPlotTiffFile.add(myQqPlotTiffFile);
 
-            GenericFile myCorrectedPvaluesFile = new GenericFile(testTypeOutDir, tmpCorrectedPvaluesFileName, "compressed", "none");
-            this.testTypeCorrectedPvaluesFile.add(myCorrectedPvaluesFile);
+			String tmpManhattanPdfFileName = null;
+			if (startChr == endChr) {
+				tmpManhattanPdfFileName = prefixManhattanName + "_chr_" + startChrS + ".pdf";
+			} else {
+				tmpManhattanPdfFileName = prefixManhattanName + "_chr_" + startChrS + "_to_" + endChrS + ".pdf";
+			}
+			GenericFile myManhattanPdfFile = new GenericFile(testTypeOutDir, tmpManhattanPdfFileName, "compressed",
+					"none");
+			this.testTypeManhattanPdfFile.add(myManhattanPdfFile);
 
-        } // End of for test types
-    }
+			String tmpManhattanTiffFileName = null;
+			if (startChr == endChr) {
+				tmpManhattanTiffFileName = prefixManhattanName + "_chr_" + startChrS + ".tiff";
+			} else {
+				tmpManhattanTiffFileName = prefixManhattanName + "_chr_" + startChrS + "_to_" + endChrS + ".tiff";
+			}
+			GenericFile myManhattanTiffFile = new GenericFile(testTypeOutDir, tmpManhattanTiffFileName, "compressed",
+					"none");
+			this.testTypeManhattanTiffFile.add(myManhattanTiffFile);
 
-    /**
-     * Method to access correctedPvaluesFile information
-     * 
-     * @param testTypeIndex
-     * @return
-     */
-    public String getCombinedOutDir(int testTypeIndex) {
-        return this.testTypeListOutDir.get(testTypeIndex);
-    }
+			String tmpCorrectedPvaluesFileName = null;
+			if (startChr == endChr) {
+				tmpCorrectedPvaluesFileName = prefixCorrectedPvaluesName + "_chr_" + startChrS + ".txt";
+			} else {
+				tmpCorrectedPvaluesFileName = prefixCorrectedPvaluesName + "_chr_" + startChrS + "_to_" + endChrS
+						+ ".txt";
+			}
 
-    /**
-     * Method to access testTypeCombinedFilteredByAllFile
-     * 
-     * @param testTypeIndex
-     * @param index
-     * @return
-     */
-    public String getCombinedFilteredByAllFile(int testTypeIndex) {
-        return this.testTypeCombinedFilteredByAllFile.get(testTypeIndex).getFullName();
-    }
+			GenericFile myCorrectedPvaluesFile = new GenericFile(testTypeOutDir, tmpCorrectedPvaluesFileName,
+					"compressed", "none");
+			this.testTypeCorrectedPvaluesFile.add(myCorrectedPvaluesFile);
 
-    /**
-     * Method to set the finalStatus of the testTypeCorrectedPvaluesFile
-     * 
-     * @param testTypeIndex
-     * @param index
-     * @param finalStatus
-     */
-    public void setCombinedFilteredByAllFileFinalStatus(int testTypeIndex, String finalStatus) {
-        this.testTypeCombinedFilteredByAllFile.get(testTypeIndex).setFinalStatus(finalStatus);
-    }
+		} // End of for test types
+	}
 
-    /**
-     * Method to access the finalStatus of the testTypeCombinedFilteredByAllFile
-     * 
-     * @param testTypeIndex
-     * @param index
-     * @return
-     */
-    public String getCombinedFilteredByAllFileFinalStatus(int testTypeIndex) {
-        return this.testTypeCombinedFilteredByAllFile.get(testTypeIndex).getFinalStatus();
-    }
+	/**
+	 * Method to access correctedPvaluesFile information
+	 * 
+	 * @param testTypeIndex
+	 * @return
+	 */
+	public String getCombinedOutDir(int testTypeIndex) {
+		return this.testTypeListOutDir.get(testTypeIndex);
+	}
 
-    /**
-     * Method to access testTypeCombinedFilteredByAllFile
-     * 
-     * @param testTypeIndex
-     * @param index
-     * @return
-     */
-    public String getCombinedFilteredByAllXMalesFile(int testTypeIndex) {
-        return this.testTypeCombinedFilteredByAllXMalesFile.get(testTypeIndex).getFullName();
-    }
-    
-    /**
-     * Method to access testTypeCombinedFilteredByAllFile
-     * 
-     * @param testTypeIndex
-     * @param index
-     * @return
-     */
-    public String getCombinedFilteredByAllXFemalesFile(int testTypeIndex) {
-        return this.testTypeCombinedFilteredByAllXFemalesFile.get(testTypeIndex).getFullName();
-    }
+	/**
+	 * Method to access testTypeCombinedFilteredByAllFile
+	 * 
+	 * @param testTypeIndex
+	 * @param index
+	 * @return
+	 */
+	public String getCombinedFilteredByAllFile(int testTypeIndex) {
+		return this.testTypeCombinedFilteredByAllFile.get(testTypeIndex).getFullName();
+	}
 
-    /**
-     * Method to set the finalStatus of the testTypeCorrectedPvaluesFile
-     * 
-     * @param testTypeIndex
-     * @param index
-     * @param finalStatus
-     */
-    public void setCombinedFilteredByAllXMalesFileFinalStatus(int testTypeIndex, String finalStatus) {
-        this.testTypeCombinedFilteredByAllXMalesFile.get(testTypeIndex).setFinalStatus(finalStatus);
-    }
-    
-    /**
-     * Method to set the finalStatus of the testTypeCorrectedPvaluesFile
-     * 
-     * @param testTypeIndex
-     * @param index
-     * @param finalStatus
-     */
-    public void setCombinedFilteredByAllXFemalesFileFinalStatus(int testTypeIndex, String finalStatus) {
-        this.testTypeCombinedFilteredByAllXFemalesFile.get(testTypeIndex).setFinalStatus(finalStatus);
-    }
+	/**
+	 * Method to set the finalStatus of the testTypeCorrectedPvaluesFile
+	 * 
+	 * @param testTypeIndex
+	 * @param index
+	 * @param finalStatus
+	 */
+	public void setCombinedFilteredByAllFileFinalStatus(int testTypeIndex, String finalStatus) {
+		this.testTypeCombinedFilteredByAllFile.get(testTypeIndex).setFinalStatus(finalStatus);
+	}
 
-    /**
-     * Method to access testTypeCombinedCondensedFile
-     * 
-     * @param testTypeIndex
-     * @return
-     */
-    public String getCombinedCondensedFile(int testTypeIndex) {
-        return this.testTypeCombinedCondensedFile.get(testTypeIndex).getFullName();
-    }
+	/**
+	 * Method to access the finalStatus of the testTypeCombinedFilteredByAllFile
+	 * 
+	 * @param testTypeIndex
+	 * @param index
+	 * @return
+	 */
+	public String getCombinedFilteredByAllFileFinalStatus(int testTypeIndex) {
+		return this.testTypeCombinedFilteredByAllFile.get(testTypeIndex).getFinalStatus();
+	}
 
-    /**
-     * Method to set the finalStatus of the testTypeCombinedCondensedFile
-     * 
-     * @param testTypeIndex
-     * @param finalStatus
-     */
-    public void setCombinedCondensedFileFinalStatus(int testTypeIndex, String finalStatus) {
-        this.testTypeCombinedCondensedFile.get(testTypeIndex).setFinalStatus(finalStatus);
-    }
+	/**
+	 * Method to access testTypeCombinedFilteredByAllFile
+	 * 
+	 * @param testTypeIndex
+	 * @param index
+	 * @return
+	 */
+	public String getCombinedFilteredByAllXMalesFile(int testTypeIndex) {
+		return this.testTypeCombinedFilteredByAllXMalesFile.get(testTypeIndex).getFullName();
+	}
 
-    /**
-     * Method to access the finalStatus of the testTypeCombinedCondensedFile
-     * 
-     * @param testTypeIndex
-     * @return
-     */
-    public String getCombinedCondensedFileFinalStatus(int testTypeIndex) {
-        return this.testTypeCombinedCondensedFile.get(testTypeIndex).getFinalStatus();
-    }
+	/**
+	 * Method to access testTypeCombinedFilteredByAllFile
+	 * 
+	 * @param testTypeIndex
+	 * @param index
+	 * @return
+	 */
+	public String getCombinedFilteredByAllXFemalesFile(int testTypeIndex) {
+		return this.testTypeCombinedFilteredByAllXFemalesFile.get(testTypeIndex).getFullName();
+	}
 
-    /**
-     * Method to access testTypeCombinedFilteredByAllFile
-     * 
-     * @param testTypeIndex
-     * @param index
-     * @return
-     */
-    public String getCombinedFilteredByAllChromoFile(int testTypeIndex, int index) {
-        return this.testTypeCombinedFilteredByAllChromoFile.get(testTypeIndex).get(index).getFullName();
-    }
+	/**
+	 * Method to set the finalStatus of the testTypeCorrectedPvaluesFile
+	 * 
+	 * @param testTypeIndex
+	 * @param index
+	 * @param finalStatus
+	 */
+	public void setCombinedFilteredByAllXMalesFileFinalStatus(int testTypeIndex, String finalStatus) {
+		this.testTypeCombinedFilteredByAllXMalesFile.get(testTypeIndex).setFinalStatus(finalStatus);
+	}
 
-    /**
-     * Method to set the finalStatus of the testTypeCorrectedPvaluesFile
-     * 
-     * @param testTypeIndex
-     * @param index
-     * @param finalStatus
-     */
-    public void setCombinedFilteredByAllFileFinalStatus(int testTypeIndex, int index, String finalStatus) {
-        this.testTypeCombinedFilteredByAllChromoFile.get(testTypeIndex).get(index).setFinalStatus(finalStatus);
-    }
+	/**
+	 * Method to set the finalStatus of the testTypeCorrectedPvaluesFile
+	 * 
+	 * @param testTypeIndex
+	 * @param index
+	 * @param finalStatus
+	 */
+	public void setCombinedFilteredByAllXFemalesFileFinalStatus(int testTypeIndex, String finalStatus) {
+		this.testTypeCombinedFilteredByAllXFemalesFile.get(testTypeIndex).setFinalStatus(finalStatus);
+	}
 
-    /**
-     * Method to access the finalStatus of the testTypeCombinedFilteredByAllFile
-     * 
-     * @param testTypeIndex
-     * @param index
-     * @return
-     */
-    public String getCombinedFilteredByAllFileFinalStatus(int testTypeIndex, int index) {
-        return this.testTypeCombinedFilteredByAllChromoFile.get(testTypeIndex).get(index).getFinalStatus();
-    }
+	/**
+	 * Method to access testTypeCombinedCondensedFile
+	 * 
+	 * @param testTypeIndex
+	 * @return
+	 */
+	public String getCombinedCondensedFile(int testTypeIndex) {
+		return this.testTypeCombinedCondensedFile.get(testTypeIndex).getFullName();
+	}
 
-    /**
-     * Method to access testTypeCombinedFilteredByAllFile
-     * 
-     * @param testTypeIndex
-     * @param index
-     * @return
-     */
-    public String getCombinedFilteredByAllXMalesChromoFile(int testTypeIndex, int index) {
-        return this.testTypeCombinedFilteredByAllXMalesChromoFile.get(testTypeIndex).get(index).getFullName();
-    }
-    
-    /**
-     * Method to access testTypeCombinedFilteredByAllFile
-     * 
-     * @param testTypeIndex
-     * @param index
-     * @return
-     */
-    public String getCombinedFilteredByAllXFemalesChromoFile(int testTypeIndex, int index) {
-        return this.testTypeCombinedFilteredByAllXFemalesChromoFile.get(testTypeIndex).get(index).getFullName();
-    }
+	/**
+	 * Method to set the finalStatus of the testTypeCombinedCondensedFile
+	 * 
+	 * @param testTypeIndex
+	 * @param finalStatus
+	 */
+	public void setCombinedCondensedFileFinalStatus(int testTypeIndex, String finalStatus) {
+		this.testTypeCombinedCondensedFile.get(testTypeIndex).setFinalStatus(finalStatus);
+	}
 
-    /**
-     * Method to set the finalStatus of the testTypeCorrectedPvaluesFile
-     * 
-     * @param testTypeIndex
-     * @param index
-     * @param finalStatus
-     */
-    public void setCombinedFilteredByAllXMalesChromoFileFinalStatus(int testTypeIndex, int index, String finalStatus) {
-        this.testTypeCombinedFilteredByAllXMalesChromoFile.get(testTypeIndex).get(index).setFinalStatus(finalStatus);
-    }
-    
-    /**
-     * Method to set the finalStatus of the testTypeCorrectedPvaluesFile
-     * 
-     * @param testTypeIndex
-     * @param index
-     * @param finalStatus
-     */
-    public void setCombinedFilteredByAllXFemalesChromoFileFinalStatus(int testTypeIndex, int index, String finalStatus) {
-        this.testTypeCombinedFilteredByAllXFemalesChromoFile.get(testTypeIndex).get(index).setFinalStatus(finalStatus);
-    }
+	/**
+	 * Method to access the finalStatus of the testTypeCombinedCondensedFile
+	 * 
+	 * @param testTypeIndex
+	 * @return
+	 */
+	public String getCombinedCondensedFileFinalStatus(int testTypeIndex) {
+		return this.testTypeCombinedCondensedFile.get(testTypeIndex).getFinalStatus();
+	}
 
-    /**
-     * Method to access the finalStatus of the testTypeCombinedFilteredByAllFile
-     * 
-     * @param testTypeIndex
-     * @param index
-     * @return
-     */
-    public String getCombinedFilteredByAllXMalesChromoFileFinalStatus(int testTypeIndex, int index) {
-        return this.testTypeCombinedFilteredByAllXMalesChromoFile.get(testTypeIndex).get(index).getFinalStatus();
-    }
-    
-    /**
-     * Method to access the finalStatus of the testTypeCombinedFilteredByAllFile
-     * 
-     * @param testTypeIndex
-     * @param index
-     * @return
-     */
-    public String getCombinedFilteredByAllXFemalesChromoFileFinalStatus(int testTypeIndex, int index) {
-        return this.testTypeCombinedFilteredByAllXFemalesChromoFile.get(testTypeIndex).get(index).getFinalStatus();
-    }
+	/**
+	 * Method to access testTypeCombinedFilteredByAllFile
+	 * 
+	 * @param testTypeIndex
+	 * @param index
+	 * @return
+	 */
+	public String getCombinedFilteredByAllChromoFile(int testTypeIndex, int index) {
+		return this.testTypeCombinedFilteredByAllChromoFile.get(testTypeIndex).get(index).getFullName();
+	}
 
-    /**
-     * Method to access testTypeCombinedCondensedFile
-     * 
-     * @param testTypeIndex
-     * @return
-     */
-    public String getCombinedCondensedChromoFile(int testTypeIndex, int index) {
-        return this.testTypeCombinedCondensedChromoFile.get(testTypeIndex).get(index).getFullName();
-    }
+	/**
+	 * Method to set the finalStatus of the testTypeCorrectedPvaluesFile
+	 * 
+	 * @param testTypeIndex
+	 * @param index
+	 * @param finalStatus
+	 */
+	public void setCombinedFilteredByAllFileFinalStatus(int testTypeIndex, int index, String finalStatus) {
+		this.testTypeCombinedFilteredByAllChromoFile.get(testTypeIndex).get(index).setFinalStatus(finalStatus);
+	}
 
-    /**
-     * Method to set the finalStatus of the testTypeCombinedCondensedFile
-     * 
-     * @param testTypeIndex
-     * @param finalStatus
-     */
-    public void setCombinedCondensedChromoFileFinalStatus(int testTypeIndex, String finalStatus, int index) {
-        this.testTypeCombinedCondensedChromoFile.get(testTypeIndex).get(index).setFinalStatus(finalStatus);
-    }
+	/**
+	 * Method to access the finalStatus of the testTypeCombinedFilteredByAllFile
+	 * 
+	 * @param testTypeIndex
+	 * @param index
+	 * @return
+	 */
+	public String getCombinedFilteredByAllFileFinalStatus(int testTypeIndex, int index) {
+		return this.testTypeCombinedFilteredByAllChromoFile.get(testTypeIndex).get(index).getFinalStatus();
+	}
 
-    /**
-     * Method to access the finalStatus of the testTypeCombinedCondensedFile
-     * 
-     * @param testTypeIndex
-     * @return
-     */
-    public String getCombinedCondensedChromoFileFinalStatus(int testTypeIndex, int index) {
-        return this.testTypeCombinedCondensedChromoFile.get(testTypeIndex).get(index).getFinalStatus();
-    }
+	/**
+	 * Method to access testTypeCombinedFilteredByAllFile
+	 * 
+	 * @param testTypeIndex
+	 * @param index
+	 * @return
+	 */
+	public String getCombinedFilteredByAllXMalesChromoFile(int testTypeIndex, int index) {
+		return this.testTypeCombinedFilteredByAllXMalesChromoFile.get(testTypeIndex).get(index).getFullName();
+	}
 
-    /**
-     * Method to access testTypeTopHitsFile
-     * 
-     * @param testTypeIndex
-     * @return
-     */
-    public String getTopHitsFile(int testTypeIndex) {
-        return this.testTypeTopHitsFile.get(testTypeIndex).getFullName();
-    }
+	/**
+	 * Method to access testTypeCombinedFilteredByAllFile
+	 * 
+	 * @param testTypeIndex
+	 * @param index
+	 * @return
+	 */
+	public String getCombinedFilteredByAllXFemalesChromoFile(int testTypeIndex, int index) {
+		return this.testTypeCombinedFilteredByAllXFemalesChromoFile.get(testTypeIndex).get(index).getFullName();
+	}
 
-    /**
-     * Method to set the finalStatus of the testTypeTopHitsFile
-     * 
-     * @param testTypeIndex
-     * @param finalStatus
-     */
-    public void setTopHitsFileFinalStatus(int testTypeIndex, String finalStatus) {
-        this.testTypeTopHitsFile.get(testTypeIndex).setFinalStatus(finalStatus);
-    }
+	/**
+	 * Method to set the finalStatus of the testTypeCorrectedPvaluesFile
+	 * 
+	 * @param testTypeIndex
+	 * @param index
+	 * @param finalStatus
+	 */
+	public void setCombinedFilteredByAllXMalesChromoFileFinalStatus(int testTypeIndex, int index, String finalStatus) {
+		this.testTypeCombinedFilteredByAllXMalesChromoFile.get(testTypeIndex).get(index).setFinalStatus(finalStatus);
+	}
 
-    /**
-     * Method to access the finalStatus of the testTypeTopHitsFile
-     * 
-     * @param testTypeIndex
-     * @return
-     */
-    public String getTopHitsFileFinalStatus(int testTypeIndex) {
-        return this.testTypeTopHitsFile.get(testTypeIndex).getFinalStatus();
-    }
+	/**
+	 * Method to set the finalStatus of the testTypeCorrectedPvaluesFile
+	 * 
+	 * @param testTypeIndex
+	 * @param index
+	 * @param finalStatus
+	 */
+	public void setCombinedFilteredByAllXFemalesChromoFileFinalStatus(int testTypeIndex, int index,
+			String finalStatus) {
+		this.testTypeCombinedFilteredByAllXFemalesChromoFile.get(testTypeIndex).get(index).setFinalStatus(finalStatus);
+	}
 
-    /**
-     * Method to access qqPlotPdfFile
-     * 
-     * @param testTypeIndex
-     * @return
-     */
-    public String getQqPlotPdfFile(int testTypeIndex) {
-        return this.testTypeQqPlotPdfFile.get(testTypeIndex).getFullName();
-    }
+	/**
+	 * Method to access the finalStatus of the testTypeCombinedFilteredByAllFile
+	 * 
+	 * @param testTypeIndex
+	 * @param index
+	 * @return
+	 */
+	public String getCombinedFilteredByAllXMalesChromoFileFinalStatus(int testTypeIndex, int index) {
+		return this.testTypeCombinedFilteredByAllXMalesChromoFile.get(testTypeIndex).get(index).getFinalStatus();
+	}
 
-    /**
-     * Method to set the finalStatus of the qqPlotPdfFile
-     * 
-     * @param testTypeIndex
-     * @param finalStatus
-     */
-    public void setQqPlotPdfFileFinalStatus(int testTypeIndex, String finalStatus) {
-        this.testTypeQqPlotPdfFile.get(testTypeIndex).setFinalStatus(finalStatus);
-    }
+	/**
+	 * Method to access the finalStatus of the testTypeCombinedFilteredByAllFile
+	 * 
+	 * @param testTypeIndex
+	 * @param index
+	 * @return
+	 */
+	public String getCombinedFilteredByAllXFemalesChromoFileFinalStatus(int testTypeIndex, int index) {
+		return this.testTypeCombinedFilteredByAllXFemalesChromoFile.get(testTypeIndex).get(index).getFinalStatus();
+	}
 
-    /**
-     * Method to access the finalStatus of the qqPlotPdfFile
-     * 
-     * @param testTypeIndex
-     * @return
-     */
-    public String getQqPlotPdfFileFinalStatus(int testTypeIndex) {
-        return this.testTypeQqPlotPdfFile.get(testTypeIndex).getFinalStatus();
-    }
+	/**
+	 * Method to access testTypeCombinedCondensedFile
+	 * 
+	 * @param testTypeIndex
+	 * @return
+	 */
+	public String getCombinedCondensedChromoFile(int testTypeIndex, int index) {
+		return this.testTypeCombinedCondensedChromoFile.get(testTypeIndex).get(index).getFullName();
+	}
 
-    /**
-     * Method to access qqPlotTiffFile
-     * 
-     * @param testTypeIndex
-     * @return
-     */
-    public String getQqPlotTiffFile(int testTypeIndex) {
-        return this.testTypeQqPlotTiffFile.get(testTypeIndex).getFullName();
-    }
+	/**
+	 * Method to set the finalStatus of the testTypeCombinedCondensedFile
+	 * 
+	 * @param testTypeIndex
+	 * @param finalStatus
+	 */
+	public void setCombinedCondensedChromoFileFinalStatus(int testTypeIndex, String finalStatus, int index) {
+		this.testTypeCombinedCondensedChromoFile.get(testTypeIndex).get(index).setFinalStatus(finalStatus);
+	}
 
-    /**
-     * Method to set the finalStatus of the qqPlotPdfFile
-     * 
-     * @param testTypeIndex
-     * @param finalStatus
-     */
-    public void setQqPlotTiffFileFinalStatus(int testTypeIndex, String finalStatus) {
-        this.testTypeQqPlotTiffFile.get(testTypeIndex).setFinalStatus(finalStatus);
-    }
+	/**
+	 * Method to access the finalStatus of the testTypeCombinedCondensedFile
+	 * 
+	 * @param testTypeIndex
+	 * @return
+	 */
+	public String getCombinedCondensedChromoFileFinalStatus(int testTypeIndex, int index) {
+		return this.testTypeCombinedCondensedChromoFile.get(testTypeIndex).get(index).getFinalStatus();
+	}
 
-    /**
-     * Method to access the finalStatus of the qqPlotTiffFile
-     * 
-     * @param testTypeIndex
-     * @return
-     */
-    public String getQqPlotTiffFileFinalStatus(int testTypeIndex) {
-        return this.testTypeQqPlotTiffFile.get(testTypeIndex).getFinalStatus();
-    }
+	/**
+	 * Method to access testTypeTopHitsFile
+	 * 
+	 * @param testTypeIndex
+	 * @return
+	 */
+	public String getTopHitsFile(int testTypeIndex) {
+		return this.testTypeTopHitsFile.get(testTypeIndex).getFullName();
+	}
 
-    /**
-     * Method to access manhattanPdfFile
-     * 
-     * @param testTypeIndex
-     * @return
-     */
-    public String getManhattanPdfFile(int testTypeIndex) {
-        return this.testTypeManhattanPdfFile.get(testTypeIndex).getFullName();
-    }
+	/**
+	 * Method to set the finalStatus of the testTypeTopHitsFile
+	 * 
+	 * @param testTypeIndex
+	 * @param finalStatus
+	 */
+	public void setTopHitsFileFinalStatus(int testTypeIndex, String finalStatus) {
+		this.testTypeTopHitsFile.get(testTypeIndex).setFinalStatus(finalStatus);
+	}
 
-    /**
-     * Method to access manhattanTiffFile
-     * 
-     * @param testTypeIndex
-     * @return
-     */
-    public String getManhattanTiffFile(int testTypeIndex) {
-        return this.testTypeManhattanTiffFile.get(testTypeIndex).getFullName();
-    }
+	/**
+	 * Method to access the finalStatus of the testTypeTopHitsFile
+	 * 
+	 * @param testTypeIndex
+	 * @return
+	 */
+	public String getTopHitsFileFinalStatus(int testTypeIndex) {
+		return this.testTypeTopHitsFile.get(testTypeIndex).getFinalStatus();
+	}
 
-    /**
-     * Method to access CorrectedPvaluesFile
-     * 
-     * @param testTypeIndex
-     * @return
-     */
-    public String getCorrectedPvaluesFile(int testTypeIndex) {
-        return this.testTypeCorrectedPvaluesFile.get(testTypeIndex).getFullName();
-    }
+	/**
+	 * Method to access qqPlotPdfFile
+	 * 
+	 * @param testTypeIndex
+	 * @return
+	 */
+	public String getQqPlotPdfFile(int testTypeIndex) {
+		return this.testTypeQqPlotPdfFile.get(testTypeIndex).getFullName();
+	}
 
-    /**
-     * Method to set the finalStatus of the CorrectedPvaluesFile
-     * 
-     * @param testTypeIndex
-     * @param finalStatus
-     */
-    public void setCorrectedPvaluesFinalStatus(int testTypeIndex, String finalStatus) {
-        this.testTypeCorrectedPvaluesFile.get(testTypeIndex).setFinalStatus(finalStatus);
-    }
+	/**
+	 * Method to set the finalStatus of the qqPlotPdfFile
+	 * 
+	 * @param testTypeIndex
+	 * @param finalStatus
+	 */
+	public void setQqPlotPdfFileFinalStatus(int testTypeIndex, String finalStatus) {
+		this.testTypeQqPlotPdfFile.get(testTypeIndex).setFinalStatus(finalStatus);
+	}
 
-    /**
-     * Method to access the finalStatus of the CorrectedPvaluesFile
-     * 
-     * @param testTypeIndex
-     * @return
-     */
-    public String getCorrectedPvaluesFileFinalStatus(int testTypeIndex) {
-        return this.testTypeCorrectedPvaluesFile.get(testTypeIndex).getFinalStatus();
-    }
+	/**
+	 * Method to access the finalStatus of the qqPlotPdfFile
+	 * 
+	 * @param testTypeIndex
+	 * @return
+	 */
+	public String getQqPlotPdfFileFinalStatus(int testTypeIndex) {
+		return this.testTypeQqPlotPdfFile.get(testTypeIndex).getFinalStatus();
+	}
+
+	/**
+	 * Method to access qqPlotTiffFile
+	 * 
+	 * @param testTypeIndex
+	 * @return
+	 */
+	public String getQqPlotTiffFile(int testTypeIndex) {
+		return this.testTypeQqPlotTiffFile.get(testTypeIndex).getFullName();
+	}
+
+	/**
+	 * Method to set the finalStatus of the qqPlotPdfFile
+	 * 
+	 * @param testTypeIndex
+	 * @param finalStatus
+	 */
+	public void setQqPlotTiffFileFinalStatus(int testTypeIndex, String finalStatus) {
+		this.testTypeQqPlotTiffFile.get(testTypeIndex).setFinalStatus(finalStatus);
+	}
+
+	/**
+	 * Method to access the finalStatus of the qqPlotTiffFile
+	 * 
+	 * @param testTypeIndex
+	 * @return
+	 */
+	public String getQqPlotTiffFileFinalStatus(int testTypeIndex) {
+		return this.testTypeQqPlotTiffFile.get(testTypeIndex).getFinalStatus();
+	}
+
+	/**
+	 * Method to access manhattanPdfFile
+	 * 
+	 * @param testTypeIndex
+	 * @return
+	 */
+	public String getManhattanPdfFile(int testTypeIndex) {
+		return this.testTypeManhattanPdfFile.get(testTypeIndex).getFullName();
+	}
+
+	/**
+	 * Method to access manhattanTiffFile
+	 * 
+	 * @param testTypeIndex
+	 * @return
+	 */
+	public String getManhattanTiffFile(int testTypeIndex) {
+		return this.testTypeManhattanTiffFile.get(testTypeIndex).getFullName();
+	}
+
+	/**
+	 * Method to access CorrectedPvaluesFile
+	 * 
+	 * @param testTypeIndex
+	 * @return
+	 */
+	public String getCorrectedPvaluesFile(int testTypeIndex) {
+		return this.testTypeCorrectedPvaluesFile.get(testTypeIndex).getFullName();
+	}
+
+	/**
+	 * Method to set the finalStatus of the CorrectedPvaluesFile
+	 * 
+	 * @param testTypeIndex
+	 * @param finalStatus
+	 */
+	public void setCorrectedPvaluesFinalStatus(int testTypeIndex, String finalStatus) {
+		this.testTypeCorrectedPvaluesFile.get(testTypeIndex).setFinalStatus(finalStatus);
+	}
+
+	/**
+	 * Method to access the finalStatus of the CorrectedPvaluesFile
+	 * 
+	 * @param testTypeIndex
+	 * @return
+	 */
+	public String getCorrectedPvaluesFileFinalStatus(int testTypeIndex) {
+		return this.testTypeCorrectedPvaluesFile.get(testTypeIndex).getFinalStatus();
+	}
 
 }

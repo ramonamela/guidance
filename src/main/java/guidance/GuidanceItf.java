@@ -236,6 +236,14 @@ public interface GuidanceItf {
 			@Parameter(type = Type.STRING, direction = Direction.IN) String cmdToStore);
 
 	@Method(declaringClass = "guidance.GuidanceImpl")
+	@Constraints(computingUnits = "12", memorySize = "1.0f")
+	void generateCondensedFile(@Parameter(type = Type.FILE, direction = Direction.IN) String filteredFile, 
+			@Parameter(type = Type.FILE, direction = Direction.IN) String filteredMalesFile,
+			@Parameter(type = Type.FILE, direction = Direction.IN) String filteredFemalesFile, 
+			@Parameter(type = Type.FILE, direction = Direction.OUT) String condensedFile, 
+			@Parameter(type = Type.STRING, direction = Direction.IN) String cmdToStore);
+	
+	@Method(declaringClass = "guidance.GuidanceImpl")
 	@Constraints(computingUnits = "1", memorySize = "${filterByInfoMem}")
 	void filterByInfo(@Parameter(type = Type.STRING, direction = Direction.IN) String imputationTool,
 			@Parameter(type = Type.FILE, direction = Direction.IN) String imputeFileInfo,

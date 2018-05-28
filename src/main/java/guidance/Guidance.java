@@ -1253,10 +1253,10 @@ public class Guidance {
 
 				String mixedImputeFemalesFileInfo = imputationFilesInfo.getImputedInfoFemalesFile(panelIndex, chrNumber,
 						lim1, lim2, chunkSize);
-				
+
 				String summaryFemalesFile = assocFilesInfo.getSummaryFemalesFile(testTypeIndex, panelIndex, lim1, lim2,
 						chunkSize);
-				
+
 				doCollectSummary(parsingArgs, chrS, mixedImputeFemalesFileInfo, snptestOutFemalesFile,
 						summaryFemalesFile, mafThresholdS, infoThresholdS, hweCohortThresholdS, hweCasesThresholdS,
 						hweControlsThresholdS);
@@ -1874,19 +1874,20 @@ public class Guidance {
 				// fB.delete();
 
 			} // End for Chunks
-			
+
 			indexA = 0;
 			indexC = 0;
-			
+
 			lim1 = minSize;
 			lim2 = lim1 + chunkSize - 1;
-			
+
 			for (int processedChunks = 0; processedChunks < 2 * numberOfChunks - 2; processedChunks = processedChunks
 					+ 2) {
 				System.out.println("Number of chunks for testType " + ttIndex + " | rpanel " + rpanelIndex + " |chr "
 						+ " processedChunks: " + processedChunks);
 				if (processedChunks < numberOfChunks) {
-					reducedA = assocFilesInfo.getCombinedFilteredFemalesFile(ttIndex, rpanelIndex, lim1, lim2, chunkSize);
+					reducedA = assocFilesInfo.getCombinedFilteredFemalesFile(ttIndex, rpanelIndex, lim1, lim2,
+							chunkSize);
 					lim1 = lim1 + chunkSize;
 					lim2 = lim2 + chunkSize;
 				} else {
@@ -1894,7 +1895,8 @@ public class Guidance {
 					indexA++;
 				}
 				if (processedChunks < numberOfChunks - 1) {
-					reducedB = assocFilesInfo.getCombinedFilteredFemalesFile(ttIndex, rpanelIndex, lim1, lim2, chunkSize);
+					reducedB = assocFilesInfo.getCombinedFilteredFemalesFile(ttIndex, rpanelIndex, lim1, lim2,
+							chunkSize);
 					lim1 = lim1 + chunkSize;
 					lim2 = lim2 + chunkSize;
 				} else {
@@ -2272,8 +2274,8 @@ public class Guidance {
 						}
 						filteredPanelsToCombineMales.add(filteredPanelMales);
 
-						String filteredPanelFemales = assocFilesInfo.getSummaryFilteredFemalesFile(ttIndex, k, lim1, lim2,
-								chunkSize);
+						String filteredPanelFemales = assocFilesInfo.getSummaryFilteredFemalesFile(ttIndex, k, lim1,
+								lim2, chunkSize);
 						System.out.println("[Guidance] Adding filtered file to combine " + filteredPanelFemales);
 						if (DEBUG) {
 							System.out.println("[Guidance] Adding filtered file to combine " + filteredPanelFemales);
@@ -2301,8 +2303,7 @@ public class Guidance {
 							if (DEBUG) {
 								LOGGER.debug("[Guidance] Combining " + filteredPanelA + " and " + filteredPanelB);
 							}
-							doCombinePanelsComplex(parsingArgs, filteredPanelA, filteredPanelB, lim1,
-									lim2);
+							doCombinePanelsComplex(parsingArgs, filteredPanelA, filteredPanelB, lim1, lim2);
 							// Adds A to the queue again
 							filteredPanelsToCombineMales.add(filteredPanelA);
 
@@ -2323,8 +2324,7 @@ public class Guidance {
 							if (DEBUG) {
 								LOGGER.debug("[Guidance] Combining " + filteredPanelA + " and " + filteredPanelB);
 							}
-							doCombinePanelsComplex(parsingArgs, filteredPanelA, filteredPanelB, lim1,
-									lim2);
+							doCombinePanelsComplex(parsingArgs, filteredPanelA, filteredPanelB, lim1, lim2);
 							// Adds A to the queue again
 							filteredPanelsToCombineFemales.add(filteredPanelA);
 
@@ -2345,8 +2345,7 @@ public class Guidance {
 							if (DEBUG) {
 								LOGGER.debug("[Guidance] Combining " + filteredPanelA + " and " + filteredPanelB);
 							}
-							doCombinePanelsComplex(parsingArgs, filteredPanelA, filteredPanelB, lim1,
-									lim2);
+							doCombinePanelsComplex(parsingArgs, filteredPanelA, filteredPanelB, lim1, lim2);
 							// Adds A to the queue again
 							filteredPanelsToCombine.add(filteredPanelA);
 
@@ -2364,13 +2363,14 @@ public class Guidance {
 				// TODO : think how to do the condensed part
 				/*
 				 * 
-				 * // -- CONDENSED PART -- // Construct a queue with all the condensed panels to
-				 * combine LinkedList<String> condensedPanelsToCombine = new LinkedList<>();
-				 * LinkedList<String> condensedPanelsToCombineMales = new LinkedList<>();
-				 * LinkedList<String> condensedPanelsToCombineFemales = new LinkedList<>(); for
-				 * (int k = 0; k < rpanelTypes.size(); ++k) { if (chr == 23) { String
-				 * condensedPanelMales = assocFilesInfo.getSummaryCondensedMalesFile(ttIndex, k,
-				 * lim1, lim2, chunkSize); if (DEBUG) {
+				 * makeCombinePanels * // -- CONDENSED PART -- // Construct a queue with all the
+				 * condensed panels to combine LinkedList<String> condensedPanelsToCombine = new
+				 * LinkedList<>(); LinkedList<String> condensedPanelsToCombineMales = new
+				 * LinkedList<>(); LinkedList<String> condensedPanelsToCombineFemales = new
+				 * LinkedList<>(); for (int k = 0; k < rpanelTypes.size(); ++k) { if (chr == 23)
+				 * { String condensedPanelMales =
+				 * assocFilesInfo.getSummaryCondensedMalesFile(ttIndex, k, lim1, lim2,
+				 * chunkSize); if (DEBUG) {
 				 * LOGGER.debug("[Guidance] Adding condensed file to combine " +
 				 * condensedPanelMales); }
 				 * condensedPanelsToCombineMales.add(condensedPanelMales);
@@ -2575,6 +2575,7 @@ public class Guidance {
 
 			reduceCounter += 1;
 		}
+
 		// TODO look at the condensed part
 		/*
 		 * if (condensedCombined.size() == 1) { String singleCondensedFile =
@@ -2600,6 +2601,8 @@ public class Guidance {
 		 * reduceCounter += 1; }
 		 */
 
+		doGenerateCondensedFile(parsingArgs, filteredCombineAll, filteredCombineAllXMales, filteredCombineAllXFemales,
+				condensedCombineAll);
 		// Finally, we create topHits from filteredCombined, and QQ and Manhattan plots
 		// from condensedCombined
 		// TODO wait for the correct binary
@@ -2620,6 +2623,30 @@ public class Guidance {
 		// combinedManhattanPlotPdfFile, combinedQqPlotTiffFile,
 		// combinedManhattanPlotTiffFile);
 
+	}
+
+	/**
+	 * Generate the condensed file from the filtered files
+	 * 
+	 * @param parsingArgs
+	 * @param filteredFile
+	 * @param filteredMalesFile
+	 * @param filteredFemalesFile
+	 * @param condensedFile
+	 */
+	private static void doGenerateCondensedFile(ParseCmdLine parsingArgs, String filteredFile, String filteredMalesFile,
+			String filteredFemalesFile, String condensedFile) {
+		// TODO fill the function
+		// Task
+		String cmdToStore = JAVA_HOME + "/java generateCondensedFile.jar " + filteredFile + " " + filteredMalesFile
+				+ " " + filteredFemalesFile + " " + condensedFile;
+		listOfCommands.add(cmdToStore);
+		try {
+			GuidanceImpl.generateCondensedFile(filteredFile, filteredMalesFile, filteredFemalesFile, condensedFile,
+					cmdToStore);
+		} catch (GuidanceTaskException gte) {
+			LOGGER.error("[Guidance] Exception trying the execution of convertFromBedToBed task", gte);
+		}
 	}
 
 	/**
@@ -3628,8 +3655,8 @@ public class Guidance {
 	private static void doCombinePanelsComplex(ParseCmdLine parsingArgs, String resultsPanelA, String resultsPanelB,
 			int lim1, int lim2) {
 
-		String cmdToStore = JAVA_HOME + "/java combinePanelsComplex " + resultsPanelA + " " + resultsPanelB + " "
-				+ lim1 + " " + lim2;
+		String cmdToStore = JAVA_HOME + "/java combinePanelsComplex " + resultsPanelA + " " + resultsPanelB + " " + lim1
+				+ " " + lim2;
 		listOfCommands.add(cmdToStore);
 
 		try {
@@ -3758,9 +3785,9 @@ public class Guidance {
 
 		// Task
 		if (parsingArgs.getStageStatus("filterByAll") == 1) {
-			String cmdToStore = JAVA_HOME + "/java filterByAll " + imputationTool + " " + inputFile + " " + outputFile + " "
-					+ outputCondensedFile + " " + mafThresholdS + " " + infoThresholdS + " " + hweCohortThresholdS + " "
-					+ hweCasesThresholdS + " " + hweControlsThresholdS + " " + sex + " " + rpanelName;
+			String cmdToStore = JAVA_HOME + "/java filterByAll " + imputationTool + " " + inputFile + " " + outputFile
+					+ " " + outputCondensedFile + " " + mafThresholdS + " " + infoThresholdS + " " + hweCohortThresholdS
+					+ " " + hweCasesThresholdS + " " + hweControlsThresholdS + " " + sex + " " + rpanelName;
 
 			listOfCommands.add(cmdToStore);
 			try {
