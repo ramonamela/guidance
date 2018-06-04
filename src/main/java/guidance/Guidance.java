@@ -1713,12 +1713,8 @@ public class Guidance {
 			// LOGGER.info("Number of chunks for testType " + ttIndex + " | rpanel " +
 			// rpanelIndex + " |chr " +
 			// chr + " " + numberOfChunks);
-			System.out.println("Number of chunks for testType " + ttIndex + " | rpanel " + rpanelIndex + " |chr " + chr
-					+ " numberOfChunks: " + numberOfChunks);
 			for (int processedChunks = 0; processedChunks < 2 * numberOfChunks - 2; processedChunks = processedChunks
 					+ 2) {
-				System.out.println("Number of chunks for testType " + ttIndex + " | rpanel " + rpanelIndex + " |chr "
-						+ chr + " processedChunks: " + processedChunks);
 				if (processedChunks < numberOfChunks) {
 					reducedA = assocFilesInfo.getCombinedFilteredFile(ttIndex, rpanelIndex, chr, lim1, lim2, chunkSize);
 					lim1 = lim1 + chunkSize;
@@ -1835,12 +1831,8 @@ public class Guidance {
 			// LOGGER.info("Number of chunks for testType " + ttIndex + " | rpanel " +
 			// rpanelIndex + " |chr " +
 			// chr + " " + numberOfChunks);
-			System.out.println("Number of chunks for testType " + ttIndex + " | rpanel " + rpanelIndex + " |chr "
-					+ " numberOfChunks: " + numberOfChunks);
 			for (int processedChunks = 0; processedChunks < 2 * numberOfChunks - 2; processedChunks = processedChunks
 					+ 2) {
-				System.out.println("Number of chunks for testType " + ttIndex + " | rpanel " + rpanelIndex + " |chr "
-						+ " processedChunks: " + processedChunks);
 				if (processedChunks < numberOfChunks) {
 					reducedA = assocFilesInfo.getCombinedFilteredMalesFile(ttIndex, rpanelIndex, lim1, lim2, chunkSize);
 					lim1 = lim1 + chunkSize;
@@ -1883,8 +1875,6 @@ public class Guidance {
 
 			for (int processedChunks = 0; processedChunks < 2 * numberOfChunks - 2; processedChunks = processedChunks
 					+ 2) {
-				System.out.println("Number of chunks for testType " + ttIndex + " | rpanel " + rpanelIndex + " |chr "
-						+ " processedChunks: " + processedChunks);
 				if (processedChunks < numberOfChunks) {
 					reducedA = assocFilesInfo.getCombinedFilteredFemalesFile(ttIndex, rpanelIndex, lim1, lim2,
 							chunkSize);
@@ -2001,10 +1991,8 @@ public class Guidance {
 		} else {
 			if (endChr == 23)
 				++numberOfChrs;
-			System.out.println("From " + startChr + " to " + endChr + " with " + numberOfChrs + " chromosomes");
 			for (int processedCondensed = 0; processedCondensed < 2 * numberOfChrs
 					- 2; processedCondensed = processedCondensed + 2) {
-				System.out.println("I'm in processedCondensed with processed " + processedCondensed);
 				if (processedCondensed < numberOfChrs) {
 					if (numberOfChrs == processedCondensed + 1 && endChr == 23) {
 						condensedA = mergeFilesInfo.getCondensedFemalesFile(ttIndex, rpanelIndex);
@@ -2017,8 +2005,6 @@ public class Guidance {
 					indexA++;
 				}
 
-				System.out.println(
-						"I'm in processedCondensed 2 with processed " + processedCondensed + " and " + numberOfChrs);
 				if (processedCondensed < numberOfChrs - 1) {
 					if (numberOfChrs == processedCondensed + 2 && endChr == 23) {
 						condensedB = mergeFilesInfo.getCondensedFemalesFile(ttIndex, rpanelIndex);
@@ -2027,7 +2013,6 @@ public class Guidance {
 						condensedB = mergeFilesInfo.getCondensedFile(ttIndex, rpanelIndex, i);
 					}
 				} else {
-					System.out.println("Asking for additional condensed file and obtaining " + condensedB);
 					condensedB = mergeFilesInfo.getAdditionalCondensedFile(ttIndex, rpanelIndex, indexA);
 					indexA++;
 				}
@@ -3193,25 +3178,21 @@ public class Guidance {
 			String knownHapFile, String legendFile, String phasingHapsFile, String phasingSampleFile, String lim1S,
 			String lim2S, String pairsFile, String imputeFile, String imputeFileInfo, String imputeFileSummary,
 			String imputeFileWarnings, String sex) {
-
+		System.out.println(gmapFile + " " + knownHapFile + " " + legendFile + " " + phasingHapsFile + " "
+				+ phasingSampleFile + " " + imputeFile);
 		String cmdToStore = null;
 		if (parsingArgs.getStageStatus("imputeWithImpute") == 1) {
 			// Submitting the impute task per chunk
 
 			if (chrS.equals("23")) {
-				cmdToStore = IMPUTE2_BINARY + " -use_prephased_g -m " + gmapFile + " -h " + knownHapFile + " -l "
-						+ legendFile + " -known_haps_g " + phasingHapsFile + " -sample_g " + phasingSampleFile
-						+ " -int " + lim1S + " " + lim2S + " -chrX -exclude_snps_g " + pairsFile
-						+ " -impute_excluded -Ne 20000 -o " + imputeFile + " -i " + imputeFileInfo + " -r "
-						+ imputeFileSummary + " -w " + imputeFileWarnings + " -no_sample_qc_info -o_gz ";
 
-				if (sex.equals("males")) {
+				if (sex.equals(SEX1)) {
 					cmdToStore = IMPUTE2_BINARY + " -use_prephased_g -m " + gmapFile + " -h " + knownHapFile + " -l "
 							+ legendFile + " -known_haps_g " + phasingHapsFile + " -sample_g " + phasingSampleFile
 							+ " -int " + lim1S + " " + lim2S + " -chrX -exclude_snps_g " + pairsFile
 							+ " -impute_excluded -Ne 20000 -o " + imputeFile + " -i " + imputeFileInfo + " -r "
 							+ imputeFileSummary + " -w " + imputeFileWarnings + " -no_sample_qc_info -o_gz ";
-				} else if (sex.equals("females")) {
+				} else if (sex.equals(SEX2)) {
 					cmdToStore = IMPUTE2_BINARY + " -use_prephased_g -m " + gmapFile + " -h " + knownHapFile + " -l "
 							+ legendFile + " -known_haps_g " + phasingHapsFile + " -sample_g " + phasingSampleFile
 							+ " -int " + lim1S + " " + lim2S + " -chrX -exclude_snps_g " + pairsFile

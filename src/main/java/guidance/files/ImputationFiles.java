@@ -402,42 +402,44 @@ public class ImputationFiles {
 					chromoListFilteredRsIdFemalesFile.add(chunkListFilteredRsIdFemalesFile);
 				}
 
-				this.imputedOutDir.add(chromoListImputedOutDir);
-				if (chromo < 23) {
-					imputedFile.add(chromoListImputedFile);
-
-					imputedInfoFile.add(chromoListImputedInfoFile);
-					imputedSummaryFile.add(chromoListImputedSummaryFile);
-					imputedWarningsFile.add(chromoListImputedWarningsFile);
-					imputedLogFile.add(chromoListImputedLogFile);
-					
-					filteredFile.add(chromoListFilteredFile);
-					filteredFileLogFile.add(chromoListFilteredLogFile);
-					filteredFileRsIdFile.add(chromoListFilteredRsIdFile);
-				} else if (chromo == 23) {
-					imputedMalesFile.add(chromoListImputedMalesFile);
-
-					imputedInfoMalesFile.add(chromoListImputedInfoMalesFile);
-					imputedSummaryMalesFile.add(chromoListImputedSummaryMalesFile);
-					imputedWarningsMalesFile.add(chromoListImputedWarningsMalesFile);
-					imputedLogMalesFile.add(chromoListImputedLogMalesFile);
-					
-					filteredMalesFile.add(chromoListFilteredMalesFile);
-					filteredLogMalesFile.add(chromoListFilteredLogMalesFile);
-					filteredRsIdMalesFile.add(chromoListFilteredRsIdMalesFile);
-
-					imputedFemalesFile.add(chromoListImputedFemalesFile);
-
-					imputedInfoFemalesFile.add(chromoListImputedInfoFemalesFile);
-					imputedSummaryFemalesFile.add(chromoListImputedSummaryFemalesFile);
-					imputedWarningsFemalesFile.add(chromoListImputedWarningsFemalesFile);
-					imputedLogFemalesFile.add(chromoListImputedLogFemalesFile);
-					
-					filteredFemalesFile.add(chromoListFilteredFemalesFile);
-					filteredLogFemalesFile.add(chromoListFilteredLogFemalesFile);
-					filteredRsIdFemalesFile.add(chromoListFilteredRsIdFemalesFile);
-				}
 			}
+
+			this.imputedOutDir.add(chromoListImputedOutDir);
+			// if (chromo < 23) {
+			imputedFile.add(chromoListImputedFile);
+
+			imputedInfoFile.add(chromoListImputedInfoFile);
+			imputedSummaryFile.add(chromoListImputedSummaryFile);
+			imputedWarningsFile.add(chromoListImputedWarningsFile);
+			imputedLogFile.add(chromoListImputedLogFile);
+
+			filteredFile.add(chromoListFilteredFile);
+			filteredFileLogFile.add(chromoListFilteredLogFile);
+			filteredFileRsIdFile.add(chromoListFilteredRsIdFile);
+			// } else if (chromo == 23) {
+			imputedMalesFile.add(chromoListImputedMalesFile);
+
+			imputedInfoMalesFile.add(chromoListImputedInfoMalesFile);
+			imputedSummaryMalesFile.add(chromoListImputedSummaryMalesFile);
+			imputedWarningsMalesFile.add(chromoListImputedWarningsMalesFile);
+			imputedLogMalesFile.add(chromoListImputedLogMalesFile);
+
+			filteredMalesFile.add(chromoListFilteredMalesFile);
+			filteredLogMalesFile.add(chromoListFilteredLogMalesFile);
+			filteredRsIdMalesFile.add(chromoListFilteredRsIdMalesFile);
+
+			imputedFemalesFile.add(chromoListImputedFemalesFile);
+
+			imputedInfoFemalesFile.add(chromoListImputedInfoFemalesFile);
+			imputedSummaryFemalesFile.add(chromoListImputedSummaryFemalesFile);
+			imputedWarningsFemalesFile.add(chromoListImputedWarningsFemalesFile);
+			imputedLogFemalesFile.add(chromoListImputedLogFemalesFile);
+
+			filteredFemalesFile.add(chromoListFilteredFemalesFile);
+			filteredLogFemalesFile.add(chromoListFilteredLogFemalesFile);
+			filteredRsIdFemalesFile.add(chromoListFilteredRsIdFemalesFile);
+			// }
+
 		}
 	}
 
@@ -812,11 +814,11 @@ public class ImputationFiles {
 					filteredFileLogFile.add(chromoListFilteredLogFile);
 					filteredFileRsIdFile.add(chromoListFilteredRsIdFile);
 					/*
-					System.out.println("mon :: INIT i :: " + i + "\n");
-					System.out.println("mon :: i :: " + i + " size :: " + imputedMMInfoFile.size());
-					System.out.println("mon :: startChr :: " + startChr + " endChr :: " + endChr);
-					System.out.println("");
-					*/
+					 * System.out.println("mon :: INIT i :: " + i + "\n");
+					 * System.out.println("mon :: i :: " + i + " size :: " +
+					 * imputedMMInfoFile.size()); System.out.println("mon :: startChr :: " +
+					 * startChr + " endChr :: " + endChr); System.out.println("");
+					 */
 
 				} else if (chromo == 23) {
 
@@ -886,6 +888,8 @@ public class ImputationFiles {
 
 		int indexChr = chromo - this.startChr;
 		int indexChunk = lim1 / chunkSize;
+		System.out.println("Asking for imputation file of panel " + rPanelIndex + " and chromo " + chromo
+				+ " and serving " + this.imputedFile.get(rPanelIndex).get(indexChr).get(indexChunk).getFullName());
 		return this.imputedFile.get(rPanelIndex).get(indexChr).get(indexChunk).getFullName();
 	}
 
@@ -1028,8 +1032,7 @@ public class ImputationFiles {
 	 * @param chunkSize
 	 * @param finalStatus
 	 */
-	public void setImputedMalesFileFinalStatus(int rPanelIndex, int lim1, int lim2, int chunkSize,
-			String finalStatus) {
+	public void setImputedMalesFileFinalStatus(int rPanelIndex, int lim1, int lim2, int chunkSize, String finalStatus) {
 		int indexChunk = lim1 / chunkSize;
 		this.imputedMalesFile.get(rPanelIndex).get(0).get(indexChunk).setFinalStatus(finalStatus);
 	}
@@ -2499,7 +2502,7 @@ public class ImputationFiles {
 		int indexChunk = lim1 / chunkSize;
 		return this.imputedMMLogFile.get(rPanelIndex).get(indexChr).get(indexChunk).getFullName();
 	}
-	
+
 	/**
 	 * Method to access the imputedMMLogFile
 	 * 
@@ -2520,7 +2523,7 @@ public class ImputationFiles {
 		int indexChunk = lim1 / chunkSize;
 		return this.imputedMMLogMalesFile.get(rPanelIndex).get(0).get(indexChunk).getFullName();
 	}
-	
+
 	/**
 	 * Method to access the imputedMMLogFile
 	 * 
@@ -2564,7 +2567,7 @@ public class ImputationFiles {
 		int indexChunk = lim1 / chunkSize;
 		this.imputedMMLogFile.get(rPanelIndex).get(indexChr).get(indexChunk).setFinalStatus(finalStatus);
 	}
-	
+
 	/**
 	 * Method to set the finalStatus of the imputedMMLogFile
 	 * 
@@ -2586,7 +2589,7 @@ public class ImputationFiles {
 		int indexChunk = lim1 / chunkSize;
 		this.imputedMMLogMalesFile.get(rPanelIndex).get(0).get(indexChunk).setFinalStatus(finalStatus);
 	}
-	
+
 	/**
 	 * Method to set the finalStatus of the imputedMMLogFile
 	 * 
@@ -2630,7 +2633,7 @@ public class ImputationFiles {
 		int indexChunk = lim1 / chunkSize;
 		return this.filteredFile.get(rPanelIndex).get(indexChr).get(indexChunk).getFullName();
 	}
-	
+
 	/**
 	 * Method to access the filteredFile
 	 * 
@@ -2645,7 +2648,7 @@ public class ImputationFiles {
 		int indexChunk = lim1 / chunkSize;
 		return this.filteredMalesFile.get(rPanelIndex).get(0).get(indexChunk).getFullName();
 	}
-	
+
 	/**
 	 * Method to access the filteredFile
 	 * 
@@ -2683,7 +2686,7 @@ public class ImputationFiles {
 		int indexChunk = lim1 / chunkSize;
 		this.filteredFile.get(rPanelIndex).get(indexChr).get(indexChunk).setFinalStatus(finalStatus);
 	}
-	
+
 	/**
 	 * Method to set the finalStatus of filteredFile
 	 * 
@@ -2699,7 +2702,7 @@ public class ImputationFiles {
 		int indexChunk = lim1 / chunkSize;
 		this.filteredMalesFile.get(rPanelIndex).get(0).get(indexChunk).setFinalStatus(finalStatus);
 	}
-	
+
 	/**
 	 * Method to set the finalStatus of filteredFile
 	 * 
@@ -2737,7 +2740,7 @@ public class ImputationFiles {
 		int indexChunk = lim1 / chunkSize;
 		return this.filteredFile.get(rPanelIndex).get(indexChr).get(indexChunk).getFinalStatus();
 	}
-	
+
 	/**
 	 * Method to access the finalStatus of filteredFile
 	 * 
@@ -2758,7 +2761,7 @@ public class ImputationFiles {
 		int indexChunk = lim1 / chunkSize;
 		return this.filteredMalesFile.get(rPanelIndex).get(0).get(indexChunk).getFinalStatus();
 	}
-	
+
 	/**
 	 * Method to access the finalStatus of filteredFile
 	 * 
@@ -2801,7 +2804,7 @@ public class ImputationFiles {
 		int indexChunk = lim1 / chunkSize;
 		return this.filteredFileLogFile.get(rPanelIndex).get(indexChr).get(indexChunk).getFullName();
 	}
-	
+
 	/**
 	 * Method to access the filteredLogFile
 	 * 
@@ -2822,7 +2825,7 @@ public class ImputationFiles {
 		int indexChunk = lim1 / chunkSize;
 		return this.filteredLogMalesFile.get(rPanelIndex).get(0).get(indexChunk).getFullName();
 	}
-	
+
 	/**
 	 * Method to access the filteredLogFile
 	 * 
@@ -2865,7 +2868,7 @@ public class ImputationFiles {
 		int indexChunk = lim1 / chunkSize;
 		return this.filteredFileRsIdFile.get(rPanelIndex).get(indexChr).get(indexChunk).getFullName();
 	}
-	
+
 	/**
 	 * Method to access the filteredRsIdFile
 	 * 
@@ -2886,7 +2889,7 @@ public class ImputationFiles {
 		int indexChunk = lim1 / chunkSize;
 		return this.filteredRsIdMalesFile.get(rPanelIndex).get(0).get(indexChunk).getFullName();
 	}
-	
+
 	/**
 	 * Method to access the filteredRsIdFile
 	 * 

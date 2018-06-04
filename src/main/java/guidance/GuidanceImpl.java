@@ -71,6 +71,7 @@ public class GuidanceImpl {
 	private static final String RSCRIPTBINDIR = "RSCRIPTBINDIR";
 	private static final String RSCRIPTDIR = "RSCRIPTDIR";
 	private static final String SNPTESTBINARY = "SNPTESTBINARY";
+	private static final String BCFTOOLSBINARY = "BCFTOOLSBINARY";
 
 	// Method headers
 	private static final String HEADER_CONVERT_FROM_BED_TO_BED = "[convertFromBedToBed]";
@@ -1149,20 +1150,47 @@ public class GuidanceImpl {
 			}
 		} else if (phasingTool.equals("eagle")) {
 			if (chromo.equals("23")) {
+
 				cmd = phasingBinary + " --bed " + bedFile + " --bim " + bimFile + " --fam " + famFile + " --chrom "
 						+ chromo + " --geneticMapFile " + gmapFile + " --numThreads 47 --outPrefix " + myPrefix;
-				if (sex.equals("males")) {
-					cmd = phasingBinary + " --bed " + bedFile + " --bim " + bimFile + " --fam " + famFile + " --chrom "
-							+ chromo + " --geneticMapFile " + gmapFile + " --numThreads 47 --outPrefix " + myPrefix;
+				if (sex.equals(SEX1)) {
+
 					String plinkBinary = loadFromEnvironment(PLINKBINARY, HEADER_PHASING);
 					String baseDirOrigin = bedFile.substring(0, bedFile.length() - 4);
 					String baseDirDest = phasingHapsFile.substring(0, phasingHapsFile.length() - 8);
 					cmd = plinkBinary + " --bfile " + baseDirOrigin + " --recode vcf --out " + baseDirDest;
 
-				} else if (sex.equals("females")) {
+					int exitValue = -1;
+					try {
+						exitValue = ProcessUtils.execute(cmd, baseDirOrigin + STDOUT_EXTENSION,
+								baseDirOrigin + STDERR_EXTENSION);
+					} catch (IOException ioe) {
+						throw new GuidanceTaskException(ioe);
+					}
+
+					// Check process exit value
+					if (exitValue != 0) {
+						System.err.println(
+								HEADER_PHASING + "Warning executing phasingProc job, exit value is: " + exitValue);
+						System.err.println(HEADER_PHASING + "                         (This warning is not fatal).");
+					}
+
+					if (DEBUG) {
+						System.out.println(HEADER_PHASING + MSG_CMD + cmd);
+					}
+
+					// https://www.cog-genomics.org/plink/1.9/data
+					String vcfFile = baseDirDest + ".vcf";
+					String bcfBinary = loadFromEnvironment(BCFTOOLSBINARY, HEADER_PHASING);
+					//
+					// cmd = vcfBinary + " --vcf " + vcfFile + --plink --out de vcf TO haps i ja
+					// estara
+
+				} else if (sex.equals(SEX2)) {
 					cmd = phasingBinary + " --bed " + bedFile + " --bim " + bimFile + " --fam " + famFile + " --chrom "
 							+ chromo + " --geneticMapFile " + gmapFile + " --numThreads 47 --outPrefix " + myPrefix;
 				}
+
 			} else {
 				cmd = phasingBinary + " --bed " + bedFile + " --bim " + bimFile + " --fam " + famFile + " --chrom "
 						+ chromo + " --geneticMapFile " + gmapFile + " --numThreads 47 --outPrefix " + myPrefix;
@@ -2004,18 +2032,22 @@ public class GuidanceImpl {
 			// There is only one chromosome
 			// Chr 23
 			if (filteredMalesFile.equals(filteredFemalesFile)) {
-				command = "zcat " + filteredMalesFile + " | awk '{ print $1 $2 $6 $7 $53 $4 }' > " + condensedPlain
-						+ ";zcat " + filteredFemalesFile + " | awk '{ print $1 $2 $6 $7 $53 $4 }' >> " + condensedPlain
-						+ ";gzip " + condensedPlain;
+				command = "zcat " + filteredMalesFile + " | awk '{ print $1\"" + TAB + "\"$2\"" + TAB + "\"$6\"" + TAB
+						+ "\"$7\"" + TAB + "\"$53\"" + TAB + "\"$4 }' > " + condensedPlain + ";zcat "
+						+ filteredFemalesFile + " | tail -n +2 | awk '{ print $1\"" + TAB + "\"$2\"" + TAB + "\"$6\""
+						+ TAB + "\"$7\"" + TAB + "\"$53\"" + TAB + "\"$4 }' >> " + condensedPlain + ";gzip "
+						+ condensedPlain;
 			} else {
-				command = "zcat " + filteredFile + " | awk '{ print $1 $2 $6 $7 $46 $4 }' > " + condensedPlain
-						+ ";gzip " + condensedPlain;
+				command = "zcat " + filteredFile + " | awk '{ print $1\"" + TAB + "\"$2\"" + TAB + "\"$6\"" + TAB
+						+ "\"$7\"" + TAB + "\"$53\"" + TAB + "\"$4 }' > " + condensedPlain + ";gzip " + condensedPlain;
 			}
 		} else {
-			command = "zcat " + filteredFile + " | awk '{ print $1 $2 $6 $7 $46 $4 }' > " + condensedPlain + ";zcat "
-					+ filteredMalesFile + " | awk '{ print $1 $2 $6 $7 $53 $4 }' >> " + condensedPlain + ";zcat "
-					+ filteredFemalesFile + " | awk '{ print $1 $2 $6 $7 $53 $4 }' >> " + condensedPlain + ";gzip "
-					+ condensedPlain;
+			command = "zcat " + filteredFile + " | awk '{ print $1\"" + TAB + "\"$2\"" + TAB + "\"$6\"" + TAB + "\"$7\""
+					+ TAB + "\"$46\"" + TAB + "\"$4 }' > " + condensedPlain + ";zcat " + filteredMalesFile
+					+ " | tail -n +2 | awk '{ print $1\"" + TAB + "\"$2\"" + TAB + "\"$6\"" + TAB + "\"$7\"" + TAB
+					+ "\"$53\"" + TAB + "\"$4 }' >> " + condensedPlain + ";zcat " + filteredFemalesFile
+					+ " | tail -n +2 | awk '{ print $1\"" + TAB + "\"$2\"" + TAB + "\"$6\"" + TAB + "\"$7\"" + TAB
+					+ "\"$53\"" + TAB + "\"$4 }' >> " + condensedPlain + ";gzip " + condensedPlain;
 		}
 
 		try {
