@@ -178,7 +178,7 @@ public interface GuidanceItf {
 	void samtoolsBgzip(@Parameter(type = Type.FILE, direction = Direction.IN) String input,
 			@Parameter(type = Type.FILE, direction = Direction.OUT) String output,
 			@Parameter(type = Type.STRING, direction = Direction.IN) String cmdToStore);
-
+	
 	@Method(declaringClass = "guidance.GuidanceImpl")
 	@Constraints(computingUnits = "1", memorySize = "1.0f")
 	void samtoolsTabix(@Parameter(type = Type.FILE, direction = Direction.IN) String inputGz,
@@ -244,13 +244,13 @@ public interface GuidanceItf {
 			@Parameter(type = Type.STRING, direction = Direction.IN) String cmdToStore);
 	
 	@Method(declaringClass = "guidance.GuidanceImpl")
-	@Constraints(computingUnits = "1", memorySize = "${filterByInfoMem}")
+	@Constraints(computingUnits = "1", memorySize = "${filterByInfoImputeMem}")
 	void filterByInfo(@Parameter(type = Type.STRING, direction = Direction.IN) String imputationTool,
 			@Parameter(type = Type.FILE, direction = Direction.IN) String imputeFileInfo,
 			@Parameter(type = Type.FILE, direction = Direction.OUT) String inclusionRsIdFile,
 			@Parameter(type = Type.STRING, direction = Direction.IN) String threshold,
 			@Parameter(type = Type.STRING, direction = Direction.IN) String cmdToStore);
-
+	
 	@Method(declaringClass = "guidance.GuidanceImpl")
 	@Constraints(computingUnits = "1", memorySize = "${jointFilteredByAllFilesMem}")
 	void jointFilteredByAllFiles(@Parameter(type = Type.FILE, direction = Direction.IN) String filteredByAllA,

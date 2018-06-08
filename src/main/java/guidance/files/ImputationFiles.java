@@ -405,7 +405,7 @@ public class ImputationFiles {
 			}
 
 			this.imputedOutDir.add(chromoListImputedOutDir);
-			// if (chromo < 23) {
+
 			imputedFile.add(chromoListImputedFile);
 
 			imputedInfoFile.add(chromoListImputedInfoFile);
@@ -416,7 +416,7 @@ public class ImputationFiles {
 			filteredFile.add(chromoListFilteredFile);
 			filteredFileLogFile.add(chromoListFilteredLogFile);
 			filteredFileRsIdFile.add(chromoListFilteredRsIdFile);
-			// } else if (chromo == 23) {
+
 			imputedMalesFile.add(chromoListImputedMalesFile);
 
 			imputedInfoMalesFile.add(chromoListImputedInfoMalesFile);
@@ -438,7 +438,6 @@ public class ImputationFiles {
 			filteredFemalesFile.add(chromoListFilteredFemalesFile);
 			filteredLogFemalesFile.add(chromoListFilteredLogFemalesFile);
 			filteredRsIdFemalesFile.add(chromoListFilteredRsIdFemalesFile);
-			// }
 
 		}
 	}
@@ -797,60 +796,52 @@ public class ImputationFiles {
 					chromoListFilteredRsIdFemalesFile.add(chunkListFilteredRsIdFemalesFile);
 				}
 
-				if (chromo < 23) {
-
-					imputedMMOutDir.add(chromoListImputedMMOutDir);
-					imputedMMDoseVCFFile.add(chromoListImputedMMDoseVCFFile);
-					imputedFileBgzip.add(chromoListImputedFileBgzip);
-					imputedFileTbi.add(chromoListImputedFileTbi);
-					imputedMMInfoFile.add(chromoListImputedMMInfoFile);
-					imputedMMErateFile.add(chromoListImputedMMErateFile);
-					imputedMMRecFile.add(chromoListImputedMMRecFile);
-					imputedMMM3VCFFile.add(chromoListImputedMMM3VCFFile);
-					imputedMMM3VCFFileBgzip.add(chromoListImputedMMM3VCFFileBgzip);
-					imputedMMM3VCFFileTbi.add(chromoListImputedMMM3VCFFileTbi);
-					imputedMMLogFile.add(chromoListImputedMMLogFile);
-					filteredFile.add(chromoListFilteredFile);
-					filteredFileLogFile.add(chromoListFilteredLogFile);
-					filteredFileRsIdFile.add(chromoListFilteredRsIdFile);
-					/*
-					 * System.out.println("mon :: INIT i :: " + i + "\n");
-					 * System.out.println("mon :: i :: " + i + " size :: " +
-					 * imputedMMInfoFile.size()); System.out.println("mon :: startChr :: " +
-					 * startChr + " endChr :: " + endChr); System.out.println("");
-					 */
-
-				} else if (chromo == 23) {
-
-					imputedMMDoseVCFMalesFile.add(chromoListImputedMMDoseVCFMalesFile);
-					imputedMalesFileBgzip.add(chromoListImputedMalesFileBgzip);
-					imputedMalesFileTbi.add(chromoListImputedMalesFileTbi);
-					imputedMMInfoMalesFile.add(chromoListImputedMMInfoMalesFile);
-					imputedMMErateMalesFile.add(chromoListImputedMMErateMalesFile);
-					imputedMMRecMalesFile.add(chromoListImputedMMRecMalesFile);
-					imputedMMM3VCFMalesFile.add(chromoListImputedMMM3VCFMalesFile);
-					imputedMMM3VCFMalesFileBgzip.add(chromoListImputedMMM3VCFMalesFileBgzip);
-					imputedMMM3VCFMalesFileTbi.add(chromoListImputedMMM3VCFMalesFileTbi);
-					imputedMMLogMalesFile.add(chromoListImputedMMLogMalesFile);
-					filteredMalesFile.add(chromoListFilteredMalesFile);
-					filteredLogMalesFile.add(chromoListFilteredLogMalesFile);
-					filteredRsIdMalesFile.add(chromoListFilteredRsIdMalesFile);
-
-					imputedMMDoseVCFFemalesFile.add(chromoListImputedMMDoseVCFFemalesFile);
-					imputedFemalesFileBgzip.add(chromoListImputedFemalesFileBgzip);
-					imputedFemalesFileTbi.add(chromoListImputedFemalesFileTbi);
-					imputedMMInfoFemalesFile.add(chromoListImputedMMInfoFemalesFile);
-					imputedMMErateFemalesFile.add(chromoListImputedMMErateFemalesFile);
-					imputedMMRecFemalesFile.add(chromoListImputedMMRecFemalesFile);
-					imputedMMM3VCFFemalesFile.add(chromoListImputedMMM3VCFFemalesFile);
-					imputedMMM3VCFFemalesFileBgzip.add(chromoListImputedMMM3VCFFemalesFileBgzip);
-					imputedMMM3VCFFemalesFileTbi.add(chromoListImputedMMM3VCFFemalesFileTbi);
-					imputedMMLogFemalesFile.add(chromoListImputedMMLogFemalesFile);
-					filteredFemalesFile.add(chromoListFilteredFemalesFile);
-					filteredLogFemalesFile.add(chromoListFilteredLogFemalesFile);
-					filteredRsIdFemalesFile.add(chromoListFilteredRsIdFemalesFile);
-				}
 			}
+
+			imputedMMOutDir.add(chromoListImputedMMOutDir);
+
+			imputedMMDoseVCFFile.add(chromoListImputedMMDoseVCFFile);
+			imputedFileBgzip.add(chromoListImputedFileBgzip);
+			imputedFileTbi.add(chromoListImputedFileTbi);
+			imputedMMInfoFile.add(chromoListImputedMMInfoFile);
+			imputedMMErateFile.add(chromoListImputedMMErateFile);
+			imputedMMRecFile.add(chromoListImputedMMRecFile);
+			imputedMMM3VCFFile.add(chromoListImputedMMM3VCFFile);
+			imputedMMM3VCFFileBgzip.add(chromoListImputedMMM3VCFFileBgzip);
+			imputedMMM3VCFFileTbi.add(chromoListImputedMMM3VCFFileTbi);
+			imputedMMLogFile.add(chromoListImputedMMLogFile);
+			filteredFile.add(chromoListFilteredFile);
+			filteredFileLogFile.add(chromoListFilteredLogFile);
+			filteredFileRsIdFile.add(chromoListFilteredRsIdFile);
+
+			imputedMMDoseVCFMalesFile.add(chromoListImputedMMDoseVCFMalesFile);
+			imputedMalesFileBgzip.add(chromoListImputedMalesFileBgzip);
+			imputedMalesFileTbi.add(chromoListImputedMalesFileTbi);
+			imputedMMInfoMalesFile.add(chromoListImputedMMInfoMalesFile);
+			imputedMMErateMalesFile.add(chromoListImputedMMErateMalesFile);
+			imputedMMRecMalesFile.add(chromoListImputedMMRecMalesFile);
+			imputedMMM3VCFMalesFile.add(chromoListImputedMMM3VCFMalesFile);
+			imputedMMM3VCFMalesFileBgzip.add(chromoListImputedMMM3VCFMalesFileBgzip);
+			imputedMMM3VCFMalesFileTbi.add(chromoListImputedMMM3VCFMalesFileTbi);
+			imputedMMLogMalesFile.add(chromoListImputedMMLogMalesFile);
+			filteredMalesFile.add(chromoListFilteredMalesFile);
+			filteredLogMalesFile.add(chromoListFilteredLogMalesFile);
+			filteredRsIdMalesFile.add(chromoListFilteredRsIdMalesFile);
+
+			imputedMMDoseVCFFemalesFile.add(chromoListImputedMMDoseVCFFemalesFile);
+			imputedFemalesFileBgzip.add(chromoListImputedFemalesFileBgzip);
+			imputedFemalesFileTbi.add(chromoListImputedFemalesFileTbi);
+			imputedMMInfoFemalesFile.add(chromoListImputedMMInfoFemalesFile);
+			imputedMMErateFemalesFile.add(chromoListImputedMMErateFemalesFile);
+			imputedMMRecFemalesFile.add(chromoListImputedMMRecFemalesFile);
+			imputedMMM3VCFFemalesFile.add(chromoListImputedMMM3VCFFemalesFile);
+			imputedMMM3VCFFemalesFileBgzip.add(chromoListImputedMMM3VCFFemalesFileBgzip);
+			imputedMMM3VCFFemalesFileTbi.add(chromoListImputedMMM3VCFFemalesFileTbi);
+			imputedMMLogFemalesFile.add(chromoListImputedMMLogFemalesFile);
+			filteredFemalesFile.add(chromoListFilteredFemalesFile);
+			filteredLogFemalesFile.add(chromoListFilteredLogFemalesFile);
+			filteredRsIdFemalesFile.add(chromoListFilteredRsIdFemalesFile);
+
 		}
 	}
 
@@ -1737,67 +1728,6 @@ public class ImputationFiles {
 	}
 
 	/**
-	 * @param rPanelIndex
-	 * @param chromo
-	 * @param lim1
-	 * @param lim2
-	 * @param chunkSize
-	 * @param finalStatus
-	 */
-	public void setImputedFileTbiFinalStatus(int rPanelIndex, int chromo, int lim1, int lim2, int chunkSize,
-			String finalStatus) {
-		// Check that chromo index is within the bounds
-		checkChromoIndex(chromo);
-
-		// Check limits are within the bounds
-		checkLimits(chromo, lim1, lim2);
-
-		int indexChr = chromo - this.startChr;
-		int indexChunk = lim1 / chunkSize;
-		imputedFileTbi.get(rPanelIndex).get(indexChr).get(indexChunk).setFinalStatus(finalStatus);
-	}
-
-	/**
-	 * @param rPanelIndex
-	 * @param chromo
-	 * @param lim1
-	 * @param lim2
-	 * @param chunkSize
-	 * @param finalStatus
-	 */
-	public void setImputedMalesFileTbiFinalStatus(int rPanelIndex, int chromo, int lim1, int lim2, int chunkSize,
-			String finalStatus) {
-		// Check that chromo index is within the bounds
-		checkChromoIndex(chromo);
-
-		// Check limits are within the bounds
-		checkLimits(chromo, lim1, lim2);
-
-		int indexChunk = lim1 / chunkSize;
-		imputedMalesFileTbi.get(rPanelIndex).get(0).get(indexChunk).setFinalStatus(finalStatus);
-	}
-
-	/**
-	 * @param rPanelIndex
-	 * @param chromo
-	 * @param lim1
-	 * @param lim2
-	 * @param chunkSize
-	 * @param finalStatus
-	 */
-	public void setImputedFemalesFileTbiFinalStatus(int rPanelIndex, int chromo, int lim1, int lim2, int chunkSize,
-			String finalStatus) {
-		// Check that chromo index is within the bounds
-		checkChromoIndex(chromo);
-
-		// Check limits are within the bounds
-		checkLimits(chromo, lim1, lim2);
-
-		int indexChunk = lim1 / chunkSize;
-		imputedFemalesFileTbi.get(rPanelIndex).get(0).get(indexChunk).setFinalStatus(finalStatus);
-	}
-
-	/**
 	 * Method to access the imputedMMFile
 	 * 
 	 * @param rPanelIndex
@@ -1993,73 +1923,6 @@ public class ImputationFiles {
 	}
 
 	/**
-	 * Method to set the finalStatus of the imputedMMErateFile
-	 * 
-	 * @param rPanelIndex
-	 * @param chromo
-	 * @param lim1
-	 * @param lim2
-	 * @param chunkSize
-	 * @param finalStatus
-	 */
-	public void setImputedMMErateFileFinalStatus(int rPanelIndex, int chromo, int lim1, int lim2, int chunkSize,
-			String finalStatus) {
-		// Check that chromo index is within the bounds
-		checkChromoIndex(chromo);
-
-		// Check limits are within the bounds
-		checkLimits(chromo, lim1, lim2);
-
-		int indexChr = chromo - this.startChr;
-		int indexChunk = lim1 / chunkSize;
-		this.imputedMMErateFile.get(rPanelIndex).get(indexChr).get(indexChunk).setFinalStatus(finalStatus);
-	}
-
-	/**
-	 * Method to set the finalStatus of the imputedMMErateFile
-	 * 
-	 * @param rPanelIndex
-	 * @param chromo
-	 * @param lim1
-	 * @param lim2
-	 * @param chunkSize
-	 * @param finalStatus
-	 */
-	public void setImputedMMErateMalesFileFinalStatus(int rPanelIndex, int chromo, int lim1, int lim2, int chunkSize,
-			String finalStatus) {
-		// Check that chromo index is within the bounds
-		checkChromoIndex(chromo);
-
-		// Check limits are within the bounds
-		checkLimits(chromo, lim1, lim2);
-
-		int indexChunk = lim1 / chunkSize;
-		this.imputedMMErateMalesFile.get(rPanelIndex).get(0).get(indexChunk).setFinalStatus(finalStatus);
-	}
-
-	/**
-	 * Method to set the finalStatus of the imputedMMErateFile
-	 * 
-	 * @param rPanelIndex
-	 * @param chromo
-	 * @param lim1
-	 * @param lim2
-	 * @param chunkSize
-	 * @param finalStatus
-	 */
-	public void setImputedMMErateFemalesFileFinalStatus(int rPanelIndex, int chromo, int lim1, int lim2, int chunkSize,
-			String finalStatus) {
-		// Check that chromo index is within the bounds
-		checkChromoIndex(chromo);
-
-		// Check limits are within the bounds
-		checkLimits(chromo, lim1, lim2);
-
-		int indexChunk = lim1 / chunkSize;
-		this.imputedMMErateFemalesFile.get(rPanelIndex).get(0).get(indexChunk).setFinalStatus(finalStatus);
-	}
-
-	/**
 	 * Method to access the imputedMMRecFile
 	 * 
 	 * @param rPanelIndex
@@ -2121,73 +1984,6 @@ public class ImputationFiles {
 
 		int indexChunk = lim1 / chunkSize;
 		return this.imputedMMRecFemalesFile.get(rPanelIndex).get(0).get(indexChunk).getFullName();
-	}
-
-	/**
-	 * Method to set the finalStatus of the imputeMMRecFile
-	 * 
-	 * @param rPanelIndex
-	 * @param chromo
-	 * @param lim1
-	 * @param lim2
-	 * @param chunkSize
-	 * @param finalStatus
-	 */
-	public void setImputedMMRecFileFinalStatus(int rPanelIndex, int chromo, int lim1, int lim2, int chunkSize,
-			String finalStatus) {
-		// Check that chromo index is within the bounds
-		checkChromoIndex(chromo);
-
-		// Check limits are within the bounds
-		checkLimits(chromo, lim1, lim2);
-
-		int indexChr = chromo - this.startChr;
-		int indexChunk = lim1 / chunkSize;
-		this.imputedMMRecFile.get(rPanelIndex).get(indexChr).get(indexChunk).setFinalStatus(finalStatus);
-	}
-
-	/**
-	 * Method to set the finalStatus of the imputeMMRecFile
-	 * 
-	 * @param rPanelIndex
-	 * @param chromo
-	 * @param lim1
-	 * @param lim2
-	 * @param chunkSize
-	 * @param finalStatus
-	 */
-	public void setImputedMMRecMalesFileFinalStatus(int rPanelIndex, int chromo, int lim1, int lim2, int chunkSize,
-			String finalStatus) {
-		// Check that chromo index is within the bounds
-		checkChromoIndex(chromo);
-
-		// Check limits are within the bounds
-		checkLimits(chromo, lim1, lim2);
-
-		int indexChunk = lim1 / chunkSize;
-		this.imputedMMRecMalesFile.get(rPanelIndex).get(0).get(indexChunk).setFinalStatus(finalStatus);
-	}
-
-	/**
-	 * Method to set the finalStatus of the imputeMMRecFile
-	 * 
-	 * @param rPanelIndex
-	 * @param chromo
-	 * @param lim1
-	 * @param lim2
-	 * @param chunkSize
-	 * @param finalStatus
-	 */
-	public void setImputedMMRecFemalesFileFinalStatus(int rPanelIndex, int chromo, int lim1, int lim2, int chunkSize,
-			String finalStatus) {
-		// Check that chromo index is within the bounds
-		checkChromoIndex(chromo);
-
-		// Check limits are within the bounds
-		checkLimits(chromo, lim1, lim2);
-
-		int indexChunk = lim1 / chunkSize;
-		this.imputedMMRecFemalesFile.get(rPanelIndex).get(0).get(indexChunk).setFinalStatus(finalStatus);
 	}
 
 	/**
@@ -2255,73 +2051,6 @@ public class ImputationFiles {
 	}
 
 	/**
-	 * Method to set the finalStatus of the imputedMMDoseFile
-	 * 
-	 * @param rPanelIndex
-	 * @param chromo
-	 * @param lim1
-	 * @param lim2
-	 * @param chunkSize
-	 * @param finalStatus
-	 */
-	public void setImputedMMM3VCFFileFinalStatus(int rPanelIndex, int chromo, int lim1, int lim2, int chunkSize,
-			String finalStatus) {
-		// Check that chromo index is within the bounds
-		checkChromoIndex(chromo);
-
-		// Check limits are within the bounds
-		checkLimits(chromo, lim1, lim2);
-
-		int indexChr = chromo - startChr;
-		int indexChunk = lim1 / chunkSize;
-		imputedMMM3VCFFile.get(rPanelIndex).get(indexChr).get(indexChunk).setFinalStatus(finalStatus);
-	}
-
-	/**
-	 * Method to set the finalStatus of the imputedMMDoseFile
-	 * 
-	 * @param rPanelIndex
-	 * @param chromo
-	 * @param lim1
-	 * @param lim2
-	 * @param chunkSize
-	 * @param finalStatus
-	 */
-	public void setImputedMMM3VCFMalesFileFinalStatus(int rPanelIndex, int chromo, int lim1, int lim2, int chunkSize,
-			String finalStatus) {
-		// Check that chromo index is within the bounds
-		checkChromoIndex(chromo);
-
-		// Check limits are within the bounds
-		checkLimits(chromo, lim1, lim2);
-
-		int indexChunk = lim1 / chunkSize;
-		imputedMMM3VCFMalesFile.get(rPanelIndex).get(0).get(indexChunk).setFinalStatus(finalStatus);
-	}
-
-	/**
-	 * Method to set the finalStatus of the imputedMMDoseFile
-	 * 
-	 * @param rPanelIndex
-	 * @param chromo
-	 * @param lim1
-	 * @param lim2
-	 * @param chunkSize
-	 * @param finalStatus
-	 */
-	public void setImputedMMM3VCFFemalesFileFinalStatus(int rPanelIndex, int chromo, int lim1, int lim2, int chunkSize,
-			String finalStatus) {
-		// Check that chromo index is within the bounds
-		checkChromoIndex(chromo);
-
-		// Check limits are within the bounds
-		checkLimits(chromo, lim1, lim2);
-
-		int indexChunk = lim1 / chunkSize;
-		imputedMMM3VCFFemalesFile.get(rPanelIndex).get(0).get(indexChunk).setFinalStatus(finalStatus);
-	}
-
-	/**
 	 * @param rPanelIndex
 	 * @param chromo
 	 * @param lim1
@@ -2377,108 +2106,6 @@ public class ImputationFiles {
 
 		int indexChunk = lim1 / chunkSize;
 		return imputedMMM3VCFFemalesFileBgzip.get(rPanelIndex).get(0).get(indexChunk).getFullName();
-	}
-
-	/**
-	 * @param rPanelIndex
-	 * @param chromo
-	 * @param lim1
-	 * @param lim2
-	 * @param chunkSize
-	 * @param finalStatus
-	 */
-	public void setImputedMMM3VCFFileFinalStatusBgzip(int rPanelIndex, int chromo, int lim1, int lim2, int chunkSize,
-			String finalStatus) {
-		// Check that chromo index is within the bounds
-		checkChromoIndex(chromo);
-
-		// Check limits are within the bounds
-		checkLimits(chromo, lim1, lim2);
-
-		int indexChr = chromo - startChr;
-		int indexChunk = lim1 / chunkSize;
-		imputedMMM3VCFFileBgzip.get(rPanelIndex).get(indexChr).get(indexChunk).setFinalStatus(finalStatus);
-	}
-
-	/**
-	 * @param rPanelIndex
-	 * @param chromo
-	 * @param lim1
-	 * @param lim2
-	 * @param chunkSize
-	 * @param finalStatus
-	 */
-	public void setImputedMMM3VCFMalesFileFinalStatusBgzip(int rPanelIndex, int chromo, int lim1, int lim2,
-			int chunkSize, String finalStatus) {
-		// Check that chromo index is within the bounds
-		checkChromoIndex(chromo);
-
-		// Check limits are within the bounds
-		checkLimits(chromo, lim1, lim2);
-
-		int indexChunk = lim1 / chunkSize;
-		imputedMMM3VCFMalesFileBgzip.get(rPanelIndex).get(0).get(indexChunk).setFinalStatus(finalStatus);
-	}
-
-	/**
-	 * @param rPanelIndex
-	 * @param chromo
-	 * @param lim1
-	 * @param lim2
-	 * @param chunkSize
-	 * @param finalStatus
-	 */
-	public void setImputedMMM3VCFFemalesFileFinalStatusBgzip(int rPanelIndex, int chromo, int lim1, int lim2,
-			int chunkSize, String finalStatus) {
-		// Check that chromo index is within the bounds
-		checkChromoIndex(chromo);
-
-		// Check limits are within the bounds
-		checkLimits(chromo, lim1, lim2);
-
-		int indexChunk = lim1 / chunkSize;
-		imputedMMM3VCFFemalesFileBgzip.get(rPanelIndex).get(0).get(indexChunk).setFinalStatus(finalStatus);
-	}
-
-	/**
-	 * @param rPanelIndex
-	 * @param chromo
-	 * @param lim1
-	 * @param lim2
-	 * @param chunkSize
-	 * @return
-	 */
-	public String getImputedMMM3VCFFileTbi(int rPanelIndex, int chromo, int lim1, int lim2, int chunkSize) {
-		// Check that chromo index is within the bounds
-		checkChromoIndex(chromo);
-
-		// Check limits are within the bounds
-		checkLimits(chromo, lim1, lim2);
-
-		int indexChr = chromo - startChr;
-		int indexChunk = lim1 / chunkSize;
-		return imputedMMM3VCFFileTbi.get(rPanelIndex).get(indexChr).get(indexChunk).getFullName();
-	}
-
-	/**
-	 * @param rPanelIndex
-	 * @param chromo
-	 * @param lim1
-	 * @param lim2
-	 * @param chunkSize
-	 * @param finalStatus
-	 */
-	public void setImputedMMM3VCFFileFinalStatusTbi(int rPanelIndex, int chromo, int lim1, int lim2, int chunkSize,
-			String finalStatus) {
-		// Check that chromo index is within the bounds
-		checkChromoIndex(chromo);
-
-		// Check limits are within the bounds
-		checkLimits(chromo, lim1, lim2);
-
-		int indexChr = chromo - startChr;
-		int indexChunk = lim1 / chunkSize;
-		imputedMMM3VCFFileTbi.get(rPanelIndex).get(indexChr).get(indexChunk).setFinalStatus(finalStatus);
 	}
 
 	/**
@@ -2543,73 +2170,6 @@ public class ImputationFiles {
 
 		int indexChunk = lim1 / chunkSize;
 		return this.imputedMMLogFemalesFile.get(rPanelIndex).get(0).get(indexChunk).getFullName();
-	}
-
-	/**
-	 * Method to set the finalStatus of the imputedMMLogFile
-	 * 
-	 * @param rPanelIndex
-	 * @param chromo
-	 * @param lim1
-	 * @param lim2
-	 * @param chunkSize
-	 * @param finalStatus
-	 */
-	public void setImputedMMLogFileFinalStatus(int rPanelIndex, int chromo, int lim1, int lim2, int chunkSize,
-			String finalStatus) {
-		// Check that chromo index is within the bounds
-		checkChromoIndex(chromo);
-
-		// Check limits are within the bounds
-		checkLimits(chromo, lim1, lim2);
-
-		int indexChr = chromo - this.startChr;
-		int indexChunk = lim1 / chunkSize;
-		this.imputedMMLogFile.get(rPanelIndex).get(indexChr).get(indexChunk).setFinalStatus(finalStatus);
-	}
-
-	/**
-	 * Method to set the finalStatus of the imputedMMLogFile
-	 * 
-	 * @param rPanelIndex
-	 * @param chromo
-	 * @param lim1
-	 * @param lim2
-	 * @param chunkSize
-	 * @param finalStatus
-	 */
-	public void setImputedMMLogMalesFileFinalStatus(int rPanelIndex, int chromo, int lim1, int lim2, int chunkSize,
-			String finalStatus) {
-		// Check that chromo index is within the bounds
-		checkChromoIndex(chromo);
-
-		// Check limits are within the bounds
-		checkLimits(chromo, lim1, lim2);
-
-		int indexChunk = lim1 / chunkSize;
-		this.imputedMMLogMalesFile.get(rPanelIndex).get(0).get(indexChunk).setFinalStatus(finalStatus);
-	}
-
-	/**
-	 * Method to set the finalStatus of the imputedMMLogFile
-	 * 
-	 * @param rPanelIndex
-	 * @param chromo
-	 * @param lim1
-	 * @param lim2
-	 * @param chunkSize
-	 * @param finalStatus
-	 */
-	public void setImputedMMLogFemalesFileFinalStatus(int rPanelIndex, int chromo, int lim1, int lim2, int chunkSize,
-			String finalStatus) {
-		// Check that chromo index is within the bounds
-		checkChromoIndex(chromo);
-
-		// Check limits are within the bounds
-		checkLimits(chromo, lim1, lim2);
-
-		int indexChunk = lim1 / chunkSize;
-		this.imputedMMLogFemalesFile.get(rPanelIndex).get(0).get(indexChunk).setFinalStatus(finalStatus);
 	}
 
 	/**
@@ -2717,70 +2277,6 @@ public class ImputationFiles {
 			String finalStatus) {
 		int indexChunk = lim1 / chunkSize;
 		this.filteredFemalesFile.get(rPanelIndex).get(0).get(indexChunk).setFinalStatus(finalStatus);
-	}
-
-	/**
-	 * Method to access the finalStatus of filteredFile
-	 * 
-	 * @param rPanelIndex
-	 * @param chromo
-	 * @param lim1
-	 * @param lim2
-	 * @param chunkSize
-	 * @return
-	 */
-	public String getFilteredFileFinalStatus(int rPanelIndex, int chromo, int lim1, int lim2, int chunkSize) {
-		// Check that chromo index is within the bounds
-		checkChromoIndex(chromo);
-
-		// Check limits are within the bounds
-		checkLimits(chromo, lim1, lim2);
-
-		int indexChr = chromo - this.startChr;
-		int indexChunk = lim1 / chunkSize;
-		return this.filteredFile.get(rPanelIndex).get(indexChr).get(indexChunk).getFinalStatus();
-	}
-
-	/**
-	 * Method to access the finalStatus of filteredFile
-	 * 
-	 * @param rPanelIndex
-	 * @param chromo
-	 * @param lim1
-	 * @param lim2
-	 * @param chunkSize
-	 * @return
-	 */
-	public String getFilteredMalesFileFinalStatus(int rPanelIndex, int chromo, int lim1, int lim2, int chunkSize) {
-		// Check that chromo index is within the bounds
-		checkChromoIndex(chromo);
-
-		// Check limits are within the bounds
-		checkLimits(chromo, lim1, lim2);
-
-		int indexChunk = lim1 / chunkSize;
-		return this.filteredMalesFile.get(rPanelIndex).get(0).get(indexChunk).getFinalStatus();
-	}
-
-	/**
-	 * Method to access the finalStatus of filteredFile
-	 * 
-	 * @param rPanelIndex
-	 * @param chromo
-	 * @param lim1
-	 * @param lim2
-	 * @param chunkSize
-	 * @return
-	 */
-	public String getFilteredFemalesFileFinalStatus(int rPanelIndex, int chromo, int lim1, int lim2, int chunkSize) {
-		// Check that chromo index is within the bounds
-		checkChromoIndex(chromo);
-
-		// Check limits are within the bounds
-		checkLimits(chromo, lim1, lim2);
-
-		int indexChunk = lim1 / chunkSize;
-		return this.filteredFemalesFile.get(rPanelIndex).get(0).get(indexChunk).getFinalStatus();
 	}
 
 	/**

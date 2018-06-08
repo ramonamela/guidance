@@ -98,7 +98,7 @@ from_phasing_to_imputation      | 0 0 0  0 0 0 0  1 0 0 0  0 0 0 0  0 0 0 0  0 0
 from_imputation                 | 0 0 0  0 0 0 0  0 1 1 1  1 1 1 1  1 1 1 1  1 1 1 1  1 0 0 0 | 0x007FFF8   ***
 from_imputation_to_summary      | 0 0 0  0 0 0 0  0 1 1 1  1 1 1 1  1 1 1 1  1 0 0 0  0 0 0 0 | 0x007FF88
 from_imputation_to_filterByAll  | 0 0 0  0 0 0 0  0 1 1 1  1 1 1 0  0 0 0 0  0 0 0 0  0 0 0 0 | 0x007E000 NEW
-from_imputation_to_association | 0 0 0  0 0 0 0  0 1 1 1  0 0 0 0  0 0 0 0  0 0 0 0  0 0 0 0 | 0x0070000
+from_imputation_to_association  | 0 0 0  0 0 0 0  0 1 1 1  0 0 0 0  0 0 0 0  0 0 0 0  0 0 0 0 | 0x0070000
 from_imputation_to_filterByInfo | 0 0 0  0 0 0 0  0 1 0 0  0 0 0 0  0 0 0 0  0 0 0 0  0 0 0 0 | 0x0040000
 from_filterByInfo_to_qctoolS    | 0 0 0  0 0 0 0  0 0 1 0  0 0 0 0  0 0 0 0  0 0 0 0  0 0 0 0 | 0x0020000
 from_qctoolS_to_association     | 0 0 0  0 0 0 0  0 0 0 1  0 0 0 0  0 0 0 0  0 0 0 0  0 0 0 0 | 0x0010000
