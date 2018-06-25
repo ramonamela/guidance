@@ -146,6 +146,8 @@ public class Guidance {
 		// Verify that all environment variables have been defined correctly
 		verifyEnvVar();
 
+		System.out.println("Environment variables have been verified");
+		
 		// Print information of Guidance version
 		printGuidancePackageVersion();
 		if (DEBUG) {
@@ -3406,7 +3408,7 @@ public class Guidance {
 
 			} else if (imputationTool.equals("minimac")) {
 
-				cmdToStore = QCTOOL_BINARY_NEW + " -g " + imputeFile + " -og " + filteredFile + " -incl-rsids "
+				cmdToStore = QCTOOL_BINARY + " -g " + imputeFile + " -og " + filteredFile + " -incl-rsids "
 						+ filteredRsIdFile + " -omit-chromosome -force -log " + filteredLogFile
 						+ " -vcf-genotype-field GP";
 			}

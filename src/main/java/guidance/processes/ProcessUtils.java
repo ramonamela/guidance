@@ -45,6 +45,32 @@ public class ProcessUtils {
         // Return the exit value
         return exitValue;
     }
+    
+    public static int execute(String cmd, String outputFile, String errorFile, String variableToErase) throws IOException {
+        // Create the process
+        ProcessBuilder pb = new ProcessBuilder(cmd.split(" "));
+
+        // Remove unnecessary environment
+        pb.environment().remove("LD_PRELOAD");
+        pb.environment().remove(variableToErase);
+
+        // Start the process
+        Process p = pb.start();
+
+        // Handle the output and the error
+        readOutputAndError(p.getInputStream(), outputFile, p.getErrorStream(), errorFile);
+
+        // Retrieve the exit value
+        int exitValue = -1;
+        try {
+            exitValue = p.waitFor();
+        } catch (InterruptedException ie) {
+            Thread.currentThread().interrupt();
+        }
+
+        // Return the exit value
+        return exitValue;
+    }
 
     /**
      * Executes the given cmd. At the end of the command execution returns the exitValue

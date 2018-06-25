@@ -879,7 +879,8 @@ public class GuidanceImpl {
 		if (imputationTool.equals("impute")) {
 			qctoolBinary = loadFromEnvironment(QCTOOLBINARY, HEADER_QCTOOLS);
 		} else if (imputationTool.equals("minimac")) {
-			qctoolBinary = loadFromEnvironment(QCTOOLBINARYNEW, HEADER_QCTOOLS);
+			qctoolBinary = loadFromEnvironment(QCTOOLBINARY, HEADER_QCTOOLS);
+			// qctoolBinary = loadFromEnvironment(QCTOOLBINARY, HEADER_QCTOOLS);
 		}
 
 		if (DEBUG) {
@@ -909,6 +910,7 @@ public class GuidanceImpl {
 			// We reused the imputFileGz
 			imputeFileGz = imputeFile + ".gz";
 			FileUtils.gzipFile(imputeFile, imputeFileGz);
+
 		}
 
 		String cmd = null;
@@ -930,7 +932,7 @@ public class GuidanceImpl {
 				System.out.println("\n[DEBUG] Execution: FALSE");
 				execution = false;
 			} else {
-				System.out.println("\n[DEBUG] Command: TRUE");
+				System.out.println("\n[DEBUG] Execution: TRUE");
 				execution = true;
 			}
 
@@ -947,14 +949,26 @@ public class GuidanceImpl {
 			int exitValue = -1;
 			try {
 				String outputBase = filteredFile.substring(0, filteredFile.length() - 3);
-				exitValue = ProcessUtils.execute(cmd, outputBase + STDOUT_EXTENSION, outputBase + STDERR_EXTENSION);
+				exitValue = ProcessUtils.execute(cmd, outputBase + STDOUT_EXTENSION, outputBase + STDERR_EXTENSION, "LD_LIBRARY_PATH");
 			} catch (IOException ioe) {
 				throw new GuidanceTaskException(ioe);
 			}
 
 			// Check process exit value
+			/*
 			if (exitValue != 0) {
-				throw new GuidanceTaskException(HEADER_GTOOLS + ERROR_BINARY_EXEC + exitValue);
+				String sandBox = new File(filteredFile).getParent();
+				try {
+					System.out.println("mv " + sandBox + "/* /gpfs/scratch/pr1ees00/pr1ees14/GCAT/SHAPEIT_IMPUTE/qctoolsLogs/");
+					ProcessUtils.executeWithoutOutputs("mv " + sandBox + "/* /gpfs/scratch/pr1ees00/pr1ees14/GCAT/SHAPEIT_IMPUTE/qctoolsLogs/");
+				} catch (IOException ioe) {
+					System.out.println("IOException when moving the files " + ioe);
+				}
+				throw new GuidanceTaskException(HEADER_QCTOOLS + ERROR_BINARY_EXEC + exitValue);
+			}
+			*/
+			if (exitValue != 0) {
+				throw new GuidanceTaskException(HEADER_QCTOOLS + ERROR_BINARY_EXEC + exitValue);
 			}
 		} else {
 			System.out.println("[qctoolS]: Empty chunk. Output files being created...");
@@ -972,7 +986,7 @@ public class GuidanceImpl {
 				FileUtils.createEmptyFile(filteredFile, HEADER_GTOOLS);
 				FileUtils.createEmptyFile(filteredLogFile, HEADER_GTOOLS);
 			} catch (IOException gte) {
-				throw new GuidanceTaskException(HEADER_GTOOLS + ERROR_BINARY_EXEC + gte);
+				throw new GuidanceTaskException(HEADER_QCTOOLS + ERROR_BINARY_EXEC + gte);
 			}
 
 		}
