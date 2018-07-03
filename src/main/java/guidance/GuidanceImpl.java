@@ -2494,8 +2494,9 @@ public class GuidanceImpl {
 						if (!infoS.equals("-")) {
 							infoD = Double.parseDouble(infoS);
 						} else {
-							System.out.println("Couldn't convert " + infoS);
+							//System.out.println("Couldn't convert " + infoS);
 							//infoStr = splittedLine[inputFileHashTableIndex.get("info_all")];
+							infoD = 1.0;
 						}
 					}
 
