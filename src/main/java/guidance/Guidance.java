@@ -744,30 +744,7 @@ public class Guidance {
 		 * them and then we create a text file that list the files that we want to
 		 * clean. After the end of the execution, the user can delete them.
 		 */
-		/*
-		 * try{ compressCommonFiles(parsingArgs, commonFilesInfo); } catch (Exception
-		 * e){ LOGGER.error("[Guidance] Exception compressing commonFilesInfo."); }
-		 * 
-		 * try{ compressImputationFiles(parsingArgs, generalChromoInfo, rpanelTypes,
-		 * imputationFilesInfo); } catch (Exception e){
-		 * LOGGER.error("[Guidance] Exception compressing imputationFilesInfo."); }
-		 * 
-		 * try{ compressAssocFiles(parsingArgs, generalChromoInfo, rpanelTypes,
-		 * assocFilesInfo); } catch (Exception e){
-		 * LOGGER.error("[Guidance] Exception compressing imputationFilesInfo."); }
-		 * 
-		 * // Now we delete files try{ deleteCommonFiles(parsingArgs, commonFilesInfo);
-		 * } catch (Exception e){
-		 * LOGGER.error("[Guidance] Exception deleting commonFilesInfo."); }
-		 * 
-		 * try{ deleteImputationFiles(parsingArgs, generalChromoInfo, rpanelTypes,
-		 * imputationFilesInfo); } catch (Exception e){
-		 * LOGGER.error("[Guidance] Exception deleting imputationFilesInfo."); }
-		 * 
-		 * try{ deleteAssocFiles(parsingArgs, generalChromoInfo, rpanelTypes,
-		 * assocFilesInfo); } catch (Exception e){
-		 * LOGGER.error("[Guidance] Exception deleting imputationFilesInfo."); }
-		 */
+
 	}
 
 	/**
@@ -788,14 +765,13 @@ public class Guidance {
 			CommonFiles commonFilesInfo) {
 
 		int chunkSize = parsingArgs.getChunkSize();
-		double infoThreshold = parsingArgs.getInfoThreshold();
 
 		String rpanelDir = parsingArgs.getRpanelDir(panelIndex);
 
 		String lim1S = Integer.toString(lim1);
 		String lim2S = Integer.toString(lim2);
 		String chrS = Integer.toString(chrNumber);
-		String infoThresholdS = Double.toString(infoThreshold);
+		// String infoThresholdS = Double.toString(infoThreshold);
 		String imputationTool = parsingArgs.getImputationTool();
 		String phasingTool = parsingArgs.getPhasingTool();
 
@@ -876,7 +852,7 @@ public class Guidance {
 					doImputationWithImpute(parsingArgs, chrS, mixedGmapFile, knownHapFile, legendFile,
 							mixedPhasingHapsFile, mixedSampleFile, lim1S, lim2S, mixedPairsFile, mixedImputeFile,
 							mixedImputeFileInfo, mixedImputeFileSummary, mixedImputeFileWarnings, NO_SEX);
-					doFilterByInfo(parsingArgs, mixedImputeFileInfo, mixedFilteredRsIdFile, infoThresholdS, chrS);
+					doFilterByInfo(parsingArgs, mixedImputeFileInfo, mixedFilteredRsIdFile, chrS);
 					doQctoolS(parsingArgs, mixedImputeFile, mixedFilteredRsIdFile, mixedFilteredFile,
 							mixedFilteredLogFile, chrS);
 
@@ -936,8 +912,7 @@ public class Guidance {
 							mixedImputeMalesFile, mixedImputeMalesFileInfo, mixedImputeMalesFileSummary,
 							mixedImputeMalesFileWarnings, SEX1);
 
-					doFilterByInfo(parsingArgs, mixedImputeMalesFileInfo, mixedFilteredRsIdMalesFile, infoThresholdS,
-							chrS);
+					doFilterByInfo(parsingArgs, mixedImputeMalesFileInfo, mixedFilteredRsIdMalesFile, chrS);
 
 					doQctoolS(parsingArgs, mixedImputeMalesFile, mixedFilteredRsIdMalesFile, mixedFilteredMalesFile,
 							mixedFilteredLogMalesFile, chrS);
@@ -947,8 +922,7 @@ public class Guidance {
 							mixedImputeFemalesFile, mixedImputeFemalesFileInfo, mixedImputeFemalesFileSummary,
 							mixedImputeFemalesFileWarnings, SEX2);
 
-					doFilterByInfo(parsingArgs, mixedImputeFemalesFileInfo, mixedFilteredRsIdFemalesFile,
-							infoThresholdS, chrS);
+					doFilterByInfo(parsingArgs, mixedImputeFemalesFileInfo, mixedFilteredRsIdFemalesFile, chrS);
 
 					doQctoolS(parsingArgs, mixedImputeFemalesFile, mixedFilteredRsIdFemalesFile,
 							mixedFilteredFemalesFile, mixedFilteredLogFemalesFile, chrS);
@@ -959,7 +933,7 @@ public class Guidance {
 					doImputationWithImpute(parsingArgs, chrS, gmapFile, knownHapFile, legendFile, mixedPhasingHapsFile,
 							mixedPhasingSampleFile, lim1S, lim2S, mixedPairsFile, mixedImputeFile, mixedImputeFileInfo,
 							mixedImputeFileSummary, mixedImputeFileWarnings, NO_SEX);
-					doFilterByInfo(parsingArgs, mixedImputeFileInfo, mixedFilteredRsIdFile, infoThresholdS, chrS);
+					doFilterByInfo(parsingArgs, mixedImputeFileInfo, mixedFilteredRsIdFile, chrS);
 					doQctoolS(parsingArgs, mixedImputeFile, mixedFilteredRsIdFile, mixedFilteredFile,
 							mixedFilteredLogFile, chrS);
 
@@ -1018,8 +992,7 @@ public class Guidance {
 							mixedImputeMalesFile, mixedImputeMalesFileInfo, mixedImputeMalesFileSummary,
 							mixedImputeMalesFileWarnings, SEX1);
 
-					doFilterByInfo(parsingArgs, mixedImputeMalesFileInfo, mixedFilteredRsIdMalesFile, infoThresholdS,
-							chrS);
+					doFilterByInfo(parsingArgs, mixedImputeMalesFileInfo, mixedFilteredRsIdMalesFile, chrS);
 
 					doQctoolS(parsingArgs, mixedImputeMalesFile, mixedFilteredRsIdMalesFile, mixedFilteredMalesFile,
 							mixedFilteredLogMalesFile, chrS);
@@ -1029,8 +1002,7 @@ public class Guidance {
 							mixedImputeFemalesFile, mixedImputeFemalesFileInfo, mixedImputeFemalesFileSummary,
 							mixedImputeFemalesFileWarnings, SEX2);
 
-					doFilterByInfo(parsingArgs, mixedImputeFemalesFileInfo, mixedFilteredRsIdFemalesFile,
-							infoThresholdS, chrS);
+					doFilterByInfo(parsingArgs, mixedImputeFemalesFileInfo, mixedFilteredRsIdFemalesFile, chrS);
 
 					doQctoolS(parsingArgs, mixedImputeFemalesFile, mixedFilteredRsIdFemalesFile,
 							mixedFilteredFemalesFile, mixedFilteredLogFemalesFile, chrS);
@@ -1105,7 +1077,7 @@ public class Guidance {
 						lim2S, mixedImputeMMInfoFile, mixedImputeMMErateFile, mixedImputeMMRecFile,
 						mixedImputeMMM3VCFFile, mixedImputeMMLogFile, mixedImputeFileBgzip, mixedImputeFileTbi, NO_SEX);
 
-				doFilterByInfo(parsingArgs, mixedImputeMMInfoFile, mixedFilteredRsIdFile, infoThresholdS, chrS);
+				doFilterByInfo(parsingArgs, mixedImputeMMInfoFile, mixedFilteredRsIdFile, chrS);
 
 				doQctoolS(parsingArgs, mixedImputeFileBgzip, mixedFilteredRsIdFile, mixedFilteredFile,
 						mixedFilteredLogFile, chrS);
@@ -1251,7 +1223,7 @@ public class Guidance {
 
 		int chunkSize = parsingArgs.getChunkSize();
 		double mafThreshold = parsingArgs.getMafThreshold();
-		double infoThreshold = parsingArgs.getInfoThreshold();
+		//double infoThreshold = parsingArgs.getInfoThreshold();
 		double hweCohortThreshold = parsingArgs.getHweCohortThreshold();
 		double hweCasesThreshold = parsingArgs.getHweCasesThreshold();
 		double hweControlsThreshold = parsingArgs.getHweControlsThreshold();
@@ -1262,7 +1234,7 @@ public class Guidance {
 		String chrS = Integer.toString(chrNumber);
 
 		String mafThresholdS = Double.toString(mafThreshold);
-		String infoThresholdS = Double.toString(infoThreshold);
+		//String infoThresholdS = Double.toString(infoThreshold);
 		String hweCohortThresholdS = Double.toString(hweCohortThreshold);
 		String hweCasesThresholdS = Double.toString(hweCasesThreshold);
 		String hweControlsThresholdS = Double.toString(hweControlsThreshold);
@@ -1308,7 +1280,7 @@ public class Guidance {
 						chunkSize);
 
 				doCollectSummary(parsingArgs, chrS, mixedImputeMalesFileInfo, snptestOutMalesFile, summaryMalesFile,
-						mafThresholdS, infoThresholdS, hweCohortThresholdS, hweCasesThresholdS, hweControlsThresholdS);
+						mafThresholdS, hweCohortThresholdS, hweCasesThresholdS, hweControlsThresholdS);
 
 				String mixedImputeFemalesFileInfo = imputationFilesInfo.getImputedInfoFemalesFile(panelIndex, chrNumber,
 						lim1, lim2, chunkSize);
@@ -1317,7 +1289,7 @@ public class Guidance {
 						chunkSize);
 
 				doCollectSummary(parsingArgs, chrS, mixedImputeFemalesFileInfo, snptestOutFemalesFile,
-						summaryFemalesFile, mafThresholdS, infoThresholdS, hweCohortThresholdS, hweCasesThresholdS,
+						summaryFemalesFile, mafThresholdS, hweCohortThresholdS, hweCasesThresholdS,
 						hweControlsThresholdS);
 
 				String assocMalesFilteredByAll = assocFilesInfo.getSummaryFilteredMalesFile(testTypeIndex, panelIndex,
@@ -1347,10 +1319,10 @@ public class Guidance {
 						chunkSize);
 
 				doCollectSummary(parsingArgs, chrS, mixedImputedMMInfoMalesFile, snptestOutMalesFile, summaryMalesFile,
-						mafThresholdS, infoThresholdS, hweCohortThresholdS, hweCasesThresholdS, hweControlsThresholdS);
+						mafThresholdS, hweCohortThresholdS, hweCasesThresholdS, hweControlsThresholdS);
 
 				doCollectSummary(parsingArgs, chrS, mixedImputedMMInfoFemalesFile, snptestOutFemalesFile,
-						summaryFemalesFile, mafThresholdS, infoThresholdS, hweCohortThresholdS, hweCasesThresholdS,
+						summaryFemalesFile, mafThresholdS, hweCohortThresholdS, hweCasesThresholdS,
 						hweControlsThresholdS);
 
 				String assocMalesFilteredByAll = assocFilesInfo.getSummaryFilteredMalesFile(testTypeIndex, panelIndex,
@@ -1389,7 +1361,7 @@ public class Guidance {
 						chunkSize);
 
 				doCollectSummary(parsingArgs, chrS, mixedImputeFileInfo, snptestOutFile, summaryFile, mafThresholdS,
-						infoThresholdS, hweCohortThresholdS, hweCasesThresholdS, hweControlsThresholdS);
+						hweCohortThresholdS, hweCasesThresholdS, hweControlsThresholdS);
 
 				String assocFilteredByAll = assocFilesInfo.getSummaryFilteredFile(testTypeIndex, panelIndex, chrNumber,
 						lim1, lim2, chunkSize);
@@ -1405,7 +1377,7 @@ public class Guidance {
 						chunkSize);
 
 				doCollectSummary(parsingArgs, chrS, mixedImputedMMInfoFile, snptestOutFile, summaryFile, mafThresholdS,
-						infoThresholdS, hweCohortThresholdS, hweCasesThresholdS, hweControlsThresholdS);
+						hweCohortThresholdS, hweCasesThresholdS, hweControlsThresholdS);
 
 				String assocFilteredByAll = assocFilesInfo.getSummaryFilteredFile(testTypeIndex, panelIndex, chrNumber,
 						lim1, lim2, chunkSize);
@@ -3392,18 +3364,25 @@ public class Guidance {
 	 * @param infoThresholdS
 	 */
 	private static void doFilterByInfo(ParseCmdLine parsingArgs, String imputeFileInfo, String filteredRsIdFile,
-			String infoThresholdS, String chromo) {
+			String chromo) {
 
 		if (parsingArgs.getStageStatus("filterByInfo") == 1) {
+			String infoThresholdS = null;
 			String imputationTool = parsingArgs.getImputationTool();
 			if (chromo.equals("23")) {
 				imputationTool = "impute";
 			}
+			
+			if(imputationTool.equals("impute")) {
+				infoThresholdS = Double.toString(parsingArgs.getImputeThreshold());
+			} else if (imputationTool.equals("minimac")) {
+				infoThresholdS = Double.toString(parsingArgs.getMinimacThreshold());
+			}
+			
 			String cmdToStore = null;
 			// We create the list of rsId that are greater than or equal to the
 			// infoThreshold value
-			cmdToStore = JAVA_HOME + "/java filterByInfo " + imputeFileInfo + " " + filteredRsIdFile + " "
-					+ infoThresholdS;
+			cmdToStore = JAVA_HOME + "/java filterByInfo " + imputationTool + " " + imputeFileInfo + " " + filteredRsIdFile + " " + infoThresholdS;
 			listOfCommands.add(cmdToStore);
 			try {
 				flushCommands();
@@ -3540,14 +3519,14 @@ public class Guidance {
 	 * @param hweControlsThresholdS
 	 */
 	private static void doCollectSummary(ParseCmdLine parsingArgs, String chrS, String imputeFileInfo,
-			String snptestOutFile, String summaryFile, String mafThresholdS, String infoThresholdS,
+			String snptestOutFile, String summaryFile, String mafThresholdS,
 			String hweCohortThresholdS, String hweCasesThresholdS, String hweControlsThresholdS) {
 
 		if (parsingArgs.getStageStatus("collectSummary") == 1) {
 			// Submitting the collect_summary task per this chunk
 			String cmdToStore = JAVA_HOME + "/java collectSummary " + chrS + " " + parsingArgs.getImputationTool() + " "
 					+ imputeFileInfo + " " + snptestOutFile + " " + summaryFile + " " + mafThresholdS + " "
-					+ infoThresholdS + " " + hweCohortThresholdS + " " + hweCasesThresholdS + " "
+					+ hweCohortThresholdS + " " + hweCasesThresholdS + " "
 					+ hweControlsThresholdS;
 
 			listOfCommands.add(cmdToStore);
@@ -3560,7 +3539,7 @@ public class Guidance {
 
 			try {
 				GuidanceImpl.collectSummary(chrS, parsingArgs.getImputationTool(), imputeFileInfo, snptestOutFile,
-						summaryFile, mafThresholdS, infoThresholdS, hweCohortThresholdS, hweCasesThresholdS,
+						summaryFile, mafThresholdS, hweCohortThresholdS, hweCasesThresholdS,
 						hweControlsThresholdS, cmdToStore);
 			} catch (GuidanceTaskException gte) {
 				LOGGER.error("[Guidance] Exception trying the execution of collectSummary task", gte);
@@ -3818,21 +3797,33 @@ public class Guidance {
 	private static void doFilterByAll(ParseCmdLine parsingArgs, String inputFile, String outputFile,
 			String outputCondensedFile, String sex, String rpanelName) {
 
-		String imputationTool = parsingArgs.getImputationTool();
-		double mafThreshold = parsingArgs.getMafThreshold();
-		double infoThreshold = parsingArgs.getInfoThreshold();
-		double hweCohortThreshold = parsingArgs.getHweCohortThreshold();
-		double hweCasesThreshold = parsingArgs.getHweCasesThreshold();
-		double hweControlsThreshold = parsingArgs.getHweControlsThreshold();
-
-		String mafThresholdS = Double.toString(mafThreshold);
-		String infoThresholdS = Double.toString(infoThreshold);
-		String hweCohortThresholdS = Double.toString(hweCohortThreshold);
-		String hweCasesThresholdS = Double.toString(hweCasesThreshold);
-		String hweControlsThresholdS = Double.toString(hweControlsThreshold);
-
 		// Task
 		if (parsingArgs.getStageStatus("filterByAll") == 1) {
+			
+			String imputationTool = parsingArgs.getImputationTool();
+			double mafThreshold = parsingArgs.getMafThreshold();
+			double infoThreshold = 0.0;
+			double hweCohortThreshold = parsingArgs.getHweCohortThreshold();
+			double hweCasesThreshold = parsingArgs.getHweCasesThreshold();
+			double hweControlsThreshold = parsingArgs.getHweControlsThreshold();
+
+			String mafThresholdS = Double.toString(mafThreshold);
+			String infoThresholdS = Double.toString(infoThreshold);
+			String hweCohortThresholdS = Double.toString(hweCohortThreshold);
+			String hweCasesThresholdS = Double.toString(hweCasesThreshold);
+			String hweControlsThresholdS = Double.toString(hweControlsThreshold);
+			
+			// Chr 23
+			if(sex.equals(SEX1) || sex.equals(SEX2)) {
+				imputationTool = "impute";
+			}
+			
+			if(imputationTool.equals("impute")) {
+				infoThreshold = parsingArgs.getImputeThreshold();
+			} else if (imputationTool.equals("minimac")) {
+				infoThreshold = parsingArgs.getMinimacThreshold();
+			}
+			
 			String cmdToStore = JAVA_HOME + "/java filterByAll " + imputationTool + " " + inputFile + " " + outputFile
 					+ " " + outputCondensedFile + " " + mafThresholdS + " " + infoThresholdS + " " + hweCohortThresholdS
 					+ " " + hweCasesThresholdS + " " + hweControlsThresholdS + " " + sex + " " + rpanelName;

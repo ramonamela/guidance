@@ -2146,6 +2146,7 @@ public class GuidanceImpl {
 
 		if (DEBUG) {
 			System.out.println("\n[DEBUG] Running filterByInfo with parameters:");
+			System.out.println("[DEBUG] \t- Imputation Tool          : " + imputationTool);
 			System.out.println("[DEBUG] \t- Input inputeFileInfo     : " + imputeFileInfo);
 			System.out.println("[DEBUG] \t- Output inclusionRsIdFile : " + inclusionRsIdFile);
 			System.out.println("[DEBUG] \t- Input threshold          : " + threshold);
@@ -2488,14 +2489,12 @@ public class GuidanceImpl {
 						hweControls = Double.parseDouble(hwe_controlsS);
 					}
 
-					if (imputationTool.equals("impute") || sex.equals(SEX1) || sex.equals(SEX2)) {
+					if (imputationTool.equals("impute")) {
 						infoD = Double.parseDouble(infoS);
 					} else if (imputationTool.equals("minimac")) {
 						if (!infoS.equals("-")) {
 							infoD = Double.parseDouble(infoS);
 						} else {
-							//System.out.println("Couldn't convert " + infoS);
-							//infoStr = splittedLine[inputFileHashTableIndex.get("info_all")];
 							infoD = 1.0;
 						}
 					}
@@ -4114,7 +4113,7 @@ public class GuidanceImpl {
 	 * @throws Exception
 	 */
 	public static void collectSummary(String chr, String imputeTool, String firstImputeFileInfo, String snptestOutFile, String reduceFile,
-			String mafThresholdS, String infoThresholdS, String hweCohortThresholdS, String hweCasesThresholdS,
+			String mafThresholdS, String hweCohortThresholdS, String hweCasesThresholdS,
 			String hweControlsThresholdS, String cmdToStore) throws GuidanceTaskException {
 
 		if (DEBUG) {
@@ -4125,7 +4124,6 @@ public class GuidanceImpl {
 			System.out.println("[DEBUG] \t- Input snptestOutFile         : " + snptestOutFile);
 			System.out.println("[DEBUG] \t- Output reduceFile            : " + reduceFile);
 			System.out.println("[DEBUG] \t- Input mafThresholdS          : " + mafThresholdS);
-			System.out.println("[DEBUG] \t- Input infoThresholdS         : " + infoThresholdS);
 			System.out.println("[DEBUG] \t- Input hweCohortThresholdS    : " + hweCohortThresholdS);
 			System.out.println("[DEBUG] \t- Input hweCasesThresholdS     : " + hweCasesThresholdS);
 			System.out.println("[DEBUG] \t- Input hweControlsThresholdS  : " + hweControlsThresholdS);
@@ -4307,7 +4305,7 @@ public class GuidanceImpl {
 			ArrayList<String> summaryTmp = new ArrayList<>();
 			try {
 				summaryTmp = mergeArrays(chr, firstTmp, assocTmp, length_entry_assoc_list, mafThresholdS,
-						infoThresholdS, hweCohortThresholdS, hweCasesThresholdS, hweControlsThresholdS);
+						hweCohortThresholdS, hweCasesThresholdS, hweControlsThresholdS);
 			} catch (IOException ioe) {
 				throw new GuidanceTaskException(ioe);
 			}
@@ -5416,7 +5414,7 @@ public class GuidanceImpl {
 	 * @throws IOException
 	 */
 	private static ArrayList<String> mergeArrays(String chr, ArrayList<String> caseArray, ArrayList<String> assocArray,
-			int length_entry_assoc_list, String mafThresholdS, String infoThresholdS, String hweCohortThresholdS,
+			int length_entry_assoc_list, String mafThresholdS, String hweCohortThresholdS,
 			String hweCasesThresholdS, String hweControlsThresholdS) throws IOException {
 
 		// Double mafThreshold = Double.parseDouble(mafThresholdS);

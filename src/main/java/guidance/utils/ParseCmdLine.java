@@ -121,7 +121,8 @@ public class ParseCmdLine {
 	private HashMap<String, Integer> wfAllStages = new HashMap<>();
 
 	private Double mafThreshold = 0.000;
-	private Double infoThreshold = 0.000;
+	private Double imputeThreshold = 0.000;
+	private Double minimacThreshold = 0.000;
 	private Double hweCohortThreshold = 0.000;
 	private Double hweCasesThreshold = 0.000;
 	private Double hweControlsThreshold = 0.000;
@@ -299,10 +300,29 @@ public class ParseCmdLine {
 		tmpArg = argumentsArray.get(i++);
 		myArgument = tmpArg.split("=");
 		if ((myArgument.length > 0) && (myArgument.length < 3)) {
-			if (myArgument[0].equals("info_threshold")) {
-				infoThreshold = Double.parseDouble(myArgument[1]);
-				if (infoThreshold < 0) {
-					LOGGER.fatal(CLASS_HEADER + " Error, info_threshold = " + infoThreshold);
+			if (myArgument[0].equals("impute_threshold")) {
+				imputeThreshold = Double.parseDouble(myArgument[1]);
+				if (imputeThreshold < 0) {
+					LOGGER.fatal(CLASS_HEADER + " Error, impute_threshold = " + imputeThreshold);
+					LOGGER.fatal(CLASS_HEADER + "        It should be: should be: > 0");
+					System.exit(1);
+				}
+			} else {
+				LOGGER.fatal(CLASS_HEADER + ERROR_PARAM_ORDER + myArgument[0]);
+				System.exit(1);
+			}
+		} else {
+			LOGGER.fatal(CLASS_HEADER + ERROR_SYNTAX + gwasConfigFile + ERROR_SYNTAX_SUFFIX + myArgument[0]);
+			System.exit(1);
+		}
+		
+		tmpArg = argumentsArray.get(i++);
+		myArgument = tmpArg.split("=");
+		if ((myArgument.length > 0) && (myArgument.length < 3)) {
+			if (myArgument[0].equals("minimac_threshold")) {
+				minimacThreshold = Double.parseDouble(myArgument[1]);
+				if (minimacThreshold < 0) {
+					LOGGER.fatal(CLASS_HEADER + " Error, info_threshold = " + minimacThreshold);
 					LOGGER.fatal(CLASS_HEADER + "        It should be: should be: > 0");
 					System.exit(1);
 				}
@@ -1026,8 +1046,17 @@ public class ParseCmdLine {
 	 * 
 	 * @return
 	 */
-	public Double getInfoThreshold() {
-		return this.infoThreshold;
+	public Double getImputeThreshold() {
+		return this.imputeThreshold;
+	}
+	
+	/**
+	 * Method to get infoThreshold flag
+	 * 
+	 * @return
+	 */
+	public Double getMinimacThreshold() {
+		return this.minimacThreshold;
 	}
 
 	/**
@@ -1553,7 +1582,8 @@ public class ParseCmdLine {
 		LOGGER.info("init_chromosome              = " + start);
 		LOGGER.info("end_chromosome               = " + end);
 		LOGGER.info("maf_threshold                = " + mafThreshold);
-		LOGGER.info("info_threshold               = " + infoThreshold);
+		LOGGER.info("impute_threshold             = " + imputeThreshold);
+		LOGGER.info("minimac_threshold            = " + minimacThreshold);
 		LOGGER.info("hwe_cohort_threshold         = " + hweCohortThreshold);
 		LOGGER.info("hwe_cases_threshold          = " + hweCasesThreshold);
 		LOGGER.info("hwe_controls_threshold       = " + hweControlsThreshold);

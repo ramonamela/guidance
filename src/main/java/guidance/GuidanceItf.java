@@ -248,7 +248,9 @@ public interface GuidanceItf {
 	void filterByInfo(@Parameter(type = Type.STRING, direction = Direction.IN) String imputationTool,
 			@Parameter(type = Type.FILE, direction = Direction.IN) String imputeFileInfo,
 			@Parameter(type = Type.FILE, direction = Direction.OUT) String inclusionRsIdFile,
-			@Parameter(type = Type.STRING, direction = Direction.IN) String threshold,
+			@Parameter(type = Type.STRING, direction = Direction.IN)String chr, 
+			@Parameter(type = Type.STRING, direction = Direction.IN) String impute_threshold,
+			@Parameter(type = Type.STRING, direction = Direction.IN) String minimac_threshold,
 			@Parameter(type = Type.STRING, direction = Direction.IN) String cmdToStore);
 	
 	@Method(declaringClass = "guidance.GuidanceImpl")
@@ -275,7 +277,6 @@ public interface GuidanceItf {
 			@Parameter(type = Type.FILE, direction = Direction.IN) String snptestOutFile,
 			@Parameter(type = Type.FILE, direction = Direction.OUT) String reduceFile,
 			@Parameter(type = Type.STRING, direction = Direction.IN) String mafThresholdS,
-			@Parameter(type = Type.STRING, direction = Direction.IN) String infoThresholdS,
 			@Parameter(type = Type.STRING, direction = Direction.IN) String hweCohortThresholdS,
 			@Parameter(type = Type.STRING, direction = Direction.IN) String hweCasesThresholdS,
 			@Parameter(type = Type.STRING, direction = Direction.IN) String hweControlsThresholdS,
