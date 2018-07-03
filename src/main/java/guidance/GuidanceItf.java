@@ -270,6 +270,7 @@ public interface GuidanceItf {
 	@Method(declaringClass = "guidance.GuidanceImpl")
 	@Constraints(computingUnits = "1", memorySize = "1.0f")
 	void collectSummary(@Parameter(type = Type.STRING, direction = Direction.IN) String chr,
+			@Parameter(type = Type.STRING, direction = Direction.IN) String imputeTool,
 			@Parameter(type = Type.FILE, direction = Direction.IN) String firstImputeFileInfo,
 			@Parameter(type = Type.FILE, direction = Direction.IN) String snptestOutFile,
 			@Parameter(type = Type.FILE, direction = Direction.OUT) String reduceFile,

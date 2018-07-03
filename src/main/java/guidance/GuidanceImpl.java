@@ -2437,10 +2437,10 @@ public class GuidanceImpl {
 
 				String chromo = splittedLine[inputFileHashTableIndex.get("chr")];
 				String infoS = null;
-				if (imputationTool.equals("impute")) {
+				if (imputationTool.equals("impute") || sex.equals(SEX1) || sex.equals(SEX2)) {
 					infoS = splittedLine[inputFileHashTableIndex.get("info_all")];
 				} else if (imputationTool.equals("minimac")) {
-					infoS = splittedLine[inputFileHashTableIndex.get("Rsq")];
+					infoS = splittedLine[inputFileHashTableIndex.get("info_all")];
 				}
 
 				String alleleA = splittedLine[inputFileHashTableIndex.get("alleleA")];
@@ -2488,13 +2488,14 @@ public class GuidanceImpl {
 						hweControls = Double.parseDouble(hwe_controlsS);
 					}
 
-					if (imputationTool.equals("impute")) {
+					if (imputationTool.equals("impute") || sex.equals(SEX1) || sex.equals(SEX2)) {
 						infoD = Double.parseDouble(infoS);
 					} else if (imputationTool.equals("minimac")) {
 						if (!infoS.equals("-")) {
 							infoD = Double.parseDouble(infoS);
 						} else {
-							infoStr = splittedLine[inputFileHashTableIndex.get("Rsq")];
+							System.out.println("Couldn't convert " + infoS);
+							//infoStr = splittedLine[inputFileHashTableIndex.get("info_all")];
 						}
 					}
 
@@ -4111,13 +4112,14 @@ public class GuidanceImpl {
 	 * @throws InterruptedException
 	 * @throws Exception
 	 */
-	public static void collectSummary(String chr, String firstImputeFileInfo, String snptestOutFile, String reduceFile,
+	public static void collectSummary(String chr, String imputeTool, String firstImputeFileInfo, String snptestOutFile, String reduceFile,
 			String mafThresholdS, String infoThresholdS, String hweCohortThresholdS, String hweCasesThresholdS,
 			String hweControlsThresholdS, String cmdToStore) throws GuidanceTaskException {
 
 		if (DEBUG) {
 			System.out.println("\n[DEBUG] Running collectSummary with parameters:");
 			System.out.println("[DEBUG] \t- Input chromosome             : " + chr);
+			System.out.println("[DEBUG] \t- Input impute tool            : " + imputeTool);
 			System.out.println("[DEBUG] \t- Input casesImputeFileInfo    : " + firstImputeFileInfo);
 			System.out.println("[DEBUG] \t- Input snptestOutFile         : " + snptestOutFile);
 			System.out.println("[DEBUG] \t- Output reduceFile            : " + reduceFile);
@@ -4167,14 +4169,24 @@ public class GuidanceImpl {
 			HashMap<String, Integer> imputeHashTableIndex = new HashMap<>();
 			if (line != null && !line.isEmpty()) {
 				// If we are here, the file is not empty.
-				imputeHashTableIndex = Headers.createHashWithHeader(line, " ");
-
-				indexPosition = imputeHashTableIndex.get("position");
-				indexRsId = imputeHashTableIndex.get("rs_id");
-				indexInfo = imputeHashTableIndex.get("info");
-				indexCertainty = imputeHashTableIndex.get("certainty");
-				indexAlleleA = imputeHashTableIndex.get("a0");
-				indexAlleleB = imputeHashTableIndex.get("a1");
+				if(imputeTool.equals("impute") || chr.equals("23")) {
+					imputeHashTableIndex = Headers.createHashWithHeader(line, " ");
+					indexPosition = imputeHashTableIndex.get("position");
+					indexRsId = imputeHashTableIndex.get("rs_id");
+					indexInfo = imputeHashTableIndex.get("info");
+					indexCertainty = imputeHashTableIndex.get("certainty");
+					indexAlleleA = imputeHashTableIndex.get("a0");
+					indexAlleleB = imputeHashTableIndex.get("a1");
+				}
+				else
+				{
+					imputeHashTableIndex = Headers.createHashWithHeader(line, TAB);
+					indexRsId = imputeHashTableIndex.get("SNP");
+					indexInfo = imputeHashTableIndex.get("Rsq");
+					indexCertainty = imputeHashTableIndex.get("AvgCall");
+					indexAlleleA = imputeHashTableIndex.get("REF(0)");
+					indexAlleleB = imputeHashTableIndex.get("ALT(1)");
+				}
 
 				// System.out.println("indexPosition: "+indexPosition);
 				// System.out.println("indexRsId: " + indexRsId);
@@ -4185,16 +4197,26 @@ public class GuidanceImpl {
 			while ((line = br.readLine()) != null) {
 				ArrayList<String> firstList = new ArrayList<>();
 				// delimiter I assume single space.
-				String[] splitted = line.split(" ");
+				String[] splitted = null;
 
 				// Store Position:Store rsIDCases:Store infoCases:Store certCases
-				firstList.add(splitted[indexPosition]);
+				String positionStr = null;
+				if(imputeTool.equals("impute") || chr.equals("23")) {
+					splitted = line.split(" ");
+					positionStr = splitted[indexPosition];
+				}
+				else {
+					splitted = line.split(TAB);
+					positionStr = splitted[indexRsId].split(":")[1];
+					System.out.println(positionStr);
+				}
+				firstList.add(positionStr);
 				firstList.add(splitted[indexRsId]);
 				firstList.add(splitted[indexInfo]);
 				firstList.add(splitted[indexCertainty]);
 				firstList.add(splitted[indexAlleleA]);
 				firstList.add(splitted[indexAlleleB]);
-				positionAndRsId = splitted[indexPosition] + "_" + splitted[indexRsId] + "_" + splitted[indexAlleleA]
+				positionAndRsId = positionStr + "_" + splitted[indexRsId] + "_" + splitted[indexAlleleA]
 						+ "_" + splitted[indexAlleleB];
 
 				// If there is not a previous snp with this combination of position and rsID, we

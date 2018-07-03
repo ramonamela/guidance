@@ -97,6 +97,8 @@ public class ParseCmdLine {
 	private ArrayList<ArrayList<String>> rpanelHapFileName = new ArrayList<>();
 	private ArrayList<ArrayList<String>> rpanelLegFileName = new ArrayList<>();
 	private ArrayList<ArrayList<String>> rpanelVCFFileName = new ArrayList<>();
+	private ArrayList<ArrayList<String>> rpanelHap23FileName = new ArrayList<>();
+	private ArrayList<ArrayList<String>> rpanelLeg23FileName = new ArrayList<>();
 
 	// testTypes will be organized as follows:
 	// Each string will have: ["test_type_name","response_variable", "covariables"]
@@ -852,7 +854,11 @@ public class ParseCmdLine {
 						// exclSVSnp = "YES";
 						LOGGER.fatal("[ParseCmdLine] We are going to use 'minimac' tool for imputation stage... ");
 						ArrayList<String> chromoListRpanelVCFFileName = new ArrayList<String>();
-						for (int j = start; j <= end; j++) {
+						int endVCF = end;
+						if(endVCF == 23) {
+							endVCF = 22;
+						}
+						for (int j = start; j <= endVCF; j++) {
 							tmpArg = argumentsArray.get(i++);
 							myArgument = tmpArg.split("=");
 							if ((myArgument.length > 0) && (myArgument.length < 3)) {
@@ -873,6 +879,48 @@ public class ParseCmdLine {
 							}
 						}
 						rpanelVCFFileName.add(chromoListRpanelVCFFileName);
+						if(end == 23) {
+							tmpArg = argumentsArray.get(i++);
+							myArgument = tmpArg.split("=");
+							ArrayList<String> chromoListRpanelHapFileName = new ArrayList<String>();
+							if ((myArgument.length > 0) && (myArgument.length < 3)) {
+								String chromo = "23";
+								String tmpfile = "refpanel_hap_file_chr_" + chromo;
+								if (myArgument[0].equals(tmpfile)) {
+									chromoListRpanelHapFileName.add(myArgument[1]);
+									checkExistence(myArgument[1]);
+								} else {
+									LOGGER.fatal("[ParseCmdLine.java] Error in the order of parameters in parameter: "
+											+ myArgument[0]);
+									System.exit(1);
+								}
+							} else {
+								LOGGER.fatal("[ParseCmdLine.java] Error of sintax in " + gwasConfigFile
+										+ ", in parameter: " + myArgument[0]);
+								System.exit(1);
+							}
+							tmpArg = argumentsArray.get(i++);
+							myArgument = tmpArg.split("=");
+							ArrayList<String> chromoListRpanelLegFileName = new ArrayList<String>();
+							if ((myArgument.length > 0) && (myArgument.length < 3)) {
+								String chromo = "23";
+								String tmpfile = "refpanel_leg_file_chr_" + chromo;
+								if (myArgument[0].equals(tmpfile)) {
+									chromoListRpanelLegFileName.add(myArgument[1]);
+									checkExistence(myArgument[1]);
+								} else {
+									LOGGER.fatal("[ParseCmdLine.java] Error in the order of parameters in parameter: "
+											+ myArgument[0]);
+									System.exit(1);
+								}
+							} else {
+								LOGGER.fatal("[ParseCmdLine.java] Error of sintax in " + gwasConfigFile
+										+ ", in parameter: " + myArgument[0]);
+								System.exit(1);
+							}
+							rpanelHap23FileName.add(chromoListRpanelHapFileName);
+							rpanelLeg23FileName.add(chromoListRpanelLegFileName);
+						}
 						LOGGER.info(CLASS_HEADER + " We are going to use 'minimac' tool for imputation stage... ");
 					} else {
 						LOGGER.fatal(CLASS_HEADER
@@ -1408,6 +1456,42 @@ public class ParseCmdLine {
 		}
 
 		return rpanelVCFFileName.get(indexRpanel).get(index);
+	}
+	
+	/**
+	 * Method to get the rpanelHap23FileName (Minimac)
+	 * 
+	 * @param indexRpanel
+	 * @return
+	 */
+	public String getRpanelHap23FileName(int indexRpanel) {
+
+		if ((indexRpanel < 0) || (indexRpanel > rpanelTypes.size())) {
+			System.err.println(
+					"[ParseCmdLine.java] Error, the indexRpanel should be  0<= indexRpanel<=" + rpanelTypes.size());
+			System.exit(1);
+			return "none";
+		}
+
+		return rpanelHap23FileName.get(indexRpanel).get(0);
+	}
+	
+	/**
+	 * Method to get the rpanelLeg23FileName (Minimac)
+	 * 
+	 * @param indexRpanel
+	 * @return
+	 */
+	public String getRpanelLeg23FileName(int indexRpanel) {
+
+		if ((indexRpanel < 0) || (indexRpanel > rpanelTypes.size())) {
+			System.err.println(
+					"[ParseCmdLine.java] Error, the indexRpanel should be  0<= indexRpanel<=" + rpanelTypes.size());
+			System.exit(1);
+			return "none";
+		}
+
+		return rpanelLeg23FileName.get(indexRpanel).get(0);
 	}
 
 	/**

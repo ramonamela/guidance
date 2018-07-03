@@ -28,6 +28,7 @@ public class TestFunction {
         String hweCasesThresholdS = args[7];
         String hweControlsThresholdS = args[8];
         String cmdToStore = args[9];
+        /*
         try {
             GuidanceImpl.collectSummary(chr, firstImputeFileInfo, snptestOutFile, reduceFile, mafThresholdS, infoThresholdS,
                     hweCohortThresholdS, hweCasesThresholdS, hweControlsThresholdS, cmdToStore);
@@ -35,6 +36,7 @@ public class TestFunction {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
+        */
     }
 
     private static void filterByAllWrapper(String[] args) {
