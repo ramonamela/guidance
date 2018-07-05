@@ -84,6 +84,9 @@ public class Guidance {
 	// Debug mode
 	private static final boolean DEBUG = false;
 
+	// Enable barriers
+	private static final boolean BARRIERS = false;
+
 	// Threshold
 	private static final double PVA_THRESHOLD = 5e-8;
 	private static final String PVA_THRESHOLD_STR = Double.toString(PVA_THRESHOLD);
@@ -345,7 +348,10 @@ public class Guidance {
 
 		LOGGER.info("[Guidance] All the names used during the workflow have been defined...");
 
-		// COMPSs.barrier();
+		if (BARRIERS) {
+			COMPSs.barrier();
+		}
+
 		String phasingTool = parsingArgs.getPhasingTool();
 
 		// The number of Chromos to process is endChr - startChr + 1;
@@ -518,32 +524,24 @@ public class Guidance {
 		}
 
 		flushCommands();
-		// COMPSs.barrier();
+
+		if (BARRIERS) {
+			COMPSs.barrier();
+		}
 
 		// The number of Chromos to process is endChr - startChr + 1;
-		for (int chr = startChr; chr <= endChr; chr++) {
+		for (int panel = 0; panel < rpanelTypes.size(); panel++) {
+			for (int chr = startChr; chr <= endChr; chr++) {
 
-			String gmapFile = null;
+				String gmapFile = null;
 
-			if (phasingTool.equals("shapeit")) {
-				gmapFile = parsingArgs.getGmapDir() + "/" + parsingArgs.getGmapFileName(chr);
+				if (phasingTool.equals("shapeit")) {
+					gmapFile = parsingArgs.getGmapDir() + "/" + parsingArgs.getGmapFileName(chr);
+				} else if (phasingTool.equals("eagle")) {
+					gmapFile = parsingArgs.getGmapDir() + "/" + parsingArgs.getGmapFileNameEagle();
+				}
 
-			} else if (phasingTool.equals("eagle")) {
-				gmapFile = parsingArgs.getGmapDir() + "/" + parsingArgs.getGmapFileNameEagle();
-
-			}
-
-			String mixedGmapFile = commonFilesInfo.getGmapFile(chr);
-
-			// ***********************************************
-			// * Now perform the imputation tasks *
-			// * over the data for the different reference *
-			// * panels that the user wants to include. The *
-			// * list of the panels to be used are stored in *
-			// * the List array rpanelTypes *
-			// ***********************************************
-			for (int panel = 0; panel < rpanelTypes.size(); panel++) {
-				// String rpanelDir = parsingArgs.getRpanelDir(kk);
+				String mixedGmapFile = commonFilesInfo.getGmapFile(chr);
 
 				int maxSize = ChromoInfo.getMaxSize(chr);
 				int minSize = ChromoInfo.getMinSize(chr);
@@ -558,7 +556,9 @@ public class Guidance {
 				}
 			} // End for panel types
 
-			flushCommands();
+			if (BARRIERS) {
+				COMPSs.barrier();
+			}
 
 		} // End for chromosomes
 
@@ -566,7 +566,6 @@ public class Guidance {
 		// * COMPSs API Call to wait for all tasks *
 		// * comment out following line to include the synchronization point *
 		// *******************************************************************
-		// COMPSs.waitForAllTasks();
 		// COMPSs.barrier();
 
 		// Now we continue with the association
@@ -653,7 +652,7 @@ public class Guidance {
 				// problem if chr23 is being
 				// processed, because
 				// the format of condensedFiles is the same for all chromosome.
-				makeJointCondensedFiles(parsingArgs, test, panel, startChr, endChr, mergeFilesInfo);
+				// makeJointCondensedFiles(parsingArgs, test, panel, startChr, endChr, mergeFilesInfo);
 
 				// Now we have to joint the filteredByAllFiles of each chromosome. Here there is
 				// an additional
@@ -677,6 +676,9 @@ public class Guidance {
 					filteredByAllXMalesFile = lastFilteredByAllFile;
 					filteredByAllXFemalesFile = lastFilteredByAllFile;
 				}
+				
+				doGenerateCondensedFile(parsingArgs, lastFilteredByAllFile, filteredByAllXMalesFile, filteredByAllXFemalesFile,
+						lastCondensedFile);
 
 				// doGenerateTopHits(parsingArgs, lastFilteredByAllFile,
 				// filteredByAllXMalesFile,
@@ -695,7 +697,10 @@ public class Guidance {
 				// qqPlotTiffFile, manhattanPlotTiffFile);
 
 				flushCommands();
-				// COMPSs.barrier();
+				
+				if(BARRIERS) {
+					COMPSs.barrier();
+				}
 
 			} // End for refPanels
 
@@ -851,7 +856,7 @@ public class Guidance {
 				if (!chrS.equals("23")) {
 					doImputationWithImpute(parsingArgs, chrS, mixedGmapFile, knownHapFile, legendFile,
 							mixedPhasingHapsFile, mixedSampleFile, lim1S, lim2S, mixedPairsFile, mixedImputeFile,
-							mixedImputeFileInfo, mixedImputeFileSummary, mixedImputeFileWarnings, NO_SEX);
+							mixedImputeFileInfo, mixedImputeFileSummary, mixedImputeFileWarnings, NO_SEX, panelIndex);
 					doFilterByInfo(parsingArgs, mixedImputeFileInfo, mixedFilteredRsIdFile, chrS);
 					doQctoolS(parsingArgs, mixedImputeFile, mixedFilteredRsIdFile, mixedFilteredFile,
 							mixedFilteredLogFile, chrS);
@@ -910,7 +915,7 @@ public class Guidance {
 					doImputationWithImpute(parsingArgs, chrS, mixedGmapFile, knownHapFile, legendFile,
 							mixedPhasingHapsMalesFile, mixedPhasingSampleMalesFile, lim1S, lim2S, mixedPairsFile,
 							mixedImputeMalesFile, mixedImputeMalesFileInfo, mixedImputeMalesFileSummary,
-							mixedImputeMalesFileWarnings, SEX1);
+							mixedImputeMalesFileWarnings, SEX1, panelIndex);
 
 					doFilterByInfo(parsingArgs, mixedImputeMalesFileInfo, mixedFilteredRsIdMalesFile, chrS);
 
@@ -920,7 +925,7 @@ public class Guidance {
 					doImputationWithImpute(parsingArgs, chrS, mixedGmapFile, knownHapFile, legendFile,
 							mixedPhasingHapsFemalesFile, mixedPhasingSampleFemalesFile, lim1S, lim2S, mixedPairsFile,
 							mixedImputeFemalesFile, mixedImputeFemalesFileInfo, mixedImputeFemalesFileSummary,
-							mixedImputeFemalesFileWarnings, SEX2);
+							mixedImputeFemalesFileWarnings, SEX2, panelIndex);
 
 					doFilterByInfo(parsingArgs, mixedImputeFemalesFileInfo, mixedFilteredRsIdFemalesFile, chrS);
 
@@ -932,7 +937,7 @@ public class Guidance {
 				if (!chrS.equals("23")) {
 					doImputationWithImpute(parsingArgs, chrS, gmapFile, knownHapFile, legendFile, mixedPhasingHapsFile,
 							mixedPhasingSampleFile, lim1S, lim2S, mixedPairsFile, mixedImputeFile, mixedImputeFileInfo,
-							mixedImputeFileSummary, mixedImputeFileWarnings, NO_SEX);
+							mixedImputeFileSummary, mixedImputeFileWarnings, NO_SEX, panelIndex);
 					doFilterByInfo(parsingArgs, mixedImputeFileInfo, mixedFilteredRsIdFile, chrS);
 					doQctoolS(parsingArgs, mixedImputeFile, mixedFilteredRsIdFile, mixedFilteredFile,
 							mixedFilteredLogFile, chrS);
@@ -990,7 +995,7 @@ public class Guidance {
 					doImputationWithImpute(parsingArgs, chrS, gmapFile, knownHapFile, legendFile,
 							mixedPhasingHapsMalesFile, mixedPhasingSampleMalesFile, lim1S, lim2S, mixedPairsFile,
 							mixedImputeMalesFile, mixedImputeMalesFileInfo, mixedImputeMalesFileSummary,
-							mixedImputeMalesFileWarnings, SEX1);
+							mixedImputeMalesFileWarnings, SEX1, panelIndex);
 
 					doFilterByInfo(parsingArgs, mixedImputeMalesFileInfo, mixedFilteredRsIdMalesFile, chrS);
 
@@ -1000,7 +1005,7 @@ public class Guidance {
 					doImputationWithImpute(parsingArgs, chrS, gmapFile, knownHapFile, legendFile,
 							mixedPhasingHapsFemalesFile, mixedPhasingSampleFemalesFile, lim1S, lim2S, mixedPairsFile,
 							mixedImputeFemalesFile, mixedImputeFemalesFileInfo, mixedImputeFemalesFileSummary,
-							mixedImputeFemalesFileWarnings, SEX2);
+							mixedImputeFemalesFileWarnings, SEX2, panelIndex);
 
 					doFilterByInfo(parsingArgs, mixedImputeFemalesFileInfo, mixedFilteredRsIdFemalesFile, chrS);
 
@@ -1075,7 +1080,8 @@ public class Guidance {
 
 				doImputationWithMinimac(parsingArgs, refVcfFile, mixedFilteredHaplotypesVcfFileBgzip, chrS, lim1S,
 						lim2S, mixedImputeMMInfoFile, mixedImputeMMErateFile, mixedImputeMMRecFile,
-						mixedImputeMMM3VCFFile, mixedImputeMMLogFile, mixedImputeFileBgzip, mixedImputeFileTbi, NO_SEX);
+						mixedImputeMMM3VCFFile, mixedImputeMMLogFile, mixedImputeFileBgzip, mixedImputeFileTbi, NO_SEX,
+						panelIndex);
 
 				doFilterByInfo(parsingArgs, mixedImputeMMInfoFile, mixedFilteredRsIdFile, chrS);
 
@@ -1223,7 +1229,7 @@ public class Guidance {
 
 		int chunkSize = parsingArgs.getChunkSize();
 		double mafThreshold = parsingArgs.getMafThreshold();
-		//double infoThreshold = parsingArgs.getInfoThreshold();
+		// double infoThreshold = parsingArgs.getInfoThreshold();
 		double hweCohortThreshold = parsingArgs.getHweCohortThreshold();
 		double hweCasesThreshold = parsingArgs.getHweCasesThreshold();
 		double hweControlsThreshold = parsingArgs.getHweControlsThreshold();
@@ -1234,7 +1240,7 @@ public class Guidance {
 		String chrS = Integer.toString(chrNumber);
 
 		String mafThresholdS = Double.toString(mafThreshold);
-		//String infoThresholdS = Double.toString(infoThreshold);
+		// String infoThresholdS = Double.toString(infoThreshold);
 		String hweCohortThresholdS = Double.toString(hweCohortThreshold);
 		String hweCasesThresholdS = Double.toString(hweCasesThreshold);
 		String hweControlsThresholdS = Double.toString(hweControlsThreshold);
@@ -3211,7 +3217,7 @@ public class Guidance {
 	private static void doImputationWithImpute(ParseCmdLine parsingArgs, String chrS, String gmapFile,
 			String knownHapFile, String legendFile, String phasingHapsFile, String phasingSampleFile, String lim1S,
 			String lim2S, String pairsFile, String imputeFile, String imputeFileInfo, String imputeFileSummary,
-			String imputeFileWarnings, String sex) {
+			String imputeFileWarnings, String sex, int refpanel) {
 		System.out.println(gmapFile + " " + knownHapFile + " " + legendFile + " " + phasingHapsFile + " "
 				+ phasingSampleFile + " " + imputeFile);
 		String cmdToStore = null;
@@ -3245,9 +3251,22 @@ public class Guidance {
 			}
 			listOfCommands.add(cmdToStore);
 			try {
-				GuidanceImpl.imputeWithImpute(gmapFile, knownHapFile, legendFile, phasingHapsFile, phasingSampleFile,
-						lim1S, lim2S, pairsFile, imputeFile, imputeFileInfo, imputeFileSummary, imputeFileWarnings,
-						chrS, sex, cmdToStore);
+				String panelMemory = parsingArgs.getRpanelMemory(refpanel);
+				if (panelMemory.equals("HIGH")) {
+					GuidanceImpl.imputeWithImputeHigh(gmapFile, knownHapFile, legendFile, phasingHapsFile,
+							phasingSampleFile, lim1S, lim2S, pairsFile, imputeFile, imputeFileInfo, imputeFileSummary,
+							imputeFileWarnings, chrS, sex, cmdToStore);
+				} else if (panelMemory.equals("MEDIUM")) {
+					GuidanceImpl.imputeWithImputeMedium(gmapFile, knownHapFile, legendFile, phasingHapsFile,
+							phasingSampleFile, lim1S, lim2S, pairsFile, imputeFile, imputeFileInfo, imputeFileSummary,
+							imputeFileWarnings, chrS, sex, cmdToStore);
+				} else if (panelMemory.equals("LOW")) {
+					GuidanceImpl.imputeWithImputeLow(gmapFile, knownHapFile, legendFile, phasingHapsFile,
+							phasingSampleFile, lim1S, lim2S, pairsFile, imputeFile, imputeFileInfo, imputeFileSummary,
+							imputeFileWarnings, chrS, sex, cmdToStore);
+				} else {
+					throw new GuidanceTaskException("Incorrect panel memory " + panelMemory);
+				}
 
 			} catch (Exception e) {
 				System.err.println("[Guidance] Exception trying the execution of impute task");
@@ -3280,7 +3299,7 @@ public class Guidance {
 	private static void doImputationWithMinimac(ParseCmdLine parsingArgs, String refVcfFile,
 			String filteredHaplotypesVcfFileBgzip, String chrS, String lim1S, String lim2S, String imputeFileInfo,
 			String imputeFileErate, String imputeFileRec, String imputeFileM3vcf, String imputeFileLog,
-			String imputeFileBgzip, String imputeFileTbi, String sex) {
+			String imputeFileBgzip, String imputeFileTbi, String sex, int refpanel) {
 
 		if (parsingArgs.getStageStatus("imputeWithMinimac") == 1) {
 			// Submitting the impute task per chunk
@@ -3312,14 +3331,30 @@ public class Guidance {
 			} catch (IOException e) {
 				LOGGER.error("[Guidance] Exception writing to list of commands file " + e);
 			}
+			System.out.println("[Minimac] " + imputeFileInfo + " " + imputeFileErate + " " + imputeFileRec + " "
+					+ imputeFileM3vcf + " " + imputeFileLog);
+
 			try {
-				System.out.println("[Minimac] " + imputeFileInfo + " " + imputeFileErate + " " + imputeFileRec + " "
-						+ imputeFileM3vcf + " " + imputeFileLog);
-				GuidanceImpl.imputeWithMinimac(refVcfFile, filteredHaplotypesVcfFileBgzip, imputeFileBgzip,
-						imputeFileInfo, imputeFileErate, imputeFileRec, imputeFileM3vcf, imputeFileLog, chrS, lim1S,
-						lim2S, myPrefix, sex, cmdToStore);
-			} catch (GuidanceTaskException gte) {
-				LOGGER.error("[Guidance] Exception trying the execution of imputationWithMinimac task", gte);
+				String panelMemory = parsingArgs.getRpanelMemory(refpanel);
+				if (panelMemory.equals("HIGH")) {
+					GuidanceImpl.imputeWithMinimacHigh(refVcfFile, filteredHaplotypesVcfFileBgzip, imputeFileBgzip,
+							imputeFileInfo, imputeFileErate, imputeFileRec, imputeFileM3vcf, imputeFileLog, chrS, lim1S,
+							lim2S, myPrefix, sex, cmdToStore);
+				} else if (panelMemory.equals("MEDIUM")) {
+					GuidanceImpl.imputeWithMinimacMedium(refVcfFile, filteredHaplotypesVcfFileBgzip, imputeFileBgzip,
+							imputeFileInfo, imputeFileErate, imputeFileRec, imputeFileM3vcf, imputeFileLog, chrS, lim1S,
+							lim2S, myPrefix, sex, cmdToStore);
+				} else if (panelMemory.equals("LOW")) {
+					GuidanceImpl.imputeWithMinimacLow(refVcfFile, filteredHaplotypesVcfFileBgzip, imputeFileBgzip,
+							imputeFileInfo, imputeFileErate, imputeFileRec, imputeFileM3vcf, imputeFileLog, chrS, lim1S,
+							lim2S, myPrefix, sex, cmdToStore);
+				} else {
+					throw new GuidanceTaskException("Incorrect panel memory " + panelMemory);
+				}
+
+			} catch (Exception e) {
+				System.err.println("[Guidance] Exception trying the execution of impute task");
+				System.err.println(e.getMessage());
 			}
 
 			/*
@@ -3372,17 +3407,18 @@ public class Guidance {
 			if (chromo.equals("23")) {
 				imputationTool = "impute";
 			}
-			
-			if(imputationTool.equals("impute")) {
+
+			if (imputationTool.equals("impute")) {
 				infoThresholdS = Double.toString(parsingArgs.getImputeThreshold());
 			} else if (imputationTool.equals("minimac")) {
 				infoThresholdS = Double.toString(parsingArgs.getMinimacThreshold());
 			}
-			
+
 			String cmdToStore = null;
 			// We create the list of rsId that are greater than or equal to the
 			// infoThreshold value
-			cmdToStore = JAVA_HOME + "/java filterByInfo " + imputationTool + " " + imputeFileInfo + " " + filteredRsIdFile + " " + infoThresholdS;
+			cmdToStore = JAVA_HOME + "/java filterByInfo " + imputationTool + " " + imputeFileInfo + " "
+					+ filteredRsIdFile + " " + infoThresholdS;
 			listOfCommands.add(cmdToStore);
 			try {
 				flushCommands();
@@ -3519,15 +3555,14 @@ public class Guidance {
 	 * @param hweControlsThresholdS
 	 */
 	private static void doCollectSummary(ParseCmdLine parsingArgs, String chrS, String imputeFileInfo,
-			String snptestOutFile, String summaryFile, String mafThresholdS,
-			String hweCohortThresholdS, String hweCasesThresholdS, String hweControlsThresholdS) {
+			String snptestOutFile, String summaryFile, String mafThresholdS, String hweCohortThresholdS,
+			String hweCasesThresholdS, String hweControlsThresholdS) {
 
 		if (parsingArgs.getStageStatus("collectSummary") == 1) {
 			// Submitting the collect_summary task per this chunk
 			String cmdToStore = JAVA_HOME + "/java collectSummary " + chrS + " " + parsingArgs.getImputationTool() + " "
 					+ imputeFileInfo + " " + snptestOutFile + " " + summaryFile + " " + mafThresholdS + " "
-					+ hweCohortThresholdS + " " + hweCasesThresholdS + " "
-					+ hweControlsThresholdS;
+					+ hweCohortThresholdS + " " + hweCasesThresholdS + " " + hweControlsThresholdS;
 
 			listOfCommands.add(cmdToStore);
 
@@ -3539,8 +3574,8 @@ public class Guidance {
 
 			try {
 				GuidanceImpl.collectSummary(chrS, parsingArgs.getImputationTool(), imputeFileInfo, snptestOutFile,
-						summaryFile, mafThresholdS, hweCohortThresholdS, hweCasesThresholdS,
-						hweControlsThresholdS, cmdToStore);
+						summaryFile, mafThresholdS, hweCohortThresholdS, hweCasesThresholdS, hweControlsThresholdS,
+						cmdToStore);
 			} catch (GuidanceTaskException gte) {
 				LOGGER.error("[Guidance] Exception trying the execution of collectSummary task", gte);
 			}
@@ -3799,7 +3834,7 @@ public class Guidance {
 
 		// Task
 		if (parsingArgs.getStageStatus("filterByAll") == 1) {
-			
+
 			String imputationTool = parsingArgs.getImputationTool();
 			double mafThreshold = parsingArgs.getMafThreshold();
 			double infoThreshold = 0.0;
@@ -3812,18 +3847,18 @@ public class Guidance {
 			String hweCohortThresholdS = Double.toString(hweCohortThreshold);
 			String hweCasesThresholdS = Double.toString(hweCasesThreshold);
 			String hweControlsThresholdS = Double.toString(hweControlsThreshold);
-			
+
 			// Chr 23
-			if(sex.equals(SEX1) || sex.equals(SEX2)) {
+			if (sex.equals(SEX1) || sex.equals(SEX2)) {
 				imputationTool = "impute";
 			}
-			
-			if(imputationTool.equals("impute")) {
+
+			if (imputationTool.equals("impute")) {
 				infoThreshold = parsingArgs.getImputeThreshold();
 			} else if (imputationTool.equals("minimac")) {
 				infoThreshold = parsingArgs.getMinimacThreshold();
 			}
-			
+
 			String cmdToStore = JAVA_HOME + "/java filterByAll " + imputationTool + " " + inputFile + " " + outputFile
 					+ " " + outputCondensedFile + " " + mafThresholdS + " " + infoThresholdS + " " + hweCohortThresholdS
 					+ " " + hweCasesThresholdS + " " + hweControlsThresholdS + " " + sex + " " + rpanelName;

@@ -92,7 +92,12 @@ public class ParseCmdLine {
 	// By default we do not combine panels
 	private boolean refPanelCombine = false;
 	private ArrayList<String> rpanelTypes = new ArrayList<>();
+	private ArrayList<String> rpanelMemory = new ArrayList<>();
 	private ArrayList<String> rpanelDir = new ArrayList<>();
+	
+	private static String HIGH = "High";
+	private static String MEDIUM = "Medium";
+	private static String LOW = "Low";
 
 	private ArrayList<ArrayList<String>> rpanelHapFileName = new ArrayList<>();
 	private ArrayList<ArrayList<String>> rpanelLegFileName = new ArrayList<>();
@@ -815,6 +820,27 @@ public class ParseCmdLine {
 				LOGGER.fatal(CLASS_HEADER + ERROR_SYNTAX + gwasConfigFile + ERROR_SYNTAX_SUFFIX + myArgument[0]);
 				System.exit(1);
 			}
+			
+			tmpArg = argumentsArray.get(i++);
+			myArgument = tmpArg.split("=");
+			if ((myArgument.length > 0) && (myArgument.length < 3)) {
+				if (myArgument[0].equals("refpanel_memory")) {
+					String panelMemory = myArgument[1];
+					if(panelMemory.equals(HIGH) || panelMemory.equals(MEDIUM) || panelMemory.equals(LOW)) {
+						rpanelMemory.add(myArgument[1]);
+					} else {
+						LOGGER.fatal(CLASS_HEADER + ERROR_SYNTAX + " the amount of memory " + panelMemory + " introduced");
+					}
+				} else {
+					LOGGER.fatal(CLASS_HEADER + ERROR_PARAM_ORDER + myArgument[0]);
+					System.exit(1);
+				}
+			} else {
+				LOGGER.fatal(CLASS_HEADER + ERROR_SYNTAX + gwasConfigFile + ERROR_SYNTAX_SUFFIX + myArgument[0]);
+				System.exit(1);
+			}
+			
+			
 			tmpArg = argumentsArray.get(i++);
 			myArgument = tmpArg.split("=");
 			if ((myArgument.length > 0) && (myArgument.length < 3)) {
@@ -1389,6 +1415,16 @@ public class ParseCmdLine {
 	 */
 	public String getRpanelType(int indexRpanel) {
 		return this.rpanelTypes.get(indexRpanel);
+	}
+	
+	/**
+	 * Method to get refPanelMemory information
+	 * 
+	 * @param indexRpanel
+	 * @return
+	 */
+	public String getRpanelMemory(int indexRpanel) {
+		return this.rpanelMemory.get(indexRpanel);
 	}
 
 	/**

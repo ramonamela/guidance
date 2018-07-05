@@ -949,24 +949,23 @@ public class GuidanceImpl {
 			int exitValue = -1;
 			try {
 				String outputBase = filteredFile.substring(0, filteredFile.length() - 3);
-				exitValue = ProcessUtils.execute(cmd, outputBase + STDOUT_EXTENSION, outputBase + STDERR_EXTENSION, "LD_LIBRARY_PATH");
+				exitValue = ProcessUtils.execute(cmd, outputBase + STDOUT_EXTENSION, outputBase + STDERR_EXTENSION,
+						"LD_LIBRARY_PATH");
 			} catch (IOException ioe) {
 				throw new GuidanceTaskException(ioe);
 			}
 
 			// Check process exit value
 			/*
-			if (exitValue != 0) {
-				String sandBox = new File(filteredFile).getParent();
-				try {
-					System.out.println("mv " + sandBox + "/* /gpfs/scratch/pr1ees00/pr1ees14/GCAT/SHAPEIT_IMPUTE/qctoolsLogs/");
-					ProcessUtils.executeWithoutOutputs("mv " + sandBox + "/* /gpfs/scratch/pr1ees00/pr1ees14/GCAT/SHAPEIT_IMPUTE/qctoolsLogs/");
-				} catch (IOException ioe) {
-					System.out.println("IOException when moving the files " + ioe);
-				}
-				throw new GuidanceTaskException(HEADER_QCTOOLS + ERROR_BINARY_EXEC + exitValue);
-			}
-			*/
+			 * if (exitValue != 0) { String sandBox = new File(filteredFile).getParent();
+			 * try { System.out.println("mv " + sandBox +
+			 * "/* /gpfs/scratch/pr1ees00/pr1ees14/GCAT/SHAPEIT_IMPUTE/qctoolsLogs/");
+			 * ProcessUtils.executeWithoutOutputs("mv " + sandBox +
+			 * "/* /gpfs/scratch/pr1ees00/pr1ees14/GCAT/SHAPEIT_IMPUTE/qctoolsLogs/"); }
+			 * catch (IOException ioe) {
+			 * System.out.println("IOException when moving the files " + ioe); } throw new
+			 * GuidanceTaskException(HEADER_QCTOOLS + ERROR_BINARY_EXEC + exitValue); }
+			 */
 			if (exitValue != 0) {
 				throw new GuidanceTaskException(HEADER_QCTOOLS + ERROR_BINARY_EXEC + exitValue);
 			}
@@ -1755,6 +1754,34 @@ public class GuidanceImpl {
 		}
 	}
 
+	public static void imputeWithImputeLow(String gmapFile, String knownHapFile, String legendFile,
+			String phasingHapsFile, String phasingSampleFile, String lim1S, String lim2S, String pairsFile,
+			String imputeFile, String imputeFileInfo, String imputeFileSummary, String imputeFileWarnings,
+			String theChromo, String sex, String cmdToStore) throws GuidanceTaskException {
+		imputeWithImpute(gmapFile, knownHapFile, legendFile, phasingHapsFile, phasingSampleFile, lim1S, lim2S,
+				pairsFile, imputeFile, imputeFileInfo, imputeFileSummary, imputeFileWarnings, theChromo, sex,
+				cmdToStore);
+	}
+
+	public static void imputeWithImputeMedium(String gmapFile, String knownHapFile, String legendFile,
+			String phasingHapsFile, String phasingSampleFile, String lim1S, String lim2S, String pairsFile,
+			String imputeFile, String imputeFileInfo, String imputeFileSummary, String imputeFileWarnings,
+			String theChromo, String sex, String cmdToStore) throws GuidanceTaskException {
+		imputeWithImpute(gmapFile, knownHapFile, legendFile, phasingHapsFile, phasingSampleFile, lim1S, lim2S,
+				pairsFile, imputeFile, imputeFileInfo, imputeFileSummary, imputeFileWarnings, theChromo, sex,
+				cmdToStore);
+	}
+
+	public static void imputeWithImputeHigh(String gmapFile, String knownHapFile, String legendFile,
+			String phasingHapsFile, String phasingSampleFile, String lim1S, String lim2S, String pairsFile,
+			String imputeFile, String imputeFileInfo, String imputeFileSummary, String imputeFileWarnings,
+			String theChromo, String sex, String cmdToStore) throws GuidanceTaskException {
+
+		imputeWithImpute(gmapFile, knownHapFile, legendFile, phasingHapsFile, phasingSampleFile, lim1S, lim2S,
+				pairsFile, imputeFile, imputeFileInfo, imputeFileSummary, imputeFileWarnings, theChromo, sex,
+				cmdToStore);
+	}
+
 	/**
 	 * Method to impute with impute
 	 * 
@@ -1776,10 +1803,10 @@ public class GuidanceImpl {
 	 * @throws InterruptedException
 	 * @throws Exception
 	 */
-	public static void imputeWithImpute(String gmapFile, String knownHapFile, String legendFile, String phasingHapsFile,
-			String phasingSampleFile, String lim1S, String lim2S, String pairsFile, String imputeFile,
-			String imputeFileInfo, String imputeFileSummary, String imputeFileWarnings, String theChromo, String sex,
-			String cmdToStore) throws GuidanceTaskException {
+	private static void imputeWithImpute(String gmapFile, String knownHapFile, String legendFile,
+			String phasingHapsFile, String phasingSampleFile, String lim1S, String lim2S, String pairsFile,
+			String imputeFile, String imputeFileInfo, String imputeFileSummary, String imputeFileWarnings,
+			String theChromo, String sex, String cmdToStore) throws GuidanceTaskException {
 
 		String impute2Binary = loadFromEnvironment(IMPUTE2BINARY, HEADER_IMPUTE);
 
@@ -1919,6 +1946,33 @@ public class GuidanceImpl {
 
 	}
 
+	public static void imputeWithMinimacLow(String vcfFile, String filteredHapsVcfFileBgzip, String imputeFile,
+			String imputeFileInfo, String imputeFileErate, String imputeFileRec, String imputeFileM3vcf,
+			String imputeFileLog, String chrS, String lim1S, String lim2S, String myPrefix, String sex,
+			String cmdToStore) throws GuidanceTaskException {
+
+		imputeWithMinimac(vcfFile, filteredHapsVcfFileBgzip, imputeFile, imputeFileInfo, imputeFileErate, imputeFileRec,
+				imputeFileM3vcf, imputeFileLog, chrS, lim1S, lim2S, myPrefix, sex, cmdToStore);
+	}
+
+	public static void imputeWithMinimacMedium(String vcfFile, String filteredHapsVcfFileBgzip, String imputeFile,
+			String imputeFileInfo, String imputeFileErate, String imputeFileRec, String imputeFileM3vcf,
+			String imputeFileLog, String chrS, String lim1S, String lim2S, String myPrefix, String sex,
+			String cmdToStore) throws GuidanceTaskException {
+
+		imputeWithMinimac(vcfFile, filteredHapsVcfFileBgzip, imputeFile, imputeFileInfo, imputeFileErate, imputeFileRec,
+				imputeFileM3vcf, imputeFileLog, chrS, lim1S, lim2S, myPrefix, sex, cmdToStore);
+	}
+
+	public static void imputeWithMinimacHigh(String vcfFile, String filteredHapsVcfFileBgzip, String imputeFile,
+			String imputeFileInfo, String imputeFileErate, String imputeFileRec, String imputeFileM3vcf,
+			String imputeFileLog, String chrS, String lim1S, String lim2S, String myPrefix, String sex,
+			String cmdToStore) throws GuidanceTaskException {
+
+		imputeWithMinimac(vcfFile, filteredHapsVcfFileBgzip, imputeFile, imputeFileInfo, imputeFileErate, imputeFileRec,
+				imputeFileM3vcf, imputeFileLog, chrS, lim1S, lim2S, myPrefix, sex, cmdToStore);
+	}
+
 	/**
 	 * Method to impute with minimac
 	 * 
@@ -1940,7 +1994,7 @@ public class GuidanceImpl {
 	 * @throws InterruptedException
 	 * @throws Exception
 	 */
-	public static void imputeWithMinimac(String vcfFile, String filteredHapsVcfFileBgzip, String imputeFile,
+	private static void imputeWithMinimac(String vcfFile, String filteredHapsVcfFileBgzip, String imputeFile,
 			String imputeFileInfo, String imputeFileErate, String imputeFileRec, String imputeFileM3vcf,
 			String imputeFileLog, String chrS, String lim1S, String lim2S, String myPrefix, String sex,
 			String cmdToStore) throws GuidanceTaskException {
@@ -2096,9 +2150,9 @@ public class GuidanceImpl {
 			// There is only one chromosome
 			// Chr 23
 			if (filteredMalesFile.equals(filteredFemalesFile)) {
-				command = "zcat " + filteredMalesFile + " | awk '{ print $1\"" + TAB + "\"$2\"" + TAB + "\"$6\"" + TAB
+				command = "zcat " + filteredMalesFile + " | awk '{ print 23_" + SEX1 + "\"" + TAB + "\"$2\"" + TAB + "\"$6\"" + TAB
 						+ "\"$7\"" + TAB + "\"$53\"" + TAB + "\"$4 }' > " + condensedPlain + ";zcat "
-						+ filteredFemalesFile + " | tail -n +2 | awk '{ print $1\"" + TAB + "\"$2\"" + TAB + "\"$6\""
+						+ filteredFemalesFile + " | tail -n +2 | awk '{ print 23_" + SEX2 + "\"" + TAB + "\"$2\"" + TAB + "\"$6\""
 						+ TAB + "\"$7\"" + TAB + "\"$53\"" + TAB + "\"$4 }' >> " + condensedPlain + ";gzip "
 						+ condensedPlain;
 			} else {
@@ -2108,9 +2162,9 @@ public class GuidanceImpl {
 		} else {
 			command = "zcat " + filteredFile + " | awk '{ print $1\"" + TAB + "\"$2\"" + TAB + "\"$6\"" + TAB + "\"$7\""
 					+ TAB + "\"$46\"" + TAB + "\"$4 }' > " + condensedPlain + ";zcat " + filteredMalesFile
-					+ " | tail -n +2 | awk '{ print $1\"" + TAB + "\"$2\"" + TAB + "\"$6\"" + TAB + "\"$7\"" + TAB
+					+ " | tail -n +2 | awk '{ print 23_" + SEX1 + "\"" + TAB + "\"$2\"" + TAB + "\"$6\"" + TAB + "\"$7\"" + TAB
 					+ "\"$53\"" + TAB + "\"$4 }' >> " + condensedPlain + ";zcat " + filteredFemalesFile
-					+ " | tail -n +2 | awk '{ print $1\"" + TAB + "\"$2\"" + TAB + "\"$6\"" + TAB + "\"$7\"" + TAB
+					+ " | tail -n +2 | awk '{ print 23_" + SEX2 + "\"" + TAB + "\"$2\"" + TAB + "\"$6\"" + TAB + "\"$7\"" + TAB
 					+ "\"$53\"" + TAB + "\"$4 }' >> " + condensedPlain + ";gzip " + condensedPlain;
 		}
 
@@ -2412,7 +2466,6 @@ public class GuidanceImpl {
 		Double hweControlsThreshold = Double.parseDouble(hweControlsThresholdS);
 
 		HashMap<String, Integer> inputFileHashTableIndex = new HashMap<>();
-		// HashMap<Integer, String> inputFileHashTableIndexReversed = new HashMap<>();
 
 		try (GZIPInputStream inputGz = new GZIPInputStream(new FileInputStream(inputFile));
 				InputStreamReader decoder = new InputStreamReader(inputGz);
@@ -2427,7 +2480,6 @@ public class GuidanceImpl {
 			writerFiltered.newLine();
 
 			inputFileHashTableIndex = Headers.createHashWithHeader(line, TAB);
-			// inputFileHashTableIndexReversed = createHashWithHeaderReversed(line, TAB);
 
 			String headerCondensed = "chr\tposition\talleleA\talleleB\tfrequentist_add_pvalue\tinfo_all";
 			writerCondensed.write(headerCondensed);
@@ -2468,8 +2520,6 @@ public class GuidanceImpl {
 				String position = splittedLine[inputFileHashTableIndex.get("position")];
 				String pva = splittedLine[inputFileHashTableIndex.get("frequentist_add_pvalue")];
 
-				String chrbpb = chromo + sex + TAB + position + TAB + alleleA + TAB + alleleB + TAB + pva + TAB + infoS;
-
 				if (!cases_mafS.equals("NA") && !controls_mafS.equals("NA") && !infoS.equals("NA")
 						&& !hwe_cohortS.equals("NA") && !hwe_casesS.equals("NA") && !hwe_controlsS.equals("NA")
 						&& !pva.equals("NA")) {
@@ -2507,10 +2557,15 @@ public class GuidanceImpl {
 							writerFiltered.write(line + TAB + rpanelName);
 							writerFiltered.newLine();
 
-							/*
-							 * if (chromo.equals("23")) { chrbpb = chromo + "_" + sex + TAB + position + TAB
-							 * + alleleA + TAB + alleleB + TAB + pva + TAB + infoS; }
-							 */
+							String chrbpb = null;
+							if (chromo.equals(CHR_23)) {
+								chrbpb = chromo + "_" + sex + TAB + position + TAB + alleleA + TAB + alleleB + TAB + pva
+										+ TAB + infoS;
+							} else {
+								chrbpb = chromo + TAB + position + TAB + alleleA + TAB + alleleB + TAB + pva + TAB
+										+ infoS;
+							}
+
 							writerCondensed.write(chrbpb);
 							writerCondensed.newLine();
 						}
@@ -3095,7 +3150,13 @@ public class GuidanceImpl {
 			positionA1A2Chr = m.getKey();
 			String lineA = m.getValue();
 			String[] splittedA = lineA.split(TAB);
-			infoA = Double.parseDouble(splittedA[infoIdx]);
+
+			String infoAString = splittedA[infoIdx];
+			if (infoAString.equals("-")) {
+				infoA = 1.0;
+			} else {
+				infoA = Double.parseDouble(splittedA[infoIdx]);
+			}
 
 			// posAllelesEqual = positionA1A2Chr;
 			posAllelesReverse = splittedA[posIdx] + "_" + getAllele(splittedA[a1Idx], splittedA[a2Idx], "reverse") + "_"
@@ -3117,7 +3178,14 @@ public class GuidanceImpl {
 				// the ones that has a better info (that is the ones with greater info).
 				String lineB = fileTreeMapB.get(positionA1A2Chr);
 				String[] splittedB = lineB.split(TAB);
-				infoB = Double.parseDouble(splittedB[infoIdx]);
+
+				String infoBString = splittedB[infoIdx];
+				if (infoBString.equals("-")) {
+					infoB = 1.0;
+				} else {
+					infoB = Double.parseDouble(infoBString);
+				}
+
 				// Then we have to choose between A o B.
 				if (infoA >= infoB) {
 					fileTreeMapC.put(positionA1A2Chr, lineA);
@@ -3133,7 +3201,14 @@ public class GuidanceImpl {
 				// the ones that has a better info (that is the ones with greater info).
 				String lineB = fileTreeMapB.get(posAllelesReverse);
 				String[] splittedB = lineB.split(TAB);
-				infoB = Double.parseDouble(splittedB[infoIdx]);
+
+				String infoBString = splittedB[infoIdx];
+				if (infoBString.equals("-")) {
+					infoB = 1.0;
+				} else {
+					infoB = Double.parseDouble(infoBString);
+				}
+
 				// Then we have to choose between A and B.
 				if (infoA >= infoB) {
 					fileTreeMapC.put(positionA1A2Chr, lineA);
@@ -3150,7 +3225,14 @@ public class GuidanceImpl {
 				// the ones that has a better info (that is the ones with greater info).
 				String lineB = fileTreeMapB.get(posAllelesComplement);
 				String[] splittedB = lineB.split(TAB);
-				infoB = Double.parseDouble(splittedB[infoIdx]);
+
+				String infoBString = splittedB[infoIdx];
+				if (infoBString.equals("-")) {
+					infoB = 1.0;
+				} else {
+					infoB = Double.parseDouble(infoBString);
+				}
+
 				// Then we have to choose between A o B.
 				if (infoA >= infoB) {
 					fileTreeMapC.put(positionA1A2Chr, lineA);
@@ -3167,7 +3249,14 @@ public class GuidanceImpl {
 				// the ones that has a better info (that is the ones with greater info).
 				String lineB = fileTreeMapB.get(posAllelesComplementAndReverse);
 				String[] splittedB = lineB.split(TAB);
-				infoB = Double.parseDouble(splittedB[infoIdx]);
+
+				String infoBString = splittedB[infoIdx];
+				if (infoBString.equals("-")) {
+					infoB = 1.0;
+				} else {
+					infoB = Double.parseDouble(infoBString);
+				}
+
 				// Then we have to choose between A o B.
 				if (infoA >= infoB) {
 					fileTreeMapC.put(positionA1A2Chr, lineA);
@@ -4112,8 +4201,8 @@ public class GuidanceImpl {
 	 * @throws InterruptedException
 	 * @throws Exception
 	 */
-	public static void collectSummary(String chr, String imputeTool, String firstImputeFileInfo, String snptestOutFile, String reduceFile,
-			String mafThresholdS, String hweCohortThresholdS, String hweCasesThresholdS,
+	public static void collectSummary(String chr, String imputeTool, String firstImputeFileInfo, String snptestOutFile,
+			String reduceFile, String mafThresholdS, String hweCohortThresholdS, String hweCasesThresholdS,
 			String hweControlsThresholdS, String cmdToStore) throws GuidanceTaskException {
 
 		if (DEBUG) {
@@ -4168,7 +4257,7 @@ public class GuidanceImpl {
 			HashMap<String, Integer> imputeHashTableIndex = new HashMap<>();
 			if (line != null && !line.isEmpty()) {
 				// If we are here, the file is not empty.
-				if(imputeTool.equals("impute") || chr.equals("23")) {
+				if (imputeTool.equals("impute") || chr.equals("23")) {
 					imputeHashTableIndex = Headers.createHashWithHeader(line, " ");
 					indexPosition = imputeHashTableIndex.get("position");
 					indexRsId = imputeHashTableIndex.get("rs_id");
@@ -4176,9 +4265,7 @@ public class GuidanceImpl {
 					indexCertainty = imputeHashTableIndex.get("certainty");
 					indexAlleleA = imputeHashTableIndex.get("a0");
 					indexAlleleB = imputeHashTableIndex.get("a1");
-				}
-				else
-				{
+				} else {
 					imputeHashTableIndex = Headers.createHashWithHeader(line, TAB);
 					indexRsId = imputeHashTableIndex.get("SNP");
 					indexInfo = imputeHashTableIndex.get("Rsq");
@@ -4200,11 +4287,10 @@ public class GuidanceImpl {
 
 				// Store Position:Store rsIDCases:Store infoCases:Store certCases
 				String positionStr = null;
-				if(imputeTool.equals("impute") || chr.equals("23")) {
+				if (imputeTool.equals("impute") || chr.equals("23")) {
 					splitted = line.split(" ");
 					positionStr = splitted[indexPosition];
-				}
-				else {
+				} else {
 					splitted = line.split(TAB);
 					positionStr = splitted[indexRsId].split(":")[1];
 					System.out.println(positionStr);
@@ -4215,8 +4301,8 @@ public class GuidanceImpl {
 				firstList.add(splitted[indexCertainty]);
 				firstList.add(splitted[indexAlleleA]);
 				firstList.add(splitted[indexAlleleB]);
-				positionAndRsId = positionStr + "_" + splitted[indexRsId] + "_" + splitted[indexAlleleA]
-						+ "_" + splitted[indexAlleleB];
+				positionAndRsId = positionStr + "_" + splitted[indexRsId] + "_" + splitted[indexAlleleA] + "_"
+						+ splitted[indexAlleleB];
 
 				// If there is not a previous snp with this combination of position and rsID, we
 				// store it.
@@ -5414,8 +5500,8 @@ public class GuidanceImpl {
 	 * @throws IOException
 	 */
 	private static ArrayList<String> mergeArrays(String chr, ArrayList<String> caseArray, ArrayList<String> assocArray,
-			int length_entry_assoc_list, String mafThresholdS, String hweCohortThresholdS,
-			String hweCasesThresholdS, String hweControlsThresholdS) throws IOException {
+			int length_entry_assoc_list, String mafThresholdS, String hweCohortThresholdS, String hweCasesThresholdS,
+			String hweControlsThresholdS) throws IOException {
 
 		// Double mafThreshold = Double.parseDouble(mafThresholdS);
 		// Double infoThreshold = Double.parseDouble(infoThresholdS);

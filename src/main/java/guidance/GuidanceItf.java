@@ -186,8 +186,44 @@ public interface GuidanceItf {
 			@Parameter(type = Type.STRING, direction = Direction.IN) String cmdToStore);
 
 	@Method(declaringClass = "guidance.GuidanceImpl")
-	@Constraints(computingUnits = "1", memorySize = "${imputeWithImputeMem}")
-	void imputeWithImpute(@Parameter(type = Type.FILE, direction = Direction.IN) String gmapFile,
+	@Constraints(computingUnits = "1", memorySize = "${imputeWithImputeLowMem}")
+	void imputeWithImputeLow(@Parameter(type = Type.FILE, direction = Direction.IN) String gmapFile,
+			@Parameter(type = Type.FILE, direction = Direction.IN) String knownHapFile,
+			@Parameter(type = Type.FILE, direction = Direction.IN) String legendFile,
+			@Parameter(type = Type.FILE, direction = Direction.IN) String shapeitHapsFile,
+			@Parameter(type = Type.FILE, direction = Direction.IN) String shapeitSampleFile,
+			@Parameter(type = Type.STRING, direction = Direction.IN) String lim1S,
+			@Parameter(type = Type.STRING, direction = Direction.IN) String lim2S,
+			@Parameter(type = Type.FILE, direction = Direction.IN) String pairsFile,
+			@Parameter(type = Type.FILE, direction = Direction.OUT) String imputeFile,
+			@Parameter(type = Type.FILE, direction = Direction.OUT) String imputeFileInfo,
+			@Parameter(type = Type.FILE, direction = Direction.OUT) String imputeFileSummary,
+			@Parameter(type = Type.FILE, direction = Direction.OUT) String imputeFileWarnings,
+			@Parameter(type = Type.STRING, direction = Direction.IN) String theChromo,
+			@Parameter(type = Type.STRING, direction = Direction.IN) String sex,
+			@Parameter(type = Type.STRING, direction = Direction.IN) String cmdToStore);
+	
+	@Method(declaringClass = "guidance.GuidanceImpl")
+	@Constraints(computingUnits = "1", memorySize = "${imputeWithImputeMediumMem}")
+	void imputeWithImputeMedium(@Parameter(type = Type.FILE, direction = Direction.IN) String gmapFile,
+			@Parameter(type = Type.FILE, direction = Direction.IN) String knownHapFile,
+			@Parameter(type = Type.FILE, direction = Direction.IN) String legendFile,
+			@Parameter(type = Type.FILE, direction = Direction.IN) String shapeitHapsFile,
+			@Parameter(type = Type.FILE, direction = Direction.IN) String shapeitSampleFile,
+			@Parameter(type = Type.STRING, direction = Direction.IN) String lim1S,
+			@Parameter(type = Type.STRING, direction = Direction.IN) String lim2S,
+			@Parameter(type = Type.FILE, direction = Direction.IN) String pairsFile,
+			@Parameter(type = Type.FILE, direction = Direction.OUT) String imputeFile,
+			@Parameter(type = Type.FILE, direction = Direction.OUT) String imputeFileInfo,
+			@Parameter(type = Type.FILE, direction = Direction.OUT) String imputeFileSummary,
+			@Parameter(type = Type.FILE, direction = Direction.OUT) String imputeFileWarnings,
+			@Parameter(type = Type.STRING, direction = Direction.IN) String theChromo,
+			@Parameter(type = Type.STRING, direction = Direction.IN) String sex,
+			@Parameter(type = Type.STRING, direction = Direction.IN) String cmdToStore);
+	
+	@Method(declaringClass = "guidance.GuidanceImpl")
+	@Constraints(computingUnits = "1", memorySize = "${imputeWithImputeHighMem}")
+	void imputeWithImputeHigh(@Parameter(type = Type.FILE, direction = Direction.IN) String gmapFile,
 			@Parameter(type = Type.FILE, direction = Direction.IN) String knownHapFile,
 			@Parameter(type = Type.FILE, direction = Direction.IN) String legendFile,
 			@Parameter(type = Type.FILE, direction = Direction.IN) String shapeitHapsFile,
@@ -204,8 +240,42 @@ public interface GuidanceItf {
 			@Parameter(type = Type.STRING, direction = Direction.IN) String cmdToStore);
 
 	@Method(declaringClass = "guidance.GuidanceImpl")
-	@Constraints(computingUnits = "1", memorySize = "${imputeWithMinimacMem}")
-	void imputeWithMinimac(@Parameter(type = Type.FILE, direction = Direction.IN) String vcfFile,
+	@Constraints(computingUnits = "1", memorySize = "${imputeWithMinimacLowMem}")
+	void imputeWithMinimacLow(@Parameter(type = Type.FILE, direction = Direction.IN) String vcfFile,
+			@Parameter(type = Type.FILE, direction = Direction.IN) String filteredHapsVcfFileBgzip,
+			@Parameter(type = Type.FILE, direction = Direction.OUT) String imputeFile,
+			@Parameter(type = Type.FILE, direction = Direction.OUT) String imputeFileInfo,
+			@Parameter(type = Type.FILE, direction = Direction.OUT) String imputeFileErate,
+			@Parameter(type = Type.FILE, direction = Direction.OUT) String imputeFileRec,
+			@Parameter(type = Type.FILE, direction = Direction.OUT) String imputeFileM3vcf,
+			@Parameter(type = Type.FILE, direction = Direction.OUT) String imputeFileLog,
+			@Parameter(type = Type.STRING, direction = Direction.IN) String chrS,
+			@Parameter(type = Type.STRING, direction = Direction.IN) String lim1S,
+			@Parameter(type = Type.STRING, direction = Direction.IN) String lim2S,
+			@Parameter(type = Type.STRING, direction = Direction.IN) String myPrefix,
+			@Parameter(type = Type.STRING, direction = Direction.IN) String sex,
+			@Parameter(type = Type.STRING, direction = Direction.IN) String cmdToStore);
+	
+	@Method(declaringClass = "guidance.GuidanceImpl")
+	@Constraints(computingUnits = "1", memorySize = "${imputeWithMinimacMediumMem}")
+	void imputeWithMinimacMedium(@Parameter(type = Type.FILE, direction = Direction.IN) String vcfFile,
+			@Parameter(type = Type.FILE, direction = Direction.IN) String filteredHapsVcfFileBgzip,
+			@Parameter(type = Type.FILE, direction = Direction.OUT) String imputeFile,
+			@Parameter(type = Type.FILE, direction = Direction.OUT) String imputeFileInfo,
+			@Parameter(type = Type.FILE, direction = Direction.OUT) String imputeFileErate,
+			@Parameter(type = Type.FILE, direction = Direction.OUT) String imputeFileRec,
+			@Parameter(type = Type.FILE, direction = Direction.OUT) String imputeFileM3vcf,
+			@Parameter(type = Type.FILE, direction = Direction.OUT) String imputeFileLog,
+			@Parameter(type = Type.STRING, direction = Direction.IN) String chrS,
+			@Parameter(type = Type.STRING, direction = Direction.IN) String lim1S,
+			@Parameter(type = Type.STRING, direction = Direction.IN) String lim2S,
+			@Parameter(type = Type.STRING, direction = Direction.IN) String myPrefix,
+			@Parameter(type = Type.STRING, direction = Direction.IN) String sex,
+			@Parameter(type = Type.STRING, direction = Direction.IN) String cmdToStore);
+	
+	@Method(declaringClass = "guidance.GuidanceImpl")
+	@Constraints(computingUnits = "1", memorySize = "${imputeWithMinimacHighMem}")
+	void imputeWithMinimacHigh(@Parameter(type = Type.FILE, direction = Direction.IN) String vcfFile,
 			@Parameter(type = Type.FILE, direction = Direction.IN) String filteredHapsVcfFileBgzip,
 			@Parameter(type = Type.FILE, direction = Direction.OUT) String imputeFile,
 			@Parameter(type = Type.FILE, direction = Direction.OUT) String imputeFileInfo,
@@ -248,9 +318,7 @@ public interface GuidanceItf {
 	void filterByInfo(@Parameter(type = Type.STRING, direction = Direction.IN) String imputationTool,
 			@Parameter(type = Type.FILE, direction = Direction.IN) String imputeFileInfo,
 			@Parameter(type = Type.FILE, direction = Direction.OUT) String inclusionRsIdFile,
-			@Parameter(type = Type.STRING, direction = Direction.IN)String chr, 
-			@Parameter(type = Type.STRING, direction = Direction.IN) String impute_threshold,
-			@Parameter(type = Type.STRING, direction = Direction.IN) String minimac_threshold,
+			@Parameter(type = Type.STRING, direction = Direction.IN) String infoThresholdS,
 			@Parameter(type = Type.STRING, direction = Direction.IN) String cmdToStore);
 	
 	@Method(declaringClass = "guidance.GuidanceImpl")

@@ -2,20 +2,22 @@
 
 ### PHASE 1 ###
 
-export phasingMem="20.0"
-export phasingCU="25"
+export phasingMem="50.0"
+export phasingCU="48"
 
-export phasingBedMem="20.0"
-export phasingBedCU="25"
+export phasingBedMem="50.0"
+export phasingBedCU="48"
 
 
 ### PHASE 2 ###
 
-export qctoolMem="8.0"
+export qctoolMem="16.0"
 
-export qctoolSMem="8.0"
+export qctoolSMem="16.0"
 
-export gtoolsMem="8.0"
+export gtoolsMem="6.0"
+
+export samtoolsBgzipMem="6.0"
 
 export imputeWithImputeLowMem="12.0"
 export imputeWithImputeMediumMem="12.0"
@@ -25,16 +27,17 @@ export imputeWithMinimacLowMem="8.0"
 export imputeWithMinimacMediumMem="8.0"
 export imputeWithMinimacHighMem="8.0"
 
-export filterByInfoMem="8.0"
+export filterByInfoImputeMem="12.0"
 
+export filterByInfoMinimacMem="24.0"
 
 ### PHASE 3 ###
 
-export createListOfExcludedSnpsMem="12.0"
+export createListOfExcludedSnpsMem="6.0"
 
-export filterHaplotypesMem="12.0"
+export filterHaplotypesMem="6.0"
 
-export filterByAllMem="12.0"
+export filterByAllMem="16.0"
 
 export jointFilteredByAllFilesMem="12.0"
 
@@ -62,8 +65,8 @@ export mergeTwoChunksMem="12.0"
 
 export mergeTwoChunksInTheFirstMem="12.0"
 
-export combinePanelsMem="12.0"
+export combinePanelsMem="24.0"
 
-export combineCondensedFilesMem="12.0"
+export combineCondensedFilesMem="24.0"
 
-export combinePanelsComplex1Mem="12.0"
+export combinePanelsComplex1Mem="24.0"

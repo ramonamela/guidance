@@ -5,6 +5,7 @@ target/
 dependency-reduced-pom.xml
 *.jar
 *.swp
+*.swn
 *.swo
 pom.xml.versionsBackup
 
