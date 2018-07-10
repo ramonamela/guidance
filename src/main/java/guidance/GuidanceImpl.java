@@ -3789,6 +3789,7 @@ public class GuidanceImpl {
 			System.out.println("\n[DEBUG] Running generateTopHits with parameters:");
 			System.out.println("[DEBUG] \t- resultsAFile                : " + resultsAFile);
 			System.out.println("[DEBUG] \t- resultsBFile                : " + resultsBFile);
+			System.out.println("[DEBUG] \t- resultsCFile                : " + resultsCFile);
 			System.out.println("[DEBUG] \t- outputTopHitFile           : " + outputTopHitFile);
 			System.out.println("[DEBUG] \t- pvaThreshold               : " + pvaThreshold);
 			System.out.println(NEW_LINE);
