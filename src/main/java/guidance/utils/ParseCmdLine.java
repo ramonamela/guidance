@@ -95,9 +95,9 @@ public class ParseCmdLine {
 	private ArrayList<String> rpanelMemory = new ArrayList<>();
 	private ArrayList<String> rpanelDir = new ArrayList<>();
 	
-	private static String HIGH = "High";
-	private static String MEDIUM = "Medium";
-	private static String LOW = "Low";
+	private static String HIGH = "HIGH";
+	private static String MEDIUM = "MEDIUM";
+	private static String LOW = "LOW";
 
 	private ArrayList<ArrayList<String>> rpanelHapFileName = new ArrayList<>();
 	private ArrayList<ArrayList<String>> rpanelLegFileName = new ArrayList<>();
@@ -825,11 +825,12 @@ public class ParseCmdLine {
 			myArgument = tmpArg.split("=");
 			if ((myArgument.length > 0) && (myArgument.length < 3)) {
 				if (myArgument[0].equals("refpanel_memory")) {
-					String panelMemory = myArgument[1];
+					String panelMemory = myArgument[1].toUpperCase();
 					if(panelMemory.equals(HIGH) || panelMemory.equals(MEDIUM) || panelMemory.equals(LOW)) {
-						rpanelMemory.add(myArgument[1]);
+						rpanelMemory.add(panelMemory);
 					} else {
-						LOGGER.fatal(CLASS_HEADER + ERROR_SYNTAX + " the amount of memory " + panelMemory + " introduced");
+						LOGGER.fatal(CLASS_HEADER + ERROR_SYNTAX + "the amount of memory " + panelMemory + " introduced");
+						System.exit(1);
 					}
 				} else {
 					LOGGER.fatal(CLASS_HEADER + ERROR_PARAM_ORDER + myArgument[0]);

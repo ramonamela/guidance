@@ -1173,6 +1173,8 @@ public class GuidanceImpl {
 		long startTime = System.currentTimeMillis();
 
 		String cmd = null;
+		
+		boolean execute = true;
 
 		if (phasingTool.equals("shapeit")) {
 			if (chromo.equals("23")) {
@@ -1208,6 +1210,7 @@ public class GuidanceImpl {
 					System.out.println("baseDirOrigin: " + baseDirOrigin);
 					System.out.println("baseDirDest: " + baseDirDest);
 					cmd = plinkBinary + " --bfile " + baseDirOrigin + " --recode vcf --out " + baseDirDest;
+					System.out.println("plink call for males: " + cmd);
 
 					int exitValue = -1;
 					try {
@@ -1230,8 +1233,60 @@ public class GuidanceImpl {
 
 					// https://www.cog-genomics.org/plink/1.9/data
 					String bcfBinary = loadFromEnvironment(BCFTOOLSBINARY, HEADER_PHASING);
-					cmd = bcfBinary + " convert " + baseDirDest + ".vcf" + " --haplegendsample " + baseDirDest;
+					cmd = bcfBinary + " convert " + baseDirDest + ".vcf" + " --hapsample " + baseDirDest + " --vcf-ids";
+					System.out.println("bcf call for males: " + cmd);
 
+					
+					exitValue = -1;
+					try {
+						exitValue = ProcessUtils.execute(cmd, baseDirOrigin + STDOUT_EXTENSION,
+								baseDirOrigin + STDERR_EXTENSION);
+					} catch (IOException ioe) {
+						throw new GuidanceTaskException(ioe);
+					}
+
+					// Check process exit value
+					if (exitValue != 0) {
+						System.err.println(
+								HEADER_PHASING + "Warning executing phasingProc job, exit value is: " + exitValue);
+						System.err.println(HEADER_PHASING + "                         (This warning is not fatal).");
+					}
+
+					if (DEBUG) {
+						System.out.println(HEADER_PHASING + MSG_CMD + cmd);
+					}
+					
+					String generatedSample = phasingSampleFile + "s";
+					
+					FileUtils.move(phasingSampleFile, generatedSample);
+
+					cmd = "echo \"ID_1 ID_2 missing\" > " + phasingSampleFile + "; echo \"0 0 0\" >> "
+							+ phasingSampleFile + "; tail -n +3 " + generatedSample
+							+ " | tr \"_\" \" \" | awk '{ print $1\"_\"$2\" \"$3\" 0\" }' >> " + phasingSampleFile
+							+ "; cp " + phasingSampleFile + " /home/pr1ees00/pr1ees14/blabla";
+					
+					exitValue = -1;
+
+					try {
+						exitValue = ProcessUtils.executeWithoutOutputs(cmd);
+					} catch (IOException ioe) {
+						throw new GuidanceTaskException(ioe);
+					}
+
+					// Check process exit value
+					if (exitValue != 0) {
+						System.err.println(
+								HEADER_PHASING + "Warning executing phasingProc job, exit value is: " + exitValue);
+						System.err.println(HEADER_PHASING + "                         (This warning is not fatal).");
+					}
+
+					if (DEBUG) {
+						System.out.println(HEADER_PHASING + MSG_CMD + cmd);
+					}
+					
+					
+					execute = false;
+					
 				} else if (sex.equals(SEX2)) {
 					cmd = phasingBinary + " --bed " + bedFile + " --bim " + bimFile + " --fam " + famFile + " --chrom "
 							+ chromo + " --geneticMapFile " + gmapFile + " --numThreads 47 --outPrefix " + myPrefix;
@@ -1252,17 +1307,19 @@ public class GuidanceImpl {
 		// not stdout
 		// Ugly issue: If we run shapeit_v2, all the stdXXX is done stdout, and there is
 		// not stderr
-		int exitValue = -1;
-		try {
-			exitValue = ProcessUtils.execute(cmd, myPrefix + STDOUT_EXTENSION, myPrefix + STDERR_EXTENSION);
-		} catch (IOException ioe) {
-			throw new GuidanceTaskException(ioe);
-		}
-
-		// Check process exit value
-		if (exitValue != 0) {
-			System.err.println(HEADER_PHASING + "Warning executing phasingProc job, exit value is: " + exitValue);
-			System.err.println(HEADER_PHASING + "                         (This warning is not fatal).");
+		if(execute) {
+			int exitValue = -1;
+			try {
+				exitValue = ProcessUtils.execute(cmd, myPrefix + STDOUT_EXTENSION, myPrefix + STDERR_EXTENSION);
+			} catch (IOException ioe) {
+				throw new GuidanceTaskException(ioe);
+			}
+	
+			// Check process exit value
+			if (exitValue != 0) {
+				System.err.println(HEADER_PHASING + "Warning executing phasingProc job, exit value is: " + exitValue);
+				System.err.println(HEADER_PHASING + "                         (This warning is not fatal).");
+			}
 		}
 
 		// Now we rename shapeitHapsFileGz to shapeitHapsFile
@@ -1283,6 +1340,8 @@ public class GuidanceImpl {
 			}
 			if (new File(myPrefix + ".sample").exists()) {
 				FileUtils.move(myPrefix + ".sample", phasingSampleFile);
+			} else if (new File(myPrefix + ".samples").exists()) {
+				FileUtils.move(myPrefix + ".samples", phasingSampleFile);
 			} else {
 				FileUtils.createEmptyFile(phasingSampleFile, HEADER_PHASING);
 			}
@@ -1503,6 +1562,7 @@ public class GuidanceImpl {
 			String key = lineSplited[0] + lineSplited[1] + lineSplited[2];
 
 			valuesJoined = new ArrayList<String>();
+			System.out.println("Current key: " + key);
 			valuesJoined = loadSampleFile.get(key);
 
 			// Add "key" Pos0 Pos1, Pos2
@@ -2150,10 +2210,10 @@ public class GuidanceImpl {
 			// There is only one chromosome
 			// Chr 23
 			if (filteredMalesFile.equals(filteredFemalesFile)) {
-				command = "zcat " + filteredMalesFile + " | awk '{ print 23_" + SEX1 + "\"" + TAB + "\"$2\"" + TAB + "\"$6\"" + TAB
-						+ "\"$7\"" + TAB + "\"$53\"" + TAB + "\"$4 }' > " + condensedPlain + ";zcat "
-						+ filteredFemalesFile + " | tail -n +2 | awk '{ print 23_" + SEX2 + "\"" + TAB + "\"$2\"" + TAB + "\"$6\""
-						+ TAB + "\"$7\"" + TAB + "\"$53\"" + TAB + "\"$4 }' >> " + condensedPlain + ";gzip "
+				command = "zcat " + filteredMalesFile + " | awk '{ print 23_" + SEX1 + "\"" + TAB + "\"$2\"" + TAB
+						+ "\"$6\"" + TAB + "\"$7\"" + TAB + "\"$53\"" + TAB + "\"$4 }' > " + condensedPlain + ";zcat "
+						+ filteredFemalesFile + " | tail -n +2 | awk '{ print 23_" + SEX2 + "\"" + TAB + "\"$2\"" + TAB
+						+ "\"$6\"" + TAB + "\"$7\"" + TAB + "\"$53\"" + TAB + "\"$4 }' >> " + condensedPlain + ";gzip "
 						+ condensedPlain;
 			} else {
 				command = "zcat " + filteredFile + " | awk '{ print $1\"" + TAB + "\"$2\"" + TAB + "\"$6\"" + TAB
@@ -2162,10 +2222,10 @@ public class GuidanceImpl {
 		} else {
 			command = "zcat " + filteredFile + " | awk '{ print $1\"" + TAB + "\"$2\"" + TAB + "\"$6\"" + TAB + "\"$7\""
 					+ TAB + "\"$46\"" + TAB + "\"$4 }' > " + condensedPlain + ";zcat " + filteredMalesFile
-					+ " | tail -n +2 | awk '{ print 23_" + SEX1 + "\"" + TAB + "\"$2\"" + TAB + "\"$6\"" + TAB + "\"$7\"" + TAB
-					+ "\"$53\"" + TAB + "\"$4 }' >> " + condensedPlain + ";zcat " + filteredFemalesFile
-					+ " | tail -n +2 | awk '{ print 23_" + SEX2 + "\"" + TAB + "\"$2\"" + TAB + "\"$6\"" + TAB + "\"$7\"" + TAB
-					+ "\"$53\"" + TAB + "\"$4 }' >> " + condensedPlain + ";gzip " + condensedPlain;
+					+ " | tail -n +2 | awk '{ print \"23_" + SEX1 + TAB + "\"$2\"" + TAB + "\"$6\"" + TAB + "\"$7\""
+					+ TAB + "\"$53\"" + TAB + "\"$4 }' >> " + condensedPlain + ";zcat " + filteredFemalesFile
+					+ " | tail -n +2 | awk '{ print \"23_" + SEX2 + TAB + "\"$2\"" + TAB + "\"$6\"" + TAB + "\"$7\""
+					+ TAB + "\"$53\"" + TAB + "\"$4 }' >> " + condensedPlain + ";gzip " + condensedPlain;
 		}
 
 		try {
@@ -2173,6 +2233,8 @@ public class GuidanceImpl {
 		} catch (IOException ioe) {
 			throw new GuidanceTaskException(ioe);
 		}
+
+		System.out.println(command);
 
 		long stopTime = System.currentTimeMillis();
 		long elapsedTime = (stopTime - startTime) / 1_000;

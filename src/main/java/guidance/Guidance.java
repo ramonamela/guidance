@@ -628,31 +628,36 @@ public class Guidance {
 							makeMergeOfChunksSex(parsingArgs, test, SEX2, panel, minSize, maxSize, chunkSize,
 									assocFilesInfo, mergeFilesInfo, FILTERED);
 						}
-						if (parsingArgs.getStageStatus("jointCondensedFiles") == 1) {
-							makeMergeOfChunksSex(parsingArgs, test, SEX1, panel, minSize, maxSize, chunkSize,
-									assocFilesInfo, mergeFilesInfo, CONDENSED);
-
-							makeMergeOfChunksSex(parsingArgs, test, SEX2, panel, minSize, maxSize, chunkSize,
-									assocFilesInfo, mergeFilesInfo, CONDENSED);
-						}
+						/*
+						 * if (parsingArgs.getStageStatus("jointCondensedFiles") == 1) {
+						 * makeMergeOfChunksSex(parsingArgs, test, SEX1, panel, minSize, maxSize,
+						 * chunkSize, assocFilesInfo, mergeFilesInfo, CONDENSED);
+						 * 
+						 * makeMergeOfChunksSex(parsingArgs, test, SEX2, panel, minSize, maxSize,
+						 * chunkSize, assocFilesInfo, mergeFilesInfo, CONDENSED); }
+						 */
 					} else {
 						// Now we perform the merge of chunks for each chromosome
 						if (parsingArgs.getStageStatus("jointFilteredByAllFiles") == 1) {
 							makeMergeOfChunks(parsingArgs, test, panel, chr, minSize, maxSize, chunkSize,
 									assocFilesInfo, mergeFilesInfo, FILTERED);
 						}
-						if (parsingArgs.getStageStatus("jointCondensedFiles") == 1) {
-							makeMergeOfChunks(parsingArgs, test, panel, chr, minSize, maxSize, chunkSize,
-									assocFilesInfo, mergeFilesInfo, CONDENSED);
-						}
+						/*
+						 * if (parsingArgs.getStageStatus("jointCondensedFiles") == 1) {
+						 * makeMergeOfChunks(parsingArgs, test, panel, chr, minSize, maxSize, chunkSize,
+						 * assocFilesInfo, mergeFilesInfo, CONDENSED); }
+						 */
 					}
+					
+					System.out.println("Filtered files successfuly generated");
 				} // End for Chromo
 
 				// Now we have to joint the condensedFiles of each chromosome. There is not
 				// problem if chr23 is being
 				// processed, because
 				// the format of condensedFiles is the same for all chromosome.
-				// makeJointCondensedFiles(parsingArgs, test, panel, startChr, endChr, mergeFilesInfo);
+				// makeJointCondensedFiles(parsingArgs, test, panel, startChr, endChr,
+				// mergeFilesInfo);
 
 				// Now we have to joint the filteredByAllFiles of each chromosome. Here there is
 				// an additional
@@ -670,15 +675,19 @@ public class Guidance {
 				String filteredByAllXMalesFile;
 				String filteredByAllXFemalesFile;
 				if (endChr == 23) {
+					System.out.println("Asking for filtered 23 files");
 					filteredByAllXMalesFile = mergeFilesInfo.getAdditionalFilteredByAllXMalesFile(test, panel, 0);
 					filteredByAllXFemalesFile = mergeFilesInfo.getAdditionalFilteredByAllXFemalesFile(test, panel, 0);
 				} else {
 					filteredByAllXMalesFile = lastFilteredByAllFile;
 					filteredByAllXFemalesFile = lastFilteredByAllFile;
 				}
-				
-				doGenerateCondensedFile(parsingArgs, lastFilteredByAllFile, filteredByAllXMalesFile, filteredByAllXFemalesFile,
-						lastCondensedFile);
+
+				System.out.println("Calling generate condensed file");
+				if (parsingArgs.getStageStatus("jointCondensedFiles") == 1) {
+					doGenerateCondensedFile(parsingArgs, lastFilteredByAllFile, filteredByAllXMalesFile,
+							filteredByAllXFemalesFile, lastCondensedFile);
+				}
 
 				// doGenerateTopHits(parsingArgs, lastFilteredByAllFile,
 				// filteredByAllXMalesFile,
@@ -695,10 +704,11 @@ public class Guidance {
 				// doGenerateQQManhattanPlots(parsingArgs, lastCondensedFile, qqPlotPdfFile,
 				// manhattanPlotPdfFile,
 				// qqPlotTiffFile, manhattanPlotTiffFile);
+				System.out.println("Panel " + panel + " ended");
 
 				flushCommands();
-				
-				if(BARRIERS) {
+
+				if (BARRIERS) {
 					COMPSs.barrier();
 				}
 
@@ -707,6 +717,7 @@ public class Guidance {
 			// Now we continue with the combining of the results of the different reference
 			// panels.
 			// It is done if the refPanelCombine flag is true.
+			System.out.println("Combining all the panels");
 			makeCombinePanels(parsingArgs, assocFilesInfo, mergeFilesInfo, combinedPanelsFilesInfo, rpanelTypes, test);
 
 		} // End for test types
@@ -802,7 +813,6 @@ public class Guidance {
 				legendFile = rpanelDir + File.separator + legendFileName;
 			}
 			System.out.println("Hap file " + knownHapFile);
-			System.out.println("Legend file " + legendFile);
 
 			String mixedSampleFile = "";
 			String mixedPhasingHapsFile = "";
@@ -1077,12 +1087,12 @@ public class Guidance {
 						chrNumber, lim1, lim2, chunkSize);
 				String mixedImputeFileTbi = imputationFilesInfo.getImputedFileTbi(panelIndex, chrNumber, lim1, lim2,
 						chunkSize);
-
+				
 				doImputationWithMinimac(parsingArgs, refVcfFile, mixedFilteredHaplotypesVcfFileBgzip, chrS, lim1S,
 						lim2S, mixedImputeMMInfoFile, mixedImputeMMErateFile, mixedImputeMMRecFile,
 						mixedImputeMMM3VCFFile, mixedImputeMMLogFile, mixedImputeFileBgzip, mixedImputeFileTbi, NO_SEX,
 						panelIndex);
-
+				
 				doFilterByInfo(parsingArgs, mixedImputeMMInfoFile, mixedFilteredRsIdFile, chrS);
 
 				doQctoolS(parsingArgs, mixedImputeFileBgzip, mixedFilteredRsIdFile, mixedFilteredFile,
@@ -2971,24 +2981,24 @@ public class Guidance {
 				if (theChromo.equals("23")) {
 					cmd = SHAPEIT_BINARY + " --input-bed " + bedFile + " " + bimFile + " " + famFile + " --input-map "
 							+ gmapFile + " --chrX --output-max " + phasingHapsFile + " " + phasingSampleFile
-							+ " --thread 16 --effective-size 20000 --output-log " + phasingLogFile;
+							+ " --thread 48 --effective-size 20000 --output-log " + phasingLogFile;
 
 					if (sex.equals(SEX1)) {
 						cmd = SHAPEIT_BINARY + " --input-bed " + bedFile + " " + bimFile + " " + famFile
 								+ " --input-map " + gmapFile + " --chrX --output-max " + phasingHapsFile + " "
-								+ phasingSampleFile + " --thread 16 --effective-size 20000 --output-log "
+								+ phasingSampleFile + " --thread 48 --effective-size 20000 --output-log "
 								+ phasingLogFile;
 					} else if (sex.equals(SEX2)) {
 						cmd = SHAPEIT_BINARY + " --input-bed " + bedFile + " " + bimFile + " " + famFile
 								+ " --input-map " + gmapFile + " --chrX --output-max " + phasingHapsFile + " "
-								+ phasingSampleFile + " --thread 16 --effective-size 20000 --output-log "
+								+ phasingSampleFile + " --thread 48 --effective-size 20000 --output-log "
 								+ phasingLogFile;
 					}
 
 				} else {
 					cmd = SHAPEIT_BINARY + " --input-bed " + bedFile + " " + bimFile + " " + famFile + " --input-map "
 							+ gmapFile + " --output-max " + phasingHapsFile + " " + phasingSampleFile
-							+ " --thread 16 --effective-size 20000 --output-log " + phasingLogFile;
+							+ " --thread 48 --effective-size 20000 --output-log " + phasingLogFile;
 				}
 
 				listOfCommands.add(new String(cmd));
@@ -3008,22 +3018,31 @@ public class Guidance {
 
 						if (sex.equals(SEX1)) {
 							String baseDirOrigin = bedFile.substring(0, bedFile.length() - 4);
-							String baseDirDest = phasingHapsFile.substring(0, phasingHapsFile.length() - 7);
+							String baseDirDest = phasingSampleFile.substring(0, phasingSampleFile.length() - 7);
 							cmd = PLINKBINARY + " --bfile " + baseDirOrigin + " --recode vcf --out " + baseDirDest;
 							listOfCommands.add(cmd);
 
-							cmd = BCFTOOLSBINARY + " convert " + baseDirDest + ".vcf" + " --haplegendsample "
-									+ baseDirDest;
+							cmd = BCFTOOLSBINARY + " convert " + baseDirDest + ".vcf" + " --hapsample " + baseDirDest
+									+ " --vcf-ids";
+							listOfCommands.add(cmd);
+
+							String generatedSample = phasingSampleFile + "s";
+
+							cmd = "mv " + phasingSampleFile + " " + generatedSample + "; echo \"ID_1 ID_2 missing\" > "
+									+ phasingSampleFile + "; echo \"0 0 0\" >> " + phasingSampleFile + "; tail -n +2 "
+									+ generatedSample + " | tr \"_\" \" \" | awk '{ print $1\"_\"$2\" \"$3\" 0\" }' >> "
+									+ phasingSampleFile + "; cp " + phasingSampleFile
+									+ " /home/pr1ees00/pr1ees14/blabla";
 						} else {
 							cmd = EAGLEBINARY + " --bed " + bedFile + " --bim " + bimFile + " --fam " + famFile
 									+ " --chrom " + theChromo + " --geneticMapFile " + gmapFile
-									+ " --numThreads 47 --outPrefix " + myPrefix;
+									+ " --numThreads 48 --outPrefix " + myPrefix;
 						}
 
 					} else {
 						cmd = EAGLEBINARY + " --bed " + bedFile + " --bim " + bimFile + " --fam " + famFile
 								+ " --chrom " + theChromo + " --geneticMapFile " + gmapFile
-								+ " --numThreads 47 --outPrefix " + myPrefix;
+								+ " --numThreads 48 --outPrefix " + myPrefix;
 					}
 
 					listOfCommands.add(cmd);
@@ -3269,7 +3288,8 @@ public class Guidance {
 				}
 
 			} catch (Exception e) {
-				System.err.println("[Guidance] Exception trying the execution of impute task");
+				System.err.println("[Guidance] Exception trying the execution of impute task for chr " + chrS
+						+ " with sex " + sex);
 				System.err.println(e.getMessage());
 			}
 		}
@@ -3300,6 +3320,8 @@ public class Guidance {
 			String filteredHaplotypesVcfFileBgzip, String chrS, String lim1S, String lim2S, String imputeFileInfo,
 			String imputeFileErate, String imputeFileRec, String imputeFileM3vcf, String imputeFileLog,
 			String imputeFileBgzip, String imputeFileTbi, String sex, int refpanel) {
+		
+		System.out.println("Entering imputation with Minimac");
 
 		if (parsingArgs.getStageStatus("imputeWithMinimac") == 1) {
 			// Submitting the impute task per chunk
@@ -3349,9 +3371,9 @@ public class Guidance {
 							imputeFileInfo, imputeFileErate, imputeFileRec, imputeFileM3vcf, imputeFileLog, chrS, lim1S,
 							lim2S, myPrefix, sex, cmdToStore);
 				} else {
+					System.err.println("Incorrect panel memory " + panelMemory);
 					throw new GuidanceTaskException("Incorrect panel memory " + panelMemory);
 				}
-
 			} catch (Exception e) {
 				System.err.println("[Guidance] Exception trying the execution of impute task");
 				System.err.println(e.getMessage());
@@ -3458,6 +3480,7 @@ public class Guidance {
 
 			if (imputationTool.equals("impute") || chromo.equals("23")) {
 
+				imputationTool = "impute";
 				cmdToStore = QCTOOL_BINARY + " -g " + imputeFile + " -og " + filteredFile + " -incl-rsids "
 						+ filteredRsIdFile + " -omit-chromosome -force -log " + filteredLogFile + " -maf "
 						+ mafThresholdS + " 1";
