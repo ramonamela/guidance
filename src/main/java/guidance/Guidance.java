@@ -648,7 +648,7 @@ public class Guidance {
 						 * assocFilesInfo, mergeFilesInfo, CONDENSED); }
 						 */
 					}
-					
+
 					System.out.println("Filtered files successfuly generated");
 				} // End for Chromo
 
@@ -701,10 +701,8 @@ public class Guidance {
 				// String correctedPvaluesFile = resultsFilesInfo.getCorrectedPvaluesFile(test,
 				// panel);
 
-				// doGenerateQQManhattanPlots(parsingArgs, lastCondensedFile, qqPlotPdfFile,
-				// manhattanPlotPdfFile,
-				// qqPlotTiffFile, manhattanPlotTiffFile);
-				System.out.println("Panel " + panel + " ended");
+				doGenerateQQManhattanPlots(parsingArgs, lastCondensedFile, qqPlotPdfFile, manhattanPlotPdfFile,
+						qqPlotTiffFile, manhattanPlotTiffFile);
 
 				flushCommands();
 
@@ -1087,12 +1085,12 @@ public class Guidance {
 						chrNumber, lim1, lim2, chunkSize);
 				String mixedImputeFileTbi = imputationFilesInfo.getImputedFileTbi(panelIndex, chrNumber, lim1, lim2,
 						chunkSize);
-				
+
 				doImputationWithMinimac(parsingArgs, refVcfFile, mixedFilteredHaplotypesVcfFileBgzip, chrS, lim1S,
 						lim2S, mixedImputeMMInfoFile, mixedImputeMMErateFile, mixedImputeMMRecFile,
 						mixedImputeMMM3VCFFile, mixedImputeMMLogFile, mixedImputeFileBgzip, mixedImputeFileTbi, NO_SEX,
 						panelIndex);
-				
+
 				doFilterByInfo(parsingArgs, mixedImputeMMInfoFile, mixedFilteredRsIdFile, chrS);
 
 				doQctoolS(parsingArgs, mixedImputeFileBgzip, mixedFilteredRsIdFile, mixedFilteredFile,
@@ -2650,10 +2648,8 @@ public class Guidance {
 		// String combinedCorrectedPvaluesFile =
 		// combinedPanelsFilesInfo.getCorrectedPvaluesFile(ttIndex);
 
-		// doGenerateQQManhattanPlots(parsingArgs, condensedCombineAll,
-		// combinedQqPlotPdfFile,
-		// combinedManhattanPlotPdfFile, combinedQqPlotTiffFile,
-		// combinedManhattanPlotTiffFile);
+		doGenerateQQManhattanPlots(parsingArgs, condensedCombineAll, combinedQqPlotPdfFile,
+				combinedManhattanPlotPdfFile, combinedQqPlotTiffFile, combinedManhattanPlotTiffFile);
 
 	}
 
@@ -3320,7 +3316,7 @@ public class Guidance {
 			String filteredHaplotypesVcfFileBgzip, String chrS, String lim1S, String lim2S, String imputeFileInfo,
 			String imputeFileErate, String imputeFileRec, String imputeFileM3vcf, String imputeFileLog,
 			String imputeFileBgzip, String imputeFileTbi, String sex, int refpanel) {
-		
+
 		System.out.println("Entering imputation with Minimac");
 
 		if (parsingArgs.getStageStatus("imputeWithMinimac") == 1) {
