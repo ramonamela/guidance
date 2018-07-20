@@ -686,7 +686,7 @@ public class Guidance {
 				System.out.println("Calling generate condensed file");
 				if (parsingArgs.getStageStatus("jointCondensedFiles") == 1) {
 					doGenerateCondensedFile(parsingArgs, lastFilteredByAllFile, filteredByAllXMalesFile,
-							filteredByAllXFemalesFile, lastCondensedFile);
+							filteredByAllXFemalesFile, lastCondensedFile, topHitsResults);
 				}
 
 				// doGenerateTopHits(parsingArgs, lastFilteredByAllFile,
@@ -2630,13 +2630,13 @@ public class Guidance {
 		 * 
 		 * reduceCounter += 1; }
 		 */
-
+		String topHitsCombinedResults = combinedPanelsFilesInfo.getTopHitsFile(ttIndex);
+		
 		doGenerateCondensedFile(parsingArgs, filteredCombineAll, filteredCombineAllXMales, filteredCombineAllXFemales,
-				condensedCombineAll);
+				condensedCombineAll, topHitsCombinedResults);
 		// Finally, we create topHits from filteredCombined, and QQ and Manhattan plots
 		// from condensedCombined
 		// TODO wait for the correct binary
-		String topHitsCombinedResults = combinedPanelsFilesInfo.getTopHitsFile(ttIndex);
 		// doGenerateTopHits(parsingArgs, filteredCombineAll, filteredCombineAllXMales,
 		// filteredCombineAllXFemales,
 		// topHitsCombinedResults, PVA_THRESHOLD_STR);
@@ -2663,14 +2663,14 @@ public class Guidance {
 	 * @param condensedFile
 	 */
 	private static void doGenerateCondensedFile(ParseCmdLine parsingArgs, String filteredFile, String filteredMalesFile,
-			String filteredFemalesFile, String condensedFile) {
+			String filteredFemalesFile, String condensedFile, String topHitsFile) {
 		// TODO fill the function
 		// Task
 		String cmdToStore = JAVA_HOME + "/java generateCondensedFile.jar " + filteredFile + " " + filteredMalesFile
 				+ " " + filteredFemalesFile + " " + condensedFile;
 		listOfCommands.add(cmdToStore);
 		try {
-			GuidanceImpl.generateCondensedFile(filteredFile, filteredMalesFile, filteredFemalesFile, condensedFile,
+			GuidanceImpl.generateCondensedFile(filteredFile, filteredMalesFile, filteredFemalesFile, condensedFile, topHitsFile, PVA_THRESHOLD_STR,
 					cmdToStore);
 		} catch (GuidanceTaskException gte) {
 			LOGGER.error("[Guidance] Exception trying the execution of convertFromBedToBed task", gte);
