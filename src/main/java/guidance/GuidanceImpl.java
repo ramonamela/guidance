@@ -2233,10 +2233,11 @@ public class GuidanceImpl {
 		 * ";gzip " + condensedPlain; }
 		 */
 		String rScriptBinDir = loadFromEnvironment(RSCRIPTBINDIR, HEADER_GENERATE_QQ_MANHATTAN_PLOTS);
+                String rScriptDir = loadFromEnvironment(RSCRIPTDIR, HEADER_GENERATE_QQ_MANHATTAN_PLOTS);
 
 		command = rScriptBinDir + "/Rscript "
-				+ "/gpfs/projects/bsc05/martagm/GWImp_COMPSs/R_SCRIPTS/condensed_tophits.R " + filteredFile + " "
-				+ filteredMalesFile + " " + filteredFemalesFile + " " + condensedFile + " " + topHitsFile + " " + pvaThresholdStr;
+				+ rScriptDir + "/condensed_tophits.R " + filteredFile + " "
+				+ filteredMalesFile + " " + filteredFemalesFile + " " + condensedPlain + " " + topHitsFile + " " + pvaThresholdStr;
 
 		try {
 			ProcessUtils.executeWithoutOutputs(command);
@@ -2245,6 +2246,8 @@ public class GuidanceImpl {
 		}
 
 		System.out.println(command);
+
+		FileUtils.gzipFile(condensedPlain, condensedFile);
 
 		long stopTime = System.currentTimeMillis();
 		long elapsedTime = (stopTime - startTime) / 1_000;
