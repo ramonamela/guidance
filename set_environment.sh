@@ -19,9 +19,9 @@ export gtoolsMem="6.0"
 
 export samtoolsBgzipMem="6.0"
 
-export imputeWithImputeLowMem="12.0"
-export imputeWithImputeMediumMem="12.0"
-export imputeWithImputeHighMem="12.0"
+export imputeWithImputeLowMem="6.0"
+export imputeWithImputeMediumMem="14.0"
+export imputeWithImputeHighMem="40.0"
 
 export imputeWithMinimacLowMem="8.0"
 export imputeWithMinimacMediumMem="8.0"
@@ -51,7 +51,7 @@ export generateTopHitsMem="90.0"
 
 export filterByMafMem="12.0"
 
-export snptestMem="12.0"
+export snptestMem="2.0"
 
 export initPhenoMatrixMem="12.0"
 

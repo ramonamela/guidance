@@ -1173,7 +1173,7 @@ public class GuidanceImpl {
 		long startTime = System.currentTimeMillis();
 
 		String cmd = null;
-		
+
 		boolean execute = true;
 
 		if (phasingTool.equals("shapeit")) {
@@ -1236,7 +1236,6 @@ public class GuidanceImpl {
 					cmd = bcfBinary + " convert " + baseDirDest + ".vcf" + " --hapsample " + baseDirDest + " --vcf-ids";
 					System.out.println("bcf call for males: " + cmd);
 
-					
 					exitValue = -1;
 					try {
 						exitValue = ProcessUtils.execute(cmd, baseDirOrigin + STDOUT_EXTENSION,
@@ -1255,16 +1254,16 @@ public class GuidanceImpl {
 					if (DEBUG) {
 						System.out.println(HEADER_PHASING + MSG_CMD + cmd);
 					}
-					
+
 					String generatedSample = phasingSampleFile + "s";
-					
+
 					FileUtils.move(phasingSampleFile, generatedSample);
 
 					cmd = "echo \"ID_1 ID_2 missing\" > " + phasingSampleFile + "; echo \"0 0 0\" >> "
 							+ phasingSampleFile + "; tail -n +3 " + generatedSample
 							+ " | tr \"_\" \" \" | awk '{ print $1\"_\"$2\" \"$3\" 0\" }' >> " + phasingSampleFile
 							+ "; cp " + phasingSampleFile + " /home/pr1ees00/pr1ees14/blabla";
-					
+
 					exitValue = -1;
 
 					try {
@@ -1283,10 +1282,9 @@ public class GuidanceImpl {
 					if (DEBUG) {
 						System.out.println(HEADER_PHASING + MSG_CMD + cmd);
 					}
-					
-					
+
 					execute = false;
-					
+
 				} else if (sex.equals(SEX2)) {
 					cmd = phasingBinary + " --bed " + bedFile + " --bim " + bimFile + " --fam " + famFile + " --chrom "
 							+ chromo + " --geneticMapFile " + gmapFile + " --numThreads 47 --outPrefix " + myPrefix;
@@ -1307,14 +1305,14 @@ public class GuidanceImpl {
 		// not stdout
 		// Ugly issue: If we run shapeit_v2, all the stdXXX is done stdout, and there is
 		// not stderr
-		if(execute) {
+		if (execute) {
 			int exitValue = -1;
 			try {
 				exitValue = ProcessUtils.execute(cmd, myPrefix + STDOUT_EXTENSION, myPrefix + STDERR_EXTENSION);
 			} catch (IOException ioe) {
 				throw new GuidanceTaskException(ioe);
 			}
-	
+
 			// Check process exit value
 			if (exitValue != 0) {
 				System.err.println(HEADER_PHASING + "Warning executing phasingProc job, exit value is: " + exitValue);
@@ -2199,34 +2197,47 @@ public class GuidanceImpl {
 	}
 
 	public static void generateCondensedFile(String filteredFile, String filteredMalesFile, String filteredFemalesFile,
-			String condensedFile, String cmdToStore) throws GuidanceTaskException {
+			String condensedFile, String topHitsFile, String pvaThresholdStr, String cmdToStore) throws GuidanceTaskException {
+		
+		// Rscript
+		// /gpfs/projects/bsc05/martagm/GWImp_COMPSs/R_SCRIPTS/condensed_tophits.R
+		// /gpfs/scratch/pr1ees00/pr1ees14/GCAT/SHAPEIT_IMPUTE/outputs/associations/T1D/T1D_WTCCC_eagle_minimac_for_uk10k/summary/T1D_uk10k_filteredByAll_chr_20_to_22.txt.gz
+		// /gpfs/scratch/pr1ees00/pr1ees14/GCAT/SHAPEIT_IMPUTE/outputs/associations/T1D/T1D_WTCCC_eagle_minimac_for_uk10k/summary/T1D_uk10k_filteredByAll_chr_23_males.txt.gz
+		// /gpfs/scratch/pr1ees00/pr1ees14/GCAT/SHAPEIT_IMPUTE/outputs/associations/T1D/T1D_WTCCC_eagle_minimac_for_uk10k/summary/T1D_uk10k_filteredByAll_chr_23_females.txt.gz
+		// condensed_chr23.txt tophits.txt 5e-8
 
 		// TODO generateCOndensedFile code
 		String command = null;
 		long startTime = System.currentTimeMillis();
 		String condensedPlain = condensedFile.substring(0, condensedFile.length() - 3);
 
-		if (filteredFile.equals(filteredMalesFile)) {
-			// There is only one chromosome
-			// Chr 23
-			if (filteredMalesFile.equals(filteredFemalesFile)) {
-				command = "zcat " + filteredMalesFile + " | awk '{ print 23_" + SEX1 + "\"" + TAB + "\"$2\"" + TAB
-						+ "\"$6\"" + TAB + "\"$7\"" + TAB + "\"$53\"" + TAB + "\"$4 }' > " + condensedPlain + ";zcat "
-						+ filteredFemalesFile + " | tail -n +2 | awk '{ print 23_" + SEX2 + "\"" + TAB + "\"$2\"" + TAB
-						+ "\"$6\"" + TAB + "\"$7\"" + TAB + "\"$53\"" + TAB + "\"$4 }' >> " + condensedPlain + ";gzip "
-						+ condensedPlain;
-			} else {
-				command = "zcat " + filteredFile + " | awk '{ print $1\"" + TAB + "\"$2\"" + TAB + "\"$6\"" + TAB
-						+ "\"$7\"" + TAB + "\"$53\"" + TAB + "\"$4 }' > " + condensedPlain + ";gzip " + condensedPlain;
-			}
-		} else {
-			command = "zcat " + filteredFile + " | awk '{ print $1\"" + TAB + "\"$2\"" + TAB + "\"$6\"" + TAB + "\"$7\""
-					+ TAB + "\"$46\"" + TAB + "\"$4 }' > " + condensedPlain + ";zcat " + filteredMalesFile
-					+ " | tail -n +2 | awk '{ print \"23_" + SEX1 + TAB + "\"$2\"" + TAB + "\"$6\"" + TAB + "\"$7\""
-					+ TAB + "\"$53\"" + TAB + "\"$4 }' >> " + condensedPlain + ";zcat " + filteredFemalesFile
-					+ " | tail -n +2 | awk '{ print \"23_" + SEX2 + TAB + "\"$2\"" + TAB + "\"$6\"" + TAB + "\"$7\""
-					+ TAB + "\"$53\"" + TAB + "\"$4 }' >> " + condensedPlain + ";gzip " + condensedPlain;
-		}
+		/*
+		 * if (filteredFile.equals(filteredMalesFile)) { // There is only one chromosome
+		 * // Chr 23 if (filteredMalesFile.equals(filteredFemalesFile)) { command =
+		 * "zcat " + filteredMalesFile + " | awk '{ print 23_" + SEX1 + "\"" + TAB +
+		 * "\"$2\"" + TAB + "\"$6\"" + TAB + "\"$7\"" + TAB + "\"$53\"" + TAB +
+		 * "\"$4 }' > " + condensedPlain + ";zcat " + filteredFemalesFile +
+		 * " | tail -n +2 | awk '{ print 23_" + SEX2 + "\"" + TAB + "\"$2\"" + TAB +
+		 * "\"$6\"" + TAB + "\"$7\"" + TAB + "\"$53\"" + TAB + "\"$4 }' >> " +
+		 * condensedPlain + ";gzip " + condensedPlain; } else { command = "zcat " +
+		 * filteredFile + " | awk '{ print $1\"" + TAB + "\"$2\"" + TAB + "\"$6\"" + TAB
+		 * + "\"$7\"" + TAB + "\"$53\"" + TAB + "\"$4 }' > " + condensedPlain + ";gzip "
+		 * + condensedPlain; } } else { command = "zcat " + filteredFile +
+		 * " | awk '{ print $1\"" + TAB + "\"$2\"" + TAB + "\"$6\"" + TAB + "\"$7\"" +
+		 * TAB + "\"$46\"" + TAB + "\"$4 }' > " + condensedPlain + ";zcat " +
+		 * filteredMalesFile + " | tail -n +2 | awk '{ print \"23_" + SEX1 + TAB +
+		 * "\"$2\"" + TAB + "\"$6\"" + TAB + "\"$7\"" + TAB + "\"$53\"" + TAB +
+		 * "\"$4 }' >> " + condensedPlain + ";zcat " + filteredFemalesFile +
+		 * " | tail -n +2 | awk '{ print \"23_" + SEX2 + TAB + "\"$2\"" + TAB + "\"$6\""
+		 * + TAB + "\"$7\"" + TAB + "\"$53\"" + TAB + "\"$4 }' >> " + condensedPlain +
+		 * ";gzip " + condensedPlain; }
+		 */
+		String rScriptBinDir = loadFromEnvironment(RSCRIPTBINDIR, HEADER_GENERATE_QQ_MANHATTAN_PLOTS);
+                String rScriptDir = loadFromEnvironment(RSCRIPTDIR, HEADER_GENERATE_QQ_MANHATTAN_PLOTS);
+
+		command = rScriptBinDir + "/Rscript "
+				+ rScriptDir + "/condensed_tophits.R " + filteredFile + " "
+				+ filteredMalesFile + " " + filteredFemalesFile + " " + condensedPlain + " " + topHitsFile + " " + pvaThresholdStr;
 
 		try {
 			ProcessUtils.executeWithoutOutputs(command);
@@ -2235,6 +2246,8 @@ public class GuidanceImpl {
 		}
 
 		System.out.println(command);
+
+		FileUtils.gzipFile(condensedPlain, condensedFile);
 
 		long stopTime = System.currentTimeMillis();
 		long elapsedTime = (stopTime - startTime) / 1_000;
