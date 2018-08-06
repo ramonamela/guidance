@@ -2593,7 +2593,7 @@ public class GuidanceImpl {
 						hwe_controlsS = splittedLine[inputFileHashTableIndex.get("controls_hwe")];
 					} catch(Exception e) {
 						if(DEBUG) {
-							System.out.println("There are not the columns cases_hwe and constrols_hew in this case");
+							System.out.println("There are not the columns cases_hwe and controls_hew in this case");
 						}
 					}
 				}
@@ -2603,7 +2603,7 @@ public class GuidanceImpl {
 					controls_mafS = splittedLine[inputFileHashTableIndex.get("controls_maf")];
 				} catch(Exception e) {
 					if(DEBUG) {
-						System.out.println("There are not the columns cases_maf and constrols_maf in this case");
+						System.out.println("There are not the columns cases_maf and controls_maf in this case");
 					}
 					cases_mafS = splittedLine[inputFileHashTableIndex.get("all_maf")];
 					controls_mafS = splittedLine[inputFileHashTableIndex.get("all_maf")];
