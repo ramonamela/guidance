@@ -2603,8 +2603,10 @@ public class GuidanceImpl {
 					controls_mafS = splittedLine[inputFileHashTableIndex.get("controls_maf")];
 				} catch(Exception e) {
 					if(DEBUG) {
-						System.out.println("There are not the columns cases_hwe and constrols_hew in this case");
+						System.out.println("There are not the columns cases_maf and constrols_maf in this case");
 					}
+					cases_mafS = splittedLine[inputFileHashTableIndex.get("all_maf")];
+					controls_mafS = splittedLine[inputFileHashTableIndex.get("all_maf")];
 				}
 				String position = splittedLine[inputFileHashTableIndex.get("position")];
 				String pva = splittedLine[inputFileHashTableIndex.get("frequentist_add_pvalue")];
