@@ -2586,8 +2586,14 @@ public class GuidanceImpl {
 
 				if (!chromo.equals(CHR_23)) {
 					hwe_cohortS = splittedLine[inputFileHashTableIndex.get("cohort_1_hwe")];
-					hwe_casesS = splittedLine[inputFileHashTableIndex.get("cases_hwe")];
-					hwe_controlsS = splittedLine[inputFileHashTableIndex.get("controls_hwe")];
+					try {
+						hwe_casesS = splittedLine[inputFileHashTableIndex.get("cases_hwe")];
+						hwe_controlsS = splittedLine[inputFileHashTableIndex.get("controls_hwe")];
+					} catch(Exception e) {
+						if(DEBUG) {
+							System.out.println("There are not the columns cases_hwe and constrols_hew in this case");
+						}
+					}
 				}
 
 				String cases_mafS = splittedLine[inputFileHashTableIndex.get("cases_maf")];
