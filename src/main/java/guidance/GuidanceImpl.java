@@ -2583,6 +2583,8 @@ public class GuidanceImpl {
 				String hwe_cohortS = "1.0";
 				String hwe_casesS = "1.0";
 				String hwe_controlsS = "1.0";
+				String cases_mafS = "1.0";
+				String controls_mafS = "1.0";
 
 				if (!chromo.equals(CHR_23)) {
 					hwe_cohortS = splittedLine[inputFileHashTableIndex.get("cohort_1_hwe")];
@@ -2596,8 +2598,14 @@ public class GuidanceImpl {
 					}
 				}
 
-				String cases_mafS = splittedLine[inputFileHashTableIndex.get("cases_maf")];
-				String controls_mafS = splittedLine[inputFileHashTableIndex.get("controls_maf")];
+				try {
+					cases_mafS = splittedLine[inputFileHashTableIndex.get("cases_maf")];
+					controls_mafS = splittedLine[inputFileHashTableIndex.get("controls_maf")];
+				} catch(Exception e) {
+					if(DEBUG) {
+						System.out.println("There are not the columns cases_hwe and constrols_hew in this case");
+					}
+				}
 				String position = splittedLine[inputFileHashTableIndex.get("position")];
 				String pva = splittedLine[inputFileHashTableIndex.get("frequentist_add_pvalue")];
 
