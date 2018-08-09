@@ -19,9 +19,9 @@ export gtoolsMem="6.0"
 
 export samtoolsBgzipMem="6.0"
 
-export imputeWithImputeLowMem="6.0"
-export imputeWithImputeMediumMem="14.0"
-export imputeWithImputeHighMem="40.0"
+export imputeWithImputeLowMem="4.0"
+export imputeWithImputeMediumMem="8.0"
+export imputeWithImputeHighMem="32.0"
 
 export imputeWithMinimacLowMem="8.0"
 export imputeWithMinimacMediumMem="8.0"

@@ -99,11 +99,9 @@ public class Guidance {
 	// will be used in the Guidance
 	// execution
 	private static final String PLINK_BINARY = System.getenv("PLINKBINARY");
-	private static final String GTOOL_BINARY = System.getenv("GTOOLBINARY");
 	private static final String R_SCRIPT_BIN_DIR = System.getenv("RSCRIPTBINDIR");
 	private static final String R_SCRIPT_DIR = System.getenv("RSCRIPTDIR");
 	private static final String QCTOOL_BINARY = System.getenv("QCTOOLBINARY");
-	private static final String QCTOOL_BINARY_NEW = System.getenv("QCTOOLSNEWBINARY");
 	private static final String EAGLEBINARY = System.getenv("EAGLEBINARY");
 	private static final String PLINKBINARY = System.getenv("PLINKBINARY");
 	private static final String BCFTOOLSBINARY = System.getenv("BCFTOOLSBINARY");
@@ -4319,7 +4317,6 @@ public class Guidance {
 	 */
 	private static void verifyEnvVar() throws GuidanceEnvironmentException {
 		verify(PLINK_BINARY);
-		verify(GTOOL_BINARY);
 
 		verifyEnvVarDefined(R_SCRIPT_BIN_DIR);
 		verifyEnvVarDefined(R_SCRIPT_DIR);
