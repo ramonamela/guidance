@@ -43,6 +43,10 @@ import java.io.FileWriter;
 import java.io.FileReader;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
+import java.nio.file.DirectoryStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.io.IOException;
 
 import java.util.ArrayList;
@@ -1906,11 +1910,6 @@ public class GuidanceImpl {
 
 		String cmd = null;
 		if (theChromo.equals(CHR_23)) {
-			cmd = impute2Binary + " -use_prephased_g -m " + gmapFile + " -h " + knownHapFile + " -l " + legendFile
-					+ " -known_haps_g " + phasingHapsFileGz + " -sample_g " + phasingSampleFile + " -int " + lim1S + " "
-					+ lim2S + "  -chrX -exclude_snps_g " + pairsFile + " -impute_excluded -Ne 20000 -o " + imputeFile
-					+ " -i " + imputeFileInfo + " -r " + imputeFileSummary + " -w " + imputeFileWarnings
-					+ " -no_sample_qc_info -o_gz";
 
 			if (sex.equals(SEX1)) {
 				cmd = impute2Binary + " -use_prephased_g -m " + gmapFile + " -h " + knownHapFile + " -l " + legendFile
@@ -2206,47 +2205,42 @@ public class GuidanceImpl {
 		// /gpfs/scratch/pr1ees00/pr1ees14/GCAT/SHAPEIT_IMPUTE/outputs/associations/T1D/T1D_WTCCC_eagle_minimac_for_uk10k/summary/T1D_uk10k_filteredByAll_chr_23_females.txt.gz
 		// condensed_chr23.txt tophits.txt 5e-8
 
-		// TODO generateCOndensedFile code
 		String command = null;
 		long startTime = System.currentTimeMillis();
 		String condensedPlain = condensedFile.substring(0, condensedFile.length() - 3);
 
-		/*
-		 * if (filteredFile.equals(filteredMalesFile)) { // There is only one chromosome
-		 * // Chr 23 if (filteredMalesFile.equals(filteredFemalesFile)) { command =
-		 * "zcat " + filteredMalesFile + " | awk '{ print 23_" + SEX1 + "\"" + TAB +
-		 * "\"$2\"" + TAB + "\"$6\"" + TAB + "\"$7\"" + TAB + "\"$53\"" + TAB +
-		 * "\"$4 }' > " + condensedPlain + ";zcat " + filteredFemalesFile +
-		 * " | tail -n +2 | awk '{ print 23_" + SEX2 + "\"" + TAB + "\"$2\"" + TAB +
-		 * "\"$6\"" + TAB + "\"$7\"" + TAB + "\"$53\"" + TAB + "\"$4 }' >> " +
-		 * condensedPlain + ";gzip " + condensedPlain; } else { command = "zcat " +
-		 * filteredFile + " | awk '{ print $1\"" + TAB + "\"$2\"" + TAB + "\"$6\"" + TAB
-		 * + "\"$7\"" + TAB + "\"$53\"" + TAB + "\"$4 }' > " + condensedPlain + ";gzip "
-		 * + condensedPlain; } } else { command = "zcat " + filteredFile +
-		 * " | awk '{ print $1\"" + TAB + "\"$2\"" + TAB + "\"$6\"" + TAB + "\"$7\"" +
-		 * TAB + "\"$46\"" + TAB + "\"$4 }' > " + condensedPlain + ";zcat " +
-		 * filteredMalesFile + " | tail -n +2 | awk '{ print \"23_" + SEX1 + TAB +
-		 * "\"$2\"" + TAB + "\"$6\"" + TAB + "\"$7\"" + TAB + "\"$53\"" + TAB +
-		 * "\"$4 }' >> " + condensedPlain + ";zcat " + filteredFemalesFile +
-		 * " | tail -n +2 | awk '{ print \"23_" + SEX2 + TAB + "\"$2\"" + TAB + "\"$6\""
-		 * + TAB + "\"$7\"" + TAB + "\"$53\"" + TAB + "\"$4 }' >> " + condensedPlain +
-		 * ";gzip " + condensedPlain; }
-		 */
 		String rScriptBinDir = loadFromEnvironment(RSCRIPTBINDIR, HEADER_GENERATE_QQ_MANHATTAN_PLOTS);
-                String rScriptDir = loadFromEnvironment(RSCRIPTDIR, HEADER_GENERATE_QQ_MANHATTAN_PLOTS);
+		String rScriptDir = loadFromEnvironment(RSCRIPTDIR, HEADER_GENERATE_QQ_MANHATTAN_PLOTS);
 
-		command = rScriptBinDir + "/Rscript "
+		command = rScriptBinDir + "Rscript --verbose "
 				+ rScriptDir + "/condensed_tophits.R " + filteredFile + " "
 				+ filteredMalesFile + " " + filteredFemalesFile + " " + condensedPlain + " " + topHitsFile + " " + pvaThresholdStr;
 
+		System.out.println(command);
+		
 		try {
 			ProcessUtils.executeWithoutOutputs(command);
 		} catch (IOException ioe) {
 			throw new GuidanceTaskException(ioe);
 		}
+		
+		File fInput = new File(condensedFile);
+		String path = fInput.getParent();
+		Path dir = Paths.get(path);
+		
+		System.out.println("Files in " + path + " before compression:");
+		try (DirectoryStream<Path> stream = Files.newDirectoryStream(dir, "*")) {
+		    for (Path file : stream) {
+		        System.out.println(file.toAbsolutePath().toString());
+		    }
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		System.out.println("End files in sandbox. Starting compression");
 
 		System.out.println(command);
-
+		
 		FileUtils.gzipFile(condensedPlain, condensedFile);
 
 		long stopTime = System.currentTimeMillis();

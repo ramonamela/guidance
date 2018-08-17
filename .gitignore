@@ -9,3 +9,13 @@ dependency-reduced-pom.xml
 *.swo
 pom.xml.versionsBackup
 
+#Docker image
+*.tar
+#Singularity image
+*.img
+
+#Binaries
+TOOLS
+
+#COMPSs scripts to launch jobs
+scripts

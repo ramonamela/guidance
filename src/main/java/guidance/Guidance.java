@@ -2664,8 +2664,8 @@ public class Guidance {
 			String filteredFemalesFile, String condensedFile, String topHitsFile) {
 		// TODO fill the function
 		// Task
-		String cmdToStore = JAVA_HOME + "/java generateCondensedFile.jar " + filteredFile + " " + filteredMalesFile
-				+ " " + filteredFemalesFile + " " + condensedFile;
+		String cmdToStore = R_SCRIPT_BIN_DIR + "/Rscript " + R_SCRIPT_DIR + "/condensed_tophits.R " + filteredFile + " " + filteredMalesFile
+				+ " " + filteredFemalesFile + " " + condensedFile + " " + topHitsFile;
 		listOfCommands.add(cmdToStore);
 		try {
 			GuidanceImpl.generateCondensedFile(filteredFile, filteredMalesFile, filteredFemalesFile, condensedFile, topHitsFile, PVA_THRESHOLD_STR,
@@ -3025,8 +3025,7 @@ public class Guidance {
 							cmd = "mv " + phasingSampleFile + " " + generatedSample + "; echo \"ID_1 ID_2 missing\" > "
 									+ phasingSampleFile + "; echo \"0 0 0\" >> " + phasingSampleFile + "; tail -n +2 "
 									+ generatedSample + " | tr \"_\" \" \" | awk '{ print $1\"_\"$2\" \"$3\" 0\" }' >> "
-									+ phasingSampleFile + "; cp " + phasingSampleFile
-									+ " /home/pr1ees00/pr1ees14/blabla";
+									+ phasingSampleFile;
 						} else {
 							cmd = EAGLEBINARY + " --bed " + bedFile + " --bim " + bimFile + " --fam " + famFile
 									+ " --chrom " + theChromo + " --geneticMapFile " + gmapFile

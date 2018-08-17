@@ -4,7 +4,10 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-
+import java.nio.file.DirectoryStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
@@ -234,6 +237,21 @@ public class FileUtils {
 	 */
 	public static void gzipFile(String sourceFilePath, String destZipFilePath) {
 		byte[] buffer = new byte[1024];
+		File fInput = new File(sourceFilePath);
+		String path = fInput.getParent();
+		Path dir = Paths.get(path);
+
+		System.out.println("Files in " + path + " :");
+		try (DirectoryStream<Path> stream = Files.newDirectoryStream(dir, "*")) {
+		    for (Path file : stream) {
+		        System.out.println(file.toAbsolutePath().toString());
+		    }
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		System.out.println("End files in sandbox");
+		
 		try (FileOutputStream fileOutputStream = new FileOutputStream(destZipFilePath);
 				GZIPOutputStream gzipOuputStream = new GZIPOutputStream(fileOutputStream);
 				FileInputStream fileInput = new FileInputStream(sourceFilePath)) {
@@ -246,6 +264,14 @@ public class FileUtils {
 			gzipOuputStream.finish();
 		} catch (IOException ioe) {
 			System.err.println("ERROR: Cannot zip file");
+			/*
+			try {
+				Thread.sleep(600000);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			*/
 			ioe.printStackTrace();
 		}
 	}
