@@ -1,0 +1,22 @@
+FROM compss/compss-ubuntu16:stable
+
+RUN sudo apt-get update && \
+    sudo apt-get install -y r-base
+
+COPY ./BINARIES /BINARIES
+
+ENV BCFTOOLSBINARY "/gpfs/apps/BCFTOOLS/1.8/INTEL/bin/bcftools"
+ENV QCTOOLSNEWBINARY "/gpfs/scratch/pr1ees00/pr1ees14/GCAT/SHAPEIT_IMPUTE/qctool/build/release/qctool_v2.0-rc9"
+ENV LC_ALL "C
+ENV PLINKBINARY "/gpfs/home/bsc05/bsc05997/TOOLS/apps_gwimp_compss/plink_1.9/plink"
+ENV EAGLEBINARY "/gpfs/home/bsc05/bsc05997/TOOLS/Eagle_v2.3/eagle"
+ENV RSCRIPTDIR "/gpfs/home/bsc05/bsc05997/TOOLS/MN3/guidance_0.9.8/R_scripts/"
+ENV RSCRIPTBINDIR "/usr/bin/"
+ENV QCTOOLBINARY "/gpfs/home/bsc05/bsc05997/TOOLS/qctool_v1.4-linux-x86_64/qctool"
+ENV SHAPEITBINARY "/gpfs/home/bsc05/bsc05997/TOOLS/shapeit.v2.r837.GLIBCv2.20/bin/shapeit"
+ENV SHAPEITBINARY "/gpfs/home/pr1ees00/pr1ees14/shapeit/shapeit.v2.r727.linux.x64"
+ENV SHAPEITBINARY "/gpfs/home/bsc05/bsc05997/TOOLS/shapeit.v2.r727.linux.x64"
+ENV IMPUTE2BINARY "/gpfs/home/bsc05/bsc05997/TOOLS/impute_v2.3.2_x86_64_static/impute2"
+ENV SNPTESTBINARY "/gpfs/home/bsc05/bsc05997/TOOLS/apps_gwimp_compss/snptest_v2.5_linux_x86_64_static/snptest_v2.5"
+ENV MINIMACBINARY "/gpfs/home/bsc05/bsc05997/TOOLS/Minimac3/bin/Minimac3"
+ENV SAMTOOLSBINARY "/gpfs/apps/SAMTOOLS/1.5-DNANEXUS/INTEL/IMPI/bin"

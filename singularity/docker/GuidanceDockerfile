@@ -1,0 +1,40 @@
+FROM compss/compss-ubuntu16:stable
+
+#Install R
+RUN sudo apt-get update && \
+    sudo apt-get install -y r-base
+
+#Install bcftools
+RUN wget https://github.com/samtools/bcftools/releases/download/1.8/bcftools-1.8.tar.bz2 -O bcftools.tar.bz2 && \
+    tar -xjvf bcftools.tar.bz2 && \\
+    rm bcftools.tar.bz2 && \\
+    cd bcftools-1.8 && \\
+    make && \\
+    sudo make prefix=/usr/local/bin install && \\
+    sudo ln -s /usr/local/bin/bin/bcftools /usr/bin/bcftools
+
+#Install samtools
+RUN wget https://github.com/samtools/samtools/releases/download/1.5/samtools-1.5.tar.bz2 -O samtools.tar.bz2 && \
+    tar -xjvf samtools.tar.bz2 && \
+    cd samtools-1.5 && \
+    make && \
+    sudo make prefix=/usr/local/bin install && \
+    sudo ln -s /usr/local/bin/bin/samtoos /usr/bin/samtools
+
+COPY ./TOOLS /TOOLS
+
+ENV LC_ALL "C
+ENV PLINKBINARY "/TOOLS/plink_1.9/plink"
+ENV EAGLEBINARY "/TOOLS/Eagle_v2.3/eagle"
+ENV RSCRIPTDIR "/TOOLS/R_scripts/"
+ENV RSCRIPTBINDIR "/usr/bin/"
+ENV QCTOOLBINARY "/TOOLS/qctool_v1.4-linux-x86_64/qctool"
+ENV SHAPEITBINARY "/TOOLS/shapeit.v2.r727.linux.x64"
+ENV IMPUTE2BINARY "/TOOLS/impute_v2.3.2_x86_64_static/impute2"
+ENV SNPTESTBINARY "/TOOLS/snptest_v2.5_linux_x86_64_static/snptest_v2.5"
+ENV MINIMACBINARY "/TOOLS/Minimac3/bin/Minimac3"
+
+#ENV BCFTOOLSBINARY "/gpfs/apps/BCFTOOLS/1.8/INTEL/bin/bcftools"
+ENV BCFTOOLSBINARY "/usr/bin/bcftools"
+ENV QCTOOLSNEWBINARY "/gpfs/scratch/pr1ees00/pr1ees14/GCAT/SHAPEIT_IMPUTE/qctool/build/release/qctool_v2.0-rc9"
+ENV SAMTOOLSBINARY "/gpfs/apps/SAMTOOLS/1.5-DNANEXUS/INTEL/IMPI/bin"
