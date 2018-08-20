@@ -1,16 +1,24 @@
 FROM compss/compss-ubuntu16:stable
 
+RUN sudo apt-get update && sudo apt-get install -y apt-utils
+
 #Install R
 RUN sudo apt-get update && \
     sudo apt-get install -y r-base
 
+#Install mercurial (for QCTool)
+RUN sudo apt-get install -y mercurial
+
+#bcftools and samtools dependencies
+RUN sudo apt-get install -y zlib1g-dev libbz2-dev liblzma-dev
+
 #Install bcftools
 RUN wget https://github.com/samtools/bcftools/releases/download/1.8/bcftools-1.8.tar.bz2 -O bcftools.tar.bz2 && \
-    tar -xjvf bcftools.tar.bz2 && \\
-    rm bcftools.tar.bz2 && \\
-    cd bcftools-1.8 && \\
-    make && \\
-    sudo make prefix=/usr/local/bin install && \\
+    tar -xjvf bcftools.tar.bz2 && \
+    rm bcftools.tar.bz2 && \
+    cd bcftools-1.8 && \
+    make && \
+    sudo make prefix=/usr/local/bin install && \
     sudo ln -s /usr/local/bin/bin/bcftools /usr/bin/bcftools
 
 #Install samtools
@@ -37,4 +45,4 @@ ENV MINIMACBINARY "/TOOLS/Minimac3/bin/Minimac3"
 #ENV BCFTOOLSBINARY "/gpfs/apps/BCFTOOLS/1.8/INTEL/bin/bcftools"
 ENV BCFTOOLSBINARY "/usr/bin/bcftools"
 ENV QCTOOLSNEWBINARY "/gpfs/scratch/pr1ees00/pr1ees14/GCAT/SHAPEIT_IMPUTE/qctool/build/release/qctool_v2.0-rc9"
-ENV SAMTOOLSBINARY "/gpfs/apps/SAMTOOLS/1.5-DNANEXUS/INTEL/IMPI/bin"
+ENV SAMTOOLSBINARY "/usr/bin/samtools"
