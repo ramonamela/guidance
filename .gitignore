@@ -16,6 +16,7 @@ pom.xml.versionsBackup
 
 #Binaries
 TOOLS
+TOOLS_INSTALLED
 
 #COMPSs scripts to launch jobs
 scripts
