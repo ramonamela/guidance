@@ -676,6 +676,9 @@ public class Guidance {
 					System.out.println("Asking for filtered 23 files");
 					filteredByAllXMalesFile = mergeFilesInfo.getAdditionalFilteredByAllXMalesFile(test, panel, 0);
 					filteredByAllXFemalesFile = mergeFilesInfo.getAdditionalFilteredByAllXFemalesFile(test, panel, 0);
+					if (startChr == 23) {
+						lastFilteredByAllFile = filteredByAllXMalesFile;
+					}
 				} else {
 					filteredByAllXMalesFile = lastFilteredByAllFile;
 					filteredByAllXFemalesFile = lastFilteredByAllFile;
@@ -2108,16 +2111,13 @@ public class Guidance {
 		String filteredC = null;
 		int numberOfChrs = endChrNormal - startChr + 1;
 
-		if (numberOfChrs == 1) { // There is only one chr to process.
+		if (numberOfChrs == 1 && startChr != 23) { // There is only one chr to process.
 			rpanelFlag = "YES";
 			// DO something.
 			filteredA = mergeFilesInfo.getFilteredByAllFile(ttIndex, rpanelIndex, startChr);
 			filteredB = filteredA;
-
 			filteredC = mergeFilesInfo.getAdditionalFilteredByAllFile(ttIndex, rpanelIndex, indexC);
-			if (startChr != 23) {
-				doJointFilteredByAllFiles(parsingArgs, filteredA, filteredB, filteredC, rpanelName, rpanelFlag);
-			}
+			doJointFilteredByAllFiles(parsingArgs, filteredA, filteredB, filteredC, rpanelName, rpanelFlag);
 		} else {
 			for (processedFiltered = 0; processedFiltered < 2 * numberOfChrs - 2; processedFiltered = processedFiltered
 					+ 2) {
