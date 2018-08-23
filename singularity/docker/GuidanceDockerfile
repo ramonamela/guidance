@@ -85,6 +85,7 @@ RUN wget http://www.well.ox.ac.uk/~gav/resources/archive/snptest_v2.5_linux_x86_
     tar -zxvf snptest_v2.5_linux_x86_64_static.tgz && \
     rm snptest_v2.5_linux_x86_64_static.tgz && \
     rm -r snptest_v2.5_linux_x86_64_static/example/ && \
+    chmod -R 755 /TOOLS/snptest_v2.5_linux_x86_64_static/ && \
     sudo ln -s /TOOLS/snptest_v2.5_linux_x86_64_static/snptest_v2.5 /usr/bin/snptest_v2.5
 
 #Install minimac3

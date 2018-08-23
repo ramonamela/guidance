@@ -1,5 +1,7 @@
 #!/bin/bash
 
+cp ../../src/main/R/* ./TOOLS/R_scripts/
+
 sudo docker build -f GuidanceDockerfile -t docker_guidance .
 
 echo "[GUIDANCE] Docker build successfully executed."
