@@ -1517,7 +1517,7 @@ public class GuidanceImpl {
 		while ((line = br.readLine()) != null) {
 
 			String[] lineSplited = line.split("\\s");
-			String key = lineSplited[0] + lineSplited[1] + lineSplited[2];
+			String key = lineSplited[1];
 			String valueResponse = lineSplited[columnsHeaderResponse.get(0)];
 
 			for (int i = 1; i < columnsHeaderResponse.size(); i++) {
@@ -1561,7 +1561,7 @@ public class GuidanceImpl {
 		while ((line = br.readLine()) != null) {
 
 			String[] lineSplited = line.split("\\s");
-			String key = lineSplited[0] + lineSplited[1] + lineSplited[2];
+			String key = lineSplited[1];
 
 			valuesJoined = new ArrayList<String>();
 			System.out.println("Current key: " + key);
