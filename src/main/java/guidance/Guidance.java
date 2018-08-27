@@ -3418,6 +3418,8 @@ public class Guidance {
 
 		if (parsingArgs.getStageStatus("filterByInfo") == 1) {
 			String infoThresholdS = null;
+			String mafThresholdS = Double.toString(parsingArgs.getMafThreshold());
+			
 			String imputationTool = parsingArgs.getImputationTool();
 			if (chromo.equals("23")) {
 				imputationTool = "impute";
@@ -3441,7 +3443,7 @@ public class Guidance {
 				LOGGER.error("[Guidance] Exception writing to list of commands file " + e);
 			}
 			try {
-				GuidanceImpl.filterByInfo(imputationTool, imputeFileInfo, filteredRsIdFile, infoThresholdS, cmdToStore);
+				GuidanceImpl.filterByInfo(imputationTool, imputeFileInfo, filteredRsIdFile, infoThresholdS, mafThresholdS, cmdToStore);
 			} catch (Exception e) {
 				System.err.println("[Guidance] Exception trying the execution of filterByInfo task");
 				System.err.println(e.getMessage());

@@ -119,9 +119,21 @@ public class TestFunction {
 		}
 	}
 
+	private static void newSample(String[] args) throws IOException, InterruptedException, Exception {
+		String sampleFile = args[0];
+		String phasingSampleFile = args[1];
+		String responseVar = args[2];
+		String covariables = args[3];
+		try {
+			GuidanceImpl.newSample(sampleFile, phasingSampleFile, responseVar, covariables, "");
+		} catch (GuidanceTaskException e) {
+			e.printStackTrace();
+		}
+	}
+
 	public static void main(String[] args) throws Exception {
 		System.out.println(Arrays.toString(args));
-		int option = 3;
+		int option = 5;
 		switch (option) {
 		case 0:
 			collectSummaryWrapper(args);
@@ -133,6 +145,8 @@ public class TestFunction {
 			generateTopHits(args);
 		case 4:
 			printPaths(args);
+		case 5:
+			newSample(args);
 		}
 	}
 }

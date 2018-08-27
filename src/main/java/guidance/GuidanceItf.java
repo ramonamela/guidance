@@ -321,6 +321,7 @@ public interface GuidanceItf {
 			@Parameter(type = Type.FILE, direction = Direction.IN) String imputeFileInfo,
 			@Parameter(type = Type.FILE, direction = Direction.OUT) String inclusionRsIdFile,
 			@Parameter(type = Type.STRING, direction = Direction.IN) String infoThresholdS,
+			@Parameter(type = Type.STRING, direction = Direction.IN) String mafThresholdS,
 			@Parameter(type = Type.STRING, direction = Direction.IN) String cmdToStore);
 	
 	@Method(declaringClass = "guidance.GuidanceImpl")

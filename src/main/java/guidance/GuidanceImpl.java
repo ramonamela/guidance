@@ -1265,8 +1265,7 @@ public class GuidanceImpl {
 
 					cmd = "echo \"ID_1 ID_2 missing\" > " + phasingSampleFile + "; echo \"0 0 0\" >> "
 							+ phasingSampleFile + "; tail -n +3 " + generatedSample
-							+ " | tr \"_\" \" \" | awk '{ print $1\"_\"$2\" \"$3\" 0\" }' >> " + phasingSampleFile
-							+ "; cp " + phasingSampleFile + " /home/pr1ees00/pr1ees14/blabla";
+							+ " | tr \"_\" \" \" | awk '{ print $1\"_\"$2\" \"$3\" 0\" }' >> " + phasingSampleFile;
 
 					exitValue = -1;
 
@@ -1423,11 +1422,11 @@ public class GuidanceImpl {
 				// If we process chromoso X (23) then we change the cmdToStore
 				cmd = phasingBinary + " --input-gen " + inputGenFile + " " + inputSampleFile + " --input-map "
 						+ gmapFile + " --chrX --output-max " + phasingHapsFile + " " + phasingSampleFile
-						+ " --thread 16 --effective-size 20000 --output-log " + phasingLogFile;
+						+ " --thread 48 --effective-size 20000 --output-log " + phasingLogFile;
 			} else {
 				cmd = phasingBinary + " --input-gen " + inputGenFile + " " + inputSampleFile + " --input-map "
 						+ gmapFile + " --output-max " + phasingHapsFile + " " + phasingSampleFile
-						+ " --thread 16 --effective-size 20000 --output-log " + phasingLogFile;
+						+ " --thread 48 --effective-size 20000 --output-log " + phasingLogFile;
 			}
 		}
 
@@ -1925,6 +1924,8 @@ public class GuidanceImpl {
 						+ imputeFileWarnings + " -no_sample_qc_info -o_gz";
 			}
 
+			theChromo = "X";
+
 		} else {
 			cmd = impute2Binary + " -use_prephased_g -m " + gmapFile + " -h " + knownHapFile + " -l " + legendFile
 					+ " -known_haps_g " + phasingHapsFileGz + " -int " + lim1S + " " + lim2S + " -exclude_snps_g "
@@ -1966,7 +1967,10 @@ public class GuidanceImpl {
 		}
 
 		boolean success = FileUtils.move(imputeGZFile, imputeFile);
-		if (!success) {
+
+		if (!success)
+
+		{
 			throw new GuidanceTaskException(HEADER_IMPUTE + ERROR_ON_FILE + imputeGZFile);
 		}
 
@@ -1974,6 +1978,26 @@ public class GuidanceImpl {
 			FileUtils.createEmptyFile(imputeFileInfo, HEADER_IMPUTE);
 			FileUtils.createEmptyFile(imputeFileSummary, HEADER_IMPUTE);
 			FileUtils.createEmptyFile(imputeFileWarnings, HEADER_IMPUTE);
+		} catch (IOException ioe) {
+			throw new GuidanceTaskException(ioe);
+		}
+		
+		String imputeFileColumnTransformation = "zcat " + imputeFile + " | awk -v chr=" + theChromo
+				+ "'{out=$1 \" \" chr \":\" $3 \"_\" $4 \"_\" $5 ; for(i=3;i<=NF;i++){out=out\" \"$i}; print out}' | gzip > "
+				+ imputeFile;
+		
+		try {
+			ProcessUtils.executeWithoutOutputs(imputeFileColumnTransformation);
+		} catch (IOException ioe) {
+			throw new GuidanceTaskException(ioe);
+		}
+		
+		String imputeInfoFileColumnTransformation = "cat " + imputeFileInfo + " | awk -v chr=" + theChromo
+				+ "'{out=$1 \" \" chr \":\" $3 \"_\" $4 \"_\" $5 ; for(i=3;i<=NF;i++){out=out\" \"$i}; print out}' > "
+				+ imputeFileInfo;
+		
+		try {
+			ProcessUtils.executeWithoutOutputs(imputeInfoFileColumnTransformation);
 		} catch (IOException ioe) {
 			throw new GuidanceTaskException(ioe);
 		}
@@ -2196,8 +2220,9 @@ public class GuidanceImpl {
 	}
 
 	public static void generateCondensedFile(String filteredFile, String filteredMalesFile, String filteredFemalesFile,
-			String condensedFile, String topHitsFile, String pvaThresholdStr, String cmdToStore) throws GuidanceTaskException {
-		
+			String condensedFile, String topHitsFile, String pvaThresholdStr, String cmdToStore)
+			throws GuidanceTaskException {
+
 		// Rscript
 		// /gpfs/projects/bsc05/martagm/GWImp_COMPSs/R_SCRIPTS/condensed_tophits.R
 		// /gpfs/scratch/pr1ees00/pr1ees14/GCAT/SHAPEIT_IMPUTE/outputs/associations/T1D/T1D_WTCCC_eagle_minimac_for_uk10k/summary/T1D_uk10k_filteredByAll_chr_20_to_22.txt.gz
@@ -2212,27 +2237,27 @@ public class GuidanceImpl {
 		String rScriptBinDir = loadFromEnvironment(RSCRIPTBINDIR, HEADER_GENERATE_QQ_MANHATTAN_PLOTS);
 		String rScriptDir = loadFromEnvironment(RSCRIPTDIR, HEADER_GENERATE_QQ_MANHATTAN_PLOTS);
 
-		command = rScriptBinDir + "Rscript --verbose "
-				+ rScriptDir + "/condensed_tophits.R " + filteredFile + " "
-				+ filteredMalesFile + " " + filteredFemalesFile + " " + condensedPlain + " " + topHitsFile + " " + pvaThresholdStr;
+		command = rScriptBinDir + "Rscript --verbose " + rScriptDir + "/condensed_tophits.R " + filteredFile + " "
+				+ filteredMalesFile + " " + filteredFemalesFile + " " + condensedPlain + " " + topHitsFile + " "
+				+ pvaThresholdStr;
 
 		System.out.println(command);
-		
+
 		try {
 			ProcessUtils.executeWithoutOutputs(command);
 		} catch (IOException ioe) {
 			throw new GuidanceTaskException(ioe);
 		}
-		
+
 		File fInput = new File(condensedFile);
 		String path = fInput.getParent();
 		Path dir = Paths.get(path);
-		
+
 		System.out.println("Files in " + path + " before compression:");
 		try (DirectoryStream<Path> stream = Files.newDirectoryStream(dir, "*")) {
-		    for (Path file : stream) {
-		        System.out.println(file.toAbsolutePath().toString());
-		    }
+			for (Path file : stream) {
+				System.out.println(file.toAbsolutePath().toString());
+			}
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -2240,7 +2265,7 @@ public class GuidanceImpl {
 		System.out.println("End files in sandbox. Starting compression");
 
 		System.out.println(command);
-		
+
 		FileUtils.gzipFile(condensedPlain, condensedFile);
 
 		long stopTime = System.currentTimeMillis();
@@ -2265,14 +2290,14 @@ public class GuidanceImpl {
 	 * @throws Exception
 	 */
 	public static void filterByInfo(String imputationTool, String imputeFileInfo, String inclusionRsIdFile,
-			String threshold, String cmdToStore) throws GuidanceTaskException {
+			String infoThresholdS, String mafThresholdS, String cmdToStore) throws GuidanceTaskException {
 
 		if (DEBUG) {
 			System.out.println("\n[DEBUG] Running filterByInfo with parameters:");
 			System.out.println("[DEBUG] \t- Imputation Tool          : " + imputationTool);
 			System.out.println("[DEBUG] \t- Input inputeFileInfo     : " + imputeFileInfo);
 			System.out.println("[DEBUG] \t- Output inclusionRsIdFile : " + inclusionRsIdFile);
-			System.out.println("[DEBUG] \t- Input threshold          : " + threshold);
+			System.out.println("[DEBUG] \t- Input threshold          : " + infoThresholdS);
 			System.out.println(NEW_LINE);
 			System.out.println("[DEBUG] \t- Command: " + cmdToStore);
 			System.out.println("--------------------------------------");
@@ -2295,7 +2320,8 @@ public class GuidanceImpl {
 		}
 
 		// Convert threshold string into thresholdDouble
-		double thresholdDouble = Double.parseDouble(threshold); // store info value in Double format
+		double thresholdInfoDouble = Double.parseDouble(infoThresholdS); // store info value in Double format
+		double thresholdMafDouble = Double.parseDouble(mafThresholdS);
 
 		File outInclusionRsIdFile = new File(inclusionRsIdFile);
 		// Tries to create the file
@@ -2320,8 +2346,8 @@ public class GuidanceImpl {
 				if (imputationTool.equals("minimac")) {
 					String type = splittedLine[typeIndex];
 
-					if (type.equals("Typed_Only")
-							|| (type.equals("Genotyped") && (Double.parseDouble(splittedLine[mafIndex]) > 0.001))) {
+					if (type.equals("Typed_Only") || (type.equals("Genotyped")
+							&& (Double.parseDouble(splittedLine[mafIndex]) > thresholdMafDouble))) {
 
 						writerFiltered.write(splittedLine[rsIdIndex]);
 						writerFiltered.newLine();
@@ -2330,7 +2356,8 @@ public class GuidanceImpl {
 
 						// int retval = Double.compare(info, thresholdDouble);
 
-						if ((info >= thresholdDouble) && (Double.parseDouble(splittedLine[mafIndex]) > 0.001)) {
+						if ((info >= thresholdInfoDouble)
+								&& (Double.parseDouble(splittedLine[mafIndex]) > thresholdMafDouble)) {
 							// The info value is greater or equal to the threshold, then store the rsID into
 							// the output file.
 							writerFiltered.write(splittedLine[rsIdIndex]);
@@ -2345,7 +2372,7 @@ public class GuidanceImpl {
 					// Store rsID into filteredFile if info >= threshold
 					// int retval = Double.compare(info, thresholdDouble);
 
-					if (info >= thresholdDouble) {
+					if (info >= thresholdInfoDouble) {
 						// The info value is greater or equal to the threshold, then store the rsID into
 						// the output file.
 						writerFiltered.write(splittedLine[rsIdIndex]);
@@ -2585,8 +2612,8 @@ public class GuidanceImpl {
 					try {
 						hwe_casesS = splittedLine[inputFileHashTableIndex.get("cases_hwe")];
 						hwe_controlsS = splittedLine[inputFileHashTableIndex.get("controls_hwe")];
-					} catch(Exception e) {
-						if(DEBUG) {
+					} catch (Exception e) {
+						if (DEBUG) {
 							System.out.println("There are not the columns cases_hwe and controls_hew in this case");
 						}
 					}
@@ -2595,8 +2622,8 @@ public class GuidanceImpl {
 				try {
 					cases_mafS = splittedLine[inputFileHashTableIndex.get("cases_maf")];
 					controls_mafS = splittedLine[inputFileHashTableIndex.get("controls_maf")];
-				} catch(Exception e) {
-					if(DEBUG) {
+				} catch (Exception e) {
+					if (DEBUG) {
 						System.out.println("There are not the columns cases_maf and controls_maf in this case");
 					}
 					cases_mafS = splittedLine[inputFileHashTableIndex.get("all_maf")];
