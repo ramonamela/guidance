@@ -8,6 +8,7 @@ import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.List;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
@@ -182,6 +183,19 @@ public class FileUtils {
 	}
 
 	/**
+	 * Copy a file from @source to @dest. Returns true if success, false otherwise
+	 * 
+	 * @param source
+	 * @param dest
+	 * @throws IOException 
+	 */
+	public static void copy(String source, String dest) throws IOException {
+		File sourceFile = new File(source);
+		File destFile = new File(dest);
+		Files.copy(sourceFile.toPath(), destFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+	}
+
+	/**
 	 * Moves a file or a directory from @source to @{dest}. Returns true if success,
 	 * false otherwise
 	 * 
@@ -243,15 +257,15 @@ public class FileUtils {
 
 		System.out.println("Files in " + path + " :");
 		try (DirectoryStream<Path> stream = Files.newDirectoryStream(dir, "*")) {
-		    for (Path file : stream) {
-		        System.out.println(file.toAbsolutePath().toString());
-		    }
+			for (Path file : stream) {
+				System.out.println(file.toAbsolutePath().toString());
+			}
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		System.out.println("End files in sandbox");
-		
+
 		try (FileOutputStream fileOutputStream = new FileOutputStream(destZipFilePath);
 				GZIPOutputStream gzipOuputStream = new GZIPOutputStream(fileOutputStream);
 				FileInputStream fileInput = new FileInputStream(sourceFilePath)) {
@@ -265,13 +279,9 @@ public class FileUtils {
 		} catch (IOException ioe) {
 			System.err.println("ERROR: Cannot zip file");
 			/*
-			try {
-				Thread.sleep(600000);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			*/
+			 * try { Thread.sleep(600000); } catch (InterruptedException e) { // TODO
+			 * Auto-generated catch block e.printStackTrace(); }
+			 */
 			ioe.printStackTrace();
 		}
 	}
@@ -288,8 +298,7 @@ public class FileUtils {
 	}
 
 	// TODO: this function should not be here, just a "fast fix"
-	public static void bgzipFile(String input, String output)
-			throws GuidanceTaskException {
+	public static void bgzipFile(String input, String output) throws GuidanceTaskException {
 
 		String samToolsBinary = FileUtils.loadFromEnvironment(SAMTOOLSBINARY, "[samtoolsBgzipFile]");
 

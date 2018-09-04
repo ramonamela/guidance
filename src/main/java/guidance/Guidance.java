@@ -690,9 +690,8 @@ public class Guidance {
 							filteredByAllXFemalesFile, lastCondensedFile, topHitsResults);
 				}
 
-				// doGenerateTopHits(parsingArgs, lastFilteredByAllFile,
-				// filteredByAllXMalesFile,
-				// filteredByAllXFemalesFile, topHitsResults, PVA_THRESHOLD_STR);
+				doGenerateTopHits(parsingArgs, lastFilteredByAllFile, filteredByAllXMalesFile,
+						filteredByAllXFemalesFile, topHitsResults, PVA_THRESHOLD_STR);
 
 				// Generate QQManhattan Plots
 				String qqPlotPdfFile = resultsFilesInfo.getQqPlotPdfFile(test, panel);
@@ -2629,7 +2628,7 @@ public class Guidance {
 		 * reduceCounter += 1; }
 		 */
 		String topHitsCombinedResults = combinedPanelsFilesInfo.getTopHitsFile(ttIndex);
-		
+
 		doGenerateCondensedFile(parsingArgs, filteredCombineAll, filteredCombineAllXMales, filteredCombineAllXFemales,
 				condensedCombineAll, topHitsCombinedResults);
 		// Finally, we create topHits from filteredCombined, and QQ and Manhattan plots
@@ -2664,15 +2663,17 @@ public class Guidance {
 			String filteredFemalesFile, String condensedFile, String topHitsFile) {
 		// TODO fill the function
 		// Task
-		String cmdToStore = R_SCRIPT_BIN_DIR + "/Rscript " + R_SCRIPT_DIR + "/condensed_tophits.R " + filteredFile + " " + filteredMalesFile
-				+ " " + filteredFemalesFile + " " + condensedFile + " " + topHitsFile;
+		String cmdToStore = R_SCRIPT_BIN_DIR + "/Rscript " + R_SCRIPT_DIR + "/condensed_tophits.R " + filteredFile + " "
+				+ filteredMalesFile + " " + filteredFemalesFile + " " + condensedFile + " " + topHitsFile;
 		listOfCommands.add(cmdToStore);
+
 		try {
-			GuidanceImpl.generateCondensedFile(filteredFile, filteredMalesFile, filteredFemalesFile, condensedFile, topHitsFile, PVA_THRESHOLD_STR,
-					cmdToStore);
+			GuidanceImpl.generateCondensedFile(filteredFile, filteredMalesFile, filteredFemalesFile, condensedFile,
+					topHitsFile, PVA_THRESHOLD_STR, cmdToStore);
 		} catch (GuidanceTaskException gte) {
 			LOGGER.error("[Guidance] Exception trying the execution of convertFromBedToBed task", gte);
 		}
+
 	}
 
 	/**
@@ -3419,7 +3420,7 @@ public class Guidance {
 		if (parsingArgs.getStageStatus("filterByInfo") == 1) {
 			String infoThresholdS = null;
 			String mafThresholdS = Double.toString(parsingArgs.getMafThreshold());
-			
+
 			String imputationTool = parsingArgs.getImputationTool();
 			if (chromo.equals("23")) {
 				imputationTool = "impute";
@@ -3443,7 +3444,8 @@ public class Guidance {
 				LOGGER.error("[Guidance] Exception writing to list of commands file " + e);
 			}
 			try {
-				GuidanceImpl.filterByInfo(imputationTool, imputeFileInfo, filteredRsIdFile, infoThresholdS, mafThresholdS, cmdToStore);
+				GuidanceImpl.filterByInfo(imputationTool, imputeFileInfo, filteredRsIdFile, infoThresholdS,
+						mafThresholdS, cmdToStore);
 			} catch (Exception e) {
 				System.err.println("[Guidance] Exception trying the execution of filterByInfo task");
 				System.err.println(e.getMessage());
@@ -3717,6 +3719,7 @@ public class Guidance {
 			} catch (GuidanceTaskException gte) {
 				LOGGER.error("[Guidance] Exception trying the execution of generateQQManhattanPlots task", gte);
 			}
+
 		}
 	}
 

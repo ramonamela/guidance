@@ -1981,26 +1981,34 @@ public class GuidanceImpl {
 		} catch (IOException ioe) {
 			throw new GuidanceTaskException(ioe);
 		}
-		
+
 		String imputeFileColumnTransformation = "zcat " + imputeFile + " | awk -v chr=" + theChromo
-				+ "'{out=$1 \" \" chr \":\" $3 \"_\" $4 \"_\" $5 ; for(i=3;i<=NF;i++){out=out\" \"$i}; print out}' | gzip > "
-				+ imputeFile;
-		
+				+ " '{out=$1 \" \" chr \":\" $3 \"_\" $4 \"_\" $5 ; for(i=3;i<=NF;i++){out=out\" \"$i}; print out}' | gzip > "
+				+ imputeFile + "_tmp; mv " + imputeFile + "_tmp " + imputeFile;
+		/*
+		 * try { FileUtils.copy(imputeFile, imputeFile + "_preTransformation"); } catch
+		 * (IOException e) { // TODO Auto-generated catch block e.printStackTrace(); }
+		 */
+
 		try {
 			ProcessUtils.executeWithoutOutputs(imputeFileColumnTransformation);
 		} catch (IOException ioe) {
 			throw new GuidanceTaskException(ioe);
 		}
-		
-		String imputeInfoFileColumnTransformation = "cat " + imputeFileInfo + " | awk -v chr=" + theChromo
-				+ "'{out=$1 \" \" chr \":\" $3 \"_\" $4 \"_\" $5 ; for(i=3;i<=NF;i++){out=out\" \"$i}; print out}' > "
-				+ imputeFileInfo;
-		
+
+		String imputeInfoFileColumnTransformation = "head -n1 " + imputeFileInfo + " > " + imputeFileInfo
+				+ "_tmp;tail -n +2 " + imputeFileInfo + " | awk -v chr=" + theChromo
+				+ " '{out=$1 \" \" chr \":\" $3 \"_\" $4 \"_\" $5 ; for(i=3;i<=NF;i++){out=out\" \"$i}; print out}' >> "
+				+ imputeFileInfo + "_tmp; mv " + imputeFileInfo + "_tmp " + imputeFileInfo;
+
 		try {
 			ProcessUtils.executeWithoutOutputs(imputeInfoFileColumnTransformation);
 		} catch (IOException ioe) {
 			throw new GuidanceTaskException(ioe);
 		}
+
+		System.out.println(imputeFileColumnTransformation);
+		System.out.println(imputeInfoFileColumnTransformation);
 
 		long stopTime = System.currentTimeMillis();
 		long elapsedTime = (stopTime - startTime) / 1_000;
@@ -4520,12 +4528,12 @@ public class GuidanceImpl {
 		// we compress it
 		String reducePlainFile = reduceFile.substring(0, reduceFile.length() - 3);
 		try (BufferedWriter writer = new BufferedWriter(new FileWriter(reducePlainFile))) {
-			writer.write("chr\tposition\trs_id_all\tinfo_all\tcertainty_all\t");
 			// We do not store the first 4 field because they are not necessary or are
 			// repeated:
 			// These four fields are:
 			// alternative_ids, rsid, chromosome, position
 			if (snptestHashTableIndexReversed.size() > 4) {
+				writer.write("chr\tposition\trs_id_all\tinfo_all\tcertainty_all\t");
 				for (int index = 4; index < snptestHashTableIndexReversed.size(); index++) {
 					String valueReversed = snptestHashTableIndexReversed.get(index);
 					writer.write(valueReversed + TAB);
