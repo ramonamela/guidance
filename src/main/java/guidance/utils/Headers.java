@@ -2,6 +2,8 @@ package guidance.utils;
 
 import java.util.HashMap;
 
+import guidance.GuidanceImpl;
+
 
 public class Headers {
 
@@ -10,7 +12,7 @@ public class Headers {
      * 
      * @return
      */
-    public static String constructHeaderX() {
+    public static String constructHeaderX(String sex) {
         StringBuilder headerMixedXBuilder = new StringBuilder();
         headerMixedXBuilder.append("chr").append("\t");
         headerMixedXBuilder.append("position").append("\t");
@@ -49,32 +51,38 @@ public class Headers {
         headerMixedXBuilder.append("controls_maf").append("\t");
         headerMixedXBuilder.append("controls_info").append("\t");
         headerMixedXBuilder.append("controls_impute_info").append("\t");
-        headerMixedXBuilder.append("sex=1_A ").append("\t");
-        headerMixedXBuilder.append("sex=1_B").append("\t");
-        headerMixedXBuilder.append("sex=1_AA").append("\t");
-        headerMixedXBuilder.append("sex=1_AB").append("\t");
-        headerMixedXBuilder.append("sex=1_BB").append("\t");
-        headerMixedXBuilder.append("sex=1_NULL").append("\t");
-        headerMixedXBuilder.append("sex=1_total").append("\t");
-        headerMixedXBuilder.append("sex=1_maf").append("\t");
-        headerMixedXBuilder.append("sex=1_info").append("\t");
-        headerMixedXBuilder.append("sex=1_impute_info").append("\t");
-        headerMixedXBuilder.append("sex=2_A").append("\t");
-        headerMixedXBuilder.append("sex=2_B").append("\t");
-        headerMixedXBuilder.append("sex=2_AA").append("\t");
-        headerMixedXBuilder.append("sex=2_AB").append("\t");
-        headerMixedXBuilder.append("sex=2_BB").append("\t");
-        headerMixedXBuilder.append("sex=2_NULL").append("\t");
-        headerMixedXBuilder.append("sex=2_total").append("\t");
-        headerMixedXBuilder.append("sex=2_maf").append("\t");
-        headerMixedXBuilder.append("sex=2_info").append("\t");
-        headerMixedXBuilder.append("sex=2_impute_info").append("\t");
+        if(GuidanceImpl.getSex1().equals(sex)) {
+            headerMixedXBuilder.append("sex=1_A ").append("\t");
+            headerMixedXBuilder.append("sex=1_B").append("\t");
+            headerMixedXBuilder.append("sex=1_AA").append("\t");
+            headerMixedXBuilder.append("sex=1_AB").append("\t");
+            headerMixedXBuilder.append("sex=1_BB").append("\t");
+            headerMixedXBuilder.append("sex=1_NULL").append("\t");
+            headerMixedXBuilder.append("sex=1_total").append("\t");
+            headerMixedXBuilder.append("sex=1_maf").append("\t");
+            headerMixedXBuilder.append("sex=1_info").append("\t");
+            headerMixedXBuilder.append("sex=1_impute_info").append("\t");
+        } else {
+            headerMixedXBuilder.append("sex=2_A").append("\t");
+            headerMixedXBuilder.append("sex=2_B").append("\t");
+            headerMixedXBuilder.append("sex=2_AA").append("\t");
+            headerMixedXBuilder.append("sex=2_AB").append("\t");
+            headerMixedXBuilder.append("sex=2_BB").append("\t");
+            headerMixedXBuilder.append("sex=2_NULL").append("\t");
+            headerMixedXBuilder.append("sex=2_total").append("\t");
+            headerMixedXBuilder.append("sex=2_maf").append("\t");
+            headerMixedXBuilder.append("sex=2_info").append("\t");
+            headerMixedXBuilder.append("sex=2_impute_info").append("\t");	
+        }
         headerMixedXBuilder.append("frequentist_add_null_ll").append("\t");
         headerMixedXBuilder.append("frequentist_add_alternative_ll").append("\t");
-        headerMixedXBuilder.append("frequentist_add_beta_1:genotype/sex=1").append("\t");
-        headerMixedXBuilder.append("frequentist_add_beta_2:genotype/sex=2").append("\t");
-        headerMixedXBuilder.append("frequentist_add_se_1:genotype/sex=1").append("\t");
-        headerMixedXBuilder.append("frequentist_add_se_2:genotype/sex=2").append("\t");
+        if(GuidanceImpl.getSex1().equals(sex)) {
+        	headerMixedXBuilder.append("frequentist_add_beta_1:genotype/sex=1").append("\t");
+        	headerMixedXBuilder.append("frequentist_add_se_1:genotype/sex=1").append("\t");
+        } else {
+            headerMixedXBuilder.append("frequentist_add_beta_2:genotype/sex=2").append("\t");
+            headerMixedXBuilder.append("frequentist_add_se_2:genotype/sex=2").append("\t");	
+        }
         headerMixedXBuilder.append("frequentist_add_degrees_of_freedom").append("\t");
         headerMixedXBuilder.append("frequentist_add_pvalue").append("\t");
         headerMixedXBuilder.append("comment");

@@ -85,8 +85,11 @@ public class CommonFiles {
 	private ArrayList<GenericFile> mixedPhasingHapsFemalesFile = new ArrayList<GenericFile>();
 
 	private ArrayList<GenericFile> mixedPhasingSampleFile = new ArrayList<GenericFile>();
+	private ArrayList<GenericFile> mixedPhasingNewSampleFile = new ArrayList<GenericFile>();
 	private ArrayList<GenericFile> mixedPhasingSampleMalesFile = new ArrayList<GenericFile>();
 	private ArrayList<GenericFile> mixedPhasingSampleFemalesFile = new ArrayList<GenericFile>();
+	private ArrayList<GenericFile> mixedPhasingNewSampleMalesFile = new ArrayList<GenericFile>();
+	private ArrayList<GenericFile> mixedPhasingNewSampleFemalesFile = new ArrayList<GenericFile>();
 
 	private ArrayList<GenericFile> mixedPhasingLogFile = new ArrayList<GenericFile>();
 	private ArrayList<GenericFile> mixedPhasingLogMalesFile = new ArrayList<GenericFile>();
@@ -260,6 +263,10 @@ public class CommonFiles {
 			GenericFile myMixedPhasingSampleFile = new GenericFile(theOutputDir,
 					"mixed_phasing_chr_" + chromo + ".sample", "decompressed", "none");
 			mixedPhasingSampleFile.add(myMixedPhasingSampleFile);
+			
+			GenericFile myMixedPhasingNewSampleFile = new GenericFile(theOutputDir,
+					"new_mixed_phasing_chr_" + chromo + ".sample", "decompressed", "none");
+			mixedPhasingNewSampleFile.add(myMixedPhasingNewSampleFile);
 
 			GenericFile myMixedPhasingLogFile = new GenericFile(theOutputDir, "mixed_phasing_chr_" + chromo + ".log",
 					"decompressed", "none");
@@ -310,6 +317,10 @@ public class CommonFiles {
 				GenericFile myMixedPhasingSampleMalesFile = new GenericFile(theOutputDir,
 						"mixed_phasing_chr_" + chromo + "_males.sample", "decompressed", "none");
 				mixedPhasingSampleMalesFile.add(myMixedPhasingSampleMalesFile);
+				
+				GenericFile myMixedPhasingNewSampleMalesFile = new GenericFile(theOutputDir,
+						"new_mixed_phasing_chr_" + chromo + "_males.sample", "decompressed", "none");
+				mixedPhasingNewSampleMalesFile.add(myMixedPhasingNewSampleMalesFile);
 
 				GenericFile myMixedPhasingLogMalesFile = new GenericFile(theOutputDir,
 						"mixed_phasing_chr_" + chromo + "_males.log", "decompressed", "none");
@@ -355,6 +366,10 @@ public class CommonFiles {
 				GenericFile myMixedPhasingSampleFemalesFile = new GenericFile(theOutputDir,
 						"mixed_phasing_chr_" + chromo + "_females.sample", "decompressed", "none");
 				mixedPhasingSampleFemalesFile.add(myMixedPhasingSampleFemalesFile);
+				
+				GenericFile myMixedPhasingNewSampleFemalesFile = new GenericFile(theOutputDir,
+						"new_mixed_phasing_chr_" + chromo + "_females.sample", "decompressed", "none");
+				mixedPhasingNewSampleFemalesFile.add(myMixedPhasingNewSampleFemalesFile);
 
 				GenericFile myMixedPhasingLogFemalesFile = new GenericFile(theOutputDir,
 						"mixed_phasing_chr_" + chromo + "_females.log", "decompressed", "none");
@@ -772,6 +787,20 @@ public class CommonFiles {
 		int index = chromo - startChr;
 		return mixedPhasingSampleFile.get(index).getFullName();
 	}
+	
+	/**
+	 * Method to access shapeitSampleFile information
+	 * 
+	 * @param chromo
+	 * @return
+	 */
+	public String getPhasingNewSampleFile(int chromo) {
+		// Check that chromo index is within the bounds
+		checkChromoIndex(chromo);
+
+		int index = chromo - startChr;
+		return mixedPhasingNewSampleFile.get(index).getFullName();
+	}
 
 	/**
 	 * Method to access the final status information of a shapeitSampleFile
@@ -824,6 +853,11 @@ public class CommonFiles {
 	public String getPhasingSampleMalesFile() {
 		return mixedPhasingSampleMalesFile.get(0).getFullName();
 	}
+	
+	// Method to access getPhasingSampleMalesFile
+	public String getPhasingNewSampleMalesFile() {
+		return mixedPhasingNewSampleMalesFile.get(0).getFullName();
+	}
 
 	// Method to access getPhasingLogMalesFile
 	public String getPhasingLogMalesFile() {
@@ -838,6 +872,11 @@ public class CommonFiles {
 	// Method to access getPhasingSampleFemalesFile
 	public String getPhasingSampleFemalesFile() {
 		return mixedPhasingSampleFemalesFile.get(0).getFullName();
+	}
+	
+	// Method to access getPhasingSampleFemalesFile
+	public String getPhasingNewSampleFemalesFile() {
+		return mixedPhasingNewSampleFemalesFile.get(0).getFullName();
 	}
 
 	// Method to access getPhasingLogFemalesFile

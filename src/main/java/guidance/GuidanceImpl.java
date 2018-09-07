@@ -1471,15 +1471,16 @@ public class GuidanceImpl {
 		}
 	}
 
-	public static void newSample(String sampleFile, String phasingSampleFile, String responseVar, String covariables,
+	public static void newSample(String sampleFile, String phasingSampleFile, String phasingNewSampleFile, String responseVar, String covariables,
 			String cmdToStore) throws IOException, InterruptedException, Exception {
 
 		if (DEBUG) {
 			System.out.println("\n[DEBUG] Running newSample with parameters:");
-			System.out.println("[DEBUG] \t- Input sampleFile               : " + sampleFile);
-			System.out.println("[DEBUG] \t- Input/Output phasingSampleFile : " + phasingSampleFile);
-			System.out.println("[DEBUG] \t- Input responseVar              : " + responseVar);
-			System.out.println("[DEBUG] \t- Input covariables              : " + covariables);
+			System.out.println("[DEBUG] \t- Input sampleFile            : " + sampleFile);
+			System.out.println("[DEBUG] \t- Input phasingSampleFile     : " + phasingSampleFile);
+			System.out.println("[DEBUG] \t- Output phasingNewSampleFile : " + phasingNewSampleFile);
+			System.out.println("[DEBUG] \t- Input responseVar           : " + responseVar);
+			System.out.println("[DEBUG] \t- Input covariables           : " + covariables);
 			System.out.println("\n");
 			System.out.println("[DEBUG] \t- Command: " + cmdToStore);
 		}
@@ -1496,42 +1497,46 @@ public class GuidanceImpl {
 		BufferedReader br = new BufferedReader(new FileReader(sampleFile));
 		String line = br.readLine(); // reading the header
 
-		String[] splitHeaderSF = line.split("\\s");
-		String[] namesHeaderResponse = responseVar.split(","); // Get the pheno columns
+		String[] splitHeaderSF = line.split(SPACE);
 		String[] namesHeaderCovar = covariables.split(","); // Get the pheno columns
+		String[] namesHeaderResponse = responseVar.split(","); // Get the pheno columns
 
 		for (int i = 0; i < splitHeaderSF.length; i++) {
-			for (int j = 0; j < namesHeaderResponse.length; j++) {
-				if (splitHeaderSF[i].equals(namesHeaderResponse[j])) {
-					columnsHeaderResponse.add(i);
-				}
-			}
-
+			
 			for (int j = 0; j < namesHeaderCovar.length; j++) {
 				if (splitHeaderSF[i].equals(namesHeaderCovar[j])) {
 					columnsHeaderCovar.add(i);
 				}
 			}
+			
+			for (int j = 0; j < namesHeaderResponse.length; j++) {
+				if (splitHeaderSF[i].equals(namesHeaderResponse[j])) {
+					columnsHeaderResponse.add(i);
+				}
+			}
+			
 		}
+		
 		while ((line = br.readLine()) != null) {
 
 			String[] lineSplited = line.split("\\s");
 			String key = lineSplited[1];
+			
+			String valueCovar = lineSplited[columnsHeaderCovar.get(0)];
+
+			for (int i = 1; i < columnsHeaderCovar.size(); i++) {
+				valueCovar += "\t" + lineSplited[columnsHeaderCovar.get(i)];
+			}
+			
 			String valueResponse = lineSplited[columnsHeaderResponse.get(0)];
 
 			for (int i = 1; i < columnsHeaderResponse.size(); i++) {
 				valueResponse += "\t" + lineSplited[columnsHeaderResponse.get(i)];
 			}
 
-			String valueCovar = lineSplited[columnsHeaderCovar.get(0)];
-
-			for (int i = 1; i < columnsHeaderCovar.size(); i++) {
-				valueCovar += "\t" + lineSplited[columnsHeaderCovar.get(i)];
-			}
-
 			valuesJoined = new ArrayList<String>();
-			valuesJoined.add(valueCovar); // Pos 2
-			valuesJoined.add(valueResponse); // Pos 1
+			valuesJoined.add(valueCovar); // Pos 1
+			valuesJoined.add(valueResponse); // Pos 2
 
 			loadSampleFile.put(key, valuesJoined);
 		}
@@ -1542,15 +1547,19 @@ public class GuidanceImpl {
 		for (int i = 0; i < 3; i++) {
 			outputFile += splitHeaderSF[i] + "\t";
 		}
-
-		for (int i = 0; i < namesHeaderCovar.length; i++) {
-			outputFile += namesHeaderCovar[i] + "\t";
+		
+		outputFile += splitHeaderSF[columnsHeaderCovar.get(0)];
+		for (int i = 1; i < columnsHeaderCovar.size(); i++) {
+			//outputFile += "\t" + namesHeaderCovar[i];
+			outputFile += "\t" + splitHeaderSF[columnsHeaderCovar.get(i)];
 		}
 
-		outputFile += namesHeaderResponse[0];
-		for (int i = 1; i < namesHeaderResponse.length; i++) {
-			outputFile += "\t" + namesHeaderResponse[i];
+		outputFile += "\t" +splitHeaderSF[columnsHeaderResponse.get(0)];
+		for (int i = 1; i < columnsHeaderResponse.size(); i++) {
+			//outputFile += "\t" + namesHeaderResponse[i];
+			outputFile += "\t" + splitHeaderSF[columnsHeaderResponse.get(i)];
 		}
+		
 		outputFile += "\n";
 
 		// Read File phasingSampleFil
@@ -1563,7 +1572,6 @@ public class GuidanceImpl {
 			String key = lineSplited[1];
 
 			valuesJoined = new ArrayList<String>();
-			System.out.println("Current key: " + key);
 			valuesJoined = loadSampleFile.get(key);
 
 			// Add "key" Pos0 Pos1, Pos2
@@ -1576,10 +1584,12 @@ public class GuidanceImpl {
 				outputFile += "\t" + values;
 			}
 			outputFile += "\n";
+			
+			System.out.println("Current key: " + key + " with values " + valuesJoined);
 		}
 		br.close();
 
-		FileWriter fw = new FileWriter(phasingSampleFile);
+		FileWriter fw = new FileWriter(phasingNewSampleFile);
 		BufferedWriter writerInfo = new BufferedWriter(fw);
 		writerInfo.write(outputFile);
 		writerInfo.close();
@@ -4324,7 +4334,7 @@ public class GuidanceImpl {
 	 */
 	public static void collectSummary(String chr, String imputeTool, String firstImputeFileInfo, String snptestOutFile,
 			String reduceFile, String mafThresholdS, String hweCohortThresholdS, String hweCasesThresholdS,
-			String hweControlsThresholdS, String cmdToStore) throws GuidanceTaskException {
+			String hweControlsThresholdS, String sex, String cmdToStore) throws GuidanceTaskException {
 
 		if (DEBUG) {
 			System.out.println("\n[DEBUG] Running collectSummary with parameters:");
@@ -4337,6 +4347,7 @@ public class GuidanceImpl {
 			System.out.println("[DEBUG] \t- Input hweCohortThresholdS    : " + hweCohortThresholdS);
 			System.out.println("[DEBUG] \t- Input hweCasesThresholdS     : " + hweCasesThresholdS);
 			System.out.println("[DEBUG] \t- Input hweControlsThresholdS  : " + hweControlsThresholdS);
+			System.out.println("[DEBUG] \t- Input sex                    : " + sex);
 			System.out.println(NEW_LINE);
 			System.out.println("[DEBUG] \t- Command: " + cmdToStore);
 			System.out.println("--------------------------------------");
@@ -4539,7 +4550,12 @@ public class GuidanceImpl {
 					writer.write(valueReversed + TAB);
 				}
 			} else {
-				writer.write(Headers.constructHeader());
+				if(sex.equals(NO_SEX)) {
+					writer.write(Headers.constructHeader());
+				}
+				else {
+					writer.write(Headers.constructHeaderX(sex));
+				}
 			}
 			writer.write(NEW_LINE);
 

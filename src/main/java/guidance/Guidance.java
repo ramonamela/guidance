@@ -387,6 +387,7 @@ public class Guidance {
 
 			String mixedPhasingHapsFile = commonFilesInfo.getPhasingHapsFile(chr);
 			String mixedPhasingSampleFile = commonFilesInfo.getPhasingSampleFile(chr);
+			String mixedPhasingNewSampleFile = commonFilesInfo.getPhasingNewSampleFile(chr);
 			String mixedPhasingLogFile = commonFilesInfo.getPhasingLogFile(chr);
 			String mixedExcludedSnpsFile = commonFilesInfo.getExcludedSnpsFile(chr);
 
@@ -446,8 +447,8 @@ public class Guidance {
 
 				doCreateRsIdList(parsingArgs, mixedBimFile, exclCgatFlag, mixedPairsFile, inputFormat);
 
-				String responseVar = parsingArgs.getResponseVar(0);
-				String covariables = parsingArgs.getCovariables(0);
+				String responseVar = parsingArgs.getAllResponseVars();
+				String covariables = parsingArgs.getAllCovariables();
 
 				if (!theChromo.equals("23")) {
 
@@ -457,6 +458,21 @@ public class Guidance {
 							mixedFilteredHaplotypesVcfFile, mixedFilteredHaplotypesVcfFileBgzip,
 							mixedFilteredHaplotypesVcfFileBgzipIndexed, exclCgatFlag, NO_SEX);
 
+					if (parsingArgs.getStageStatus("phasingBed") == 1) {
+
+						String cmd = JAVA_HOME + " newSample.jar " + mixedSampleFile + " " + mixedPhasingSampleFile
+								+ " " + mixedPhasingNewSampleFile + " " + covariables + " " + responseVar;
+
+						listOfCommands.add(new String(cmd));
+						try {
+							GuidanceImpl.newSample(mixedSampleFile, mixedPhasingSampleFile, mixedPhasingNewSampleFile,
+									responseVar, covariables, cmd);
+						} catch (Exception e) {
+							System.err.println("[Guidance] Exception trying the execution of phasing task");
+							System.err.println(e.getMessage());
+						}
+					}
+
 				} else if (theChromo.equals("23")) {
 
 					String mixedPhasingHapsMalesFile = commonFilesInfo.getPhasingHapsMalesFile();
@@ -464,6 +480,9 @@ public class Guidance {
 
 					String mixedPhasingSampleMalesFile = commonFilesInfo.getPhasingSampleMalesFile();
 					String mixedPhasingSampleFemalesFile = commonFilesInfo.getPhasingSampleFemalesFile();
+
+					String mixedPhasingNewSampleMalesFile = commonFilesInfo.getPhasingNewSampleMalesFile();
+					String mixedPhasingNewSampleFemalesFile = commonFilesInfo.getPhasingNewSampleFemalesFile();
 
 					String mixedPhasingLogMalesFile = commonFilesInfo.getPhasingLogMalesFile();
 					String mixedPhasingLogFemalesFile = commonFilesInfo.getPhasingLogFemalesFile();
@@ -503,6 +522,30 @@ public class Guidance {
 							mixedFilteredHaplotypesVcfFemalesFile, mixedFilteredHaplotypesVcfFemalesFileBgzip,
 							mixedFilteredHaplotypesVcfFemalesFileBgzipIndexed, exclCgatFlag, SEX2);
 
+					String cmd = JAVA_HOME + " newSample.jar " + mixedSampleFile + " " + mixedPhasingSampleMalesFile
+							+ " " + mixedPhasingNewSampleMalesFile + " " + covariables + " " + responseVar;
+
+					listOfCommands.add(new String(cmd));
+					try {
+						GuidanceImpl.newSample(mixedSampleFile, mixedPhasingSampleMalesFile,
+								mixedPhasingNewSampleMalesFile, responseVar, covariables, cmd);
+					} catch (Exception e) {
+						System.err.println("[Guidance] Exception trying the execution of snptest task");
+						System.err.println(e.getMessage());
+					}
+
+					cmd = JAVA_HOME + " newSample.jar " + mixedSampleFile + " " + mixedPhasingSampleFemalesFile + " "
+							+ mixedPhasingNewSampleFemalesFile + " " + covariables + " " + responseVar;
+
+					listOfCommands.add(new String(cmd));
+					try {
+						GuidanceImpl.newSample(mixedSampleFile, mixedPhasingSampleFemalesFile,
+								mixedPhasingNewSampleFemalesFile, responseVar, covariables, cmd);
+					} catch (Exception e) {
+						System.err.println("[Guidance] Exception trying the execution of snptest task");
+						System.err.println(e.getMessage());
+					}
+
 				}
 
 			} else { // The inputFormat is GEN
@@ -512,7 +555,7 @@ public class Guidance {
 				doCreateRsIdList(parsingArgs, mixedGenFile, exclCgatFlag, mixedPairsFile, inputFormat);
 
 				doPhasing(parsingArgs, theChromo, mixedGenFile, mixedSampleFile, gmapFile, mixedExcludedSnpsFile,
-						mixedPhasingHapsFile, mixedPhasingSampleFile, mixedPhasingLogFile,
+						mixedPhasingHapsFile, mixedPhasingSampleFile, mixedPhasingNewSampleFile, mixedPhasingLogFile,
 						mixedFilteredHaplotypesLogFile, mixedFilteredHaplotypesVcfFile,
 						mixedFilteredHaplotypesVcfFileBgzip, mixedFilteredHaplotypesVcfFileBgzipIndexed, exclCgatFlag);
 
@@ -566,8 +609,70 @@ public class Guidance {
 		// *******************************************************************
 		// COMPSs.barrier();
 
+		if (parsingArgs.getStageStatus("snptest") == 1) {
+
+			String responseVar = parsingArgs.getAllResponseVars();
+			String covariables = parsingArgs.getAllCovariables();
+
+			for (int chr = startChr; chr <= endChr; chr++) {
+				if (chr == 23) {
+
+					String mixedPhasingNewSampleMalesFile = commonFilesInfo.getPhasingNewSampleMalesFile();
+					String mixedPhasingNewSampleFemalesFile = commonFilesInfo.getPhasingNewSampleFemalesFile();
+
+					String mixedSampleFile = commonFilesInfo.getSampleFile(chr);
+
+					String mixedPhasingSampleMalesFile = commonFilesInfo.getPhasingSampleMalesFile();
+					String mixedPhasingSampleFemalesFile = commonFilesInfo.getPhasingSampleFemalesFile();
+
+					String cmd = JAVA_HOME + " newSample.jar " + mixedSampleFile + " " + mixedPhasingSampleMalesFile
+							+ " " + mixedPhasingNewSampleMalesFile + " " + covariables + " " + responseVar;
+
+					listOfCommands.add(new String(cmd));
+					try {
+						GuidanceImpl.newSample(mixedSampleFile, mixedPhasingSampleMalesFile,
+								mixedPhasingNewSampleMalesFile, responseVar, covariables, cmd);
+					} catch (Exception e) {
+						System.err.println("[Guidance] Exception trying the execution of snptest task");
+						System.err.println(e.getMessage());
+					}
+
+					cmd = JAVA_HOME + " newSample.jar " + mixedSampleFile + " " + mixedPhasingSampleFemalesFile + " "
+							+ mixedPhasingNewSampleFemalesFile + " " + covariables + " " + responseVar;
+
+					listOfCommands.add(new String(cmd));
+					try {
+						GuidanceImpl.newSample(mixedSampleFile, mixedPhasingSampleFemalesFile,
+								mixedPhasingNewSampleFemalesFile, responseVar, covariables, cmd);
+					} catch (Exception e) {
+						System.err.println("[Guidance] Exception trying the execution of snptest task");
+						System.err.println(e.getMessage());
+					}
+				} else {
+					String mixedPhasingNewSampleFile = commonFilesInfo.getPhasingNewSampleFile(chr);
+
+					String mixedSampleFile = commonFilesInfo.getSampleFile(chr);
+
+					String mixedPhasingSampleFile = commonFilesInfo.getPhasingSampleFile(chr);
+
+					String cmd = JAVA_HOME + " newSample.jar " + mixedSampleFile + " " + mixedPhasingSampleFile + " "
+							+ mixedPhasingNewSampleFile + " " + covariables + " " + responseVar;
+
+					listOfCommands.add(new String(cmd));
+					try {
+						GuidanceImpl.newSample(mixedSampleFile, mixedPhasingSampleFile, mixedPhasingNewSampleFile,
+								responseVar, covariables, cmd);
+					} catch (Exception e) {
+						System.err.println("[Guidance] Exception trying the execution of snptest task");
+						System.err.println(e.getMessage());
+					}
+				}
+			}
+		}
+
 		// Now we continue with the association
 		int numberOfTestTypes = parsingArgs.getNumberOfTestTypeName();
+
 		for (int test = 0; test < numberOfTestTypes; test++) {
 			for (int panel = 0; panel < rpanelTypes.size(); panel++) {
 				for (int chr = startChr; chr <= endChr; chr++) {
@@ -690,8 +795,10 @@ public class Guidance {
 							filteredByAllXFemalesFile, lastCondensedFile, topHitsResults);
 				}
 
-				doGenerateTopHits(parsingArgs, lastFilteredByAllFile, filteredByAllXMalesFile,
-						filteredByAllXFemalesFile, topHitsResults, PVA_THRESHOLD_STR);
+				if (parsingArgs.getStageStatus("generateTopHits") == 1) {
+					doGenerateTopHits(parsingArgs, lastFilteredByAllFile, filteredByAllXMalesFile,
+							filteredByAllXFemalesFile, topHitsResults, PVA_THRESHOLD_STR);
+				}
 
 				// Generate QQManhattan Plots
 				String qqPlotPdfFile = resultsFilesInfo.getQqPlotPdfFile(test, panel);
@@ -701,8 +808,10 @@ public class Guidance {
 				// String correctedPvaluesFile = resultsFilesInfo.getCorrectedPvaluesFile(test,
 				// panel);
 
-				doGenerateQQManhattanPlots(parsingArgs, lastCondensedFile, qqPlotPdfFile, manhattanPlotPdfFile,
-						qqPlotTiffFile, manhattanPlotTiffFile);
+				if (parsingArgs.getStageStatus("generateQQManhattanPlots") == 1) {
+					doGenerateQQManhattanPlots(parsingArgs, lastCondensedFile, qqPlotPdfFile, manhattanPlotPdfFile,
+							qqPlotTiffFile, manhattanPlotTiffFile);
+				}
 
 				flushCommands();
 
@@ -789,9 +898,6 @@ public class Guidance {
 		String imputationTool = parsingArgs.getImputationTool();
 		String phasingTool = parsingArgs.getPhasingTool();
 
-		System.out.println(
-				"Entering chr " + chrNumber + " amb " + gmapFile + " " + mixedGmapFile + " i panel " + panelIndex);
-
 		if (imputationTool.equals("impute") || (imputationTool.equals("minimac") && chrNumber == 23)) {
 			boolean specialCase = (imputationTool.equals("minimac") && chrNumber == 23);
 
@@ -810,11 +916,10 @@ public class Guidance {
 				legendFileName = parsingArgs.getRpanelLegFileName(panelIndex, chrNumber);
 				legendFile = rpanelDir + File.separator + legendFileName;
 			}
-			System.out.println("Hap file " + knownHapFile);
 
 			String mixedSampleFile = "";
 			String mixedPhasingHapsFile = "";
-			String mixedPhasingSampleFile = "";
+			String mixedPhasingNewSampleFile = "";
 			String mixedPairsFile = commonFilesInfo.getPairsFile(chrNumber);
 			String mixedImputeFile = "";
 			String mixedImputeFileInfo = "";
@@ -827,34 +932,24 @@ public class Guidance {
 
 			if (!chrS.equals("23")) {
 				mixedSampleFile = commonFilesInfo.getSampleFile(chrNumber);
-				System.out.println("Sample file " + mixedSampleFile);
 				mixedPhasingHapsFile = commonFilesInfo.getPhasingHapsFile(chrNumber);
-				System.out.println("Phasing " + mixedPhasingHapsFile);
-				mixedPhasingSampleFile = commonFilesInfo.getPhasingSampleFile(chrNumber);
-				System.out.println("Phasing sample " + mixedPhasingSampleFile);
+				mixedPhasingNewSampleFile = commonFilesInfo.getPhasingNewSampleFile(chrNumber);
 				mixedImputeFile = imputationFilesInfo.getImputedFile(panelIndex, chrNumber, lim1, lim2, chunkSize);
-				System.out.println("Impute file " + mixedImputeFile);
 				mixedImputeFileInfo = imputationFilesInfo.getImputedInfoFile(panelIndex, chrNumber, lim1, lim2,
 						chunkSize);
-				System.out.println("ImputeFileInfo " + mixedImputeFileInfo);
 				mixedImputeFileSummary = imputationFilesInfo.getImputedSummaryFile(panelIndex, chrNumber, lim1, lim2,
 						chunkSize);
-				System.out.println("Impute summary " + mixedImputeFileSummary);
 				mixedImputeFileWarnings = imputationFilesInfo.getImputedWarningsFile(panelIndex, chrNumber, lim1, lim2,
 						chunkSize);
-				System.out.println("Impute warnings " + mixedImputeFileWarnings);
 				/*
 				 * mixedImputeLogFile = imputationFilesInfo.getImputedLogFile(panelIndex,
 				 * chrNumber, lim1, lim2, chunkSize);
 				 */
 				mixedFilteredFile = imputationFilesInfo.getFilteredFile(panelIndex, chrNumber, lim1, lim2, chunkSize);
-				System.out.println("Mixed filtered " + mixedFilteredFile);
 				mixedFilteredLogFile = imputationFilesInfo.getFilteredLogFile(panelIndex, chrNumber, lim1, lim2,
 						chunkSize);
-				System.out.println("Mixed filtered log " + mixedFilteredLogFile);
 				mixedFilteredRsIdFile = imputationFilesInfo.getFilteredRsIdFile(panelIndex, chrNumber, lim1, lim2,
 						chunkSize);
-				System.out.println("RsId " + mixedFilteredRsIdFile);
 			}
 
 			// We create the list of rsId that are greater than or equal to the
@@ -874,8 +969,8 @@ public class Guidance {
 					String mixedPhasingHapsMalesFile = commonFilesInfo.getPhasingHapsMalesFile();
 					String mixedPhasingHapsFemalesFile = commonFilesInfo.getPhasingHapsFemalesFile();
 
-					String mixedPhasingSampleMalesFile = commonFilesInfo.getPhasingSampleMalesFile();
-					String mixedPhasingSampleFemalesFile = commonFilesInfo.getPhasingSampleFemalesFile();
+					String mixedPhasingNewSampleMalesFile = commonFilesInfo.getPhasingNewSampleMalesFile();
+					String mixedPhasingNewSampleFemalesFile = commonFilesInfo.getPhasingNewSampleFemalesFile();
 
 					String mixedImputeMalesFile = imputationFilesInfo.getImputedMalesFile(panelIndex, chrNumber, lim1,
 							lim2, chunkSize);
@@ -921,7 +1016,7 @@ public class Guidance {
 							chrNumber, lim1, lim2, chunkSize);
 
 					doImputationWithImpute(parsingArgs, chrS, mixedGmapFile, knownHapFile, legendFile,
-							mixedPhasingHapsMalesFile, mixedPhasingSampleMalesFile, lim1S, lim2S, mixedPairsFile,
+							mixedPhasingHapsMalesFile, mixedPhasingNewSampleMalesFile, lim1S, lim2S, mixedPairsFile,
 							mixedImputeMalesFile, mixedImputeMalesFileInfo, mixedImputeMalesFileSummary,
 							mixedImputeMalesFileWarnings, SEX1, panelIndex);
 
@@ -931,7 +1026,7 @@ public class Guidance {
 							mixedFilteredLogMalesFile, chrS);
 
 					doImputationWithImpute(parsingArgs, chrS, mixedGmapFile, knownHapFile, legendFile,
-							mixedPhasingHapsFemalesFile, mixedPhasingSampleFemalesFile, lim1S, lim2S, mixedPairsFile,
+							mixedPhasingHapsFemalesFile, mixedPhasingNewSampleFemalesFile, lim1S, lim2S, mixedPairsFile,
 							mixedImputeFemalesFile, mixedImputeFemalesFileInfo, mixedImputeFemalesFileSummary,
 							mixedImputeFemalesFileWarnings, SEX2, panelIndex);
 
@@ -944,8 +1039,8 @@ public class Guidance {
 			} else if (phasingTool.equals("shapeit")) {
 				if (!chrS.equals("23")) {
 					doImputationWithImpute(parsingArgs, chrS, gmapFile, knownHapFile, legendFile, mixedPhasingHapsFile,
-							mixedPhasingSampleFile, lim1S, lim2S, mixedPairsFile, mixedImputeFile, mixedImputeFileInfo,
-							mixedImputeFileSummary, mixedImputeFileWarnings, NO_SEX, panelIndex);
+							mixedPhasingNewSampleFile, lim1S, lim2S, mixedPairsFile, mixedImputeFile,
+							mixedImputeFileInfo, mixedImputeFileSummary, mixedImputeFileWarnings, NO_SEX, panelIndex);
 					doFilterByInfo(parsingArgs, mixedImputeFileInfo, mixedFilteredRsIdFile, chrS);
 					doQctoolS(parsingArgs, mixedImputeFile, mixedFilteredRsIdFile, mixedFilteredFile,
 							mixedFilteredLogFile, chrS);
@@ -954,8 +1049,8 @@ public class Guidance {
 					String mixedPhasingHapsMalesFile = commonFilesInfo.getPhasingHapsMalesFile();
 					String mixedPhasingHapsFemalesFile = commonFilesInfo.getPhasingHapsFemalesFile();
 
-					String mixedPhasingSampleMalesFile = commonFilesInfo.getPhasingSampleMalesFile();
-					String mixedPhasingSampleFemalesFile = commonFilesInfo.getPhasingSampleFemalesFile();
+					String mixedPhasingNewSampleMalesFile = commonFilesInfo.getPhasingNewSampleMalesFile();
+					String mixedPhasingNewSampleFemalesFile = commonFilesInfo.getPhasingNewSampleFemalesFile();
 
 					String mixedImputeMalesFile = imputationFilesInfo.getImputedMalesFile(panelIndex, chrNumber, lim1,
 							lim2, chunkSize);
@@ -1001,7 +1096,7 @@ public class Guidance {
 							chrNumber, lim1, lim2, chunkSize);
 
 					doImputationWithImpute(parsingArgs, chrS, gmapFile, knownHapFile, legendFile,
-							mixedPhasingHapsMalesFile, mixedPhasingSampleMalesFile, lim1S, lim2S, mixedPairsFile,
+							mixedPhasingHapsMalesFile, mixedPhasingNewSampleMalesFile, lim1S, lim2S, mixedPairsFile,
 							mixedImputeMalesFile, mixedImputeMalesFileInfo, mixedImputeMalesFileSummary,
 							mixedImputeMalesFileWarnings, SEX1, panelIndex);
 
@@ -1011,7 +1106,7 @@ public class Guidance {
 							mixedFilteredLogMalesFile, chrS);
 
 					doImputationWithImpute(parsingArgs, chrS, gmapFile, knownHapFile, legendFile,
-							mixedPhasingHapsFemalesFile, mixedPhasingSampleFemalesFile, lim1S, lim2S, mixedPairsFile,
+							mixedPhasingHapsFemalesFile, mixedPhasingNewSampleFemalesFile, lim1S, lim2S, mixedPairsFile,
 							mixedImputeFemalesFile, mixedImputeFemalesFileInfo, mixedImputeFemalesFileSummary,
 							mixedImputeFemalesFileWarnings, SEX2, panelIndex);
 
@@ -1276,14 +1371,14 @@ public class Guidance {
 			String mixedFilteredFemalesFile = imputationFilesInfo.getFilteredFemalesFile(panelIndex, lim1, lim2,
 					chunkSize);
 
-			String mixedPhasingSampleMalesFile = commonFilesInfo.getPhasingSampleMalesFile();
-			String mixedPhasingSampleFemalesFile = commonFilesInfo.getPhasingSampleFemalesFile();
+			String mixedPhasingNewSampleMalesFile = commonFilesInfo.getPhasingNewSampleMalesFile();
+			String mixedPhasingNewSampleFemalesFile = commonFilesInfo.getPhasingNewSampleFemalesFile();
 
-			doSnptest(parsingArgs, chrS, mixedFilteredMalesFile, mixedPhasingSampleMalesFile, snptestOutMalesFile,
+			doSnptest(parsingArgs, chrS, mixedFilteredMalesFile, mixedPhasingNewSampleMalesFile, snptestOutMalesFile,
 					snptestLogMalesFile, responseVar, covariables);
 
-			doSnptest(parsingArgs, chrS, mixedFilteredFemalesFile, mixedPhasingSampleFemalesFile, snptestOutFemalesFile,
-					snptestLogFemalesFile, responseVar, covariables);
+			doSnptest(parsingArgs, chrS, mixedFilteredFemalesFile, mixedPhasingNewSampleFemalesFile,
+					snptestOutFemalesFile, snptestLogFemalesFile, responseVar, covariables);
 
 			// This true should be erased when the problem with minimac is solved
 			if (imputationTool.equals("impute") || true) {
@@ -1294,7 +1389,7 @@ public class Guidance {
 						chunkSize);
 
 				doCollectSummary(parsingArgs, chrS, mixedImputeMalesFileInfo, snptestOutMalesFile, summaryMalesFile,
-						mafThresholdS, hweCohortThresholdS, hweCasesThresholdS, hweControlsThresholdS);
+						mafThresholdS, hweCohortThresholdS, hweCasesThresholdS, hweControlsThresholdS, SEX1);
 
 				String mixedImputeFemalesFileInfo = imputationFilesInfo.getImputedInfoFemalesFile(panelIndex, chrNumber,
 						lim1, lim2, chunkSize);
@@ -1304,7 +1399,7 @@ public class Guidance {
 
 				doCollectSummary(parsingArgs, chrS, mixedImputeFemalesFileInfo, snptestOutFemalesFile,
 						summaryFemalesFile, mafThresholdS, hweCohortThresholdS, hweCasesThresholdS,
-						hweControlsThresholdS);
+						hweControlsThresholdS, SEX2);
 
 				String assocMalesFilteredByAll = assocFilesInfo.getSummaryFilteredMalesFile(testTypeIndex, panelIndex,
 						lim1, lim2, chunkSize);
@@ -1333,11 +1428,11 @@ public class Guidance {
 						chunkSize);
 
 				doCollectSummary(parsingArgs, chrS, mixedImputedMMInfoMalesFile, snptestOutMalesFile, summaryMalesFile,
-						mafThresholdS, hweCohortThresholdS, hweCasesThresholdS, hweControlsThresholdS);
+						mafThresholdS, hweCohortThresholdS, hweCasesThresholdS, hweControlsThresholdS, SEX1);
 
 				doCollectSummary(parsingArgs, chrS, mixedImputedMMInfoFemalesFile, snptestOutFemalesFile,
 						summaryFemalesFile, mafThresholdS, hweCohortThresholdS, hweCasesThresholdS,
-						hweControlsThresholdS);
+						hweControlsThresholdS, SEX2);
 
 				String assocMalesFilteredByAll = assocFilesInfo.getSummaryFilteredMalesFile(testTypeIndex, panelIndex,
 						lim1, lim2, chunkSize);
@@ -1363,9 +1458,16 @@ public class Guidance {
 					chunkSize);
 			String mixedFilteredFile = imputationFilesInfo.getFilteredFile(panelIndex, chrNumber, lim1, lim2,
 					chunkSize);
+			String mixedPhasingNewSampleFile = commonFilesInfo.getPhasingNewSampleFile(chrNumber);
+
+			String mixedSampleFile = commonFilesInfo.getSampleFile(chrNumber);
+
 			String mixedPhasingSampleFile = commonFilesInfo.getPhasingSampleFile(chrNumber);
 
-			doSnptest(parsingArgs, chrS, mixedFilteredFile, mixedPhasingSampleFile, snptestOutFile, snptestLogFile,
+			String cmd = JAVA_HOME + " newSample.jar " + mixedSampleFile + " " + mixedPhasingSampleFile + " "
+					+ mixedPhasingNewSampleFile + " " + covariables + " " + responseVar;
+
+			doSnptest(parsingArgs, chrS, mixedFilteredFile, mixedPhasingNewSampleFile, snptestOutFile, snptestLogFile,
 					responseVar, covariables);
 
 			if (imputationTool.equals("impute")) {
@@ -1375,7 +1477,7 @@ public class Guidance {
 						chunkSize);
 
 				doCollectSummary(parsingArgs, chrS, mixedImputeFileInfo, snptestOutFile, summaryFile, mafThresholdS,
-						hweCohortThresholdS, hweCasesThresholdS, hweControlsThresholdS);
+						hweCohortThresholdS, hweCasesThresholdS, hweControlsThresholdS, NO_SEX);
 
 				String assocFilteredByAll = assocFilesInfo.getSummaryFilteredFile(testTypeIndex, panelIndex, chrNumber,
 						lim1, lim2, chunkSize);
@@ -1391,7 +1493,7 @@ public class Guidance {
 						chunkSize);
 
 				doCollectSummary(parsingArgs, chrS, mixedImputedMMInfoFile, snptestOutFile, summaryFile, mafThresholdS,
-						hweCohortThresholdS, hweCasesThresholdS, hweControlsThresholdS);
+						hweCohortThresholdS, hweCasesThresholdS, hweControlsThresholdS, NO_SEX);
 
 				String assocFilteredByAll = assocFilesInfo.getSummaryFilteredFile(testTypeIndex, panelIndex, chrNumber,
 						lim1, lim2, chunkSize);
@@ -2227,14 +2329,13 @@ public class Guidance {
 			new File(plainfilteredCombineAll).delete();
 		}
 
-		String filteredXHeader = null;
 		if (endChr == 23) {
-			filteredXHeader = Headers.constructHeaderX();
-
+			
+			String filteredXHeaderMales = Headers.constructHeaderX(SEX1);
 			final String plainfilteredCombineAllXMales = filteredCombineAllXMales.substring(0,
 					filteredCombineAllXMales.length() - 3);
 			try (BufferedWriter writer = new BufferedWriter(new FileWriter(plainfilteredCombineAllXMales))) {
-				writer.write(filteredXHeader);
+				writer.write(filteredXHeaderMales);
 				writer.newLine();
 				writer.flush();
 			} catch (IOException ioe) {
@@ -2243,10 +2344,11 @@ public class Guidance {
 			FileUtils.gzipFile(plainfilteredCombineAllXMales, filteredCombineAllXMales);
 			new File(plainfilteredCombineAllXMales).delete();
 
+			String filteredXHeaderFemales = Headers.constructHeaderX(SEX2);
 			final String plainfilteredCombineAllXFemales = filteredCombineAllXFemales.substring(0,
 					filteredCombineAllXFemales.length() - 3);
 			try (BufferedWriter writer = new BufferedWriter(new FileWriter(plainfilteredCombineAllXFemales))) {
-				writer.write(filteredXHeader);
+				writer.write(filteredXHeaderFemales);
 				writer.newLine();
 				writer.flush();
 			} catch (IOException ioe) {
@@ -2634,9 +2736,8 @@ public class Guidance {
 		// Finally, we create topHits from filteredCombined, and QQ and Manhattan plots
 		// from condensedCombined
 		// TODO wait for the correct binary
-		// doGenerateTopHits(parsingArgs, filteredCombineAll, filteredCombineAllXMales,
-		// filteredCombineAllXFemales,
-		// topHitsCombinedResults, PVA_THRESHOLD_STR);
+		doGenerateTopHits(parsingArgs, filteredCombineAll, filteredCombineAllXMales, filteredCombineAllXFemales,
+				topHitsCombinedResults, PVA_THRESHOLD_STR);
 
 		String combinedQqPlotPdfFile = combinedPanelsFilesInfo.getQqPlotPdfFile(ttIndex);
 		String combinedQqPlotTiffFile = combinedPanelsFilesInfo.getQqPlotTiffFile(ttIndex);
@@ -2663,17 +2764,18 @@ public class Guidance {
 			String filteredFemalesFile, String condensedFile, String topHitsFile) {
 		// TODO fill the function
 		// Task
+		
 		String cmdToStore = R_SCRIPT_BIN_DIR + "/Rscript " + R_SCRIPT_DIR + "/condensed_tophits.R " + filteredFile + " "
 				+ filteredMalesFile + " " + filteredFemalesFile + " " + condensedFile + " " + topHitsFile;
 		listOfCommands.add(cmdToStore);
-
+		
 		try {
 			GuidanceImpl.generateCondensedFile(filteredFile, filteredMalesFile, filteredFemalesFile, condensedFile,
 					topHitsFile, PVA_THRESHOLD_STR, cmdToStore);
 		} catch (GuidanceTaskException gte) {
-			LOGGER.error("[Guidance] Exception trying the execution of convertFromBedToBed task", gte);
+			LOGGER.error("[Guidance] Exception trying the execution of generateCondensedFile task", gte);
 		}
-
+		
 	}
 
 	/**
@@ -3052,18 +3154,6 @@ public class Guidance {
 				System.err.println("[Guidance] Only Eagle and Shapeit are available for phasing haplotypes");
 
 			}
-
-			cmd = JAVA_HOME + " newSample.jar " + sampleFile + " " + phasingSampleFile + " " + covariables + " "
-					+ responseVar;
-
-			listOfCommands.add(new String(cmd));
-			try {
-				GuidanceImpl.newSample(sampleFile, phasingSampleFile, responseVar, covariables, cmd);
-			} catch (Exception e) {
-				System.err.println("[Guidance] Exception trying the execution of phasing task");
-				System.err.println(e.getMessage());
-			}
-
 		}
 
 		if (parsingArgs.getStageStatus("createListOfExcludedSnps") == 1) {
@@ -3131,8 +3221,9 @@ public class Guidance {
 	 */
 	private static void doPhasing(ParseCmdLine parsingArgs, String theChromo, String genFile, String sampleFile,
 			String gmapFile, String excludedSnpsFile, String phasingHapsFile, String phasingSampleFile,
-			String phasingLogFile, String filteredHaplotypesLogFile, String filteredHaplotypesVcfFile,
-			String filteredHaplotypesVcfFileBgzip, String filteredHaplotypesVcfFileBgzipIndexed, String exclCgatFlag) {
+			String phasingNewSampleFile, String phasingLogFile, String filteredHaplotypesLogFile,
+			String filteredHaplotypesVcfFile, String filteredHaplotypesVcfFileBgzip,
+			String filteredHaplotypesVcfFileBgzipIndexed, String exclCgatFlag) {
 
 		String phasingTool = parsingArgs.getPhasingTool();
 		// String myPrefix = phasingHapsFile.split("\\.")[0];
@@ -3576,7 +3667,7 @@ public class Guidance {
 	 */
 	private static void doCollectSummary(ParseCmdLine parsingArgs, String chrS, String imputeFileInfo,
 			String snptestOutFile, String summaryFile, String mafThresholdS, String hweCohortThresholdS,
-			String hweCasesThresholdS, String hweControlsThresholdS) {
+			String hweCasesThresholdS, String hweControlsThresholdS, String sex) {
 
 		if (parsingArgs.getStageStatus("collectSummary") == 1) {
 			// Submitting the collect_summary task per this chunk
@@ -3595,7 +3686,7 @@ public class Guidance {
 			try {
 				GuidanceImpl.collectSummary(chrS, parsingArgs.getImputationTool(), imputeFileInfo, snptestOutFile,
 						summaryFile, mafThresholdS, hweCohortThresholdS, hweCasesThresholdS, hweControlsThresholdS,
-						cmdToStore);
+						sex, cmdToStore);
 			} catch (GuidanceTaskException gte) {
 				LOGGER.error("[Guidance] Exception trying the execution of collectSummary task", gte);
 			}
@@ -3678,18 +3769,17 @@ public class Guidance {
 	 */
 	private static void doGenerateTopHits(ParseCmdLine parsingArgs, String filteredFile, String filteredXMalesFile,
 			String filteredXFemalesFile, String topHitsResults, String pvaThrS) {
-
-		if (parsingArgs.getStageStatus("generateTopHits") == 1) {
-			String cmdToStore = JAVA_HOME + "/java generateTopHits " + filteredFile + " " + filteredXMalesFile + " "
-					+ filteredXFemalesFile + " " + topHitsResults + " " + pvaThrS;
-			listOfCommands.add(cmdToStore);
-			try {
-				GuidanceImpl.generateTopHitsAll(filteredFile, filteredXMalesFile, filteredXFemalesFile, topHitsResults,
-						pvaThrS, cmdToStore);
-			} catch (GuidanceTaskException gte) {
-				LOGGER.error("[Guidance] Exception trying the execution of generateTopHits task", gte);
-			}
+		/*
+		String cmdToStore = JAVA_HOME + "/java generateTopHits " + filteredFile + " " + filteredXMalesFile + " "
+				+ filteredXFemalesFile + " " + topHitsResults + " " + pvaThrS;
+		listOfCommands.add(cmdToStore);
+		try {
+			GuidanceImpl.generateTopHitsAll(filteredFile, filteredXMalesFile, filteredXFemalesFile, topHitsResults,
+					pvaThrS, cmdToStore);
+		} catch (GuidanceTaskException gte) {
+			LOGGER.error("[Guidance] Exception trying the execution of generateTopHits task", gte);
 		}
+		*/
 	}
 
 	/**
@@ -3707,20 +3797,18 @@ public class Guidance {
 	 */
 	private static void doGenerateQQManhattanPlots(ParseCmdLine parsingArgs, String condensedFile, String qqPlotFile,
 			String manhattanPlotFile, String qqPlotTiffFile, String manhattanPlotTiffFile) {
-
-		if (parsingArgs.getStageStatus("generateQQManhattanPlots") == 1) {
-			String cmdToStore = R_SCRIPT_BIN_DIR + "/Rscript " + R_SCRIPT_DIR + "/qqplot_manhattan.R " + condensedFile
-					+ " " + qqPlotFile + " " + manhattanPlotFile + " " + qqPlotTiffFile + " " + manhattanPlotTiffFile;
-			listOfCommands.add(cmdToStore);
-
-			try {
-				GuidanceImpl.generateQQManhattanPlots(condensedFile, qqPlotFile, manhattanPlotFile, qqPlotTiffFile,
-						manhattanPlotTiffFile, cmdToStore);
-			} catch (GuidanceTaskException gte) {
-				LOGGER.error("[Guidance] Exception trying the execution of generateQQManhattanPlots task", gte);
-			}
-
+		/*
+		String cmdToStore = R_SCRIPT_BIN_DIR + "/Rscript " + R_SCRIPT_DIR + "/qqplot_manhattan.R " + condensedFile + " "
+				+ qqPlotFile + " " + manhattanPlotFile + " " + qqPlotTiffFile + " " + manhattanPlotTiffFile;
+		listOfCommands.add(cmdToStore);
+		
+		try {
+			GuidanceImpl.generateQQManhattanPlots(condensedFile, qqPlotFile, manhattanPlotFile, qqPlotTiffFile,
+					manhattanPlotTiffFile, cmdToStore);
+		} catch (GuidanceTaskException gte) {
+			LOGGER.error("[Guidance] Exception trying the execution of generateQQManhattanPlots task", gte);
 		}
+		*/
 	}
 
 	/**

@@ -36,11 +36,14 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.File;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class ParseCmdLine {
 
@@ -94,7 +97,7 @@ public class ParseCmdLine {
 	private ArrayList<String> rpanelTypes = new ArrayList<>();
 	private ArrayList<String> rpanelMemory = new ArrayList<>();
 	private ArrayList<String> rpanelDir = new ArrayList<>();
-	
+
 	private static String HIGH = "HIGH";
 	private static String MEDIUM = "MEDIUM";
 	private static String LOW = "LOW";
@@ -140,6 +143,9 @@ public class ParseCmdLine {
 
 	private String inputFormat = null;
 	private String outputfile = null;
+
+	private String allCovariables = null;
+	private String allResponseVar = null;
 
 	/**
 	 * Parse CMD Args into internal values
@@ -320,7 +326,7 @@ public class ParseCmdLine {
 			LOGGER.fatal(CLASS_HEADER + ERROR_SYNTAX + gwasConfigFile + ERROR_SYNTAX_SUFFIX + myArgument[0]);
 			System.exit(1);
 		}
-		
+
 		tmpArg = argumentsArray.get(i++);
 		myArgument = tmpArg.split("=");
 		if ((myArgument.length > 0) && (myArgument.length < 3)) {
@@ -820,16 +826,17 @@ public class ParseCmdLine {
 				LOGGER.fatal(CLASS_HEADER + ERROR_SYNTAX + gwasConfigFile + ERROR_SYNTAX_SUFFIX + myArgument[0]);
 				System.exit(1);
 			}
-			
+
 			tmpArg = argumentsArray.get(i++);
 			myArgument = tmpArg.split("=");
 			if ((myArgument.length > 0) && (myArgument.length < 3)) {
 				if (myArgument[0].equals("refpanel_memory")) {
 					String panelMemory = myArgument[1].toUpperCase();
-					if(panelMemory.equals(HIGH) || panelMemory.equals(MEDIUM) || panelMemory.equals(LOW)) {
+					if (panelMemory.equals(HIGH) || panelMemory.equals(MEDIUM) || panelMemory.equals(LOW)) {
 						rpanelMemory.add(panelMemory);
 					} else {
-						LOGGER.fatal(CLASS_HEADER + ERROR_SYNTAX + "the amount of memory " + panelMemory + " introduced");
+						LOGGER.fatal(
+								CLASS_HEADER + ERROR_SYNTAX + "the amount of memory " + panelMemory + " introduced");
 						System.exit(1);
 					}
 				} else {
@@ -840,8 +847,7 @@ public class ParseCmdLine {
 				LOGGER.fatal(CLASS_HEADER + ERROR_SYNTAX + gwasConfigFile + ERROR_SYNTAX_SUFFIX + myArgument[0]);
 				System.exit(1);
 			}
-			
-			
+
 			tmpArg = argumentsArray.get(i++);
 			myArgument = tmpArg.split("=");
 			if ((myArgument.length > 0) && (myArgument.length < 3)) {
@@ -902,7 +908,7 @@ public class ParseCmdLine {
 						LOGGER.fatal("[ParseCmdLine] We are going to use 'minimac' tool for imputation stage... ");
 						ArrayList<String> chromoListRpanelVCFFileName = new ArrayList<String>();
 						int endVCF = end;
-						if(endVCF == 23) {
+						if (endVCF == 23) {
 							endVCF = 22;
 						}
 						for (int j = start; j <= endVCF; j++) {
@@ -926,7 +932,7 @@ public class ParseCmdLine {
 							}
 						}
 						rpanelVCFFileName.add(chromoListRpanelVCFFileName);
-						if(end == 23) {
+						if (end == 23) {
 							tmpArg = argumentsArray.get(i++);
 							myArgument = tmpArg.split("=");
 							ArrayList<String> chromoListRpanelHapFileName = new ArrayList<String>();
@@ -1076,7 +1082,7 @@ public class ParseCmdLine {
 	public Double getImputeThreshold() {
 		return this.imputeThreshold;
 	}
-	
+
 	/**
 	 * Method to get infoThreshold flag
 	 * 
@@ -1169,13 +1175,55 @@ public class ParseCmdLine {
 	}
 
 	/**
-	 * Method to get the name of covariables to included in the snptest
+	 * Method to get the name of covariables to be included in the snptest
 	 * 
 	 * @param testNameIndex
 	 * @return
 	 */
 	public String getCovariables(int testNameIndex) {
 		return this.covariables.get(testNameIndex);
+	}
+
+	private String fromVectorToUnique(ArrayList<String> vector) {
+		HashSet<String> uniqueCovars = new HashSet<String>();
+		for(String stringWithElements : vector) {
+			List<String> listWithElements = Arrays.asList(stringWithElements.split(","));
+			for(String elem : listWithElements) {
+				uniqueCovars.add(elem);
+			}
+		}
+		ArrayList<String> uniqueElementsArray = new ArrayList<String>(uniqueCovars);
+		String stringWithUniqueValues = uniqueElementsArray.get(0);
+		for(int i = 1; i < uniqueElementsArray.size(); ++i) {
+			stringWithUniqueValues = stringWithUniqueValues + ("," + uniqueElementsArray.get(i));
+		}
+		return stringWithUniqueValues;
+	}
+
+	/**
+	 * Method to get the name of all the covariables considered
+	 * 
+	 * @param testNameIndex
+	 * @return
+	 */
+	public String getAllCovariables() {
+		if (allCovariables == null) {
+			allCovariables = fromVectorToUnique(this.covariables);
+		}
+		return allCovariables;
+	}
+	
+	/**
+	 * Method to get the name of all the response vars considered
+	 * 
+	 * @param testNameIndex
+	 * @return
+	 */
+	public String getAllResponseVars() {
+		if (allResponseVar == null) {
+			allResponseVar = fromVectorToUnique(this.responseVars);
+		}
+		return allResponseVar;
 	}
 
 	/**
@@ -1417,7 +1465,7 @@ public class ParseCmdLine {
 	public String getRpanelType(int indexRpanel) {
 		return this.rpanelTypes.get(indexRpanel);
 	}
-	
+
 	/**
 	 * Method to get refPanelMemory information
 	 * 
@@ -1523,7 +1571,7 @@ public class ParseCmdLine {
 
 		return rpanelVCFFileName.get(indexRpanel).get(index);
 	}
-	
+
 	/**
 	 * Method to get the rpanelHap23FileName (Minimac)
 	 * 
@@ -1541,7 +1589,7 @@ public class ParseCmdLine {
 
 		return rpanelHap23FileName.get(indexRpanel).get(0);
 	}
-	
+
 	/**
 	 * Method to get the rpanelLeg23FileName (Minimac)
 	 * 

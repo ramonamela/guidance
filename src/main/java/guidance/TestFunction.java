@@ -122,10 +122,11 @@ public class TestFunction {
 	private static void newSample(String[] args) throws IOException, InterruptedException, Exception {
 		String sampleFile = args[0];
 		String phasingSampleFile = args[1];
-		String responseVar = args[2];
-		String covariables = args[3];
+		String phasingNewSampleFile = args[2];
+		String responseVar = args[3];
+		String covariables = args[4];
 		try {
-			GuidanceImpl.newSample(sampleFile, phasingSampleFile, responseVar, covariables, "");
+			GuidanceImpl.newSample(sampleFile, phasingSampleFile, phasingNewSampleFile, responseVar, covariables, "");
 		} catch (GuidanceTaskException e) {
 			e.printStackTrace();
 		}

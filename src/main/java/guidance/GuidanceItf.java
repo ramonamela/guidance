@@ -159,7 +159,8 @@ public interface GuidanceItf {
 	@Method(declaringClass = "guidance.GuidanceImpl")
 	@Constraints(computingUnits = "1", memorySize = "1.0f")
 	void newSample(@Parameter(type = Type.FILE, direction = Direction.IN) String sampleFile,
-			@Parameter(type = Type.FILE, direction = Direction.INOUT) String phasingSampleFile,
+			@Parameter(type = Type.FILE, direction = Direction.IN) String phasingSampleFile,
+			@Parameter(type = Type.FILE, direction = Direction.OUT) String phasingNewSampleFile,
 			@Parameter(type = Type.STRING, direction = Direction.IN) String responseVar,
 			@Parameter(type = Type.STRING, direction = Direction.IN) String covariables,
 			@Parameter(type = Type.STRING, direction = Direction.IN) String cmdToStore);
@@ -351,6 +352,7 @@ public interface GuidanceItf {
 			@Parameter(type = Type.STRING, direction = Direction.IN) String hweCohortThresholdS,
 			@Parameter(type = Type.STRING, direction = Direction.IN) String hweCasesThresholdS,
 			@Parameter(type = Type.STRING, direction = Direction.IN) String hweControlsThresholdS,
+			@Parameter(type = Type.STRING, direction = Direction.IN) String sex, 
 			@Parameter(type = Type.STRING, direction = Direction.IN) String cmdToStore);
 
 	@Method(declaringClass = "guidance.GuidanceImpl")
