@@ -67,20 +67,6 @@ public class TestFunction {
 		}
 	}
 
-	private static void generateTopHits(String[] args) {
-		String filteredFile = args[0];
-		String filteredXMalesFile = args[1];
-		String filteredXFemalesFile = args[2];
-		String topHitsResults = args[3];
-		String pvaThrS = args[4];
-		try {
-			GuidanceImpl.generateTopHitsAll(filteredFile, filteredXMalesFile, filteredXFemalesFile, topHitsResults,
-					pvaThrS, "");
-		} catch (GuidanceTaskException e) {
-			e.printStackTrace();
-		}
-	}
-
 	private static void printPaths(String[] args) throws IOException, GuidanceTaskException {
 
 		ArrayList<String> listOfCommands = new ArrayList<>();
@@ -142,8 +128,6 @@ public class TestFunction {
 			filterByAllWrapper(args);
 		case 2:
 			mergeOfChunksWrapper(args);
-		case 3:
-			generateTopHits(args);
 		case 4:
 			printPaths(args);
 		case 5:

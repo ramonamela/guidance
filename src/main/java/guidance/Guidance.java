@@ -789,15 +789,9 @@ public class Guidance {
 					filteredByAllXFemalesFile = lastFilteredByAllFile;
 				}
 
-				System.out.println("Calling generate condensed file");
 				if (parsingArgs.getStageStatus("jointCondensedFiles") == 1) {
 					doGenerateCondensedFile(parsingArgs, lastFilteredByAllFile, filteredByAllXMalesFile,
 							filteredByAllXFemalesFile, lastCondensedFile, topHitsResults);
-				}
-
-				if (parsingArgs.getStageStatus("generateTopHits") == 1) {
-					doGenerateTopHits(parsingArgs, lastFilteredByAllFile, filteredByAllXMalesFile,
-							filteredByAllXFemalesFile, topHitsResults, PVA_THRESHOLD_STR);
 				}
 
 				// Generate QQManhattan Plots
@@ -807,7 +801,6 @@ public class Guidance {
 				String manhattanPlotTiffFile = resultsFilesInfo.getManhattanTiffFile(test, panel);
 				// String correctedPvaluesFile = resultsFilesInfo.getCorrectedPvaluesFile(test,
 				// panel);
-
 				if (parsingArgs.getStageStatus("generateQQManhattanPlots") == 1) {
 					doGenerateQQManhattanPlots(parsingArgs, lastCondensedFile, qqPlotPdfFile, manhattanPlotPdfFile,
 							qqPlotTiffFile, manhattanPlotTiffFile);
@@ -2330,7 +2323,7 @@ public class Guidance {
 		}
 
 		if (endChr == 23) {
-			
+
 			String filteredXHeaderMales = Headers.constructHeaderX(SEX1);
 			final String plainfilteredCombineAllXMales = filteredCombineAllXMales.substring(0,
 					filteredCombineAllXMales.length() - 3);
@@ -2733,11 +2726,6 @@ public class Guidance {
 
 		doGenerateCondensedFile(parsingArgs, filteredCombineAll, filteredCombineAllXMales, filteredCombineAllXFemales,
 				condensedCombineAll, topHitsCombinedResults);
-		// Finally, we create topHits from filteredCombined, and QQ and Manhattan plots
-		// from condensedCombined
-		// TODO wait for the correct binary
-		doGenerateTopHits(parsingArgs, filteredCombineAll, filteredCombineAllXMales, filteredCombineAllXFemales,
-				topHitsCombinedResults, PVA_THRESHOLD_STR);
 
 		String combinedQqPlotPdfFile = combinedPanelsFilesInfo.getQqPlotPdfFile(ttIndex);
 		String combinedQqPlotTiffFile = combinedPanelsFilesInfo.getQqPlotTiffFile(ttIndex);
@@ -2764,18 +2752,18 @@ public class Guidance {
 			String filteredFemalesFile, String condensedFile, String topHitsFile) {
 		// TODO fill the function
 		// Task
-		
+
 		String cmdToStore = R_SCRIPT_BIN_DIR + "/Rscript " + R_SCRIPT_DIR + "/condensed_tophits.R " + filteredFile + " "
 				+ filteredMalesFile + " " + filteredFemalesFile + " " + condensedFile + " " + topHitsFile;
 		listOfCommands.add(cmdToStore);
-		
+
 		try {
 			GuidanceImpl.generateCondensedFile(filteredFile, filteredMalesFile, filteredFemalesFile, condensedFile,
 					topHitsFile, PVA_THRESHOLD_STR, cmdToStore);
 		} catch (GuidanceTaskException gte) {
 			LOGGER.error("[Guidance] Exception trying the execution of generateCondensedFile task", gte);
 		}
-		
+
 	}
 
 	/**
@@ -3685,8 +3673,8 @@ public class Guidance {
 
 			try {
 				GuidanceImpl.collectSummary(chrS, parsingArgs.getImputationTool(), imputeFileInfo, snptestOutFile,
-						summaryFile, mafThresholdS, hweCohortThresholdS, hweCasesThresholdS, hweControlsThresholdS,
-						sex, cmdToStore);
+						summaryFile, mafThresholdS, hweCohortThresholdS, hweCasesThresholdS, hweControlsThresholdS, sex,
+						cmdToStore);
 			} catch (GuidanceTaskException gte) {
 				LOGGER.error("[Guidance] Exception trying the execution of collectSummary task", gte);
 			}
@@ -3757,32 +3745,6 @@ public class Guidance {
 	}
 
 	/**
-	 * Method that wraps the generateTopHits task and store the command in the
-	 * listOfCommands
-	 * 
-	 * @param parsingArgs
-	 * @param listOfCommands
-	 * @param filteredFile
-	 * @param filteredXFile
-	 * @param topHitsResults
-	 * @param pvaThrS
-	 */
-	private static void doGenerateTopHits(ParseCmdLine parsingArgs, String filteredFile, String filteredXMalesFile,
-			String filteredXFemalesFile, String topHitsResults, String pvaThrS) {
-		/*
-		String cmdToStore = JAVA_HOME + "/java generateTopHits " + filteredFile + " " + filteredXMalesFile + " "
-				+ filteredXFemalesFile + " " + topHitsResults + " " + pvaThrS;
-		listOfCommands.add(cmdToStore);
-		try {
-			GuidanceImpl.generateTopHitsAll(filteredFile, filteredXMalesFile, filteredXFemalesFile, topHitsResults,
-					pvaThrS, cmdToStore);
-		} catch (GuidanceTaskException gte) {
-			LOGGER.error("[Guidance] Exception trying the execution of generateTopHits task", gte);
-		}
-		*/
-	}
-
-	/**
 	 * Method that wraps the generateQQManhattanPlots task and store the command in
 	 * the listOfCommands
 	 * 
@@ -3797,18 +3759,18 @@ public class Guidance {
 	 */
 	private static void doGenerateQQManhattanPlots(ParseCmdLine parsingArgs, String condensedFile, String qqPlotFile,
 			String manhattanPlotFile, String qqPlotTiffFile, String manhattanPlotTiffFile) {
-		/*
+
 		String cmdToStore = R_SCRIPT_BIN_DIR + "/Rscript " + R_SCRIPT_DIR + "/qqplot_manhattan.R " + condensedFile + " "
 				+ qqPlotFile + " " + manhattanPlotFile + " " + qqPlotTiffFile + " " + manhattanPlotTiffFile;
 		listOfCommands.add(cmdToStore);
-		
+
 		try {
 			GuidanceImpl.generateQQManhattanPlots(condensedFile, qqPlotFile, manhattanPlotFile, qqPlotTiffFile,
 					manhattanPlotTiffFile, cmdToStore);
 		} catch (GuidanceTaskException gte) {
 			LOGGER.error("[Guidance] Exception trying the execution of generateQQManhattanPlots task", gte);
 		}
-		*/
+
 	}
 
 	/**
