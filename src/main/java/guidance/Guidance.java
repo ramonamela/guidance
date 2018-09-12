@@ -522,28 +522,30 @@ public class Guidance {
 							mixedFilteredHaplotypesVcfFemalesFile, mixedFilteredHaplotypesVcfFemalesFileBgzip,
 							mixedFilteredHaplotypesVcfFemalesFileBgzipIndexed, exclCgatFlag, SEX2);
 
-					String cmd = JAVA_HOME + " newSample.jar " + mixedSampleFile + " " + mixedPhasingSampleMalesFile
-							+ " " + mixedPhasingNewSampleMalesFile + " " + covariables + " " + responseVar;
-
-					listOfCommands.add(new String(cmd));
-					try {
-						GuidanceImpl.newSample(mixedSampleFile, mixedPhasingSampleMalesFile,
-								mixedPhasingNewSampleMalesFile, responseVar, covariables, cmd);
-					} catch (Exception e) {
-						System.err.println("[Guidance] Exception trying the execution of snptest task");
-						System.err.println(e.getMessage());
-					}
-
-					cmd = JAVA_HOME + " newSample.jar " + mixedSampleFile + " " + mixedPhasingSampleFemalesFile + " "
-							+ mixedPhasingNewSampleFemalesFile + " " + covariables + " " + responseVar;
-
-					listOfCommands.add(new String(cmd));
-					try {
-						GuidanceImpl.newSample(mixedSampleFile, mixedPhasingSampleFemalesFile,
-								mixedPhasingNewSampleFemalesFile, responseVar, covariables, cmd);
-					} catch (Exception e) {
-						System.err.println("[Guidance] Exception trying the execution of snptest task");
-						System.err.println(e.getMessage());
+					if (parsingArgs.getStageStatus("phasingBed") == 1) {
+						String cmd = JAVA_HOME + " newSample.jar " + mixedSampleFile + " " + mixedPhasingSampleMalesFile
+								+ " " + mixedPhasingNewSampleMalesFile + " " + covariables + " " + responseVar;
+	
+						listOfCommands.add(new String(cmd));
+						try {
+							GuidanceImpl.newSample(mixedSampleFile, mixedPhasingSampleMalesFile,
+									mixedPhasingNewSampleMalesFile, responseVar, covariables, cmd);
+						} catch (Exception e) {
+							System.err.println("[Guidance] Exception trying the execution of snptest task");
+							System.err.println(e.getMessage());
+						}
+	
+						cmd = JAVA_HOME + " newSample.jar " + mixedSampleFile + " " + mixedPhasingSampleFemalesFile + " "
+								+ mixedPhasingNewSampleFemalesFile + " " + covariables + " " + responseVar;
+	
+						listOfCommands.add(new String(cmd));
+						try {
+							GuidanceImpl.newSample(mixedSampleFile, mixedPhasingSampleFemalesFile,
+									mixedPhasingNewSampleFemalesFile, responseVar, covariables, cmd);
+						} catch (Exception e) {
+							System.err.println("[Guidance] Exception trying the execution of snptest task");
+							System.err.println(e.getMessage());
+						}
 					}
 
 				}
