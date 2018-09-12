@@ -2251,12 +2251,13 @@ public class GuidanceImpl {
 		String command = null;
 		long startTime = System.currentTimeMillis();
 		String condensedPlain = condensedFile.substring(0, condensedFile.length() - 3);
+		String topHitsPlain = topHitsFile.substring(0, topHitsFile.length() - 3);
 
 		String rScriptBinDir = loadFromEnvironment(RSCRIPTBINDIR, HEADER_GENERATE_QQ_MANHATTAN_PLOTS);
 		String rScriptDir = loadFromEnvironment(RSCRIPTDIR, HEADER_GENERATE_QQ_MANHATTAN_PLOTS);
 
 		command = rScriptBinDir + "Rscript --verbose " + rScriptDir + "/condensed_tophits.R " + filteredFile + " "
-				+ filteredMalesFile + " " + filteredFemalesFile + " " + condensedPlain + " " + topHitsFile + " "
+				+ filteredMalesFile + " " + filteredFemalesFile + " " + condensedPlain + " " + topHitsPlain + " "
 				+ pvaThresholdStr;
 
 		System.out.println(command);
@@ -2267,6 +2268,7 @@ public class GuidanceImpl {
 			throw new GuidanceTaskException(ioe);
 		}
 
+		/*
 		File fInput = new File(condensedFile);
 		String path = fInput.getParent();
 		Path dir = Paths.get(path);
@@ -2281,10 +2283,12 @@ public class GuidanceImpl {
 			e.printStackTrace();
 		}
 		System.out.println("End files in sandbox. Starting compression");
+		*/
 
 		System.out.println(command);
 
 		FileUtils.gzipFile(condensedPlain, condensedFile);
+		FileUtils.gzipFile(topHitsPlain, topHitsFile);
 
 		long stopTime = System.currentTimeMillis();
 		long elapsedTime = (stopTime - startTime) / 1_000;
