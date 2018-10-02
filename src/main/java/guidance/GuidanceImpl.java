@@ -264,9 +264,11 @@ public class GuidanceImpl {
 		}
 
 		long startTime = System.currentTimeMillis();
+		
+		String basePath = newBedFile.substring(0, newBedFile.length() - 4);
 
 		String cmd = plinkBinary + " --noweb --bed " + bedFile + " --bim " + bimFile + " --fam " + famFile + " --chr "
-				+ chromo + " --recode --out " + newBedFile + " --make-bed";
+				+ chromo + " --out " + basePath + " --make-bed";
 
 		if (DEBUG) {
 			System.out.println(HEADER_CONVERT_FROM_BED_TO_BED + MSG_CMD + cmd);
@@ -275,7 +277,7 @@ public class GuidanceImpl {
 		// Execute the command retrieving its exitValue, output and error
 		int exitValue = -1;
 		try {
-			exitValue = ProcessUtils.execute(cmd, newBedFile + STDOUT_EXTENSION, newBedFile + STDERR_EXTENSION);
+			exitValue = ProcessUtils.execute(cmd, basePath + STDOUT_EXTENSION, basePath + STDERR_EXTENSION);
 		} catch (IOException ioe) {
 			throw new GuidanceTaskException(ioe);
 		}
@@ -286,28 +288,28 @@ public class GuidanceImpl {
 		}
 
 		// Rename file (or directory)
-		boolean success = FileUtils.move(newBedFile + ".bed", newBedFile);
+		boolean success = FileUtils.move(basePath + ".bed", newBedFile);
 		if (!success) {
 			// File was not successfully renamed
 			throw new GuidanceTaskException(
 					HEADER_CONVERT_FROM_BED_TO_BED + ERROR_ON_FILE + newBedFile + ERROR_SUFFIX_RENAMED_FILE);
 		}
 		// Rename file (or directory)
-		success = FileUtils.move(newBedFile + ".bim", newBimFile);
+		success = FileUtils.move(basePath + ".bim", newBimFile);
 		if (!success) {
 			// File was not successfully renamed
 			throw new GuidanceTaskException(
 					HEADER_CONVERT_FROM_BED_TO_BED + ERROR_ON_FILE + newBimFile + ERROR_SUFFIX_RENAMED_FILE);
 		}
 		// Rename file (or directory)
-		success = FileUtils.move(newBedFile + ".fam", newFamFile);
+		success = FileUtils.move(basePath + ".fam", newFamFile);
 		if (!success) {
 			throw new GuidanceTaskException(
 					HEADER_CONVERT_FROM_BED_TO_BED + ERROR_ON_FILE + newFamFile + ERROR_SUFFIX_RENAMED_FILE);
 			// File was not successfully renamed
 		}
 		// Rename file (or directory)
-		success = FileUtils.move(newBedFile + ".log", logFile);
+		success = FileUtils.move(basePath + ".log", logFile);
 		if (!success) {
 			throw new GuidanceTaskException(
 					HEADER_CONVERT_FROM_BED_TO_BED + ERROR_ON_FILE + logFile + ERROR_SUFFIX_RENAMED_FILE);
@@ -353,10 +355,12 @@ public class GuidanceImpl {
 	 * @throws InterruptedException
 	 * @throws Exception
 	 */
-	public static void splitChr23(String myPrefix, String bedFile, String bimFile, String famFile, String bedChr23File,
+	public static void splitChr23(String bedFile, String bimFile, String famFile, String bedChr23File,
 			String bimChr23File, String famChr23File, String logFile, String sex, String theChromo, String cmdToStore)
 			throws IOException, InterruptedException, Exception {
 
+		String myPrefix = bedChr23File.substring(0, bedChr23File.length() - 4);
+		
 		String plinkBinary = System.getenv("PLINKBINARY");
 		if (plinkBinary == null) {
 			throw new Exception("[splitChr23] Error, PLINKBINARY environment variable is not defined in .bashrc!!!");
@@ -689,7 +693,7 @@ public class GuidanceImpl {
 			String cmdToStore) throws GuidanceTaskException {
 
 		if (DEBUG) {
-			System.out.println("\n[DEBUG] Running createRsIdList with parameters:");
+			System.out.println("\n[DEBUG] Running :q with parameters:");
 			System.out.println("[DEBUG] \t- Input genOrBimFile : " + genOrBimFile);
 			System.out.println("[DEBUG] \t- Input exclCgatFlag : " + exclCgatFlag);
 			System.out.println("[DEBUG] \t- Output pairsFile   : " + pairsFile);
@@ -1584,8 +1588,6 @@ public class GuidanceImpl {
 				outputFile += "\t" + values;
 			}
 			outputFile += "\n";
-			
-			System.out.println("Current key: " + key + " with values " + valuesJoined);
 		}
 		br.close();
 
@@ -1874,7 +1876,7 @@ public class GuidanceImpl {
 	 * @throws InterruptedException
 	 * @throws Exception
 	 */
-	private static void imputeWithImpute(String gmapFile, String knownHapFile, String legendFile,
+	public static void imputeWithImpute(String gmapFile, String knownHapFile, String legendFile,
 			String phasingHapsFile, String phasingSampleFile, String lim1S, String lim2S, String pairsFile,
 			String imputeFile, String imputeFileInfo, String imputeFileSummary, String imputeFileWarnings,
 			String theChromo, String sex, String cmdToStore) throws GuidanceTaskException {
@@ -1907,15 +1909,18 @@ public class GuidanceImpl {
 		// We have to make sure whether we are using renamed files of the original gz
 		// files.
 		// We detect this situation by scanning the last three characters:
-		String extension = phasingHapsFile.substring(Math.max(0, phasingHapsFile.length() - 3));
+		String extensionHaps = phasingHapsFile.substring(Math.max(0, phasingHapsFile.length() - 3));
 
 		String phasingHapsFileGz = null;
-		if (extension.equals(".gz")) {
+		if (extensionHaps.equals(".gz")) {
 			phasingHapsFileGz = phasingHapsFile;
 		} else {
 			// If shapeitHapsFile exists, then shapeitHapsFileGz exists also.
 			phasingHapsFileGz = phasingHapsFile + ".gz";
 		}
+		
+		//We erase the extension .gz
+		imputeFile = imputeFile.substring(0, imputeFile.length() - 3);
 
 		String cmd = null;
 		if (theChromo.equals(CHR_23)) {
@@ -1961,7 +1966,7 @@ public class GuidanceImpl {
 			System.err.println(HEADER_IMPUTE + "                        (This warning is not fatal).");
 		}
 
-		// With the -o_gz option in the comand, the outputs are imputeFile.gz
+		// With the -o_gz option in the command, the outputs are imputeFile.gz
 		// If there is not output in the impute process. Then we have to create some
 		// empty outputs
 		String imputeGZFile = imputeFile + ".gz";
@@ -1973,16 +1978,19 @@ public class GuidanceImpl {
 			} catch (IOException ioe) {
 				throw new GuidanceTaskException(ioe);
 			}
-			FileUtils.gzipFile(imputeFile, imputeGZFile);
+			FileUtils.gzipFile(imputeFile, imputeFile + ".gz");
 		}
+		
+		//The result has the gz extension
+		imputeFile = imputeFile + ".gz";
 
-		boolean success = FileUtils.move(imputeGZFile, imputeFile);
+		//boolean success = FileUtils.move(imputeGZFile, imputeFile);
 
-		if (!success)
+		//if (!success)
 
-		{
-			throw new GuidanceTaskException(HEADER_IMPUTE + ERROR_ON_FILE + imputeGZFile);
-		}
+		//{
+		//	throw new GuidanceTaskException(HEADER_IMPUTE + ERROR_ON_FILE + imputeGZFile);
+		//}
 
 		try {
 			FileUtils.createEmptyFile(imputeFileInfo, HEADER_IMPUTE);
@@ -1995,10 +2003,6 @@ public class GuidanceImpl {
 		String imputeFileColumnTransformation = "zcat " + imputeFile + " | awk -v chr=" + theChromo
 				+ " '{out=$1 \" \" chr \":\" $3 \"_\" $4 \"_\" $5 ; for(i=3;i<=NF;i++){out=out\" \"$i}; print out}' | gzip > "
 				+ imputeFile + "_tmp; mv " + imputeFile + "_tmp " + imputeFile;
-		/*
-		 * try { FileUtils.copy(imputeFile, imputeFile + "_preTransformation"); } catch
-		 * (IOException e) { // TODO Auto-generated catch block e.printStackTrace(); }
-		 */
 
 		try {
 			ProcessUtils.executeWithoutOutputs(imputeFileColumnTransformation);
@@ -2347,6 +2351,10 @@ public class GuidanceImpl {
 
 		File outInclusionRsIdFile = new File(inclusionRsIdFile);
 		// Tries to create the file
+		if(outInclusionRsIdFile.exists()) {
+			outInclusionRsIdFile.delete();
+		}
+		
 		boolean bool = false;
 		try {
 			bool = outInclusionRsIdFile.createNewFile();
@@ -4174,6 +4182,8 @@ public class GuidanceImpl {
 			System.out.println("[DEBUG] \t- Command: " + cmdToStore);
 			System.out.println("--------------------------------------");
 		}
+		
+		FileUtils.recursiveSearch(firstImputeFileInfo);
 
 		long startTime = System.currentTimeMillis();
 		// Indexes for impute 2.3.2

@@ -2977,12 +2977,12 @@ public class Guidance {
 		if (parsingArgs.getStageStatus("convertFromBedToBed") == 1) {
 
 			if (sex.equals(SEX1)) {
-				myPrefix = bedChr23File.split("\\.")[0];
+				myPrefix = bedChr23File.substring(0, bedChr23File.length() - 4);
 
 				cmdToStore = PLINKBINARY + " --noweb --bed " + bedFile + " --bim " + bimFile + " --fam " + famFile
 						+ " --filter-males --out " + myPrefix + " --make-bed";
 			} else if (sex.equals(SEX2)) {
-				myPrefix = bedChr23File.split("\\.")[0];
+				myPrefix = bedChr23File.substring(0, bedChr23File.length() - 4);
 
 				cmdToStore = PLINKBINARY + " --noweb --bed " + bedFile + " --bim " + bimFile + " --fam " + famFile
 						+ " --filter-females --out " + myPrefix + " --make-bed";
@@ -2990,7 +2990,7 @@ public class Guidance {
 
 			listOfCommands.add(cmdToStore);
 			try {
-				GuidanceImpl.splitChr23(myPrefix, bedFile, bimFile, famFile, bedChr23File, bimChr23File, famChr23File,
+				GuidanceImpl.splitChr23(bedFile, bimFile, famFile, bedChr23File, bimChr23File, famChr23File,
 						logFile, sex, theChromo, cmdToStore);
 			} catch (Exception e) {
 				System.err.println("[Guidance] Exception trying the execution of splitChr23 task");

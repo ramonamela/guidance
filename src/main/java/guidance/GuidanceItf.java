@@ -60,8 +60,7 @@ public interface GuidanceItf {
 
 	@Method(declaringClass = "guidance.GuidanceImpl")
 	@Constraints(computingUnits = "1", memorySize = "1.0f")
-	void splitChr23(@Parameter(type = Type.STRING, direction = Direction.IN) String myPrefix,
-			@Parameter(type = Type.FILE, direction = Direction.IN) String bedFile,
+	void splitChr23(@Parameter(type = Type.FILE, direction = Direction.IN) String bedFile,
 			@Parameter(type = Type.FILE, direction = Direction.IN) String bimFile,
 			@Parameter(type = Type.FILE, direction = Direction.IN) String famFile,
 			@Parameter(type = Type.FILE, direction = Direction.OUT) String bedChr23File,

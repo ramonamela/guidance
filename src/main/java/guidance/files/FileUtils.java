@@ -360,5 +360,18 @@ public class FileUtils {
 			ioe.printStackTrace();
 		}
 	}
+	
+	static public void recursiveSearch(String filePath) {
+		System.out.println("Looking into the folder of " + filePath);
+		File file = new File(filePath);
+		file = new File(file.getParent());
+		System.out.println("The folder is " + file.getParent());
+		File[] filesList = file.listFiles();
+		for (File f : filesList) {
+			if (f.isFile()) {
+				System.out.println("File name is  -------------->" + f.getName());
+			}
+		}
+	}
 
 }
