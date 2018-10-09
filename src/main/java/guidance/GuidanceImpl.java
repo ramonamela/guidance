@@ -287,6 +287,7 @@ public class GuidanceImpl {
 			throw new GuidanceTaskException(HEADER_CONVERT_FROM_BED_TO_BED + ERROR_BINARY_EXEC + exitValue);
 		}
 
+		/*
 		// Rename file (or directory)
 		boolean success = FileUtils.move(basePath + ".bed", newBedFile);
 		if (!success) {
@@ -315,7 +316,7 @@ public class GuidanceImpl {
 					HEADER_CONVERT_FROM_BED_TO_BED + ERROR_ON_FILE + logFile + ERROR_SUFFIX_RENAMED_FILE);
 			// File was not successfully renamed
 		}
-
+		*/
 		// If there is not output in the convertFromBedToBed process. Then we have to
 		// create some empty outputs
 		try {
