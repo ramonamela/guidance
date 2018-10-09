@@ -2949,9 +2949,9 @@ public class Guidance {
 
 		if (parsingArgs.getStageStatus("convertFromBedToBed") == 1) {
 			// Task
-			String cmdToStore = JAVA_HOME + "/java convertFromBedToBed.jar " + bedFile + " " + bimFile + " " + famFile
-					+ " " + mixedBedFile + " " + mixedBimFile + " " + mixedFamFile + " " + mixedBedToBedLogFile + " "
-					+ theChromo;
+			String basePath = mixedBedFile.substring(0, mixedBedFile.length() - 4);
+			String cmdToStore = PLINKBINARY + " --noweb --bed " + bedFile + " --bim " + bimFile + " --fam " + famFile + " --chr "
+					+ theChromo + " --out " + basePath + " --make-bed";
 			listOfCommands.add(cmdToStore);
 			try {
 				GuidanceImpl.convertFromBedToBed(bedFile, bimFile, famFile, mixedBedFile, mixedBimFile, mixedFamFile,

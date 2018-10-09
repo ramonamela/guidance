@@ -187,7 +187,7 @@ public class CommonFiles {
 				GenericFile myMixedByChrFamFile = new GenericFile(theOutputDir, tmpFile, "decompressed", "none");
 				mixedByChrFamFile.add(myMixedByChrFamFile);
 
-				tmpFile = "mixed_" + cohort + "_chr_" + chromo + "_bed2bed.log";
+				tmpFile = "mixed_" + cohort + "_chr_" + chromo + ".log";
 				GenericFile myMixedBedToBedLogFile = new GenericFile(theOutputDir, tmpFile, "decompressed", "none");
 				mixedBedToBedLogFile.add(myMixedBedToBedLogFile);
 
