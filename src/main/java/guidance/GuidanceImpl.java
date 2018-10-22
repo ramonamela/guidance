@@ -267,7 +267,7 @@ public class GuidanceImpl {
 		
 		String basePath = newBedFile.substring(0, newBedFile.length() - 4);
 
-		String cmd = plinkBinary + " --noweb --bed " + bedFile + " --bim " + bimFile + " --fam " + famFile + " --chr "
+		String cmd = plinkBinary + " --bed " + bedFile + " --bim " + bimFile + " --fam " + famFile + " --chr "
 				+ chromo + " --out " + basePath + " --make-bed";
 
 		if (DEBUG) {
@@ -281,6 +281,7 @@ public class GuidanceImpl {
 		} catch (IOException ioe) {
 			throw new GuidanceTaskException(ioe);
 		}
+		System.out.println("The exit value is " + exitValue);
 
 		// Check process exit value
 		if (exitValue != 0) {
@@ -395,11 +396,11 @@ public class GuidanceImpl {
 		String cmd = null;
 
 		if (sex.equals("males")) {
-			cmd = plinkBinary + " --noweb --bed " + bedFile + " --bim " + bimFile + " --fam " + famFile
+			cmd = plinkBinary + " --bed " + bedFile + " --bim " + bimFile + " --fam " + famFile
 					+ " --filter-males --out " + myPrefix + " --make-bed";
 
 		} else if (sex.equals("females")) {
-			cmd = plinkBinary + " --noweb --bed " + bedFile + " --bim " + bimFile + " --fam " + famFile
+			cmd = plinkBinary + " --bed " + bedFile + " --bim " + bimFile + " --fam " + famFile
 					+ " --filter-females --out " + myPrefix + " --make-bed";
 
 		}
@@ -417,14 +418,28 @@ public class GuidanceImpl {
 		}
 
 		// Check process exit value
-		if (exitValue != 0) {
+		// Check process exit value
+		if (exitValue == 12) {
+			System.out.println("Look at the log file. Error: All people removed due to gender filter (--filter-males).");
+			try {
+				FileUtils.createEmptyFile(bedChr23File, HEADER_CONVERT_FROM_BED_TO_BED);
+				FileUtils.createEmptyFile(bimChr23File, HEADER_CONVERT_FROM_BED_TO_BED);
+				FileUtils.createEmptyFile(famChr23File, HEADER_CONVERT_FROM_BED_TO_BED);
+				FileUtils.createEmptyFile(logFile, HEADER_CONVERT_FROM_BED_TO_BED);
+			} catch (IOException ioe) {
+				throw new GuidanceTaskException(ioe);
+			}
+		}
+		else if (exitValue != 0) {
 			throw new GuidanceTaskException(HEADER_CONVERT_FROM_BED_TO_BED + ERROR_BINARY_EXEC + exitValue);
 		}
 
+		/*
 		FileUtils.move(myPrefix + ".bed", bedChr23File);
 		FileUtils.move(myPrefix + ".bim", bimChr23File);
 		FileUtils.move(myPrefix + ".fam", famChr23File);
 		FileUtils.move(myPrefix + ".log", logFile);
+		*/
 
 		long stopTime = System.currentTimeMillis();
 		long elapsedTime = (stopTime - startTime) / 1000;
@@ -1507,15 +1522,17 @@ public class GuidanceImpl {
 		String[] namesHeaderResponse = responseVar.split(","); // Get the pheno columns
 
 		for (int i = 0; i < splitHeaderSF.length; i++) {
-			
+
 			for (int j = 0; j < namesHeaderCovar.length; j++) {
 				if (splitHeaderSF[i].equals(namesHeaderCovar[j])) {
+					System.out.println("Adding column " + i + " corresponding to " + splitHeaderSF[i] + " to covars");
 					columnsHeaderCovar.add(i);
 				}
 			}
 			
 			for (int j = 0; j < namesHeaderResponse.length; j++) {
 				if (splitHeaderSF[i].equals(namesHeaderResponse[j])) {
+					System.out.println("Adding column " + i + " corresponding to " + splitHeaderSF[i] + " to reponse");
 					columnsHeaderResponse.add(i);
 				}
 			}
@@ -1524,7 +1541,7 @@ public class GuidanceImpl {
 		
 		while ((line = br.readLine()) != null) {
 
-			String[] lineSplited = line.split("\\s");
+			String[] lineSplited = line.split(SPACE);
 			String key = lineSplited[1];
 			
 			String valueCovar = lineSplited[columnsHeaderCovar.get(0)];
@@ -1550,19 +1567,17 @@ public class GuidanceImpl {
 		// Prepearing header output file
 		String outputFile = "";
 		for (int i = 0; i < 3; i++) {
-			outputFile += splitHeaderSF[i] + "\t";
+			outputFile += splitHeaderSF[i] + SPACE;
 		}
 		
 		outputFile += splitHeaderSF[columnsHeaderCovar.get(0)];
 		for (int i = 1; i < columnsHeaderCovar.size(); i++) {
-			//outputFile += "\t" + namesHeaderCovar[i];
-			outputFile += "\t" + splitHeaderSF[columnsHeaderCovar.get(i)];
+			outputFile += SPACE + splitHeaderSF[columnsHeaderCovar.get(i)];
 		}
 
-		outputFile += "\t" +splitHeaderSF[columnsHeaderResponse.get(0)];
+		outputFile += SPACE +splitHeaderSF[columnsHeaderResponse.get(0)];
 		for (int i = 1; i < columnsHeaderResponse.size(); i++) {
-			//outputFile += "\t" + namesHeaderResponse[i];
-			outputFile += "\t" + splitHeaderSF[columnsHeaderResponse.get(i)];
+			outputFile += SPACE + splitHeaderSF[columnsHeaderResponse.get(i)];
 		}
 		
 		outputFile += "\n";
@@ -1573,20 +1588,20 @@ public class GuidanceImpl {
 
 		while ((line = br.readLine()) != null) {
 
-			String[] lineSplited = line.split("\\s");
+			String[] lineSplited = line.split(SPACE);
 			String key = lineSplited[1];
 
 			valuesJoined = new ArrayList<String>();
 			valuesJoined = loadSampleFile.get(key);
 
 			// Add "key" Pos0 Pos1, Pos2
-			outputFile += lineSplited[0] + "\t" + lineSplited[1] + "\t" + lineSplited[2];
+			outputFile += lineSplited[0] + SPACE + lineSplited[1] + SPACE + lineSplited[2];
 
 			// Add the Covar and Response columns
 			for (int i = 0; i < valuesJoined.size(); i++) {
 
 				String values = valuesJoined.get(i);
-				outputFile += "\t" + values;
+				outputFile += SPACE + values;
 			}
 			outputFile += "\n";
 		}

@@ -159,7 +159,7 @@ public class TestFunction {
 
 	public static void main(String[] args) throws Exception {
 		System.out.println(Arrays.toString(args));
-		int option = 7;
+		int option = 5;
 		switch (option) {
 		case 0:
 			collectSummaryWrapper(args);
