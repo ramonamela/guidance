@@ -77,9 +77,6 @@ public class ParseCmdLine {
 	private String mixedSampleFileName = null;
 	private String mixedSampleFile = null;
 
-	private ArrayList<String> mixedGenLogFileName = new ArrayList<String>();
-	private ArrayList<String> mixedGenLogFile = new ArrayList<String>();
-
 	private String gmapDir = null;
 	private ArrayList<String> gmapFileName = new ArrayList<>();
 
@@ -122,8 +119,6 @@ public class ParseCmdLine {
 	private int end = 0;
 	private int endNormal = 0;
 
-	private boolean doChr23independently = false;
-
 	private String wfDeepRequired = null;
 	private HashMap<String, Integer> wfPossibleDeeps = new HashMap<>();
 	private HashMap<String, Integer> wfAllStages = new HashMap<>();
@@ -131,6 +126,7 @@ public class ParseCmdLine {
 	private Double mafThreshold = 0.000;
 	private Double imputeThreshold = 0.000;
 	private Double minimacThreshold = 0.000;
+	private Double pvaThreshold = 0.000;
 	private Double hweCohortThreshold = 0.000;
 	private Double hweCasesThreshold = 0.000;
 	private Double hweControlsThreshold = 0.000;
@@ -139,10 +135,7 @@ public class ParseCmdLine {
 	private String removeTemporalFiles = "NO";
 	private String compressFiles = "NO";
 
-	private int procsPerChromo = 1;
-
 	private String inputFormat = null;
-	private String outputfile = null;
 
 	private String allCovariables = null;
 	private String allResponseVar = null;
@@ -314,7 +307,7 @@ public class ParseCmdLine {
 			if (myArgument[0].equals("impute_threshold")) {
 				imputeThreshold = Double.parseDouble(myArgument[1]);
 				if (imputeThreshold < 0) {
-					LOGGER.fatal(CLASS_HEADER + " Error, impute_threshold = " + imputeThreshold);
+					LOGGER.fatal(CLASS_HEADER + " Error, info_impute_threshold = " + imputeThreshold);
 					LOGGER.fatal(CLASS_HEADER + "        It should be: should be: > 0");
 					System.exit(1);
 				}
@@ -333,7 +326,26 @@ public class ParseCmdLine {
 			if (myArgument[0].equals("minimac_threshold")) {
 				minimacThreshold = Double.parseDouble(myArgument[1]);
 				if (minimacThreshold < 0) {
-					LOGGER.fatal(CLASS_HEADER + " Error, info_threshold = " + minimacThreshold);
+					LOGGER.fatal(CLASS_HEADER + " Error, info_minimac_threshold = " + minimacThreshold);
+					LOGGER.fatal(CLASS_HEADER + "        It should be: should be: > 0");
+					System.exit(1);
+				}
+			} else {
+				LOGGER.fatal(CLASS_HEADER + ERROR_PARAM_ORDER + myArgument[0]);
+				System.exit(1);
+			}
+		} else {
+			LOGGER.fatal(CLASS_HEADER + ERROR_SYNTAX + gwasConfigFile + ERROR_SYNTAX_SUFFIX + myArgument[0]);
+			System.exit(1);
+		}
+		
+		tmpArg = argumentsArray.get(i++);
+		myArgument = tmpArg.split("=");
+		if ((myArgument.length > 0) && (myArgument.length < 3)) {
+			if (myArgument[0].equals("pva_threshold")) {
+				pvaThreshold = Double.parseDouble(myArgument[1]);
+				if (minimacThreshold < 0) {
+					LOGGER.fatal(CLASS_HEADER + " Error, pva_threshold = " + pvaThreshold);
 					LOGGER.fatal(CLASS_HEADER + "        It should be: should be: > 0");
 					System.exit(1);
 				}
@@ -1075,7 +1087,7 @@ public class ParseCmdLine {
 	}
 
 	/**
-	 * Method to get infoThreshold flag
+	 * Method to get infoThreshold flag when using impute
 	 * 
 	 * @return
 	 */
@@ -1084,12 +1096,21 @@ public class ParseCmdLine {
 	}
 
 	/**
-	 * Method to get infoThreshold flag
+	 * Method to get infoThreshold flag when using minimac
 	 * 
 	 * @return
 	 */
 	public Double getMinimacThreshold() {
 		return this.minimacThreshold;
+	}
+	
+	/**
+	 * Method to get infoThreshold flag
+	 * 
+	 * @return
+	 */
+	public Double getPvaThreshold() {
+		return this.pvaThreshold;
 	}
 
 	/**
@@ -1186,15 +1207,15 @@ public class ParseCmdLine {
 
 	private String fromVectorToUnique(ArrayList<String> vector) {
 		HashSet<String> uniqueCovars = new HashSet<String>();
-		for(String stringWithElements : vector) {
+		for (String stringWithElements : vector) {
 			List<String> listWithElements = Arrays.asList(stringWithElements.split(","));
-			for(String elem : listWithElements) {
+			for (String elem : listWithElements) {
 				uniqueCovars.add(elem);
 			}
 		}
 		ArrayList<String> uniqueElementsArray = new ArrayList<String>(uniqueCovars);
 		String stringWithUniqueValues = uniqueElementsArray.get(0);
-		for(int i = 1; i < uniqueElementsArray.size(); ++i) {
+		for (int i = 1; i < uniqueElementsArray.size(); ++i) {
 			stringWithUniqueValues = stringWithUniqueValues + ("," + uniqueElementsArray.get(i));
 		}
 		return stringWithUniqueValues;
@@ -1212,7 +1233,7 @@ public class ParseCmdLine {
 		}
 		return allCovariables;
 	}
-	
+
 	/**
 	 * Method to get the name of all the response vars considered
 	 * 
@@ -1737,40 +1758,6 @@ public class ParseCmdLine {
 	 */
 	public void activateStages(String wfDeepRequired, String imputationTool) {
 
-		// Lets create the complete list of stages of the workflow
-		// With the value 0, meaning initially they are not active.
-		// They will be activated when activateStages is called, at the end of the
-		// class.
-
-		final Integer DISABLED_MASK = 0;
-		wfAllStages.put("convertFromBedToBed", DISABLED_MASK);
-		wfAllStages.put("createRsIdList", DISABLED_MASK);
-		wfAllStages.put("phasingBed", DISABLED_MASK);
-		wfAllStages.put("phasing", DISABLED_MASK);
-		wfAllStages.put("createListOfExcludedSnps", DISABLED_MASK);
-		wfAllStages.put("filterHaplotypes", DISABLED_MASK);
-		wfAllStages.put("imputeWithImpute", DISABLED_MASK);
-		wfAllStages.put("imputeWithMinimac", DISABLED_MASK);
-		wfAllStages.put("filterByInfo", DISABLED_MASK);
-		wfAllStages.put("qctoolS", DISABLED_MASK);
-		wfAllStages.put("snptest", DISABLED_MASK);
-		wfAllStages.put("collectSummary", DISABLED_MASK);
-		wfAllStages.put("mergeTwoChunks", DISABLED_MASK);
-		wfAllStages.put("filterByAll", DISABLED_MASK);
-		wfAllStages.put("jointCondensedFiles", DISABLED_MASK);
-		wfAllStages.put("jointFilteredByAllFiles", DISABLED_MASK);
-		wfAllStages.put("generateTopHits", DISABLED_MASK);
-		wfAllStages.put("generateQQManhattanPlots", DISABLED_MASK);
-		wfAllStages.put("combinePanelsComplex", DISABLED_MASK);
-		wfAllStages.put("combineCondensedFiles", DISABLED_MASK);
-		wfAllStages.put("initPhenoMatrix", DISABLED_MASK);
-		wfAllStages.put("addToPhenoMatrix", DISABLED_MASK);
-		wfAllStages.put("filloutPhenoMatrix", DISABLED_MASK);
-		wfAllStages.put("finalizePhenoMatrix", DISABLED_MASK);
-		wfAllStages.put("taskx", DISABLED_MASK);
-		wfAllStages.put("tasky", DISABLED_MASK);
-		wfAllStages.put("taskz", DISABLED_MASK);
-
 		// First of all, we activate the correct PossibleDeeps depending on the kind of
 		// imputation tool that is used:
 		// Important: The order of the bits in the value are related to the order of the
@@ -1784,167 +1771,71 @@ public class ParseCmdLine {
 			wfPossibleDeeps.put("until_imputation", 0x7900000);
 			wfPossibleDeeps.put("until_association", 0x7970000);
 			wfPossibleDeeps.put("until_filterByAll", 0x797E000);
-			wfPossibleDeeps.put("until_summary", 0x797FF80);
-			wfPossibleDeeps.put("whole_workflow", 0x797FFF8);
-			wfPossibleDeeps.put("from_phasing", 0x017FFF8);
-			wfPossibleDeeps.put("from_phasing_to_summary", 0x017FF80);
+			wfPossibleDeeps.put("until_summary", 0x797FF00);
+			wfPossibleDeeps.put("whole_workflow", 0x797FF80);
+			wfPossibleDeeps.put("from_phasing", 0x017FF80);
+			wfPossibleDeeps.put("from_phasing_to_summary", 0x017FF00);
 			wfPossibleDeeps.put("from_phasing_to_filterByAll", 0x017E000);
 			wfPossibleDeeps.put("from_phasing_to_association", 0x0170000);
 			wfPossibleDeeps.put("from_phasing_to_imputation", 0x0100000);
-			wfPossibleDeeps.put("from_imputation", 0x007FFF8);
-			wfPossibleDeeps.put("from_imputation_to_summary", 0x007FF80);
+			wfPossibleDeeps.put("from_imputation", 0x007FF80);
+			wfPossibleDeeps.put("from_imputation_to_summary", 0x007FF00);
 			wfPossibleDeeps.put("from_imputation_to_filterByAll", 0x007E000);
 			wfPossibleDeeps.put("from_imputation_to_association", 0x0070000);
 			wfPossibleDeeps.put("from_imputation_to_filterByInfo", 0x0040000);
 			wfPossibleDeeps.put("from_filterByInfo_to_qctoolS", 0x0020000);
 			wfPossibleDeeps.put("from_qctoolS_to_association", 0x0010000);
-			wfPossibleDeeps.put("from_association", 0x000FFF8);
+			wfPossibleDeeps.put("from_association", 0x000FF80);
 			wfPossibleDeeps.put("from_association_to_filterByAll", 0x000E000);
 			wfPossibleDeeps.put("from_association_to_summary", 0x000FF80);
-			wfPossibleDeeps.put("from_filterByAll", 0x0001FF8);
-			wfPossibleDeeps.put("from_filterByAll_to_summary", 0x0001F80);
-			wfPossibleDeeps.put("from_summary", 0x0000078);
+			wfPossibleDeeps.put("from_filterByAll", 0x0001F80);
+			wfPossibleDeeps.put("from_filterByAll_to_summary", 0x0001F00);
+			wfPossibleDeeps.put("from_summary", 0x0000080);
 		} else if (imputationTool.equals("minimac")) {
 			wfPossibleDeeps.put("until_convertFromBedToBed", 0x6000000);
 			wfPossibleDeeps.put("until_phasing", 0x7E00000);
 			wfPossibleDeeps.put("until_imputation", 0x7E80000);
 			wfPossibleDeeps.put("until_association", 0x7EF0000);
 			wfPossibleDeeps.put("until_filterByAll", 0x7EFE000);
-			wfPossibleDeeps.put("until_summary", 0x7EFFF80);
-			wfPossibleDeeps.put("whole_workflow", 0x7EFFFF8);
-			wfPossibleDeeps.put("from_phasing", 0x00FFFF8);
-			wfPossibleDeeps.put("from_phasing_to_summary", 0x00FFF80);
+			wfPossibleDeeps.put("until_summary", 0x7EFFF00);
+			wfPossibleDeeps.put("whole_workflow", 0x7EFFF80);
+			wfPossibleDeeps.put("from_phasing", 0x00FFF00);
+			wfPossibleDeeps.put("from_phasing_to_summary", 0x00FFF00);
 			wfPossibleDeeps.put("from_phasing_to_filterByAll", 0x00FE000);
 			wfPossibleDeeps.put("from_phasing_to_association", 0x00F0000);
 			wfPossibleDeeps.put("from_phasing_to_imputation", 0x0080000);
-			wfPossibleDeeps.put("from_imputation", 0x007FFF8);
-			wfPossibleDeeps.put("from_imputation_to_summary", 0x007FF80);
+			wfPossibleDeeps.put("from_imputation", 0x007FF80);
+			wfPossibleDeeps.put("from_imputation_to_summary", 0x007FF00);
 			wfPossibleDeeps.put("from_imputation_to_filterByAll", 0x007E000);
 			wfPossibleDeeps.put("from_imputation_to_association", 0x0070000);
 			wfPossibleDeeps.put("from_imputation_to_filterByInfo", 0x0040000);
 			wfPossibleDeeps.put("from_filterByInfo_to_qctoolS", 0x0020000);
 			wfPossibleDeeps.put("from_qctoolS_to_association", 0x0010000);
-			wfPossibleDeeps.put("from_association", 0x000FFF8);
+			wfPossibleDeeps.put("from_association", 0x000FF80);
 			wfPossibleDeeps.put("from_association_to_filterByAll", 0x000E000);
-			wfPossibleDeeps.put("from_association_to_summary", 0x000FF80);
-			wfPossibleDeeps.put("from_filterByAll", 0x0001FF8);
-			wfPossibleDeeps.put("from_filterByAll_to_summary", 0x0001F80);
-			wfPossibleDeeps.put("from_summary", 0x0000078);
+			wfPossibleDeeps.put("from_association_to_summary", 0x000FF00);
+			wfPossibleDeeps.put("from_filterByAll", 0x0001F80);
+			wfPossibleDeeps.put("from_filterByAll_to_summary", 0x0001F00);
+			wfPossibleDeeps.put("from_summary", 0x0000080);
 		} else {
 			LOGGER.fatal(CLASS_HEADER + " Error, the imputation tool: " + imputationTool
 					+ " is not supported in this version...");
 			System.exit(1);
 		}
 
+		String[] steps = { "convertFromBedToBed", "createRsIdList", "phasingBed", "phasing", "createListOfExcludedSnps",
+				"filterHaplotypes", "imputeWithImpute", "imputeWithMinimac", "filterByInfo", "qctoolS", "snpTest",
+				"collectSummary", "mergeTwoChunks", "filterByAll", "jointCondensedFiles", "jointFilteredByAllFiles",
+				"generateTopHits", "generateQQManhatanPlots", "combinePanelsComplex", "phenoAnalysis", "ttask", "utask",
+				"vtask", "wtask", "xtask", "ytask", "ztask" };
+
 		final Integer MASK1 = 0x00001;
-		int stageNumber = 0;
+
 		// Shift 1 and Mask1
-		int tmpVar = (wfPossibleDeeps.get(wfDeepRequired) >> stageNumber) & MASK1;
-		wfAllStages.put("taskz", tmpVar);
-		stageNumber++;
-
-		tmpVar = (wfPossibleDeeps.get(wfDeepRequired) >> stageNumber) & MASK1;
-		wfAllStages.put("tasky", tmpVar);
-		stageNumber++;
-
-		tmpVar = (wfPossibleDeeps.get(wfDeepRequired) >> stageNumber) & MASK1;
-		wfAllStages.put("taskx", tmpVar);
-		stageNumber++;
-
-		tmpVar = (wfPossibleDeeps.get(wfDeepRequired) >> stageNumber) & MASK1;
-		wfAllStages.put("finalizePhenoMatrix", tmpVar);
-		stageNumber++;
-
-		tmpVar = (wfPossibleDeeps.get(wfDeepRequired) >> stageNumber) & MASK1;
-		wfAllStages.put("filloutPhenoMatrix", tmpVar);
-		stageNumber++;
-
-		tmpVar = (wfPossibleDeeps.get(wfDeepRequired) >> stageNumber) & MASK1;
-		wfAllStages.put("addToPhenoMatrix", tmpVar);
-		stageNumber++;
-
-		tmpVar = (wfPossibleDeeps.get(wfDeepRequired) >> stageNumber) & MASK1;
-		wfAllStages.put("initPhenoMatrix", tmpVar);
-		stageNumber++;
-
-		tmpVar = (wfPossibleDeeps.get(wfDeepRequired) >> stageNumber) & MASK1;
-		wfAllStages.put("combineCondensedFiles", tmpVar);
-		stageNumber++;
-
-		tmpVar = (wfPossibleDeeps.get(wfDeepRequired) >> stageNumber) & MASK1;
-		wfAllStages.put("combinePanelsComplex", tmpVar);
-		stageNumber++;
-
-		tmpVar = (wfPossibleDeeps.get(wfDeepRequired) >> stageNumber) & MASK1;
-		wfAllStages.put("generateQQManhattanPlots", tmpVar);
-		stageNumber++;
-
-		tmpVar = (wfPossibleDeeps.get(wfDeepRequired) >> stageNumber) & MASK1;
-		wfAllStages.put("generateTopHits", tmpVar);
-		stageNumber++;
-
-		tmpVar = (wfPossibleDeeps.get(wfDeepRequired) >> stageNumber) & MASK1;
-		wfAllStages.put("jointFilteredByAllFiles", tmpVar);
-		stageNumber++;
-
-		tmpVar = (wfPossibleDeeps.get(wfDeepRequired) >> stageNumber) & MASK1;
-		wfAllStages.put("jointCondensedFiles", tmpVar);
-		stageNumber++;
-
-		tmpVar = (wfPossibleDeeps.get(wfDeepRequired) >> stageNumber) & MASK1;
-		wfAllStages.put("filterByAll", tmpVar);
-		stageNumber++;
-
-		tmpVar = (wfPossibleDeeps.get(wfDeepRequired) >> stageNumber) & MASK1;
-		wfAllStages.put("mergeTwoChunks", tmpVar);
-		stageNumber++;
-
-		tmpVar = (wfPossibleDeeps.get(wfDeepRequired) >> stageNumber) & MASK1;
-		wfAllStages.put("collectSummary", tmpVar);
-		stageNumber++;
-
-		tmpVar = (wfPossibleDeeps.get(wfDeepRequired) >> stageNumber) & MASK1;
-		wfAllStages.put("snptest", tmpVar);
-		stageNumber++;
-
-		tmpVar = (wfPossibleDeeps.get(wfDeepRequired) >> stageNumber) & MASK1;
-		wfAllStages.put("qctoolS", tmpVar);
-		stageNumber++;
-
-		tmpVar = (wfPossibleDeeps.get(wfDeepRequired) >> stageNumber) & MASK1;
-		wfAllStages.put("filterByInfo", tmpVar);
-		stageNumber++;
-
-		tmpVar = (wfPossibleDeeps.get(wfDeepRequired) >> stageNumber) & MASK1;
-		wfAllStages.put("imputeWithMinimac", tmpVar);
-		stageNumber++;
-
-		tmpVar = (wfPossibleDeeps.get(wfDeepRequired) >> stageNumber) & MASK1;
-		wfAllStages.put("imputeWithImpute", tmpVar);
-		stageNumber++;
-
-		tmpVar = (wfPossibleDeeps.get(wfDeepRequired) >> stageNumber) & MASK1;
-		wfAllStages.put("filterHaplotypes", tmpVar);
-		stageNumber++;
-
-		tmpVar = (wfPossibleDeeps.get(wfDeepRequired) >> stageNumber) & MASK1;
-		wfAllStages.put("createListOfExcludedSnps", tmpVar);
-		stageNumber++;
-
-		tmpVar = (wfPossibleDeeps.get(wfDeepRequired) >> stageNumber) & MASK1;
-		wfAllStages.put("phasing", tmpVar);
-		stageNumber++;
-
-		tmpVar = (wfPossibleDeeps.get(wfDeepRequired) >> stageNumber) & MASK1;
-		wfAllStages.put("phasingBed", tmpVar);
-		stageNumber++;
-
-		tmpVar = (wfPossibleDeeps.get(wfDeepRequired) >> stageNumber) & MASK1;
-		wfAllStages.put("createRsIdList", tmpVar);
-		stageNumber++;
-
-		tmpVar = (wfPossibleDeeps.get(wfDeepRequired) >> stageNumber) & MASK1;
-		wfAllStages.put("convertFromBedToBed", tmpVar);
+		for (int stageNumber = 0; stageNumber < steps.length; ++stageNumber) {
+			int tmpVar = (wfPossibleDeeps.get(wfDeepRequired) >> stageNumber) & MASK1;
+			wfAllStages.put(steps[steps.length - stageNumber - 1], tmpVar);
+		}
 	}
 
 	/**

@@ -38,180 +38,106 @@ import guidance.utils.ParseCmdLine;
 import java.io.File;
 import java.util.ArrayList;
 
-
 public class PhenomeAnalysisFiles {
 
-    private String phenomeAnalysisOutDir = null;
+	private String phenomeAnalysisOutDir = null;
 
-    private ArrayList<GenericFile> phenomeAnalysisFile = new ArrayList<>();
-    private ArrayList<GenericFile> phenomeTmpFile = new ArrayList<>();
-    private ArrayList<GenericFile> phenomeFinalFile = new ArrayList<>();
+	private GenericFile topHitsAllPhenos = null;
 
+	private ArrayList<GenericFile> phenomeMergedTopHits = new ArrayList<>();
 
-    /**
-     * New PhenomeAnalysisFiles instance
-     * 
-     * @param parsingArgs
-     * @param baseOutDir
-     * @param refPanels
-     */
-    public PhenomeAnalysisFiles(ParseCmdLine parsingArgs, String baseOutDir, List<String> refPanels) {
-        String testTypeName = null;
-        String rPanel = null;
+	private GenericFile crossPhenoAll = null;
+	private GenericFile crossPhenoRanges = null;
+	private GenericFile crossPhenoAssocTop = null;
 
-        int numberOfTestTypesNames = parsingArgs.getNumberOfTestTypeName();
-        // int numberOfRpanels = refPanels.size();
-        // int totalCombinations = numberOfTestTypesNames * numberOfRpanels - 1;
+	/**
+	 * New PhenomeAnalysisFiles instance
+	 * 
+	 * @param parsingArgs
+	 * @param baseOutDir
+	 * @param refPanels
+	 */
+	public PhenomeAnalysisFiles(ParseCmdLine parsingArgs, String baseOutDir) {
+		String testTypeName = null;
 
-        // We create the first directory name: the cohort directory
-        String mixedCohort = parsingArgs.getCohort();
+		int numberOfTestTypesNames = parsingArgs.getNumberOfTestTypeName();
 
-        this.phenomeAnalysisOutDir = baseOutDir + File.separator + "associations" + File.separator + "pheno_analysis" + File.separator
-                + mixedCohort;
-        // for(int tt=0; tt< numberOfTestTypesNames; tt++) {
-        // testTypeName = parsingArgs.getTestTypeName(tt);
-        // phenomeAnalysisOutDir = phenomeAnalysisOutDir + "_" + testTypeName;
-        // }
+		String mixedCohort = parsingArgs.getCohort();
 
-        String basePrefixPhenomeName = "phenome_analysis_" + mixedCohort;
-        String prefixPhenomeName = basePrefixPhenomeName;
-        String prefixPhenomeTmpName = basePrefixPhenomeName;
+		this.phenomeAnalysisOutDir = baseOutDir + File.separator + "associations" + File.separator + "pheno_analysis"
+				+ File.separator + mixedCohort;
 
-        // Phantom name as the first position of phenomeFinalFile
-        int counter = 0;
-        String prefixPhenomeFinalName = prefixPhenomeTmpName + "_" + counter + "_final";
-        String tmpPhenomeFinalFileName = prefixPhenomeFinalName + ".txt.gz";
-        GenericFile myPhenomeFinalFile = new GenericFile(this.phenomeAnalysisOutDir, tmpPhenomeFinalFileName, "uncompressed", "none");
-        this.phenomeFinalFile.add(myPhenomeFinalFile);
+		String basePrefixPhenomeName = "phenome_analysis_" + mixedCohort;
+		
+		topHitsAllPhenos = new GenericFile(basePrefixPhenomeName, "tophits_all_phenotypes.txt", "decompressed", "none");
 
-        counter = 0;
-        for (int tt = 0; tt < numberOfTestTypesNames; tt++) {
-            testTypeName = parsingArgs.getTestTypeName(tt);
+		crossPhenoAll = new GenericFile(basePrefixPhenomeName, "cross_pheno_all.txt", "decompressed", "none");
+		crossPhenoRanges = new GenericFile(basePrefixPhenomeName, "cross_pheno_ranges.txt", "decompressed", "none");
+		crossPhenoAssocTop = new GenericFile(basePrefixPhenomeName, "cross_pheno_association_topvariants.txt", "decompressed", "none");
 
-            int startj = 0;
-            /*
-             * if(tt==0) { rPanel = refPanels.get(0); prefixPhenomeName = prefixPhenomeName + "_" + rPanel; startj=1; }
-             */
-            for (int j = startj; j < refPanels.size(); j++) {
-                rPanel = refPanels.get(j);
+		for (int tt = 0; tt < numberOfTestTypesNames; tt++) {
+			testTypeName = parsingArgs.getTestTypeName(tt);
+			phenomeMergedTopHits.add(new GenericFile(basePrefixPhenomeName, "tophits_merge_" + testTypeName + ".txt", "decompressed", "none"));
+		}
+	}
 
-                String tmpPhenomeTmpFileName = prefixPhenomeTmpName + "_" + counter + ".txt.gz";
-                GenericFile myPhenomeTmpFile = new GenericFile(this.phenomeAnalysisOutDir, tmpPhenomeTmpFileName, "uncompressed", "none");
-                this.phenomeTmpFile.add(myPhenomeTmpFile);
+	/**
+	 * Method to access correctedPvaluesFile information
+	 * 
+	 * @return
+	 */
+	public String getPhenomeAnalysisOutDir() {
+		return this.phenomeAnalysisOutDir;
+	}
 
-                prefixPhenomeName = basePrefixPhenomeName + "_" + testTypeName + "_" + rPanel;
-                String tmpPhenomeAnalysisFileName = prefixPhenomeName + ".txt.gz";
-                GenericFile myPhenomeAnalysisFile = new GenericFile(this.phenomeAnalysisOutDir, tmpPhenomeAnalysisFileName, "uncompressed",
-                        "none");
-                this.phenomeAnalysisFile.add(myPhenomeAnalysisFile);
+	/**
+	 * Method to access topHitsAllPhenos
+	 * 
+	 * @param index
+	 * @return
+	 */
+	public String getTopHitsAllPhenos() {
+		return this.topHitsAllPhenos.getFullName();
+	}
 
-                prefixPhenomeFinalName = prefixPhenomeTmpName + "_" + counter + "_final";
-                tmpPhenomeFinalFileName = prefixPhenomeFinalName + ".txt.gz";
-                myPhenomeFinalFile = new GenericFile(this.phenomeAnalysisOutDir, tmpPhenomeFinalFileName, "uncompressed", "none");
-                this.phenomeFinalFile.add(myPhenomeFinalFile);
+	/**
+	 * Method to access crossPhenoAll
+	 * 
+	 * @param index
+	 * @return
+	 */
+	public String getCrossPhenoAll() {
+		return this.crossPhenoAll.getFullName();
+	}
 
-                counter++;
-            } // End of for panels
-        } // End of for test types
-    }
+	/**
+	 * Method to access crossPhenoRanges
+	 * 
+	 * @param index
+	 * @return
+	 */
+	public String getCrossPhenoRanges() {
+		return this.crossPhenoRanges.getFullName();
+	}
 
-    /**
-     * Method to access correctedPvaluesFile information
-     * 
-     * @return
-     */
-    public String getPhenomeAnalysisOutDir() {
-        return this.phenomeAnalysisOutDir;
-    }
+	/**
+	 * Method to access crossPhenoAssocTop
+	 * 
+	 * @param index
+	 * @return
+	 */
+	public String getCrossPhenoAssocTop() {
+		return this.crossPhenoAssocTop.getFullName();
+	}
 
-    /**
-     * Method to access phenomeAnalysisFile
-     * 
-     * @param index
-     * @return
-     */
-    public String getPhenotypeIntermediateFile(int index) {
-        return this.phenomeTmpFile.get(index).getFullName();
-    }
-
-    /**
-     * Method to set the finalStatus of the phenomeAnalysisFile
-     * 
-     * @param index
-     * @param finalStatus
-     */
-    public void setPhenotypeIntermediateFileFinalStatus(int index, String finalStatus) {
-        this.phenomeTmpFile.get(index).setFinalStatus(finalStatus);
-    }
-
-    /**
-     * Method to access the finalStatus of the phenomeAnalysisFile
-     * 
-     * @param index
-     * @return
-     */
-    public String getPhenotypeIntermediateFileFinalStatus(int index) {
-        return this.phenomeTmpFile.get(index).getFinalStatus();
-    }
-
-    /**
-     * Method to access phenomeAnalysisFile
-     * 
-     * @param index
-     * @return
-     */
-    public String getPhenotypeFile(int index) {
-        return this.phenomeAnalysisFile.get(index).getFullName();
-    }
-
-    /**
-     * Method to set the finalStatus of the phenomeAnalysisFile
-     * 
-     * @param index
-     * @param finalStatus
-     */
-    public void setPhenotypeFileFinalStatus(int index, String finalStatus) {
-        this.phenomeAnalysisFile.get(index).setFinalStatus(finalStatus);
-    }
-
-    /**
-     * Method to access the finalStatus of the phenomeAnalysisFile
-     * 
-     * @param index
-     * @return
-     */
-    public String getPhenotypeFileFinalStatus(int index) {
-        return this.phenomeAnalysisFile.get(index).getFinalStatus();
-    }
-
-    /**
-     * Method to access phenomeFinalFile
-     * 
-     * @param index
-     * @return
-     */
-    public String getPhenotypeFinalFile(int index) {
-        return this.phenomeFinalFile.get(index).getFullName();
-    }
-
-    /**
-     * Method to set the finalStatus of the phenomeFinalFile
-     * 
-     * @param index
-     * @param finalStatus
-     */
-    public void setPhenotypeFinalFileFinalStatus(int index, String finalStatus) {
-        this.phenomeFinalFile.get(index).setFinalStatus(finalStatus);
-    }
-
-    /**
-     * Method to access the finalStatus of the phenomeFinalFile
-     * 
-     * @param index
-     * @return
-     */
-    public String getPhenotypeFinalFileFinalStatus(int index) {
-        return this.phenomeFinalFile.get(index).getFinalStatus();
-    }
+	/**
+	 * Method to access crossPhenoMergedTop
+	 * 
+	 * @param index
+	 * @return
+	 */
+	public String getCrossPhenoMergedTop(int index) {
+		return this.phenomeMergedTopHits.get(index).getFullName();
+	}
 
 }

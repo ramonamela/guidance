@@ -33,6 +33,8 @@ package guidance;
 
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -88,8 +90,8 @@ public class Guidance {
 	private static final boolean BARRIERS = false;
 
 	// Threshold
-	private static final double PVA_THRESHOLD = 5e-8;
-	private static final String PVA_THRESHOLD_STR = Double.toString(PVA_THRESHOLD);
+	//private static final double PVA_THRESHOLD = 5e-8;
+	//private static final String PVA_THRESHOLD_STR = Double.toString(PVA_THRESHOLD);
 
 	// Execution mode variables
 	private static final String FILTERED = "filtered";
@@ -328,7 +330,7 @@ public class Guidance {
 
 		CombinedPanelsFiles combinedPanelsFilesInfo = new CombinedPanelsFiles(parsingArgs, outDir, rpanelTypes);
 
-		PhenomeAnalysisFiles phenomeAnalysisFilesInfo = new PhenomeAnalysisFiles(parsingArgs, outDir, rpanelTypes);
+		PhenomeAnalysisFiles phenomeAnalysisFilesInfo = new PhenomeAnalysisFiles(parsingArgs, outDir);
 
 		LOGGER.info("[Guidance] Directory structures have been created...");
 
@@ -683,25 +685,6 @@ public class Guidance {
 					int lim1 = minSize;
 					int lim2 = lim1 + chunkSize - 1;
 					String panelName = rpanelTypes.get(panel);
-					/*
-					 * for(j=minSize; j<maxSize; j = j + chunkSize) {
-					 * makeAssociationPerChunk(parsingArgs,tt, kk, i, lim1, lim2,
-					 * imputationFilesInfo, commonFilesInfo, assocFilesInfo, listOfCommands);
-					 * 
-					 * lim1 = lim1 + chunkSize; lim2 = lim2 + chunkSize; }
-					 * 
-					 * // Now we perform the merge of chunks for each chromosome
-					 * makeMergeOfChunks(parsingArgs, listOfCommands, tt, kk, i, minSize, maxSize,
-					 * chunkSize, assocFilesInfo, mergeFilesInfo);
-					 * 
-					 * // Then, we have to filterByAll the last merged File of each chromomose.
-					 * String theLastReducedFile = mergeFilesInfo.getTheLastReducedFile(tt, kk, i);
-					 * String filteredByAllFile = mergeFilesInfo.getFilteredByAllFile(tt, kk, i);
-					 * String condensedFile = mergeFilesInfo.getCondensedFile(tt, kk,i);
-					 * 
-					 * doFilterByAll(parsingArgs, listOfCommands, theLastReducedFile,
-					 * filteredByAllFile, condensedFile);
-					 */
 
 					for (int j = minSize; j < maxSize; j = j + chunkSize) {
 						if (DEBUG) {
@@ -733,25 +716,12 @@ public class Guidance {
 							makeMergeOfChunksSex(parsingArgs, test, SEX2, panel, minSize, maxSize, chunkSize,
 									assocFilesInfo, mergeFilesInfo, FILTERED);
 						}
-						/*
-						 * if (parsingArgs.getStageStatus("jointCondensedFiles") == 1) {
-						 * makeMergeOfChunksSex(parsingArgs, test, SEX1, panel, minSize, maxSize,
-						 * chunkSize, assocFilesInfo, mergeFilesInfo, CONDENSED);
-						 * 
-						 * makeMergeOfChunksSex(parsingArgs, test, SEX2, panel, minSize, maxSize,
-						 * chunkSize, assocFilesInfo, mergeFilesInfo, CONDENSED); }
-						 */
 					} else {
 						// Now we perform the merge of chunks for each chromosome
 						if (parsingArgs.getStageStatus("jointFilteredByAllFiles") == 1) {
 							makeMergeOfChunks(parsingArgs, test, panel, chr, minSize, maxSize, chunkSize,
 									assocFilesInfo, mergeFilesInfo, FILTERED);
 						}
-						/*
-						 * if (parsingArgs.getStageStatus("jointCondensedFiles") == 1) {
-						 * makeMergeOfChunks(parsingArgs, test, panel, chr, minSize, maxSize, chunkSize,
-						 * assocFilesInfo, mergeFilesInfo, CONDENSED); }
-						 */
 					}
 
 					System.out.println("Filtered files successfuly generated");
@@ -792,7 +762,7 @@ public class Guidance {
 				}
 
 				if (parsingArgs.getStageStatus("jointCondensedFiles") == 1) {
-					doGenerateCondensedFile(parsingArgs, lastFilteredByAllFile, filteredByAllXMalesFile,
+					doGenerateCondensedAndTopHitsFile(parsingArgs, lastFilteredByAllFile, filteredByAllXMalesFile,
 							filteredByAllXFemalesFile, lastCondensedFile, topHitsResults);
 				}
 
@@ -801,8 +771,7 @@ public class Guidance {
 				String qqPlotTiffFile = resultsFilesInfo.getQqPlotTiffFile(test, panel);
 				String manhattanPlotPdfFile = resultsFilesInfo.getManhattanPdfFile(test, panel);
 				String manhattanPlotTiffFile = resultsFilesInfo.getManhattanTiffFile(test, panel);
-				// String correctedPvaluesFile = resultsFilesInfo.getCorrectedPvaluesFile(test,
-				// panel);
+
 				if (parsingArgs.getStageStatus("generateQQManhattanPlots") == 1) {
 					doGenerateQQManhattanPlots(parsingArgs, lastCondensedFile, qqPlotPdfFile, manhattanPlotPdfFile,
 							qqPlotTiffFile, manhattanPlotTiffFile);
@@ -825,32 +794,12 @@ public class Guidance {
 		} // End for test types
 
 		if (1 < numberOfTestTypes) {
-			// makePhenotypeAnalysis(parsingArgs, mergeFilesInfo, resultsFilesInfo,
-			// phenomeAnalysisFilesInfo, rpanelTypes);
+			makePhenotypeAnalysis(parsingArgs, combinedPanelsFilesInfo, resultsFilesInfo,
+			phenomeAnalysisFilesInfo);
 		} else {
 			LOGGER.info("\n[Guidance] No cross-phenotype analysis. Only one phenotype available");
 		}
 
-		// makePhenotypeAnalysis(parsingArgs, mergeFilesInfo, resultsFilesInfo,
-		// phenomeAnalysisFilesInfo, rpanelTypes,
-		// listOfCommands);
-
-		// -------------------------->
-		// makeMergingAndSummaryResults(parsingArgs, rpanelTypes, assocFilesInfo,
-		// startChr, endChr, listOfCommands);
-
-		// makeCombinePanels(parsingArgs, rpanelTypes, assocFilesInfo,
-		// numOfChromosToProcess,
-		// refPanelCombine, mafThreshold, infoThreshold, hweCohortThreshold,
-		// hweCasesThreshold, hweControlsThreshold, listOfCommands);
-
-		// Final part: Summary, qqplot and Manhatan plots generation.
-		/*
-		 * makeMergingAndDrawingResults(parsingArgs, rpanelTypes, assocFilesInfo,
-		 * numOfChromosToProcess, refPanelCombine, mafThreshold, infoThreshold,
-		 * hweCohortThreshold, hweCasesThreshold, hweControlsThreshold, startChr,
-		 * endChr, listOfCommands);
-		 */
 		LOGGER.info("\n[Guidance] All tasks are in execution, please wait...");
 
 		/**
@@ -2484,146 +2433,6 @@ public class Guidance {
 				}
 
 				flushCommands();
-				// TODO : think how to do the condensed part
-				/*
-				 * 
-				 * makeCombinePanels * // -- CONDENSED PART -- // Construct a queue with all the
-				 * condensed panels to combine LinkedList<String> condensedPanelsToCombine = new
-				 * LinkedList<>(); LinkedList<String> condensedPanelsToCombineMales = new
-				 * LinkedList<>(); LinkedList<String> condensedPanelsToCombineFemales = new
-				 * LinkedList<>(); for (int k = 0; k < rpanelTypes.size(); ++k) { if (chr == 23)
-				 * { String condensedPanelMales =
-				 * assocFilesInfo.getSummaryCondensedMalesFile(ttIndex, k, lim1, lim2,
-				 * chunkSize); if (DEBUG) {
-				 * LOGGER.debug("[Guidance] Adding condensed file to combine " +
-				 * condensedPanelMales); }
-				 * condensedPanelsToCombineMales.add(condensedPanelMales);
-				 * 
-				 * String condensedPanelFemales =
-				 * assocFilesInfo.getSummaryCondensedFemalesFile(ttIndex, k, lim1, lim2,
-				 * chunkSize); if (DEBUG) {
-				 * LOGGER.debug("[Guidance] Adding condensed file to combine " +
-				 * condensedPanelFemales); }
-				 * condensedPanelsToCombineFemales.add(condensedPanelFemales); } else { String
-				 * condensedPanel = assocFilesInfo.getSummaryCondensedFile(ttIndex, k, chr,
-				 * lim1, lim2, chunkSize); if (DEBUG) {
-				 * LOGGER.debug("[Guidance] Adding condensed file to combine " +
-				 * condensedPanel); } condensedPanelsToCombine.add(condensedPanel); } }
-				 * 
-				 * if (chr == 23) { while (!condensedPanelsToCombineMales.isEmpty()) { String
-				 * condensedPanelA = condensedPanelsToCombineMales.poll(); if
-				 * (!condensedPanelsToCombineMales.isEmpty()) { String condensedPanelB =
-				 * condensedPanelsToCombineMales.poll(); // Filtered part: combines A and B into
-				 * A if (DEBUG) { LOGGER.debug("[Guidance] Combining " + condensedPanelA +
-				 * " and " + condensedPanelB); } doCombinePanelsComplex(parsingArgs,
-				 * condensedPanelA, condensedPanelB, lim1, lim2); // Adds A to the queue again
-				 * condensedPanelsToCombine.add(condensedPanelA);
-				 * 
-				 * // Deletes B since it is no longer needed // new
-				 * File(condensedPanelB).delete(); } else { String destCondensedPanelMales =
-				 * assocFilesInfo.getCombinedCondensedMalesFile(ttIndex, 0, lim1, lim2,
-				 * chunkSize); doCopyFile(parsingArgs, condensedPanelA,
-				 * destCondensedPanelMales); } }
-				 * 
-				 * while (!condensedPanelsToCombineFemales.isEmpty()) { String condensedPanelA =
-				 * condensedPanelsToCombineFemales.poll(); if
-				 * (!condensedPanelsToCombineFemales.isEmpty()) { String condensedPanelB =
-				 * condensedPanelsToCombineFemales.poll(); // Filtered part: combines A and B
-				 * into A if (DEBUG) { LOGGER.debug("[Guidance] Combining " + condensedPanelA +
-				 * " and " + condensedPanelB); } doCombinePanelsComplex(parsingArgs,
-				 * condensedPanelA, condensedPanelB, lim1, lim2); // Adds A to the queue again
-				 * condensedPanelsToCombine.add(condensedPanelA);
-				 * 
-				 * // Deletes B since it is no longer needed // new
-				 * File(condensedPanelB).delete(); } else { String destCondensedPanelFemales =
-				 * assocFilesInfo.getCombinedCondensedFemalesFile(ttIndex, 0, lim1, lim2,
-				 * chunkSize); doCopyFile(parsingArgs, condensedPanelA,
-				 * destCondensedPanelFemales); } }
-				 * 
-				 * } else { // Combine all the filtered panels 2 by 2 until there are no
-				 * remaining panels while (!condensedPanelsToCombine.isEmpty()) { String
-				 * condensedPanelA = condensedPanelsToCombine.poll(); if
-				 * (!condensedPanelsToCombine.isEmpty()) { String condensedPanelB =
-				 * condensedPanelsToCombine.poll(); // Filtered part: combines A and B into A if
-				 * (DEBUG) { LOGGER.debug("[Guidance] Combining " + condensedPanelA + " and " +
-				 * condensedPanelB); } doCombinePanelsComplex(parsingArgs, condensedPanelA,
-				 * condensedPanelB, lim1, lim2); // Adds A to the queue again
-				 * condensedPanelsToCombine.add(condensedPanelA);
-				 * 
-				 * // Deletes B since it is no longer needed // new
-				 * File(condensedPanelB).delete(); } else { String destCondensedPanel =
-				 * assocFilesInfo.getCombinedCondensedFile(ttIndex, 0, chr, lim1, lim2,
-				 * chunkSize); doCopyFile(parsingArgs, condensedPanelA, destCondensedPanel); } }
-				 * }
-				 * 
-				 */
-
-				flushCommands();
-				// TODO at this point we have generated the combined files (both the condensed
-				// and the filtered) for each chunk
-
-				// -- COMBINE FILTERED TO FINAL CHUNK AND ALL FILES
-				// Files are merged to the first or the last file depending on the panel Size
-
-				/*
-				 * int mergeIndex = (rpanelTypes.size() % 2 == 0) ? 0 : rpanelTypes.size() - 1;
-				 * String chunkResultsFiltered = assocFilesInfo.getSummaryFilteredFile(ttIndex,
-				 * mergeIndex, chr, lim1, lim2, chunkSize); if (chr != 23) { // We merge in the
-				 * chunk files String filteredCombinePerChunk =
-				 * combinedPanelsFilesInfo.getCombinedFilteredByAllChromoFile(ttIndex, indexFC);
-				 * if (!new File(filteredCombinePerChunk).exists()) { // Initialize filtered per
-				 * chunk file to default header and compress it String
-				 * plainfilteredCombinePerChunk = filteredCombinePerChunk.substring(0,
-				 * filteredCombinePerChunk.length() - 3); try (BufferedWriter writer = new
-				 * BufferedWriter(new FileWriter(plainfilteredCombinePerChunk))) {
-				 * writer.write(filteredHeader); writer.newLine(); writer.flush(); } catch
-				 * (IOException ioe) { LOGGER.error(
-				 * "[Guidance] Exception when initializing makeCombinePanel filteredCombinePerChunk file"
-				 * , ioe); } FileUtils.gzipFile(plainfilteredCombinePerChunk,
-				 * filteredCombinePerChunk); new File(plainfilteredCombinePerChunk).delete(); }
-				 * // We merge in the all files if (DEBUG) {
-				 * LOGGER.debug("[Guidance] Merging filtered into ALL: " + filteredCombineAll +
-				 * " and " + chunkResultsFiltered); } ++indexFC; } else { // We merge in the
-				 * chunk files String filteredCombineXPerChunk = combinedPanelsFilesInfo
-				 * .getCombinedFilteredByAllXMalesChromoFile(ttIndex, indexXFC); if (!new
-				 * File(filteredCombineXPerChunk).exists()) { // Initialize filtered per chunk
-				 * file to default header and compress it String plainfilteredCombineXPerChunk =
-				 * filteredCombineXPerChunk.substring(0, filteredCombineXPerChunk.length() - 3);
-				 * try (BufferedWriter writer = new BufferedWriter( new
-				 * FileWriter(plainfilteredCombineXPerChunk))) { writer.write(filteredXHeader);
-				 * writer.newLine(); writer.flush(); } catch (IOException ioe) { LOGGER.error(
-				 * "[Guidance] Exception when initializing makeCombinePanel filteredCombineXPerChunk file"
-				 * , ioe); } FileUtils.gzipFile(plainfilteredCombineXPerChunk,
-				 * filteredCombineXPerChunk); new File(plainfilteredCombineXPerChunk).delete();
-				 * }
-				 * 
-				 * // We merge in the all files ++indexXFC; }
-				 * 
-				 * // Clean partial results // new File(chunkResultsFiltered).delete();
-				 * 
-				 * // -- COMBINE CONDENSED TO FINAL CHUNK AND ALL FILES String
-				 * chunkResultsCondensed = assocFilesInfo.getSummaryCondensedFile(ttIndex,
-				 * mergeIndex, chr, lim1, lim2, chunkSize); // We merge in the chunk files
-				 * String condensedCombinePerChunk =
-				 * combinedPanelsFilesInfo.getCombinedCondensedChromoFile(ttIndex, indexCC); if
-				 * (!new File(condensedCombinePerChunk).exists()) { // Initialize filtered per
-				 * chunk file to default header and compress it String
-				 * plainCondensedCombinePerChunk = condensedCombinePerChunk.substring(0,
-				 * condensedCombinePerChunk.length() - 3); try (BufferedWriter writer = new
-				 * BufferedWriter(new FileWriter(plainCondensedCombinePerChunk))) {
-				 * writer.write(condensedHeader); writer.newLine(); writer.flush(); } catch
-				 * (IOException ioe) { LOGGER.error(
-				 * "[Guidance] Exception when initializing makeCombinePanel plainCondensedCombinePerChunk file"
-				 * , ioe); } FileUtils.gzipFile(plainCondensedCombinePerChunk,
-				 * condensedCombinePerChunk); new File(plainCondensedCombinePerChunk).delete();
-				 * }
-				 * 
-				 * // We merge in the all files if (DEBUG) {
-				 * LOGGER.debug("[Guidance] Merging combined into ALL: " + condensedCombineAll +
-				 * " and " + chunkResultsCondensed); }
-				 * 
-				 * ++indexCC;
-				 */
 
 				// Clean partial results
 				// new File(chunkResultsCondensed).delete();
@@ -2651,24 +2460,12 @@ public class Guidance {
 			// TODO look at the condensed part
 			if (chr != 23) {
 				String filteredByAllCurrentFile = mergeFilesInfo.getCombinedFilteredByAllFile(ttIndex, 0, chr);
-				// String condensedCurrentFile =
-				// mergeFilesInfo.getCombinedCondensedFile(ttIndex, 0, chr);
-
 				filteredCombined.add(filteredByAllCurrentFile);
-				// condensedCombined.add(condensedCurrentFile);
 			} else {
 				String filteredByAllCurrentMalesFile = mergeFilesInfo.getCombinedFilteredByAllMalesFile(ttIndex, 0);
 				doCopyFile(parsingArgs, filteredByAllCurrentMalesFile, filteredCombineAllXMales);
 				String filteredByAllCurrentFemalesFile = mergeFilesInfo.getCombinedFilteredByAllFemalesFile(ttIndex, 0);
 				doCopyFile(parsingArgs, filteredByAllCurrentFemalesFile, filteredCombineAllXFemales);
-
-				// String condensedCurrentMalesFile =
-				// mergeFilesInfo.getCombinedCondensedMalesFile(ttIndex, 0);
-				// condensedCombined.add(condensedCurrentMalesFile);
-
-				// String condensedCurrentFemalesFile =
-				// mergeFilesInfo.getCombinedCondensedFemalesFile(ttIndex, 0);
-				// condensedCombined.add(condensedCurrentFemalesFile);
 			}
 
 		} // End for chromosomes
@@ -2700,41 +2497,15 @@ public class Guidance {
 			reduceCounter += 1;
 		}
 
-		// TODO look at the condensed part
-		/*
-		 * if (condensedCombined.size() == 1) { String singleCondensedFile =
-		 * condensedCombined.poll(); String destinationCondensedFile =
-		 * condensedCombineAll; doCopyFile(parsingArgs, singleCondensedFile,
-		 * destinationCondensedFile); }
-		 * 
-		 * reduceCounter = 0; while (condensedCombined.size() > 1) { String
-		 * originCondensedFileA = condensedCombined.poll(); String originCondensedFileB
-		 * = condensedCombined.poll();
-		 * 
-		 * String destinationCondensedFile;
-		 * 
-		 * if (condensedCombined.isEmpty()) { destinationCondensedFile =
-		 * condensedCombineAll; } else { destinationCondensedFile =
-		 * condensedCombineAll.substring(0, condensedCombineAll.length() - 7) +
-		 * "_reduce_" + Integer.toString(reduceCounter) + ".txt.gz"; }
-		 * 
-		 * doMergeTwoChunksUnconditional(parsingArgs, originCondensedFileA,
-		 * originCondensedFileB, destinationCondensedFile);
-		 * condensedCombined.add(destinationCondensedFile);
-		 * 
-		 * reduceCounter += 1; }
-		 */
 		String topHitsCombinedResults = combinedPanelsFilesInfo.getTopHitsFile(ttIndex);
 
-		doGenerateCondensedFile(parsingArgs, filteredCombineAll, filteredCombineAllXMales, filteredCombineAllXFemales,
+		doGenerateCondensedAndTopHitsFile(parsingArgs, filteredCombineAll, filteredCombineAllXMales, filteredCombineAllXFemales,
 				condensedCombineAll, topHitsCombinedResults);
 
 		String combinedQqPlotPdfFile = combinedPanelsFilesInfo.getQqPlotPdfFile(ttIndex);
 		String combinedQqPlotTiffFile = combinedPanelsFilesInfo.getQqPlotTiffFile(ttIndex);
 		String combinedManhattanPlotPdfFile = combinedPanelsFilesInfo.getManhattanPdfFile(ttIndex);
 		String combinedManhattanPlotTiffFile = combinedPanelsFilesInfo.getManhattanTiffFile(ttIndex);
-		// String combinedCorrectedPvaluesFile =
-		// combinedPanelsFilesInfo.getCorrectedPvaluesFile(ttIndex);
 
 		doGenerateQQManhattanPlots(parsingArgs, condensedCombineAll, combinedQqPlotPdfFile,
 				combinedManhattanPlotPdfFile, combinedQqPlotTiffFile, combinedManhattanPlotTiffFile);
@@ -2750,24 +2521,24 @@ public class Guidance {
 	 * @param filteredFemalesFile
 	 * @param condensedFile
 	 */
-	private static void doGenerateCondensedFile(ParseCmdLine parsingArgs, String filteredFile, String filteredMalesFile,
+	private static void doGenerateCondensedAndTopHitsFile(ParseCmdLine parsingArgs, String filteredFile, String filteredMalesFile,
 			String filteredFemalesFile, String condensedFile, String topHitsFile) {
-		// TODO fill the function
-		// Task
 
 		String cmdToStore = R_SCRIPT_BIN_DIR + "/Rscript " + R_SCRIPT_DIR + "/condensed_tophits.R " + filteredFile + " "
 				+ filteredMalesFile + " " + filteredFemalesFile + " " + condensedFile + " " + topHitsFile;
 		listOfCommands.add(cmdToStore);
+		
+		String pvaThreshold = Double.toString(parsingArgs.getPvaThreshold());
 
 		try {
-			GuidanceImpl.generateCondensedFile(filteredFile, filteredMalesFile, filteredFemalesFile, condensedFile,
-					topHitsFile, PVA_THRESHOLD_STR, cmdToStore);
+			GuidanceImpl.generateCondensedAndTopHitsFile(filteredFile, filteredMalesFile, filteredFemalesFile, condensedFile,
+					topHitsFile, pvaThreshold, cmdToStore);
 		} catch (GuidanceTaskException gte) {
 			LOGGER.error("[Guidance] Exception trying the execution of generateCondensedFile task", gte);
 		}
 
 	}
-
+	
 	/**
 	 * Method that performs the last part of the work flow corresponding to the
 	 * phenome Analysis, combining the results of each phenoType analysis
@@ -2778,129 +2549,60 @@ public class Guidance {
 	 * @param phenomeAnalysisFilesInfo
 	 * @param rpanelTypes
 	 * @param listOfCommands
+	 * @throws GuidanceTaskException 
 	 */
-	private static void makePhenotypeAnalysis(ParseCmdLine parsingArgs, MergeFiles mergeFilesInfo,
-			ResultsFiles resultsFilesInfo, PhenomeAnalysisFiles phenomeAnalysisFilesInfo, List<String> rpanelTypes) {
-
-		int endChr = parsingArgs.getEnd();
-		String endChrS = Integer.toString(endChr);
-
-		String topHitsFile = null;
-
-		String filteredByAllFile = null;
-		String filteredByAllXMalesFile = null;
-		String filteredByAllXFemalesFile = null;
-
-		String phenomeFileA = null;
-		String phenomeFileB = null;
-		String phenomeFileC = null;
-
+	private static void makePhenotypeAnalysis(ParseCmdLine parsingArgs, CombinedPanelsFiles combinedPanelsFilesInfo,
+			ResultsFiles resultsFilesInfo, PhenomeAnalysisFiles phenomeAnalysisFilesInfo) throws GuidanceTaskException {
+		
+		if (parsingArgs.getStageStatus("phenoAnalysis") != 1) {
+			return;
+		}
+		
+		
+		List<String> combinedTopHits = new ArrayList<>();
+		
 		int numberOfTestTypes = parsingArgs.getNumberOfTestTypeName();
-		int numberOfRpanelsTypes = rpanelTypes.size();
-
-		// int maxPhenoIndex = numberOfTestTypes * numberOfRpanelsTypes - 1;
-		int phenoIndex = 0;
-
-		int ttIndex = 0;
-		int rpIndex = 0;
-		String ttName = parsingArgs.getTestTypeName(ttIndex);
-		String rpName = rpanelTypes.get(rpIndex);
-
-		topHitsFile = resultsFilesInfo.getTopHitsFile(ttIndex, rpIndex);
-		// filteredByAllFile = mergeFilesInfo.getFinalFilteredByAllFile(ttIndex,
-		// rpIndex);
-		// phenomeFileA = phenomeAnalysisFilesInfo.getPhenotypeFile(phenoIndex);
-		phenomeFileA = phenomeAnalysisFilesInfo.getPhenotypeIntermediateFile(phenoIndex);
-		phenoIndex++;
-
-		doInitPhenoMatrix(parsingArgs, topHitsFile, ttName, rpName, phenomeFileA);
-
-		for (ttIndex = 0; ttIndex < numberOfTestTypes; ttIndex++) {
-			int startRp = 0;
-			if (ttIndex == 0) {
-				startRp = 1;
-			}
-			ttName = parsingArgs.getTestTypeName(ttIndex);
-			for (rpIndex = startRp; rpIndex < numberOfRpanelsTypes; rpIndex++) {
-				rpName = rpanelTypes.get(rpIndex);
-
-				topHitsFile = resultsFilesInfo.getTopHitsFile(ttIndex, rpIndex);
-				// filteredByAllFile = mergeFilesInfo.getFinalFilteredByAllFile(ttIndex,
-				// rpIndex);
-				// condensedFile = mergeFilesInfo.getFinalCondensedFile(ttIndex, rpIndex);
-
-				// phenomeFileB = phenomeAnalysisFilesInfo.getPhenotypeFile(phenoIndex);
-				phenomeFileB = phenomeAnalysisFilesInfo.getPhenotypeIntermediateFile(phenoIndex);
-
-				doAddToPhenoMatrix(parsingArgs, phenomeFileA, topHitsFile, ttName, rpName, phenomeFileB);
-
-				phenomeFileA = phenomeFileB;
-				phenoIndex++;
-			}
+				
+		for (int test = 0; test < numberOfTestTypes; ++test) {
+			combinedTopHits.add(combinedPanelsFilesInfo.getTopHitsFile(test));
+			FileUtils.getFile(combinedPanelsFilesInfo.getTopHitsFile(test));
 		}
-
-		phenoIndex = 0;
-		// Lets do the fillinout of the phenomeAnalysis.
-		for (ttIndex = 0; ttIndex < numberOfTestTypes; ttIndex++) {
-			ttName = parsingArgs.getTestTypeName(ttIndex);
-
-			for (rpIndex = 0; rpIndex < numberOfRpanelsTypes; rpIndex++) {
-				rpName = rpanelTypes.get(rpIndex);
-
-				// condensedFile = mergeFilesInfo.getFinalCondensedFile(ttIndex, rpIndex);
-				filteredByAllFile = mergeFilesInfo.getFinalFilteredByAllFile(ttIndex, rpIndex);
-				if (endChrS.equals("23")) {
-					filteredByAllXMalesFile = mergeFilesInfo.getAdditionalFilteredByAllXMalesFile(ttIndex, rpIndex, 0);
-					filteredByAllXFemalesFile = mergeFilesInfo.getAdditionalFilteredByAllXFemalesFile(ttIndex, rpIndex,
-							0);
-				} else {
-					filteredByAllXMalesFile = mergeFilesInfo.getFinalFilteredByAllFile(ttIndex, rpIndex);
-					filteredByAllXFemalesFile = mergeFilesInfo.getFinalFilteredByAllFile(ttIndex, rpIndex);
-				}
-
-				phenomeFileB = phenomeAnalysisFilesInfo.getPhenotypeFile(phenoIndex);
-
-				doFilloutPhenoMatrix(parsingArgs, phenomeFileA, filteredByAllFile, filteredByAllXMalesFile,
-						filteredByAllXFemalesFile, endChrS, ttName, rpName, phenomeFileB);
-
-				// phenomeFileA = phenomeFileB;
-				phenoIndex++;
-			}
+		
+		String topHitsAllPheno = phenomeAnalysisFilesInfo.getTopHitsAllPhenos();
+		
+		//This is a sequential invocation that implies bringing back all the combined condensed files to the master
+		GuidanceImpl.generateTopHitsAllPhenos(combinedTopHits, topHitsAllPheno);
+		
+		String condensedFile = null;
+		String mergedPhenoFile = null;
+		String pheno = null;
+		for(int test = 0; test < numberOfTestTypes; ++test) {
+			condensedFile = combinedPanelsFilesInfo.getCombinedCondensedFile(test);
+			mergedPhenoFile = phenomeAnalysisFilesInfo.getCrossPhenoMergedTop(test);
+			pheno = parsingArgs.getTestTypeName(test);
+			//This is a task
+			GuidanceImpl.generateMergedPhenoTopHits(topHitsAllPheno, condensedFile, mergedPhenoFile, pheno);
 		}
-
-		// Last round to generate final results
-		phenoIndex = 0;
-		phenomeFileA = phenomeAnalysisFilesInfo.getPhenotypeFile(phenoIndex);
-
-		phenoIndex++;
-
-		// Lets do the finalization of the phenomeAnalysis.
-		for (ttIndex = 0; ttIndex < numberOfTestTypes; ttIndex++) {
-			int startRp = 0;
-			if (ttIndex == 0) {
-				startRp = 1;
-			}
-
-			ttName = parsingArgs.getTestTypeName(ttIndex);
-			for (rpIndex = startRp; rpIndex < numberOfRpanelsTypes; rpIndex++) {
-				rpName = rpanelTypes.get(rpIndex);
-				// LOGGER.info("i\n\n\t[makeImputationPerChunk]: ttName " + ttName + " | rpName
-				// " + rpName + " |
-				// phenoIndex " + phenoIndex);
-				// LOGGER.info("\t[makeImputationPerChunk]: phenomeFileA " + phenomeFileA);
-				phenomeFileB = phenomeAnalysisFilesInfo.getPhenotypeFile(phenoIndex);
-				// LOGGER.info("\t[makeImputationPerChunk]: phenomeFileB " + phenomeFileB);
-
-				phenomeFileC = phenomeAnalysisFilesInfo.getPhenotypeFinalFile(phenoIndex);
-				// LOGGER.info("\t[makeImputationPerChunk]: phenomeFileC " + phenomeFileC);
-
-				doFinalizePhenoMatrix(parsingArgs, phenomeFileA, phenomeFileB, ttName, rpName, phenomeFileC);
-
-				phenomeFileA = phenomeFileC;
-				phenoIndex++;
-			}
+		
+		List<String> phenoMergedTopHits = new ArrayList<>();
+		for(int test = 0; test < numberOfTestTypes; ++ test) {
+			phenoMergedTopHits.add(phenomeAnalysisFilesInfo.getCrossPhenoMergedTop(test));
+			FileUtils.getFile(phenomeAnalysisFilesInfo.getCrossPhenoMergedTop(test));
 		}
-
+		
+		String pvaThreshold = Double.toString(parsingArgs.getPvaThreshold());
+		
+		String crossPhenoAll = phenomeAnalysisFilesInfo.getCrossPhenoAll();
+		String crossPhenoRanges = phenomeAnalysisFilesInfo.getCrossPhenoRanges();
+		String crossPhenoTopVariants = phenomeAnalysisFilesInfo.getCrossPhenoAssocTop();
+		
+		//This is a sequential invocation that implies bringing back all the phenoMerged files
+		GuidanceImpl.computeCrossPheno(phenoMergedTopHits, crossPhenoAll, crossPhenoRanges, crossPhenoTopVariants, pvaThreshold);
+		
+		FileUtils.getFile(crossPhenoAll);
+		FileUtils.getFile(crossPhenoRanges);
+		FileUtils.getFile(crossPhenoTopVariants);
+		
 	}
 
 	/**
@@ -3966,6 +3668,7 @@ public class Guidance {
 	 * @param rpName
 	 * @param phenomeFile
 	 */
+	/*
 	private static void doInitPhenoMatrix(ParseCmdLine parsingArgs, String topHitsFile, String ttName, String rpName,
 			String phenomeFile) {
 
@@ -3981,6 +3684,7 @@ public class Guidance {
 			}
 		}
 	}
+	*/
 
 	/**
 	 * Method that wraps the addToPhenoMatrix task and store the command in the
@@ -3994,6 +3698,7 @@ public class Guidance {
 	 * @param rpName
 	 * @param phenomeFileB
 	 */
+	/*
 	private static void doAddToPhenoMatrix(ParseCmdLine parsingArgs, String phenomeFileA, String topHitsFile,
 			String ttName, String rpName, String phenomeFileB) {
 
@@ -4009,6 +3714,7 @@ public class Guidance {
 			}
 		}
 	}
+	*/
 
 	/**
 	 * Method that wraps the filloutPhenoMatrix task and store the command in the
@@ -4024,6 +3730,7 @@ public class Guidance {
 	 * @param rpName
 	 * @param phenomeFileB
 	 */
+	/*
 	private static void doFilloutPhenoMatrix(ParseCmdLine parsingArgs, String phenomeFileA, String filteredByAllFile,
 			String filteredByAllXMalesFile, String filteredByAllXFemalesFile, String endChrS, String ttName,
 			String rpName, String phenomeFileB) {
@@ -4042,6 +3749,7 @@ public class Guidance {
 			}
 		}
 	}
+	*/
 
 	/**
 	 * Method that wraps the finalizePhenoMatrix task and store the command in the
@@ -4055,6 +3763,7 @@ public class Guidance {
 	 * @param rpName
 	 * @param phenomeFileC
 	 */
+	/*
 	private static void doFinalizePhenoMatrix(ParseCmdLine parsingArgs, String phenomeFileA, String phenomeFileB,
 			String ttName, String rpName, String phenomeFileC) {
 
@@ -4070,6 +3779,7 @@ public class Guidance {
 			}
 		}
 	}
+	*/
 
 	private static void doCopyFile(ParseCmdLine parsingArgs, String originPath, String destinationPath)
 			throws IOException, GuidanceTaskException {
@@ -4342,11 +4052,11 @@ public class Guidance {
 		LOGGER.info("[Guidance] generateTopHits          " + parsingArgs.getStageStatus("generateTopHits"));
 		LOGGER.info("[Guidance] generateQQManhattanPlots " + parsingArgs.getStageStatus("generateQQManhattanPlots"));
 		LOGGER.info("[Guidance] combinePanelsComplex     " + parsingArgs.getStageStatus("combinePanelsComplex"));
-		LOGGER.info("[Guidance] combineCondensedFiles    " + parsingArgs.getStageStatus("combineCondensedFiles"));
-		LOGGER.info("[Guidance] initPhenoMatrix          " + parsingArgs.getStageStatus("initPhenoMatrix"));
-		LOGGER.info("[Guidance] addToPhenoMatrix         " + parsingArgs.getStageStatus("addToPhenoMatrix"));
-		LOGGER.info("[Guidance] filloutPhenoMatrix       " + parsingArgs.getStageStatus("filloutPhenoMatrix"));
-		LOGGER.info("[Guidance] finalizePhenoMatrix      " + parsingArgs.getStageStatus("finalizePhenoMatrix"));
+		LOGGER.info("[Guidance] phenoAnalysis            " + parsingArgs.getStageStatus("phenoAnalysis"));
+		LOGGER.info("[Guidance] taskt                    " + parsingArgs.getStageStatus("taskt"));
+		LOGGER.info("[Guidance] tasku                    " + parsingArgs.getStageStatus("tasku"));
+		LOGGER.info("[Guidance] taskv                    " + parsingArgs.getStageStatus("taskv"));
+		LOGGER.info("[Guidance] taskw                    " + parsingArgs.getStageStatus("taskw"));
 		LOGGER.info("[Guidance] taskx                    " + parsingArgs.getStageStatus("taskx"));
 		LOGGER.info("[Guidance] tasky                    " + parsingArgs.getStageStatus("tasky"));
 		LOGGER.info("[Guidance] taskz                    " + parsingArgs.getStageStatus("taskz"));

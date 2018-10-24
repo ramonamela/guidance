@@ -304,10 +304,17 @@ public interface GuidanceItf {
 			@Parameter(type = Type.STRING, direction = Direction.IN) String sex,
 			@Parameter(type = Type.STRING, direction = Direction.IN) String rpanelName,
 			@Parameter(type = Type.STRING, direction = Direction.IN) String cmdToStore);
+	
+	@Method(declaringClass = "guidance.GuidanceImpl")
+	@Constraints(computingUnits = "1", memorySize = "1.0f")
+	void generateMergedPhenoTopHits(@Parameter(type = Type.FILE, direction = Direction.IN) String topHitsAllPheno, 
+			@Parameter(type = Type.FILE, direction = Direction.IN) String condensedFile, 
+			@Parameter(type = Type.FILE, direction = Direction.OUT) String mergedPhenoFile, 
+			@Parameter(type = Type.STRING, direction = Direction.IN) String pheno);
 
 	@Method(declaringClass = "guidance.GuidanceImpl")
 	@Constraints(computingUnits = "12", memorySize = "1.0f")
-	void generateCondensedFile(@Parameter(type = Type.FILE, direction = Direction.IN) String filteredFile, 
+	void generateCondensedAndTopHitsFile(@Parameter(type = Type.FILE, direction = Direction.IN) String filteredFile, 
 			@Parameter(type = Type.FILE, direction = Direction.IN) String filteredMalesFile,
 			@Parameter(type = Type.FILE, direction = Direction.IN) String filteredFemalesFile, 
 			@Parameter(type = Type.FILE, direction = Direction.OUT) String condensedFile, 

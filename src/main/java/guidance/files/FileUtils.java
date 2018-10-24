@@ -2,8 +2,10 @@ package guidance.files;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -371,6 +373,17 @@ public class FileUtils {
 			if (f.isFile()) {
 				System.out.println("File name is  -------------->" + f.getName());
 			}
+		}
+	}
+	
+	static public void getFile(String filename) {
+		File file = new File(filename);
+		PrintWriter writer;
+		try {
+			writer = new PrintWriter(file);
+			writer.close();
+		} catch (FileNotFoundException e) {
+			LOGGER.debug("[DEBUG] File " + filename + " does not exist");
 		}
 	}
 

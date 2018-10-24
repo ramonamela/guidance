@@ -54,6 +54,7 @@ import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.TreeMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.zip.GZIPInputStream;
@@ -93,6 +94,7 @@ public class GuidanceImpl {
 	private static final String HEADER_MINIMAC = "[minimac]";
 	private static final String HEADER_GENERATE_QQ_MANHATTAN_PLOTS = "[generateQQManhattanPlots]";
 	private static final String HEADER_SNPTEST = "[snptest]";
+	private static final String HEADER_PHENO = "[phenoAnalysis]";
 
 	private static final String SEX1 = "males";
 	private static final String SEX2 = "females";
@@ -264,11 +266,11 @@ public class GuidanceImpl {
 		}
 
 		long startTime = System.currentTimeMillis();
-		
+
 		String basePath = newBedFile.substring(0, newBedFile.length() - 4);
 
-		String cmd = plinkBinary + " --bed " + bedFile + " --bim " + bimFile + " --fam " + famFile + " --chr "
-				+ chromo + " --out " + basePath + " --make-bed";
+		String cmd = plinkBinary + " --bed " + bedFile + " --bim " + bimFile + " --fam " + famFile + " --chr " + chromo
+				+ " --out " + basePath + " --make-bed";
 
 		if (DEBUG) {
 			System.out.println(HEADER_CONVERT_FROM_BED_TO_BED + MSG_CMD + cmd);
@@ -289,35 +291,22 @@ public class GuidanceImpl {
 		}
 
 		/*
-		// Rename file (or directory)
-		boolean success = FileUtils.move(basePath + ".bed", newBedFile);
-		if (!success) {
-			// File was not successfully renamed
-			throw new GuidanceTaskException(
-					HEADER_CONVERT_FROM_BED_TO_BED + ERROR_ON_FILE + newBedFile + ERROR_SUFFIX_RENAMED_FILE);
-		}
-		// Rename file (or directory)
-		success = FileUtils.move(basePath + ".bim", newBimFile);
-		if (!success) {
-			// File was not successfully renamed
-			throw new GuidanceTaskException(
-					HEADER_CONVERT_FROM_BED_TO_BED + ERROR_ON_FILE + newBimFile + ERROR_SUFFIX_RENAMED_FILE);
-		}
-		// Rename file (or directory)
-		success = FileUtils.move(basePath + ".fam", newFamFile);
-		if (!success) {
-			throw new GuidanceTaskException(
-					HEADER_CONVERT_FROM_BED_TO_BED + ERROR_ON_FILE + newFamFile + ERROR_SUFFIX_RENAMED_FILE);
-			// File was not successfully renamed
-		}
-		// Rename file (or directory)
-		success = FileUtils.move(basePath + ".log", logFile);
-		if (!success) {
-			throw new GuidanceTaskException(
-					HEADER_CONVERT_FROM_BED_TO_BED + ERROR_ON_FILE + logFile + ERROR_SUFFIX_RENAMED_FILE);
-			// File was not successfully renamed
-		}
-		*/
+		 * // Rename file (or directory) boolean success = FileUtils.move(basePath +
+		 * ".bed", newBedFile); if (!success) { // File was not successfully renamed
+		 * throw new GuidanceTaskException( HEADER_CONVERT_FROM_BED_TO_BED +
+		 * ERROR_ON_FILE + newBedFile + ERROR_SUFFIX_RENAMED_FILE); } // Rename file (or
+		 * directory) success = FileUtils.move(basePath + ".bim", newBimFile); if
+		 * (!success) { // File was not successfully renamed throw new
+		 * GuidanceTaskException( HEADER_CONVERT_FROM_BED_TO_BED + ERROR_ON_FILE +
+		 * newBimFile + ERROR_SUFFIX_RENAMED_FILE); } // Rename file (or directory)
+		 * success = FileUtils.move(basePath + ".fam", newFamFile); if (!success) {
+		 * throw new GuidanceTaskException( HEADER_CONVERT_FROM_BED_TO_BED +
+		 * ERROR_ON_FILE + newFamFile + ERROR_SUFFIX_RENAMED_FILE); // File was not
+		 * successfully renamed } // Rename file (or directory) success =
+		 * FileUtils.move(basePath + ".log", logFile); if (!success) { throw new
+		 * GuidanceTaskException( HEADER_CONVERT_FROM_BED_TO_BED + ERROR_ON_FILE +
+		 * logFile + ERROR_SUFFIX_RENAMED_FILE); // File was not successfully renamed }
+		 */
 		// If there is not output in the convertFromBedToBed process. Then we have to
 		// create some empty outputs
 		try {
@@ -362,7 +351,7 @@ public class GuidanceImpl {
 			throws IOException, InterruptedException, Exception {
 
 		String myPrefix = bedChr23File.substring(0, bedChr23File.length() - 4);
-		
+
 		String plinkBinary = System.getenv("PLINKBINARY");
 		if (plinkBinary == null) {
 			throw new Exception("[splitChr23] Error, PLINKBINARY environment variable is not defined in .bashrc!!!");
@@ -420,7 +409,8 @@ public class GuidanceImpl {
 		// Check process exit value
 		// Check process exit value
 		if (exitValue == 12) {
-			System.out.println("Look at the log file. Error: All people removed due to gender filter (--filter-males).");
+			System.out
+					.println("Look at the log file. Error: All people removed due to gender filter (--filter-males).");
 			try {
 				FileUtils.createEmptyFile(bedChr23File, HEADER_CONVERT_FROM_BED_TO_BED);
 				FileUtils.createEmptyFile(bimChr23File, HEADER_CONVERT_FROM_BED_TO_BED);
@@ -429,17 +419,15 @@ public class GuidanceImpl {
 			} catch (IOException ioe) {
 				throw new GuidanceTaskException(ioe);
 			}
-		}
-		else if (exitValue != 0) {
+		} else if (exitValue != 0) {
 			throw new GuidanceTaskException(HEADER_CONVERT_FROM_BED_TO_BED + ERROR_BINARY_EXEC + exitValue);
 		}
 
 		/*
-		FileUtils.move(myPrefix + ".bed", bedChr23File);
-		FileUtils.move(myPrefix + ".bim", bimChr23File);
-		FileUtils.move(myPrefix + ".fam", famChr23File);
-		FileUtils.move(myPrefix + ".log", logFile);
-		*/
+		 * FileUtils.move(myPrefix + ".bed", bedChr23File); FileUtils.move(myPrefix +
+		 * ".bim", bimChr23File); FileUtils.move(myPrefix + ".fam", famChr23File);
+		 * FileUtils.move(myPrefix + ".log", logFile);
+		 */
 
 		long stopTime = System.currentTimeMillis();
 		long elapsedTime = (stopTime - startTime) / 1000;
@@ -1491,8 +1479,9 @@ public class GuidanceImpl {
 		}
 	}
 
-	public static void newSample(String sampleFile, String phasingSampleFile, String phasingNewSampleFile, String responseVar, String covariables,
-			String cmdToStore) throws IOException, InterruptedException, Exception {
+	public static void newSample(String sampleFile, String phasingSampleFile, String phasingNewSampleFile,
+			String responseVar, String covariables, String cmdToStore)
+			throws IOException, InterruptedException, Exception {
 
 		if (DEBUG) {
 			System.out.println("\n[DEBUG] Running newSample with parameters:");
@@ -1529,27 +1518,27 @@ public class GuidanceImpl {
 					columnsHeaderCovar.add(i);
 				}
 			}
-			
+
 			for (int j = 0; j < namesHeaderResponse.length; j++) {
 				if (splitHeaderSF[i].equals(namesHeaderResponse[j])) {
 					System.out.println("Adding column " + i + " corresponding to " + splitHeaderSF[i] + " to reponse");
 					columnsHeaderResponse.add(i);
 				}
 			}
-			
+
 		}
-		
+
 		while ((line = br.readLine()) != null) {
 
 			String[] lineSplited = line.split(SPACE);
 			String key = lineSplited[1];
-			
+
 			String valueCovar = lineSplited[columnsHeaderCovar.get(0)];
 
 			for (int i = 1; i < columnsHeaderCovar.size(); i++) {
 				valueCovar += "\t" + lineSplited[columnsHeaderCovar.get(i)];
 			}
-			
+
 			String valueResponse = lineSplited[columnsHeaderResponse.get(0)];
 
 			for (int i = 1; i < columnsHeaderResponse.size(); i++) {
@@ -1569,17 +1558,17 @@ public class GuidanceImpl {
 		for (int i = 0; i < 3; i++) {
 			outputFile += splitHeaderSF[i] + SPACE;
 		}
-		
+
 		outputFile += splitHeaderSF[columnsHeaderCovar.get(0)];
 		for (int i = 1; i < columnsHeaderCovar.size(); i++) {
 			outputFile += SPACE + splitHeaderSF[columnsHeaderCovar.get(i)];
 		}
 
-		outputFile += SPACE +splitHeaderSF[columnsHeaderResponse.get(0)];
+		outputFile += SPACE + splitHeaderSF[columnsHeaderResponse.get(0)];
 		for (int i = 1; i < columnsHeaderResponse.size(); i++) {
 			outputFile += SPACE + splitHeaderSF[columnsHeaderResponse.get(i)];
 		}
-		
+
 		outputFile += "\n";
 
 		// Read File phasingSampleFil
@@ -1892,10 +1881,10 @@ public class GuidanceImpl {
 	 * @throws InterruptedException
 	 * @throws Exception
 	 */
-	public static void imputeWithImpute(String gmapFile, String knownHapFile, String legendFile,
-			String phasingHapsFile, String phasingSampleFile, String lim1S, String lim2S, String pairsFile,
-			String imputeFile, String imputeFileInfo, String imputeFileSummary, String imputeFileWarnings,
-			String theChromo, String sex, String cmdToStore) throws GuidanceTaskException {
+	public static void imputeWithImpute(String gmapFile, String knownHapFile, String legendFile, String phasingHapsFile,
+			String phasingSampleFile, String lim1S, String lim2S, String pairsFile, String imputeFile,
+			String imputeFileInfo, String imputeFileSummary, String imputeFileWarnings, String theChromo, String sex,
+			String cmdToStore) throws GuidanceTaskException {
 
 		String impute2Binary = loadFromEnvironment(IMPUTE2BINARY, HEADER_IMPUTE);
 
@@ -1934,8 +1923,8 @@ public class GuidanceImpl {
 			// If shapeitHapsFile exists, then shapeitHapsFileGz exists also.
 			phasingHapsFileGz = phasingHapsFile + ".gz";
 		}
-		
-		//We erase the extension .gz
+
+		// We erase the extension .gz
 		imputeFile = imputeFile.substring(0, imputeFile.length() - 3);
 
 		String cmd = null;
@@ -1996,17 +1985,18 @@ public class GuidanceImpl {
 			}
 			FileUtils.gzipFile(imputeFile, imputeFile + ".gz");
 		}
-		
-		//The result has the gz extension
+
+		// The result has the gz extension
 		imputeFile = imputeFile + ".gz";
 
-		//boolean success = FileUtils.move(imputeGZFile, imputeFile);
+		// boolean success = FileUtils.move(imputeGZFile, imputeFile);
 
-		//if (!success)
+		// if (!success)
 
-		//{
-		//	throw new GuidanceTaskException(HEADER_IMPUTE + ERROR_ON_FILE + imputeGZFile);
-		//}
+		// {
+		// throw new GuidanceTaskException(HEADER_IMPUTE + ERROR_ON_FILE +
+		// imputeGZFile);
+		// }
 
 		try {
 			FileUtils.createEmptyFile(imputeFileInfo, HEADER_IMPUTE);
@@ -2257,16 +2247,122 @@ public class GuidanceImpl {
 
 	}
 
-	public static void generateCondensedFile(String filteredFile, String filteredMalesFile, String filteredFemalesFile,
-			String condensedFile, String topHitsFile, String pvaThresholdStr, String cmdToStore)
+	// This is not a task!! Calling it will imply a sincronization!!!
+	// If someday this can be a task, combinedTopHits -> FILE_IN_ARRAY
+	// topHitsAllPheno -> FILE_OUT
+	public static void generateTopHitsAllPhenos(List<String> combinedTopHits, String topHitsAllPheno)
 			throws GuidanceTaskException {
+		String rScriptBinDir = loadFromEnvironment(RSCRIPTBINDIR, HEADER_PHENO);
+		String rScriptDir = loadFromEnvironment(RSCRIPTDIR, HEADER_PHENO);
 
-		// Rscript
-		// /gpfs/projects/bsc05/martagm/GWImp_COMPSs/R_SCRIPTS/condensed_tophits.R
-		// /gpfs/scratch/pr1ees00/pr1ees14/GCAT/SHAPEIT_IMPUTE/outputs/associations/T1D/T1D_WTCCC_eagle_minimac_for_uk10k/summary/T1D_uk10k_filteredByAll_chr_20_to_22.txt.gz
-		// /gpfs/scratch/pr1ees00/pr1ees14/GCAT/SHAPEIT_IMPUTE/outputs/associations/T1D/T1D_WTCCC_eagle_minimac_for_uk10k/summary/T1D_uk10k_filteredByAll_chr_23_males.txt.gz
-		// /gpfs/scratch/pr1ees00/pr1ees14/GCAT/SHAPEIT_IMPUTE/outputs/associations/T1D/T1D_WTCCC_eagle_minimac_for_uk10k/summary/T1D_uk10k_filteredByAll_chr_23_females.txt.gz
-		// condensed_chr23.txt tophits.txt 5e-8
+		String combinedTopHitsString = combinedTopHits.get(0);
+		for (int i = 1; i < combinedTopHits.size(); ++i) {
+			combinedTopHitsString += ("," + combinedTopHits.get(i));
+		}
+		String command = rScriptBinDir + "Rscript --verbose " + rScriptDir + "/tophits_all_phenotypes.R "
+				+ combinedTopHitsString + " " + topHitsAllPheno;
+
+		long startTime = 0;
+		if (DEBUG) {
+			startTime = System.currentTimeMillis();
+			System.out.println("\n[DEBUG] [pheno] Launched command:                 : " + command);
+		}
+
+		try {
+			ProcessUtils.executeWithoutOutputs(command);
+		} catch (IOException ioe) {
+			throw new GuidanceTaskException(ioe);
+		}
+
+		FileUtils.getFile(topHitsAllPheno);
+
+		if (DEBUG) {
+			long stopTime = System.currentTimeMillis();
+			long elapsedTime = (stopTime - startTime) / 1_000;
+			System.out.println("\n[DEBUG] [pheno] generateTopHitsAllPhenos startTime   : " + startTime);
+			System.out.println("\n[DEBUG] [pheno] generateTopHitsAllPhenos endTime     : " + stopTime);
+			System.out.println("\n[DEBUG] [pheno] generateTopHitsAllPhenos elapsedTime : " + elapsedTime + " seconds");
+			System.out.println("\n[DEBUG] [pheno] Finished execution of generateTopHitsAllPhenos.");
+		}
+	}
+
+	public static void generateMergedPhenoTopHits(String topHitsAllPheno, String condensedFile, String mergedPhenoFile,
+			String pheno) throws GuidanceTaskException {
+
+		String rScriptBinDir = loadFromEnvironment(RSCRIPTBINDIR, HEADER_PHENO);
+		String rScriptDir = loadFromEnvironment(RSCRIPTDIR, HEADER_PHENO);
+
+		String command = rScriptBinDir + "Rscript --verbose " + rScriptDir + "/merging_tophits_all_pheno.R "
+				+ topHitsAllPheno + " " + condensedFile + " " + mergedPhenoFile + " " + pheno;
+
+		long startTime = 0;
+		if (DEBUG) {
+			startTime = System.currentTimeMillis();
+			System.out.println("\n[DEBUG] [pheno] Launched command:                 : " + command);
+		}
+
+		try {
+			ProcessUtils.executeWithoutOutputs(command);
+		} catch (IOException ioe) {
+			throw new GuidanceTaskException(ioe);
+		}
+
+		if (DEBUG) {
+			long stopTime = System.currentTimeMillis();
+			long elapsedTime = (stopTime - startTime) / 1_000;
+			System.out.println("\n[DEBUG] [pheno] generateMergedPhenoTopHits startTime   : " + startTime);
+			System.out.println("\n[DEBUG] [pheno] generateMergedPhenoTopHits endTime     : " + stopTime);
+			System.out
+					.println("\n[DEBUG] [pheno] generateMergedPhenoTopHits elapsedTime : " + elapsedTime + " seconds");
+			System.out.println("\n[DEBUG] [pheno] Finished execution of generateMergedPhenoTopHits.");
+		}
+	}
+
+	// This is not a task!! Calling it will imply a sincronization!!!
+	// If someday this can be a task, phenoMergedTopHits -> FILE_IN_ARRAY
+	// crossPhenoAll -> FILE_OUT
+	// crossPhenoRanges -> FILE_OUT
+	// crossPhenoTopVariants -> FILE_OUT
+	// pvaThreshold -> STRING_IN
+	public static void computeCrossPheno(List<String> phenoMergedTopHits, String crossPhenoAll, String crossPhenoRanges,
+			String crossPhenoTopVariants, String pvaThreshold) throws GuidanceTaskException {
+
+		String rScriptBinDir = loadFromEnvironment(RSCRIPTBINDIR, HEADER_PHENO);
+		String rScriptDir = loadFromEnvironment(RSCRIPTDIR, HEADER_PHENO);
+
+		String mergedTopHitsString = phenoMergedTopHits.get(0);
+		for (int i = 1; i < phenoMergedTopHits.size(); ++i) {
+			mergedTopHitsString += ("," + phenoMergedTopHits.get(i));
+		}
+
+		String command = rScriptBinDir + "Rscript --verbose " + rScriptDir + "/crossphenotype.R " + mergedTopHitsString
+				+ " " + crossPhenoAll + " " + crossPhenoRanges + " " + crossPhenoTopVariants + " " + pvaThreshold;
+
+		long startTime = 0;
+		if (DEBUG) {
+			startTime = System.currentTimeMillis();
+			System.out.println("\n[DEBUG] [pheno] Launched command:                 : " + command);
+		}
+
+		try {
+			ProcessUtils.executeWithoutOutputs(command);
+		} catch (IOException ioe) {
+			throw new GuidanceTaskException(ioe);
+		}
+
+		if (DEBUG) {
+			long stopTime = System.currentTimeMillis();
+			long elapsedTime = (stopTime - startTime) / 1_000;
+			System.out.println("\n[DEBUG] [pheno] computeCrossPheno startTime   : " + startTime);
+			System.out.println("\n[DEBUG] [pheno] computeCrossPheno endTime     : " + stopTime);
+			System.out.println("\n[DEBUG] [pheno] computeCrossPheno elapsedTime : " + elapsedTime + " seconds");
+			System.out.println("\n[DEBUG] [pheno] Finished execution of computeCrossPheno.");
+		}
+	}
+
+	public static void generateCondensedAndTopHitsFile(String filteredFile, String filteredMalesFile,
+			String filteredFemalesFile, String condensedFile, String topHitsFile, String pvaThresholdStr,
+			String cmdToStore) throws GuidanceTaskException {
 
 		String command = null;
 		long startTime = System.currentTimeMillis();
@@ -2280,32 +2376,15 @@ public class GuidanceImpl {
 				+ filteredMalesFile + " " + filteredFemalesFile + " " + condensedPlain + " " + topHitsPlain + " "
 				+ pvaThresholdStr;
 
-		System.out.println(command);
+		if (DEBUG) {
+			System.out.println("\n[DEBUG] Launched command:                 : " + command);
+		}
 
 		try {
 			ProcessUtils.executeWithoutOutputs(command);
 		} catch (IOException ioe) {
 			throw new GuidanceTaskException(ioe);
 		}
-
-		/*
-		File fInput = new File(condensedFile);
-		String path = fInput.getParent();
-		Path dir = Paths.get(path);
-
-		System.out.println("Files in " + path + " before compression:");
-		try (DirectoryStream<Path> stream = Files.newDirectoryStream(dir, "*")) {
-			for (Path file : stream) {
-				System.out.println(file.toAbsolutePath().toString());
-			}
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		System.out.println("End files in sandbox. Starting compression");
-		*/
-
-		System.out.println(command);
 
 		FileUtils.gzipFile(condensedPlain, condensedFile);
 		FileUtils.gzipFile(topHitsPlain, topHitsFile);
@@ -2367,10 +2446,10 @@ public class GuidanceImpl {
 
 		File outInclusionRsIdFile = new File(inclusionRsIdFile);
 		// Tries to create the file
-		if(outInclusionRsIdFile.exists()) {
+		if (outInclusionRsIdFile.exists()) {
 			outInclusionRsIdFile.delete();
 		}
-		
+
 		boolean bool = false;
 		try {
 			bool = outInclusionRsIdFile.createNewFile();
@@ -4198,7 +4277,7 @@ public class GuidanceImpl {
 			System.out.println("[DEBUG] \t- Command: " + cmdToStore);
 			System.out.println("--------------------------------------");
 		}
-		
+
 		FileUtils.recursiveSearch(firstImputeFileInfo);
 
 		long startTime = System.currentTimeMillis();
@@ -4398,10 +4477,9 @@ public class GuidanceImpl {
 					writer.write(valueReversed + TAB);
 				}
 			} else {
-				if(sex.equals(NO_SEX)) {
+				if (sex.equals(NO_SEX)) {
 					writer.write(Headers.constructHeader());
-				}
-				else {
+				} else {
 					writer.write(Headers.constructHeaderX(sex));
 				}
 			}
@@ -4461,152 +4539,123 @@ public class GuidanceImpl {
 	 * @throws InterruptedException
 	 * @throws Exception
 	 */
-	public static void initPhenoMatrix(String topHitsFile, String ttName, String rpName, String phenomeFile,
-			String cmdToStore) throws GuidanceTaskException {
-
-		if (DEBUG) {
-			System.out.println("\n[DEBUG] Running initPhenoMatrix with parameters:");
-			System.out.println("[DEBUG] \t- Input topHitsFile       : " + topHitsFile);
-			System.out.println("[DEBUG] \t- Input ttName            : " + ttName);
-			System.out.println("[DEBUG] \t- Input rpName            : " + rpName);
-			System.out.println("[DEBUG] \t- Output phenomeFile      : " + phenomeFile);
-			System.out.println(NEW_LINE);
-			System.out.println("[DEBUG] \t- Command: " + cmdToStore);
-			System.out.println("--------------------------------------");
-		}
-
-		long startTime = System.currentTimeMillis();
-
-		// First, let's create the header for this file
-		String headerPhenomeFile = "chr\tposition";
-		// headerPhenomeFile = headerPhenomeFile + TAB + ttName + ":" + rpName + ":" +
-		// "rs_id_all";
-		// headerPhenomeFile = headerPhenomeFile + TAB + ttName + ":" + rpName + ":" +
-		// "alleleA";
-		// headerPhenomeFile = headerPhenomeFile + TAB + ttName + ":" + rpName + ":" +
-		// "alleleB";
-		// headerPhenomeFile = headerPhenomeFile + TAB + ttName + ":" + rpName + ":" +
-		// "all_maf";
-		// headerPhenomeFile = headerPhenomeFile + TAB + ttName + ":" + rpName + ":" +
-		// "frequentist_add_pvalue";
-		// headerPhenomeFile = headerPhenomeFile + TAB + ttName + ":" + rpName + ":" +
-		// "frequentist_add_beta_1";
-		// headerPhenomeFile = headerPhenomeFile + TAB + ttName + ":" + rpName + ":" +
-		// "frequentist_add_beta_1:genotype/sex=1";
-		// headerPhenomeFile = headerPhenomeFile + TAB + ttName + ":" + rpName + ":" +
-		// "frequentist_add_beta_2:genotype/sex=2";
-		// headerPhenomeFile = headerPhenomeFile + TAB + ttName + ":" + rpName + ":" +
-		// "frequentist_add_se_1";
-		// headerPhenomeFile = headerPhenomeFile + TAB + ttName + ":" + rpName + ":" +
-		// "frequentist_add_se_1:genotype/sex=1";
-		// headerPhenomeFile = headerPhenomeFile + TAB + ttName + ":" + rpName + ":" +
-		// "frequentist_add_se_2:genotype/sex=2";
-
-		// Then, read the input file
-
-		String chrAndPosition = null;
-		String newHeader = headerPhenomeFile;
-		if (DEBUG) {
-			System.out.println("[DEBUG] \t- The new header will be : [" + newHeader + "]");
-		}
-
-		// First, we load the whole topHitsFile into a TreeMap
-
-		// A place to store the results of the merge
-		TreeMap<String, ArrayList<String>> phenomeTreeMap = new TreeMap<>();
-
-		// Now we create the header for the phenomeFile. The label variable should
-		// contain all the information
-		// to do it, as follows (//Everything in one line)
-		// chr:position:rsId:pval_phe_[0]_pan_[0]:pval_phe_[0]_pa_[1]:...:pval_phe_[0]_pa_[K-1]:
-		// pval_phe_[1]_pan_[0]:pval_phe_[1]_pa_[1]:...:pval_phe_[1]_pa_[K-1]:
-		// pval_phe_[2]_pan_[0]:pval_phe_[2]_pa_[1]:...:pval_phe_[2]_pa_[K-1]:
-		// ...
-		// pval_phe_[T-1]_pan_[0]:pval_phe_[T-1]_pa_[1]:...:pval_phe_(T-1)_pa_[K-1]:
-		// Where:
-		// T : number of phenotypes.
-		// phe_[i]: name of phenotype i.
-		// K : number of panels.
-		// pa_[j]: name of panel j.
-
-		// We start reading the topHits File
-		try (GZIPInputStream topHitsFileGz = new GZIPInputStream(new FileInputStream(topHitsFile));
-				InputStreamReader decoder = new InputStreamReader(topHitsFileGz);
-				BufferedReader br = new BufferedReader(decoder)) {
-
-			String line = br.readLine();
-			HashMap<String, Integer> topHitsHashTableIndex = new HashMap<>();
-			topHitsHashTableIndex = Headers.createHashWithHeader(line, TAB);
-
-			int indexChrInTopHitsFile = topHitsHashTableIndex.get("chr");
-			int indexPositionInTopHitsFile = topHitsHashTableIndex.get("position");
-
-			chrAndPosition = null;
-			while ((line = br.readLine()) != null) {
-				ArrayList<String> firstList = new ArrayList<>();
-				// delimiter I assume TAP space.
-				String[] splitted = line.split(TAB);
-
-				chrAndPosition = splitted[indexChrInTopHitsFile] + "_" + splitted[indexPositionInTopHitsFile];
-
-				// Store chr:position:rsId:pvalues for the all combination of phenotypes and
-				// panels
-				// It means
-				firstList.add(splitted[indexChrInTopHitsFile]);
-				firstList.add(splitted[indexPositionInTopHitsFile]);
-
-				// System.out.println("\n[DEBUG] phenomeHashTableIndex.size() " +
-				// phenomeHashTableIndex.size());
-
-				// Finally, we put this data into the firstTreeMap, using chrPosition as key and
-				// the firstList as value.
-				phenomeTreeMap.put(chrAndPosition, firstList);
-			}
-		} catch (IOException ioe) {
-			throw new GuidanceTaskException(ioe);
-		}
-
-		// Finally, we print the phenomeThreeMap into the output file
-
-		// We create the plain file, then we will compress it
-		String plainPhenomeFile = phenomeFile.substring(0, phenomeFile.length() - 3);
-		try (BufferedWriter writer = new BufferedWriter(new FileWriter(plainPhenomeFile))) {
-			// Print the header
-			writer.write(newHeader);
-			writer.newLine();
-
-			Set<Entry<String, ArrayList<String>>> mySet = phenomeTreeMap.entrySet();
-			// Move next key and value of Map by iterator
-			Iterator<Entry<String, ArrayList<String>>> iter = mySet.iterator();
-			while (iter.hasNext()) {
-				Entry<String, ArrayList<String>> m = iter.next();
-				ArrayList<String> firstTmp = m.getValue();
-
-				writer.write(firstTmp.get(0));
-				for (int j = 1; j < firstTmp.size(); j++) {
-					writer.write(TAB + firstTmp.get(j));
-				}
-				writer.newLine();
-			}
-
-			writer.flush();
-		} catch (IOException ioe) {
-			throw new GuidanceTaskException(ioe);
-		}
-
-		// Then, we create the gz file and rename it
-		FileUtils.gzipFile(plainPhenomeFile, phenomeFile);
-		FileUtils.delete(plainPhenomeFile);
-
-		long stopTime = System.currentTimeMillis();
-		long elapsedTime = (stopTime - startTime) / 1_000;
-		if (DEBUG) {
-			System.out.println("\n[DEBUG] initPhenoMatrix startTime: " + startTime);
-			System.out.println("\n[DEBUG] initPhenoMatrix endTime: " + stopTime);
-			System.out.println("\n[DEBUG] initPhenoMatrix elapsedTime: " + elapsedTime + " seconds");
-			System.out.println("\n[DEBUG] Finished execution of initPhenoMatrix.");
-		}
-	}
+	/*
+	 * public static void initPhenoMatrix(String topHitsFile, String ttName, String
+	 * rpName, String phenomeFile, String cmdToStore) throws GuidanceTaskException {
+	 * 
+	 * if (DEBUG) {
+	 * System.out.println("\n[DEBUG] Running initPhenoMatrix with parameters:");
+	 * System.out.println("[DEBUG] \t- Input topHitsFile       : " + topHitsFile);
+	 * System.out.println("[DEBUG] \t- Input ttName            : " + ttName);
+	 * System.out.println("[DEBUG] \t- Input rpName            : " + rpName);
+	 * System.out.println("[DEBUG] \t- Output phenomeFile      : " + phenomeFile);
+	 * System.out.println(NEW_LINE); System.out.println("[DEBUG] \t- Command: " +
+	 * cmdToStore); System.out.println("--------------------------------------"); }
+	 * 
+	 * long startTime = System.currentTimeMillis();
+	 * 
+	 * // First, let's create the header for this file String headerPhenomeFile =
+	 * "chr\tposition"; // headerPhenomeFile = headerPhenomeFile + TAB + ttName +
+	 * ":" + rpName + ":" + // "rs_id_all"; // headerPhenomeFile = headerPhenomeFile
+	 * + TAB + ttName + ":" + rpName + ":" + // "alleleA"; // headerPhenomeFile =
+	 * headerPhenomeFile + TAB + ttName + ":" + rpName + ":" + // "alleleB"; //
+	 * headerPhenomeFile = headerPhenomeFile + TAB + ttName + ":" + rpName + ":" +
+	 * // "all_maf"; // headerPhenomeFile = headerPhenomeFile + TAB + ttName + ":" +
+	 * rpName + ":" + // "frequentist_add_pvalue"; // headerPhenomeFile =
+	 * headerPhenomeFile + TAB + ttName + ":" + rpName + ":" + //
+	 * "frequentist_add_beta_1"; // headerPhenomeFile = headerPhenomeFile + TAB +
+	 * ttName + ":" + rpName + ":" + // "frequentist_add_beta_1:genotype/sex=1"; //
+	 * headerPhenomeFile = headerPhenomeFile + TAB + ttName + ":" + rpName + ":" +
+	 * // "frequentist_add_beta_2:genotype/sex=2"; // headerPhenomeFile =
+	 * headerPhenomeFile + TAB + ttName + ":" + rpName + ":" + //
+	 * "frequentist_add_se_1"; // headerPhenomeFile = headerPhenomeFile + TAB +
+	 * ttName + ":" + rpName + ":" + // "frequentist_add_se_1:genotype/sex=1"; //
+	 * headerPhenomeFile = headerPhenomeFile + TAB + ttName + ":" + rpName + ":" +
+	 * // "frequentist_add_se_2:genotype/sex=2";
+	 * 
+	 * // Then, read the input file
+	 * 
+	 * String chrAndPosition = null; String newHeader = headerPhenomeFile; if
+	 * (DEBUG) { System.out.println("[DEBUG] \t- The new header will be : [" +
+	 * newHeader + "]"); }
+	 * 
+	 * // First, we load the whole topHitsFile into a TreeMap
+	 * 
+	 * // A place to store the results of the merge TreeMap<String,
+	 * ArrayList<String>> phenomeTreeMap = new TreeMap<>();
+	 * 
+	 * // Now we create the header for the phenomeFile. The label variable should //
+	 * contain all the information // to do it, as follows (//Everything in one
+	 * line) //
+	 * chr:position:rsId:pval_phe_[0]_pan_[0]:pval_phe_[0]_pa_[1]:...:pval_phe_[0]
+	 * _pa_[K-1]: //
+	 * pval_phe_[1]_pan_[0]:pval_phe_[1]_pa_[1]:...:pval_phe_[1]_pa_[K-1]: //
+	 * pval_phe_[2]_pan_[0]:pval_phe_[2]_pa_[1]:...:pval_phe_[2]_pa_[K-1]: // ... //
+	 * pval_phe_[T-1]_pan_[0]:pval_phe_[T-1]_pa_[1]:...:pval_phe_(T-1)_pa_[K-1]: //
+	 * Where: // T : number of phenotypes. // phe_[i]: name of phenotype i. // K :
+	 * number of panels. // pa_[j]: name of panel j.
+	 * 
+	 * // We start reading the topHits File try (GZIPInputStream topHitsFileGz = new
+	 * GZIPInputStream(new FileInputStream(topHitsFile)); InputStreamReader decoder
+	 * = new InputStreamReader(topHitsFileGz); BufferedReader br = new
+	 * BufferedReader(decoder)) {
+	 * 
+	 * String line = br.readLine(); HashMap<String, Integer> topHitsHashTableIndex =
+	 * new HashMap<>(); topHitsHashTableIndex = Headers.createHashWithHeader(line,
+	 * TAB);
+	 * 
+	 * int indexChrInTopHitsFile = topHitsHashTableIndex.get("chr"); int
+	 * indexPositionInTopHitsFile = topHitsHashTableIndex.get("position");
+	 * 
+	 * chrAndPosition = null; while ((line = br.readLine()) != null) {
+	 * ArrayList<String> firstList = new ArrayList<>(); // delimiter I assume TAP
+	 * space. String[] splitted = line.split(TAB);
+	 * 
+	 * chrAndPosition = splitted[indexChrInTopHitsFile] + "_" +
+	 * splitted[indexPositionInTopHitsFile];
+	 * 
+	 * // Store chr:position:rsId:pvalues for the all combination of phenotypes and
+	 * // panels // It means firstList.add(splitted[indexChrInTopHitsFile]);
+	 * firstList.add(splitted[indexPositionInTopHitsFile]);
+	 * 
+	 * // System.out.println("\n[DEBUG] phenomeHashTableIndex.size() " + //
+	 * phenomeHashTableIndex.size());
+	 * 
+	 * // Finally, we put this data into the firstTreeMap, using chrPosition as key
+	 * and // the firstList as value. phenomeTreeMap.put(chrAndPosition, firstList);
+	 * } } catch (IOException ioe) { throw new GuidanceTaskException(ioe); }
+	 * 
+	 * // Finally, we print the phenomeThreeMap into the output file
+	 * 
+	 * // We create the plain file, then we will compress it String plainPhenomeFile
+	 * = phenomeFile.substring(0, phenomeFile.length() - 3); try (BufferedWriter
+	 * writer = new BufferedWriter(new FileWriter(plainPhenomeFile))) { // Print the
+	 * header writer.write(newHeader); writer.newLine();
+	 * 
+	 * Set<Entry<String, ArrayList<String>>> mySet = phenomeTreeMap.entrySet(); //
+	 * Move next key and value of Map by iterator Iterator<Entry<String,
+	 * ArrayList<String>>> iter = mySet.iterator(); while (iter.hasNext()) {
+	 * Entry<String, ArrayList<String>> m = iter.next(); ArrayList<String> firstTmp
+	 * = m.getValue();
+	 * 
+	 * writer.write(firstTmp.get(0)); for (int j = 1; j < firstTmp.size(); j++) {
+	 * writer.write(TAB + firstTmp.get(j)); } writer.newLine(); }
+	 * 
+	 * writer.flush(); } catch (IOException ioe) { throw new
+	 * GuidanceTaskException(ioe); }
+	 * 
+	 * // Then, we create the gz file and rename it
+	 * FileUtils.gzipFile(plainPhenomeFile, phenomeFile);
+	 * FileUtils.delete(plainPhenomeFile);
+	 * 
+	 * long stopTime = System.currentTimeMillis(); long elapsedTime = (stopTime -
+	 * startTime) / 1_000; if (DEBUG) {
+	 * System.out.println("\n[DEBUG] initPhenoMatrix startTime: " + startTime);
+	 * System.out.println("\n[DEBUG] initPhenoMatrix endTime: " + stopTime);
+	 * System.out.println("\n[DEBUG] initPhenoMatrix elapsedTime: " + elapsedTime +
+	 * " seconds");
+	 * System.out.println("\n[DEBUG] Finished execution of initPhenoMatrix."); } }
+	 */
 
 	/**
 	 * Method to add to the pheno matrix
@@ -4621,180 +4670,146 @@ public class GuidanceImpl {
 	 * @throws InterruptedException
 	 * @throws Exception
 	 */
-	public static void addToPhenoMatrix(String phenomeAFile, String topHitsFile, String ttName, String rpName,
-			String phenomeBFile, String cmdToStore) throws GuidanceTaskException {
-
-		if (DEBUG) {
-			System.out.println("\n[DEBUG] Running addToPhenoMatrix with parameters:");
-			System.out.println("[DEBUG] \t- Input phenomeFileA      : " + phenomeAFile);
-			System.out.println("[DEBUG] \t- Input topHitsFile       : " + topHitsFile);
-			System.out.println("[DEBUG] \t- Input ttName            : " + ttName);
-			System.out.println("[DEBUG] \t- Input rpName            : " + rpName);
-			System.out.println("[DEBUG] \t- Output phenomeFileB     : " + phenomeBFile);
-			System.out.println(NEW_LINE);
-			System.out.println("[DEBUG] \t- Command: " + cmdToStore);
-			System.out.println("--------------------------------------");
-		}
-
-		long startTime = System.currentTimeMillis();
-
-		// A place to store the results
-		TreeMap<String, ArrayList<String>> phenomeATreeMap = new TreeMap<>();
-
-		// Now we create the header for the phenomeFile. The label variable should
-		// contain all the information
-		// to do it, as follows (//Everything in one line)
-		// chr:position:rsId:pval_phe_[0]_pan_[0]:pval_phe_[0]_pa_[1]:...:pval_phe_[0]_pa_[K-1]:
-		// pval_phe_[1]_pan_[0]:pval_phe_[1]_pa_[1]:...:pval_phe_[1]_pa_[K-1]:
-		// pval_phe_[2]_pan_[0]:pval_phe_[2]_pa_[1]:...:pval_phe_[2]_pa_[K-1]:
-		// ...
-		// pval_phe_[T-1]_pan_[0]:pval_phe_[T-1]_pa_[1]:...:pval_phe_(T-1)_pa_[K-1]:
-		// Where:
-		// T : number of phenotypes.
-		// phe_[i]: name of phenotype i.
-		// K : number of panels.
-		// pa_[j]: name of panel j.
-
-		HashMap<String, Integer> phenomeAHashTableIndex = new HashMap<>();
-
-		// We start reading the phenomeFileA
-		String phenomeAHeader = null;
-		try (GZIPInputStream phenomeAFileGz = new GZIPInputStream(new FileInputStream(phenomeAFile));
-				InputStreamReader decoder = new InputStreamReader(phenomeAFileGz);
-				BufferedReader br = new BufferedReader(decoder)) {
-
-			// First of all, the header
-			phenomeAHeader = br.readLine();
-
-			phenomeAHeader = "chr\tposition";
-			// phenomeAHeader = phenomeAHeader + TAB + ttName + ":" + rpName + ":" +
-			// "rs_id_all";
-			// phenomeAHeader = phenomeAHeader + TAB + ttName + ":" + rpName + ":" +
-			// "alleleA";
-			// phenomeAHeader = phenomeAHeader + TAB + ttName + ":" + rpName + ":" +
-			// "alleleB";
-			// phenomeAHeader = phenomeAHeader + TAB + ttName + ":" + rpName + ":" +
-			// "all_maf";
-			// phenomeAHeader = phenomeAHeader + TAB + ttName + ":" + rpName + ":" +
-			// "frequentist_add_pvalue";
-			// phenomeAHeader = phenomeAHeader + TAB + ttName + ":" + rpName + ":" +
-			// "frequentist_add_beta_1";
-			// headerPhenomeFile = headerPhenomeFile + TAB + ttName + ":" + rpName + ":" +
-			// "frequentist_add_beta_1:genotype/sex=1";
-			// headerPhenomeFile = headerPhenomeFile + TAB + ttName + ":" + rpName + ":" +
-			// "frequentist_add_beta_2:genotype/sex=2";
-			// phenomeAHeader = phenomeAHeader + TAB + ttName + ":" + rpName + ":" +
-			// "frequentist_add_se_1";
-			// headerPhenomeFile = headerPhenomeFile + TAB + ttName + ":" + rpName + ":" +
-			// "frequentist_add_se_1:genotype/sex=1";
-			// headerPhenomeFile = headerPhenomeFile + TAB + ttName + ":" + rpName + ":" +
-			// "frequentist_add_se_2:genotype/sex=2";
-
-			phenomeAHashTableIndex = Headers.createHashWithHeader(phenomeAHeader, TAB);
-
-			int indexChrInPhenomeAFile = phenomeAHashTableIndex.get("chr");
-			int indexPositionInPhenomeAFile = phenomeAHashTableIndex.get("position");
-
-			// Then, we read the rest of the file and put the information into the
-			// phenomeATreeMap
-			String chrAndPosition = null;
-			String line = null;
-
-			while ((line = br.readLine()) != null) {
-				ArrayList<String> firstList = new ArrayList<>();
-				// Delimiter,I assume tab space.
-				String[] splitted = line.split(TAB);
-
-				chrAndPosition = splitted[indexChrInPhenomeAFile] + "_" + splitted[indexPositionInPhenomeAFile];
-
-				// Store chr:position
-				firstList.add(splitted[indexChrInPhenomeAFile]);
-				firstList.add(splitted[indexPositionInPhenomeAFile]);
-
-				// Finally, we put this data into the phenomeATreeMap, using chrPosition as key
-				// and the firstList as
-				// value.
-				phenomeATreeMap.put(chrAndPosition, firstList);
-			}
-		} catch (IOException ioe) {
-			throw new GuidanceTaskException(ioe);
-		}
-
-		// Now we read the topHitsFile
-		try (GZIPInputStream topHitsFileGz = new GZIPInputStream(new FileInputStream(topHitsFile));
-				InputStreamReader decoder = new InputStreamReader(topHitsFileGz);
-				BufferedReader br = new BufferedReader(decoder);) {
-
-			// We start reading the topHits File
-			String line = br.readLine();
-			HashMap<String, Integer> topHitsHashTableIndex = new HashMap<>();
-			topHitsHashTableIndex = Headers.createHashWithHeader(line, TAB);
-
-			int indexChrInTopHitsFile = topHitsHashTableIndex.get("chr");
-			int indexPositionInTopHitsFile = topHitsHashTableIndex.get("position");
-
-			String chrAndPosition = null;
-			while ((line = br.readLine()) != null) {
-				ArrayList<String> firstList = new ArrayList<>();
-				// delimiter I assume tab space.
-				String[] splitted = line.split(TAB);
-
-				chrAndPosition = splitted[indexChrInTopHitsFile] + "_" + splitted[indexPositionInTopHitsFile];
-
-				if (!phenomeATreeMap.containsKey(chrAndPosition)) {
-					firstList.add(splitted[indexChrInTopHitsFile]);
-					firstList.add(splitted[indexPositionInTopHitsFile]);
-
-					// Finally, we put this data into the phenomeATreeMap, using chrPosition as key
-					// and the firstList as
-					// value.
-					phenomeATreeMap.put(chrAndPosition, firstList);
-				}
-			}
-		} catch (IOException ioe) {
-			throw new GuidanceTaskException(ioe);
-		}
-
-		// Finally, we print the phenomeThreeMap into the plain output file and we will
-		// compress it
-		String plainPhenomeBFile = phenomeBFile.substring(0, phenomeBFile.length() - 3);
-		try (BufferedWriter writer = new BufferedWriter(new FileWriter(plainPhenomeBFile))) {
-			// Write the header
-			writer.write(phenomeAHeader);
-			writer.newLine();
-
-			Set<Entry<String, ArrayList<String>>> mySet = phenomeATreeMap.entrySet();
-			// Move next key and value of Map by iterator
-			Iterator<Entry<String, ArrayList<String>>> iter = mySet.iterator();
-			while (iter.hasNext()) {
-				Entry<String, ArrayList<String>> m = iter.next();
-				ArrayList<String> firstTmp = m.getValue();
-
-				writer.write(firstTmp.get(0));
-				for (int j = 1; j < firstTmp.size(); j++) {
-					writer.write(TAB + firstTmp.get(j));
-				}
-				writer.newLine();
-			}
-
-			writer.flush();
-		} catch (IOException ioe) {
-			throw new GuidanceTaskException(ioe);
-		}
-
-		// Then, we create the gz file and rename it
-		FileUtils.gzipFile(plainPhenomeBFile, phenomeBFile);
-		FileUtils.delete(plainPhenomeBFile);
-
-		long stopTime = System.currentTimeMillis();
-		long elapsedTime = (stopTime - startTime) / 1_000;
-		if (DEBUG) {
-			System.out.println("\n[DEBUG] addToPhenoMatrix startTime: " + startTime);
-			System.out.println("\n[DEBUG] addToPhenoMatrix endTime: " + stopTime);
-			System.out.println("\n[DEBUG] addToPhenoMatrix elapsedTime: " + elapsedTime + " seconds");
-			System.out.println("\n[DEBUG] Finished execution of addToPhenoMatrix.");
-		}
-	}
+	/*
+	 * public static void addToPhenoMatrix(String phenomeAFile, String topHitsFile,
+	 * String ttName, String rpName, String phenomeBFile, String cmdToStore) throws
+	 * GuidanceTaskException {
+	 * 
+	 * if (DEBUG) {
+	 * System.out.println("\n[DEBUG] Running addToPhenoMatrix with parameters:");
+	 * System.out.println("[DEBUG] \t- Input phenomeFileA      : " + phenomeAFile);
+	 * System.out.println("[DEBUG] \t- Input topHitsFile       : " + topHitsFile);
+	 * System.out.println("[DEBUG] \t- Input ttName            : " + ttName);
+	 * System.out.println("[DEBUG] \t- Input rpName            : " + rpName);
+	 * System.out.println("[DEBUG] \t- Output phenomeFileB     : " + phenomeBFile);
+	 * System.out.println(NEW_LINE); System.out.println("[DEBUG] \t- Command: " +
+	 * cmdToStore); System.out.println("--------------------------------------"); }
+	 * 
+	 * long startTime = System.currentTimeMillis();
+	 * 
+	 * // A place to store the results TreeMap<String, ArrayList<String>>
+	 * phenomeATreeMap = new TreeMap<>();
+	 * 
+	 * // Now we create the header for the phenomeFile. The label variable should //
+	 * contain all the information // to do it, as follows (//Everything in one
+	 * line) //
+	 * chr:position:rsId:pval_phe_[0]_pan_[0]:pval_phe_[0]_pa_[1]:...:pval_phe_[0]
+	 * _pa_[K-1]: //
+	 * pval_phe_[1]_pan_[0]:pval_phe_[1]_pa_[1]:...:pval_phe_[1]_pa_[K-1]: //
+	 * pval_phe_[2]_pan_[0]:pval_phe_[2]_pa_[1]:...:pval_phe_[2]_pa_[K-1]: // ... //
+	 * pval_phe_[T-1]_pan_[0]:pval_phe_[T-1]_pa_[1]:...:pval_phe_(T-1)_pa_[K-1]: //
+	 * Where: // T : number of phenotypes. // phe_[i]: name of phenotype i. // K :
+	 * number of panels. // pa_[j]: name of panel j.
+	 * 
+	 * HashMap<String, Integer> phenomeAHashTableIndex = new HashMap<>();
+	 * 
+	 * // We start reading the phenomeFileA String phenomeAHeader = null; try
+	 * (GZIPInputStream phenomeAFileGz = new GZIPInputStream(new
+	 * FileInputStream(phenomeAFile)); InputStreamReader decoder = new
+	 * InputStreamReader(phenomeAFileGz); BufferedReader br = new
+	 * BufferedReader(decoder)) {
+	 * 
+	 * // First of all, the header phenomeAHeader = br.readLine();
+	 * 
+	 * phenomeAHeader = "chr\tposition"; // phenomeAHeader = phenomeAHeader + TAB +
+	 * ttName + ":" + rpName + ":" + // "rs_id_all"; // phenomeAHeader =
+	 * phenomeAHeader + TAB + ttName + ":" + rpName + ":" + // "alleleA"; //
+	 * phenomeAHeader = phenomeAHeader + TAB + ttName + ":" + rpName + ":" + //
+	 * "alleleB"; // phenomeAHeader = phenomeAHeader + TAB + ttName + ":" + rpName +
+	 * ":" + // "all_maf"; // phenomeAHeader = phenomeAHeader + TAB + ttName + ":" +
+	 * rpName + ":" + // "frequentist_add_pvalue"; // phenomeAHeader =
+	 * phenomeAHeader + TAB + ttName + ":" + rpName + ":" + //
+	 * "frequentist_add_beta_1"; // headerPhenomeFile = headerPhenomeFile + TAB +
+	 * ttName + ":" + rpName + ":" + // "frequentist_add_beta_1:genotype/sex=1"; //
+	 * headerPhenomeFile = headerPhenomeFile + TAB + ttName + ":" + rpName + ":" +
+	 * // "frequentist_add_beta_2:genotype/sex=2"; // phenomeAHeader =
+	 * phenomeAHeader + TAB + ttName + ":" + rpName + ":" + //
+	 * "frequentist_add_se_1"; // headerPhenomeFile = headerPhenomeFile + TAB +
+	 * ttName + ":" + rpName + ":" + // "frequentist_add_se_1:genotype/sex=1"; //
+	 * headerPhenomeFile = headerPhenomeFile + TAB + ttName + ":" + rpName + ":" +
+	 * // "frequentist_add_se_2:genotype/sex=2";
+	 * 
+	 * phenomeAHashTableIndex = Headers.createHashWithHeader(phenomeAHeader, TAB);
+	 * 
+	 * int indexChrInPhenomeAFile = phenomeAHashTableIndex.get("chr"); int
+	 * indexPositionInPhenomeAFile = phenomeAHashTableIndex.get("position");
+	 * 
+	 * // Then, we read the rest of the file and put the information into the //
+	 * phenomeATreeMap String chrAndPosition = null; String line = null;
+	 * 
+	 * while ((line = br.readLine()) != null) { ArrayList<String> firstList = new
+	 * ArrayList<>(); // Delimiter,I assume tab space. String[] splitted =
+	 * line.split(TAB);
+	 * 
+	 * chrAndPosition = splitted[indexChrInPhenomeAFile] + "_" +
+	 * splitted[indexPositionInPhenomeAFile];
+	 * 
+	 * // Store chr:position firstList.add(splitted[indexChrInPhenomeAFile]);
+	 * firstList.add(splitted[indexPositionInPhenomeAFile]);
+	 * 
+	 * // Finally, we put this data into the phenomeATreeMap, using chrPosition as
+	 * key // and the firstList as // value. phenomeATreeMap.put(chrAndPosition,
+	 * firstList); } } catch (IOException ioe) { throw new
+	 * GuidanceTaskException(ioe); }
+	 * 
+	 * // Now we read the topHitsFile try (GZIPInputStream topHitsFileGz = new
+	 * GZIPInputStream(new FileInputStream(topHitsFile)); InputStreamReader decoder
+	 * = new InputStreamReader(topHitsFileGz); BufferedReader br = new
+	 * BufferedReader(decoder);) {
+	 * 
+	 * // We start reading the topHits File String line = br.readLine();
+	 * HashMap<String, Integer> topHitsHashTableIndex = new HashMap<>();
+	 * topHitsHashTableIndex = Headers.createHashWithHeader(line, TAB);
+	 * 
+	 * int indexChrInTopHitsFile = topHitsHashTableIndex.get("chr"); int
+	 * indexPositionInTopHitsFile = topHitsHashTableIndex.get("position");
+	 * 
+	 * String chrAndPosition = null; while ((line = br.readLine()) != null) {
+	 * ArrayList<String> firstList = new ArrayList<>(); // delimiter I assume tab
+	 * space. String[] splitted = line.split(TAB);
+	 * 
+	 * chrAndPosition = splitted[indexChrInTopHitsFile] + "_" +
+	 * splitted[indexPositionInTopHitsFile];
+	 * 
+	 * if (!phenomeATreeMap.containsKey(chrAndPosition)) {
+	 * firstList.add(splitted[indexChrInTopHitsFile]);
+	 * firstList.add(splitted[indexPositionInTopHitsFile]);
+	 * 
+	 * // Finally, we put this data into the phenomeATreeMap, using chrPosition as
+	 * key // and the firstList as // value. phenomeATreeMap.put(chrAndPosition,
+	 * firstList); } } } catch (IOException ioe) { throw new
+	 * GuidanceTaskException(ioe); }
+	 * 
+	 * // Finally, we print the phenomeThreeMap into the plain output file and we
+	 * will // compress it String plainPhenomeBFile = phenomeBFile.substring(0,
+	 * phenomeBFile.length() - 3); try (BufferedWriter writer = new
+	 * BufferedWriter(new FileWriter(plainPhenomeBFile))) { // Write the header
+	 * writer.write(phenomeAHeader); writer.newLine();
+	 * 
+	 * Set<Entry<String, ArrayList<String>>> mySet = phenomeATreeMap.entrySet(); //
+	 * Move next key and value of Map by iterator Iterator<Entry<String,
+	 * ArrayList<String>>> iter = mySet.iterator(); while (iter.hasNext()) {
+	 * Entry<String, ArrayList<String>> m = iter.next(); ArrayList<String> firstTmp
+	 * = m.getValue();
+	 * 
+	 * writer.write(firstTmp.get(0)); for (int j = 1; j < firstTmp.size(); j++) {
+	 * writer.write(TAB + firstTmp.get(j)); } writer.newLine(); }
+	 * 
+	 * writer.flush(); } catch (IOException ioe) { throw new
+	 * GuidanceTaskException(ioe); }
+	 * 
+	 * // Then, we create the gz file and rename it
+	 * FileUtils.gzipFile(plainPhenomeBFile, phenomeBFile);
+	 * FileUtils.delete(plainPhenomeBFile);
+	 * 
+	 * long stopTime = System.currentTimeMillis(); long elapsedTime = (stopTime -
+	 * startTime) / 1_000; if (DEBUG) {
+	 * System.out.println("\n[DEBUG] addToPhenoMatrix startTime: " + startTime);
+	 * System.out.println("\n[DEBUG] addToPhenoMatrix endTime: " + stopTime);
+	 * System.out.println("\n[DEBUG] addToPhenoMatrix elapsedTime: " + elapsedTime +
+	 * " seconds");
+	 * System.out.println("\n[DEBUG] Finished execution of addToPhenoMatrix."); } }
+	 */
 
 	/**
 	 * Method to add X chromosome to the pheno matrix
@@ -4809,499 +4824,174 @@ public class GuidanceImpl {
 	 * @throws InterruptedException
 	 * @throws Exception
 	 */
-	public static void addToPhenoMatrixX(String phenomeAFile, String filteredByAllFile, String ttName, String rpName,
-			String phenomeBFile, String cmdToStore) throws GuidanceTaskException {
-
-		if (DEBUG) {
-			System.out.println("\n[DEBUG] Running addToPhenoMatrixX with parameters:");
-			System.out.println("[DEBUG] \t- Input phenomeFileA      : " + phenomeAFile);
-			System.out.println("[DEBUG] \t- Input filteredByAllFile : " + filteredByAllFile);
-			System.out.println("[DEBUG] \t- Input ttName            : " + ttName);
-			System.out.println("[DEBUG] \t- Input rpName            : " + rpName);
-			System.out.println("[DEBUG] \t- Output phenomeFileB     : " + phenomeBFile);
-			System.out.println(NEW_LINE);
-			System.out.println("[DEBUG] \t- Command: " + cmdToStore);
-			System.out.println("--------------------------------------");
-		}
-
-		long startTime = System.currentTimeMillis();
-
-		// A place to store the results
-		TreeMap<String, ArrayList<String>> phenomeATreeMap = new TreeMap<>();
-
-		// Now we create the header for the phenomeFile. The label variable should
-		// contain all the information
-		// to do it, as follows (//Everything in one line)
-		// chr:position:rsId:pval_phe_[0]_pan_[0]:pval_phe_[0]_pa_[1]:...:pval_phe_[0]_pa_[K-1]:
-		// pval_phe_[1]_pan_[0]:pval_phe_[1]_pa_[1]:...:pval_phe_[1]_pa_[K-1]:
-		// pval_phe_[2]_pan_[0]:pval_phe_[2]_pa_[1]:...:pval_phe_[2]_pa_[K-1]:
-		// ...
-		// pval_phe_[T-1]_pan_[0]:pval_phe_[T-1]_pa_[1]:...:pval_phe_(T-1)_pa_[K-1]:
-		// Where:
-		// T : number of phenotypes.
-		// phe_[i]: name of phenotype i.
-		// K : number of panels.
-		// pa_[j]: name of panel j.
-
-		HashMap<String, Integer> phenomeAHashTableIndex = new HashMap<>();
-		// HashMap<Integer, String> phenomeAHashTableIndexReversed = new HashMap<>();
-
-		// We start reading the phenomeFileA
-		String phenomeAHeader = null;
-		try (GZIPInputStream phenomeAFileGz = new GZIPInputStream(new FileInputStream(phenomeAFile));
-				InputStreamReader decoder = new InputStreamReader(phenomeAFileGz);
-				BufferedReader br = new BufferedReader(decoder)) {
-
-			// First of all, the header
-			phenomeAHeader = br.readLine();
-			phenomeAHashTableIndex = Headers.createHashWithHeader(phenomeAHeader, TAB);
-
-			int indexChrInPhenomeAFile = phenomeAHashTableIndex.get("chr");
-			int indexPositionInPhenomeAFile = phenomeAHashTableIndex.get("position");
-
-			// Then, we read the rest of the file and put the information into the
-			// phenomeATreeMap
-			String chrAndPosition = null;
-			String line = null;
-			while ((line = br.readLine()) != null) {
-				ArrayList<String> firstList = new ArrayList<>();
-				// Delimiter,I assume tab space.
-				String[] splitted = line.split(TAB);
-
-				chrAndPosition = splitted[indexChrInPhenomeAFile] + "_" + splitted[indexPositionInPhenomeAFile];
-
-				// Store chr:position
-				firstList.add(splitted[indexChrInPhenomeAFile]);
-				firstList.add(splitted[indexPositionInPhenomeAFile]);
-
-				// Finally, we put this data into the phenomeATreeMap, using chrPosition as key
-				// and the firstList as
-				// value.
-				phenomeATreeMap.put(chrAndPosition, firstList);
-			}
-		} catch (IOException ioe) {
-			throw new GuidanceTaskException(ioe);
-		}
-
-		// Now we load the whole filteredByAllFile into a TreeMap
-		TreeMap<String, ArrayList<String>> filteredTreeMap = new TreeMap<>();
-		try (GZIPInputStream filteredByAllGz = new GZIPInputStream(new FileInputStream(filteredByAllFile));
-				InputStreamReader decoder = new InputStreamReader(filteredByAllGz);
-				BufferedReader br = new BufferedReader(decoder)) {
-
-			HashMap<String, Integer> filteredByAllHashTableIndex = new HashMap<>();
-			// HashMap<Integer, String> filteredByAllHashTableIndexReversed = new
-			// HashMap<>();
-
-			// We start reading the filteredByAllFile
-			// First of all, the header
-			String filteredHeader = br.readLine();
-			filteredByAllHashTableIndex = Headers.createHashWithHeader(filteredHeader, TAB);
-
-			int indexChrInFiltered = filteredByAllHashTableIndex.get("chr");
-			int indexPositionInFiltered = filteredByAllHashTableIndex.get("position");
-			int indexRsIdInFiltered = filteredByAllHashTableIndex.get("rs_id_all");
-			int indexAlleleAInFiltered = filteredByAllHashTableIndex.get("alleleA");
-			int indexAlleleBInFiltered = filteredByAllHashTableIndex.get("alleleB");
-			int indexAllMafInFiltered = filteredByAllHashTableIndex.get("all_maf");
-			int indexFreqAddPvalueInFiltered = filteredByAllHashTableIndex.get("frequentist_add_pvalue");
-
-			int indexFreqAddBetaInFiltered = filteredByAllHashTableIndex.get("frequentist_add_beta_1");
-			// int indexFreqAddBeta1sex1InFiltered =
-			// filteredByAllHashTableIndex.get("frequentist_add_beta_1:genotype/sex=1");
-			// int indexFreqAddBeta2sex2InFiltered =
-			// filteredByAllHashTableIndex.get("frequentist_add_beta_2:genotype/sex=2");
-
-			int indexFreqAddSeInFiltered = filteredByAllHashTableIndex.get("frequentist_add_se_1");
-			// int indexFreqAddSe1sex1InFiltered =
-			// filteredByAllHashTableIndex.get("frequentist_add_se_1:genotype/sex=1");
-			// int indexFreqAddSe2sex2InFiltered =
-			// filteredByAllHashTableIndex.get("frequentist_add_se_2:genotype/sex=2");
-
-			String line = null;
-			while ((line = br.readLine()) != null) {
-				String[] splitted = line.split(TAB);
-				String chrAndPosition = splitted[indexChrInFiltered] + "_" + splitted[indexPositionInFiltered];
-
-				ArrayList<String> reducedList = new ArrayList<>();
-				reducedList.add(splitted[indexRsIdInFiltered]);
-				reducedList.add(splitted[indexAlleleAInFiltered]);
-				reducedList.add(splitted[indexAlleleBInFiltered]);
-				reducedList.add(splitted[indexAllMafInFiltered]);
-				reducedList.add(splitted[indexFreqAddPvalueInFiltered]);
-
-				reducedList.add(splitted[indexFreqAddBetaInFiltered]);
-				// reducedList.add(splitted[indexFreqAddBeta1sex1InFiltered]);
-				// reducedList.add(splitted[indexFreqAddBeta2sex2InFiltered]);
-
-				reducedList.add(splitted[indexFreqAddSeInFiltered]);
-				// reducedList.add(splitted[indexFreqAddSe1sex1InFiltered]);
-				// reducedList.add(splitted[indexFreqAddSe2sex2InFiltered]);
-
-				filteredTreeMap.put(chrAndPosition, reducedList);
-			}
-		} catch (IOException ioe) {
-			throw new GuidanceTaskException(ioe);
-		}
-
-		// Finally, we print the phenomeThreeMap into the output file.
-		Set<Entry<String, ArrayList<String>>> mySet = phenomeATreeMap.entrySet();
-		// Move next key and value of Map by iterator
-		Iterator<Entry<String, ArrayList<String>>> iter = mySet.iterator();
-		while (iter.hasNext()) {
-			Entry<String, ArrayList<String>> m = iter.next();
-			String chrAndPosition = m.getKey();
-			ArrayList<String> currentList = (ArrayList<String>) m.getValue();
-			ArrayList<String> reducedList = null;
-
-			if (filteredTreeMap.containsKey(chrAndPosition)) {
-				reducedList = filteredTreeMap.get(chrAndPosition);
-				for (int i = 0; i < reducedList.size(); i++) {
-					currentList.add(reducedList.get(i));
-				}
-			} else {
-				for (int i = 0; i < 11; i++) {
-					currentList.add("NA");
-				}
-			}
-
-			filteredTreeMap.put(chrAndPosition, currentList);
-		}
-
-		// Finally, we print the phenomeThreeMap into the output plain output file and
-		// we will compress it
-		String plainPhenomeBFile = phenomeBFile.substring(0, phenomeBFile.length() - 3);
-		try (BufferedWriter writer = new BufferedWriter(new FileWriter(plainPhenomeBFile))) {
-			// Write the header
-			writer.write(phenomeAHeader);
-			writer.newLine();
-
-			mySet = phenomeATreeMap.entrySet();
-			// Move next key and value of Map by iterator
-			iter = mySet.iterator();
-			while (iter.hasNext()) {
-				Entry<String, ArrayList<String>> m = iter.next();
-				ArrayList<String> firstTmp = m.getValue();
-
-				writer.write(firstTmp.get(0));
-				for (int j = 1; j < firstTmp.size(); j++) {
-					writer.write(TAB + firstTmp.get(j));
-				}
-				writer.newLine();
-			}
-
-			writer.flush();
-		} catch (IOException ioe) {
-			throw new GuidanceTaskException(ioe);
-		}
-
-		// Then, we create the gz file and rename it
-		FileUtils.gzipFile(plainPhenomeBFile, phenomeBFile);
-		FileUtils.delete(plainPhenomeBFile);
-
-		long stopTime = System.currentTimeMillis();
-		long elapsedTime = (stopTime - startTime) / 1_000;
-		if (DEBUG) {
-			System.out.println("\n[DEBUG] addToPhenoMatrix startTime: " + startTime);
-			System.out.println("\n[DEBUG] addToPhenoMatrix endTime: " + stopTime);
-			System.out.println("\n[DEBUG] addToPhenoMatrix elapsedTime: " + elapsedTime + " seconds");
-			System.out.println("\n[DEBUG] Finished execution of addToPhenoMatrixX");
-		}
-	}
-
-	/**
-	 * Method to fill out the pheno matrix
+	/*
+	 * public static void addToPhenoMatrixX(String phenomeAFile, String
+	 * filteredByAllFile, String ttName, String rpName, String phenomeBFile, String
+	 * cmdToStore) throws GuidanceTaskException {
 	 * 
-	 * @param phenomeAFile
-	 * @param filteredByAllFile
-	 * @param filteredByAllXFile
-	 * @param endChrS
-	 * @param ttName
-	 * @param rpName
-	 * @param phenomeBFile
-	 * @param cmdToStore
-	 * @throws IOException
-	 * @throws InterruptedException
-	 * @throws Exception
+	 * if (DEBUG) {
+	 * System.out.println("\n[DEBUG] Running addToPhenoMatrixX with parameters:");
+	 * System.out.println("[DEBUG] \t- Input phenomeFileA      : " + phenomeAFile);
+	 * System.out.println("[DEBUG] \t- Input filteredByAllFile : " +
+	 * filteredByAllFile);
+	 * System.out.println("[DEBUG] \t- Input ttName            : " + ttName);
+	 * System.out.println("[DEBUG] \t- Input rpName            : " + rpName);
+	 * System.out.println("[DEBUG] \t- Output phenomeFileB     : " + phenomeBFile);
+	 * System.out.println(NEW_LINE); System.out.println("[DEBUG] \t- Command: " +
+	 * cmdToStore); System.out.println("--------------------------------------"); }
+	 * 
+	 * long startTime = System.currentTimeMillis();
+	 * 
+	 * // A place to store the results TreeMap<String, ArrayList<String>>
+	 * phenomeATreeMap = new TreeMap<>();
+	 * 
+	 * // Now we create the header for the phenomeFile. The label variable should //
+	 * contain all the information // to do it, as follows (//Everything in one
+	 * line) //
+	 * chr:position:rsId:pval_phe_[0]_pan_[0]:pval_phe_[0]_pa_[1]:...:pval_phe_[0]
+	 * _pa_[K-1]: //
+	 * pval_phe_[1]_pan_[0]:pval_phe_[1]_pa_[1]:...:pval_phe_[1]_pa_[K-1]: //
+	 * pval_phe_[2]_pan_[0]:pval_phe_[2]_pa_[1]:...:pval_phe_[2]_pa_[K-1]: // ... //
+	 * pval_phe_[T-1]_pan_[0]:pval_phe_[T-1]_pa_[1]:...:pval_phe_(T-1)_pa_[K-1]: //
+	 * Where: // T : number of phenotypes. // phe_[i]: name of phenotype i. // K :
+	 * number of panels. // pa_[j]: name of panel j.
+	 * 
+	 * HashMap<String, Integer> phenomeAHashTableIndex = new HashMap<>(); //
+	 * HashMap<Integer, String> phenomeAHashTableIndexReversed = new HashMap<>();
+	 * 
+	 * // We start reading the phenomeFileA String phenomeAHeader = null; try
+	 * (GZIPInputStream phenomeAFileGz = new GZIPInputStream(new
+	 * FileInputStream(phenomeAFile)); InputStreamReader decoder = new
+	 * InputStreamReader(phenomeAFileGz); BufferedReader br = new
+	 * BufferedReader(decoder)) {
+	 * 
+	 * // First of all, the header phenomeAHeader = br.readLine();
+	 * phenomeAHashTableIndex = Headers.createHashWithHeader(phenomeAHeader, TAB);
+	 * 
+	 * int indexChrInPhenomeAFile = phenomeAHashTableIndex.get("chr"); int
+	 * indexPositionInPhenomeAFile = phenomeAHashTableIndex.get("position");
+	 * 
+	 * // Then, we read the rest of the file and put the information into the //
+	 * phenomeATreeMap String chrAndPosition = null; String line = null; while
+	 * ((line = br.readLine()) != null) { ArrayList<String> firstList = new
+	 * ArrayList<>(); // Delimiter,I assume tab space. String[] splitted =
+	 * line.split(TAB);
+	 * 
+	 * chrAndPosition = splitted[indexChrInPhenomeAFile] + "_" +
+	 * splitted[indexPositionInPhenomeAFile];
+	 * 
+	 * // Store chr:position firstList.add(splitted[indexChrInPhenomeAFile]);
+	 * firstList.add(splitted[indexPositionInPhenomeAFile]);
+	 * 
+	 * // Finally, we put this data into the phenomeATreeMap, using chrPosition as
+	 * key // and the firstList as // value. phenomeATreeMap.put(chrAndPosition,
+	 * firstList); } } catch (IOException ioe) { throw new
+	 * GuidanceTaskException(ioe); }
+	 * 
+	 * // Now we load the whole filteredByAllFile into a TreeMap TreeMap<String,
+	 * ArrayList<String>> filteredTreeMap = new TreeMap<>(); try (GZIPInputStream
+	 * filteredByAllGz = new GZIPInputStream(new
+	 * FileInputStream(filteredByAllFile)); InputStreamReader decoder = new
+	 * InputStreamReader(filteredByAllGz); BufferedReader br = new
+	 * BufferedReader(decoder)) {
+	 * 
+	 * HashMap<String, Integer> filteredByAllHashTableIndex = new HashMap<>(); //
+	 * HashMap<Integer, String> filteredByAllHashTableIndexReversed = new //
+	 * HashMap<>();
+	 * 
+	 * // We start reading the filteredByAllFile // First of all, the header String
+	 * filteredHeader = br.readLine(); filteredByAllHashTableIndex =
+	 * Headers.createHashWithHeader(filteredHeader, TAB);
+	 * 
+	 * int indexChrInFiltered = filteredByAllHashTableIndex.get("chr"); int
+	 * indexPositionInFiltered = filteredByAllHashTableIndex.get("position"); int
+	 * indexRsIdInFiltered = filteredByAllHashTableIndex.get("rs_id_all"); int
+	 * indexAlleleAInFiltered = filteredByAllHashTableIndex.get("alleleA"); int
+	 * indexAlleleBInFiltered = filteredByAllHashTableIndex.get("alleleB"); int
+	 * indexAllMafInFiltered = filteredByAllHashTableIndex.get("all_maf"); int
+	 * indexFreqAddPvalueInFiltered =
+	 * filteredByAllHashTableIndex.get("frequentist_add_pvalue");
+	 * 
+	 * int indexFreqAddBetaInFiltered =
+	 * filteredByAllHashTableIndex.get("frequentist_add_beta_1"); // int
+	 * indexFreqAddBeta1sex1InFiltered = //
+	 * filteredByAllHashTableIndex.get("frequentist_add_beta_1:genotype/sex=1"); //
+	 * int indexFreqAddBeta2sex2InFiltered = //
+	 * filteredByAllHashTableIndex.get("frequentist_add_beta_2:genotype/sex=2");
+	 * 
+	 * int indexFreqAddSeInFiltered =
+	 * filteredByAllHashTableIndex.get("frequentist_add_se_1"); // int
+	 * indexFreqAddSe1sex1InFiltered = //
+	 * filteredByAllHashTableIndex.get("frequentist_add_se_1:genotype/sex=1"); //
+	 * int indexFreqAddSe2sex2InFiltered = //
+	 * filteredByAllHashTableIndex.get("frequentist_add_se_2:genotype/sex=2");
+	 * 
+	 * String line = null; while ((line = br.readLine()) != null) { String[]
+	 * splitted = line.split(TAB); String chrAndPosition =
+	 * splitted[indexChrInFiltered] + "_" + splitted[indexPositionInFiltered];
+	 * 
+	 * ArrayList<String> reducedList = new ArrayList<>();
+	 * reducedList.add(splitted[indexRsIdInFiltered]);
+	 * reducedList.add(splitted[indexAlleleAInFiltered]);
+	 * reducedList.add(splitted[indexAlleleBInFiltered]);
+	 * reducedList.add(splitted[indexAllMafInFiltered]);
+	 * reducedList.add(splitted[indexFreqAddPvalueInFiltered]);
+	 * 
+	 * reducedList.add(splitted[indexFreqAddBetaInFiltered]); //
+	 * reducedList.add(splitted[indexFreqAddBeta1sex1InFiltered]); //
+	 * reducedList.add(splitted[indexFreqAddBeta2sex2InFiltered]);
+	 * 
+	 * reducedList.add(splitted[indexFreqAddSeInFiltered]); //
+	 * reducedList.add(splitted[indexFreqAddSe1sex1InFiltered]); //
+	 * reducedList.add(splitted[indexFreqAddSe2sex2InFiltered]);
+	 * 
+	 * filteredTreeMap.put(chrAndPosition, reducedList); } } catch (IOException ioe)
+	 * { throw new GuidanceTaskException(ioe); }
+	 * 
+	 * // Finally, we print the phenomeThreeMap into the output file.
+	 * Set<Entry<String, ArrayList<String>>> mySet = phenomeATreeMap.entrySet(); //
+	 * Move next key and value of Map by iterator Iterator<Entry<String,
+	 * ArrayList<String>>> iter = mySet.iterator(); while (iter.hasNext()) {
+	 * Entry<String, ArrayList<String>> m = iter.next(); String chrAndPosition =
+	 * m.getKey(); ArrayList<String> currentList = (ArrayList<String>) m.getValue();
+	 * ArrayList<String> reducedList = null;
+	 * 
+	 * if (filteredTreeMap.containsKey(chrAndPosition)) { reducedList =
+	 * filteredTreeMap.get(chrAndPosition); for (int i = 0; i < reducedList.size();
+	 * i++) { currentList.add(reducedList.get(i)); } } else { for (int i = 0; i <
+	 * 11; i++) { currentList.add("NA"); } }
+	 * 
+	 * filteredTreeMap.put(chrAndPosition, currentList); }
+	 * 
+	 * // Finally, we print the phenomeThreeMap into the output plain output file
+	 * and // we will compress it String plainPhenomeBFile =
+	 * phenomeBFile.substring(0, phenomeBFile.length() - 3); try (BufferedWriter
+	 * writer = new BufferedWriter(new FileWriter(plainPhenomeBFile))) { // Write
+	 * the header writer.write(phenomeAHeader); writer.newLine();
+	 * 
+	 * mySet = phenomeATreeMap.entrySet(); // Move next key and value of Map by
+	 * iterator iter = mySet.iterator(); while (iter.hasNext()) { Entry<String,
+	 * ArrayList<String>> m = iter.next(); ArrayList<String> firstTmp =
+	 * m.getValue();
+	 * 
+	 * writer.write(firstTmp.get(0)); for (int j = 1; j < firstTmp.size(); j++) {
+	 * writer.write(TAB + firstTmp.get(j)); } writer.newLine(); }
+	 * 
+	 * writer.flush(); } catch (IOException ioe) { throw new
+	 * GuidanceTaskException(ioe); }
+	 * 
+	 * // Then, we create the gz file and rename it
+	 * FileUtils.gzipFile(plainPhenomeBFile, phenomeBFile);
+	 * FileUtils.delete(plainPhenomeBFile);
+	 * 
+	 * long stopTime = System.currentTimeMillis(); long elapsedTime = (stopTime -
+	 * startTime) / 1_000; if (DEBUG) {
+	 * System.out.println("\n[DEBUG] addToPhenoMatrix startTime: " + startTime);
+	 * System.out.println("\n[DEBUG] addToPhenoMatrix endTime: " + stopTime);
+	 * System.out.println("\n[DEBUG] addToPhenoMatrix elapsedTime: " + elapsedTime +
+	 * " seconds");
+	 * System.out.println("\n[DEBUG] Finished execution of addToPhenoMatrixX"); } }
 	 */
-	public static void filloutPhenoMatrix(String phenomeAFile, String filteredByAllFile, String filteredByAllXMalesFile,
-			String filteredByAllXFemalesFile, String endChrS, String ttName, String rpName, String phenomeBFile,
-			String cmdToStore) throws GuidanceTaskException {
-		// TODO: take into account that now there are two sex files
-		/*
-		 * if (DEBUG) {
-		 * System.out.println("\n[DEBUG] Running filloutPhenoMatrix with parameters:");
-		 * System.out.println("[DEBUG] \t- Input phenomeFileA              : " +
-		 * phenomeAFile);
-		 * System.out.println("[DEBUG] \t- Input filteredByAllFile         : " +
-		 * filteredByAllFile);
-		 * System.out.println("[DEBUG] \t- Input filteredByAllXMalesFile   : " +
-		 * filteredByAllXMalesFile);
-		 * System.out.println("[DEBUG] \t- Input filteredByAllXFemalesFile : " +
-		 * filteredByAllXFemalesFile);
-		 * System.out.println("[DEBUG] \t- Input endChrS                   : " +
-		 * endChrS); System.out.println("[DEBUG] \t- Input ttName                    : "
-		 * + ttName);
-		 * System.out.println("[DEBUG] \t- Input rpName                    : " +
-		 * rpName); System.out.println("[DEBUG] \t- Output phenomeFileB             : "
-		 * + phenomeBFile); System.out.println(NEW_LINE);
-		 * System.out.println("[DEBUG] \t- Command: " + cmdToStore);
-		 * System.out.println("--------------------------------------"); }
-		 * 
-		 * long startTime = System.currentTimeMillis();
-		 * 
-		 * // A place to store the data TreeMap<String, ArrayList<String>>
-		 * phenomeATreeMap = new TreeMap<>();
-		 * 
-		 * HashMap<String, Integer> phenomeAHashTableIndex = new HashMap<>(); //
-		 * HashMap<Integer, String> phenomeAHashTableIndexReversed = new HashMap<>();
-		 * 
-		 * // We start reading the phenomeFileA String phenomeAHeader = null; try
-		 * (GZIPInputStream phenomeAFileGz = new GZIPInputStream(new
-		 * FileInputStream(phenomeAFile)); InputStreamReader decoder = new
-		 * InputStreamReader(phenomeAFileGz); BufferedReader br = new
-		 * BufferedReader(decoder)) {
-		 * 
-		 * // First of all, the header phenomeAHeader = br.readLine();
-		 * 
-		 * // phenomeAHeader = "chr\tposition"; phenomeAHeader = phenomeAHeader + TAB +
-		 * ttName + ":" + rpName + ":" + "rs_id_all"; phenomeAHeader = phenomeAHeader +
-		 * TAB + ttName + ":" + rpName + ":" + "alleleA"; phenomeAHeader =
-		 * phenomeAHeader + TAB + ttName + ":" + rpName + ":" + "alleleB";
-		 * phenomeAHeader = phenomeAHeader + TAB + ttName + ":" + rpName + ":" +
-		 * "all_maf"; phenomeAHeader = phenomeAHeader + TAB + ttName + ":" + rpName +
-		 * ":" + "frequentist_add_pvalue"; phenomeAHeader = phenomeAHeader + TAB +
-		 * ttName + ":" + rpName + ":" + "frequentist_add_beta_1"; phenomeAHeader =
-		 * phenomeAHeader + TAB + ttName + ":" + rpName + ":" + "frequentist_add_se_1";
-		 * 
-		 * phenomeAHeader = phenomeAHeader + TAB + ttName + ":" + rpName + ":" +
-		 * "frequentist_add_beta_1:genotype/sex=1"; phenomeAHeader = phenomeAHeader +
-		 * TAB + ttName + ":" + rpName + ":" + "frequentist_add_beta_2:genotype/sex=2";
-		 * phenomeAHeader = phenomeAHeader + TAB + ttName + ":" + rpName + ":" +
-		 * "frequentist_add_se_1:genotype/sex=1"; phenomeAHeader = phenomeAHeader + TAB
-		 * + ttName + ":" + rpName + ":" + "frequentist_add_se_2:genotype/sex=2";
-		 * 
-		 * phenomeAHashTableIndex = Headers.createHashWithHeader(phenomeAHeader, TAB);
-		 * 
-		 * int indexChrInPhenomeAFile = phenomeAHashTableIndex.get("chr"); int
-		 * indexPositionInPhenomeAFile = phenomeAHashTableIndex.get("position");
-		 * 
-		 * // int indexRsIdInPhenomeAFile = phenomeAHashTableIndex.get(ttName + ":" + //
-		 * rpName + ":" + "rs_id_all"); // int indexAlleleAInPhenomeAFile =
-		 * phenomeAHashTableIndex.get(ttName + ":" + // rpName + ":" + "alleleA"); //
-		 * int indexAlleleBInPhenomeAFile = phenomeAHashTableIndex.get(ttName + ":" + //
-		 * rpName + ":" + "alleleB"); // int indexallMAFInPhenomeAFile =
-		 * phenomeAHashTableIndex.get(ttName + ":" + // rpName + ":" + "all_maf"); //
-		 * int indexFreqAddPvalueInPhenomeAFile = phenomeAHashTableIndex.get(ttName + //
-		 * ":" + rpName + ":" + // "frequentist_add_pvalue"); // int
-		 * indexFreqAddBetaInPhenomeAFile = phenomeAHashTableIndex.get(ttName + ":" // +
-		 * rpName + ":" + // "frequentist_add_beta_1"); // int
-		 * indexFreqAddSeInPhenomeAFile = phenomeAHashTableIndex.get(ttName + ":" + //
-		 * rpName + ":" + // "frequentist_add_se_1");
-		 * 
-		 * // int indexFreqAddBeta1Sex1InPhenomeAFile =
-		 * phenomeAHashTableIndex.get(ttName + // ":" + rpName + ":" + //
-		 * "frequentist_add_beta_1:genotype/sex=1"); // int
-		 * indexFreqAddBeta2Sex2InPhenomeAFile = phenomeAHashTableIndex.get(ttName + //
-		 * ":" + rpName + ":" + // "frequentist_add_beta_2:genotype/sex=2"); // int
-		 * indexFreqAddSe1Sex1InPhenomeAFile = phenomeAHashTableIndex.get(ttName + //
-		 * ":" + rpName + ":" + // "frequentist_add_se_1:genotype/sex=1"); // int
-		 * indexFreqAddSe2Sex2InPhenomeAFile = phenomeAHashTableIndex.get(ttName + //
-		 * ":" + rpName + ":" + // "frequentist_add_se_2:genotype/sex=2");
-		 * 
-		 * // ---> // Then, we read the rest of the file and put the information into
-		 * the // phenomeATreeMap String chrAndPosition = null; String line = null;
-		 * while ((line = br.readLine()) != null) { ArrayList<String> currentList = new
-		 * ArrayList<>(); // delimiter,I assume tab space. String[] splitted =
-		 * line.split(TAB);
-		 * 
-		 * chrAndPosition = splitted[indexChrInPhenomeAFile] + "_" +
-		 * splitted[indexPositionInPhenomeAFile];
-		 * 
-		 * // currentList.add(splitted[indexChrInPhenomeAFile]); //
-		 * currentList.add(splitted[indexPositionInPhenomeAFile]); for (int i = 0; i <
-		 * splitted.length; i++) { currentList.add(splitted[i]); }
-		 * 
-		 * // We update the phenomeATreeMap with the currentList
-		 * phenomeATreeMap.put(chrAndPosition, currentList); } } catch (IOException ioe)
-		 * { throw new GuidanceTaskException(ioe); }
-		 * 
-		 * // Then, we need to extract the information of each snp from the //
-		 * filteredByAllFile // Now we load the whole filteredByAllFile into a TreeMap
-		 * TreeMap<String, ArrayList<String>> filteredTreeMap = new TreeMap<>(); try
-		 * (GZIPInputStream filteredByAllGz = new GZIPInputStream(new
-		 * FileInputStream(filteredByAllFile)); InputStreamReader decoder = new
-		 * InputStreamReader(filteredByAllGz); BufferedReader br = new
-		 * BufferedReader(decoder)) {
-		 * 
-		 * HashMap<String, Integer> filteredByAllHashTableIndex = new HashMap<>(); //
-		 * HashMap<Integer, String> filteredByAllHashTableIndexReversed = new //
-		 * HashMap<>();
-		 * 
-		 * // We start reading the filteredByAllFile // First of all, the header String
-		 * filteredHeader = br.readLine(); filteredByAllHashTableIndex =
-		 * Headers.createHashWithHeader(filteredHeader, TAB);
-		 * 
-		 * int indexChrInFiltered = filteredByAllHashTableIndex.get("chr"); int
-		 * indexPositionInFiltered = filteredByAllHashTableIndex.get("position"); int
-		 * indexRsIdInFiltered = filteredByAllHashTableIndex.get("rs_id_all"); int
-		 * indexAlleleAInFiltered = filteredByAllHashTableIndex.get("alleleA"); int
-		 * indexAlleleBInFiltered = filteredByAllHashTableIndex.get("alleleB"); int
-		 * indexAllMafInFiltered = filteredByAllHashTableIndex.get("all_maf"); int
-		 * indexFreqAddPvalueInFiltered =
-		 * filteredByAllHashTableIndex.get("frequentist_add_pvalue"); int
-		 * indexFreqAddBetaInFiltered =
-		 * filteredByAllHashTableIndex.get("frequentist_add_beta_1"); // int
-		 * indexFreqAddBeta1sex1InFiltered = //
-		 * filteredByAllHashTableIndex.get("frequentist_add_beta_1:genotype/sex=1"); //
-		 * int indexFreqAddBeta2sex2InFiltered = //
-		 * filteredByAllHashTableIndex.get("frequentist_add_beta_2:genotype/sex=2"); int
-		 * indexFreqAddSeInFiltered =
-		 * filteredByAllHashTableIndex.get("frequentist_add_se_1"); // int
-		 * indexFreqAddSe1sex1InFiltered = //
-		 * filteredByAllHashTableIndex.get("frequentist_add_se_1:genotype/sex=1"); //
-		 * int indexFreqAddSe2sex2InFiltered = //
-		 * filteredByAllHashTableIndex.get("frequentist_add_se_2:genotype/sex=2");
-		 * 
-		 * String line = null; while ((line = br.readLine()) != null) { String[]
-		 * splitted = line.split(TAB); String chrAndPosition =
-		 * splitted[indexChrInFiltered] + "_" + splitted[indexPositionInFiltered];
-		 * 
-		 * ArrayList<String> reducedList = new ArrayList<>();
-		 * reducedList.add(splitted[indexRsIdInFiltered]);
-		 * reducedList.add(splitted[indexAlleleAInFiltered]);
-		 * reducedList.add(splitted[indexAlleleBInFiltered]);
-		 * reducedList.add(splitted[indexAllMafInFiltered]);
-		 * reducedList.add(splitted[indexFreqAddPvalueInFiltered]);
-		 * reducedList.add(splitted[indexFreqAddBetaInFiltered]);
-		 * reducedList.add(splitted[indexFreqAddSeInFiltered]);
-		 * 
-		 * // Now we put 4 values more that are the ones for chrX reducedList.add("NA");
-		 * reducedList.add("NA"); reducedList.add("NA"); reducedList.add("NA");
-		 * 
-		 * filteredTreeMap.put(chrAndPosition, reducedList); } } catch (IOException ioe)
-		 * { throw new GuidanceTaskException(ioe); }
-		 * 
-		 * // Here we have to do some similar with filteredByAllXFile (the results for
-		 * // chr23) TreeMap<String, ArrayList<String>> filteredXTreeMap = new
-		 * TreeMap<>(); HashMap<String, Integer> filteredByAllXHashTableIndex = new
-		 * HashMap<>(); // HashMap<Integer, String> filteredByAllXHashTableIndexReversed
-		 * = new // HashMap<>();
-		 * 
-		 * if (endChrS.equals(CHR_23)) { // Then, we need to extract the information of
-		 * each snp from the // filteredByAllFile // Now we load the whole
-		 * filteredByAllFile into a TreeMap try (GZIPInputStream filteredByAllXGz = new
-		 * GZIPInputStream(new FileInputStream(filteredByAllXFile)); InputStreamReader
-		 * decoder = new InputStreamReader(filteredByAllXGz); BufferedReader br = new
-		 * BufferedReader(decoder)) {
-		 * 
-		 * // We start reading the filteredByAllXFile // First of all, the header String
-		 * filteredXHeader = br.readLine(); filteredByAllXHashTableIndex =
-		 * Headers.createHashWithHeader(filteredXHeader, TAB);
-		 * 
-		 * int indexChrInFilteredX = filteredByAllXHashTableIndex.get("chr"); int
-		 * indexPositionInFilteredX = filteredByAllXHashTableIndex.get("position"); int
-		 * indexRsIdInFilteredX = filteredByAllXHashTableIndex.get("rs_id_all"); int
-		 * indexAlleleAInFilteredX = filteredByAllXHashTableIndex.get("alleleA"); int
-		 * indexAlleleBInFilteredX = filteredByAllXHashTableIndex.get("alleleB"); int
-		 * indexAllMafInFilteredX = filteredByAllXHashTableIndex.get("all_maf"); int
-		 * indexFreqAddPvalueInFilteredX =
-		 * filteredByAllXHashTableIndex.get("frequentist_add_pvalue"); // int
-		 * indexFreqAddBetaInFilteredX = //
-		 * filteredByAllXHashTableIndex.get("frequentist_add_beta_1"); // int
-		 * indexFreqAddSeInFilteredX = //
-		 * filteredByAllXHashTableIndex.get("frequentist_add_se_1");
-		 * 
-		 * int indexFreqAddBeta1sex1InFilteredX = filteredByAllXHashTableIndex
-		 * .get("frequentist_add_beta_1:genotype/sex=1"); int
-		 * indexFreqAddBeta2sex2InFilteredX = filteredByAllXHashTableIndex
-		 * .get("frequentist_add_beta_2:genotype/sex=2"); int
-		 * indexFreqAddSe1sex1InFilteredX = filteredByAllXHashTableIndex
-		 * .get("frequentist_add_se_1:genotype/sex=1"); int
-		 * indexFreqAddSe2sex2InFilteredX = filteredByAllXHashTableIndex
-		 * .get("frequentist_add_se_2:genotype/sex=2");
-		 * 
-		 * String line = null; while ((line = br.readLine()) != null) { String[]
-		 * splitted = line.split(TAB); String chrAndPosition =
-		 * splitted[indexChrInFilteredX] + "_" + splitted[indexPositionInFilteredX];
-		 * 
-		 * ArrayList<String> reducedList = new ArrayList<>();
-		 * reducedList.add(splitted[indexRsIdInFilteredX]);
-		 * reducedList.add(splitted[indexAlleleAInFilteredX]);
-		 * reducedList.add(splitted[indexAlleleBInFilteredX]);
-		 * reducedList.add(splitted[indexAllMafInFilteredX]);
-		 * reducedList.add(splitted[indexFreqAddPvalueInFilteredX]);
-		 * 
-		 * // This to values for chr23 reducedList.add("NA"); reducedList.add("NA");
-		 * 
-		 * // Now we put 4 values more that are the ones for chrX
-		 * reducedList.add(splitted[indexFreqAddBeta1sex1InFilteredX]);
-		 * reducedList.add(splitted[indexFreqAddBeta2sex2InFilteredX]);
-		 * reducedList.add(splitted[indexFreqAddSe1sex1InFilteredX]);
-		 * reducedList.add(splitted[indexFreqAddSe2sex2InFilteredX]);
-		 * 
-		 * filteredXTreeMap.put(chrAndPosition, reducedList); } } catch (IOException
-		 * ioe) { throw new GuidanceTaskException(ioe); } }
-		 * 
-		 * // Now, we print the information of each snp from filteredByAllFile into the
-		 * // phenomeATreeMap
-		 * 
-		 * Set<Entry<String, ArrayList<String>>> mySet = phenomeATreeMap.entrySet(); //
-		 * Move next key and value of Map by iterator Iterator<Entry<String,
-		 * ArrayList<String>>> iter = mySet.iterator(); while (iter.hasNext()) {
-		 * Entry<String, ArrayList<String>> m = iter.next(); String chrAndPosition =
-		 * m.getKey(); ArrayList<String> currentList = m.getValue(); ArrayList<String>
-		 * reducedList = null;
-		 * 
-		 * String[] divideKey = chrAndPosition.split("_"); String Chr = divideKey[0];
-		 * 
-		 * if (!Chr.equals(CHR_23)) { if (filteredTreeMap.containsKey(chrAndPosition)) {
-		 * reducedList = filteredTreeMap.get(chrAndPosition);
-		 * 
-		 * for (int i = 0; i < reducedList.size(); i++) {
-		 * currentList.add(reducedList.get(i)); } } else { for (int i = 0; i < 11; i++)
-		 * { currentList.add("NA"); } } } else { if
-		 * (filteredXTreeMap.containsKey(chrAndPosition)) { reducedList =
-		 * filteredXTreeMap.get(chrAndPosition);
-		 * 
-		 * for (int i = 0; i < reducedList.size(); i++) {
-		 * currentList.add(reducedList.get(i)); } } else { for (int i = 0; i < 11; i++)
-		 * { currentList.add("NA"); } } }
-		 * 
-		 * phenomeATreeMap.put(chrAndPosition, currentList); }
-		 * 
-		 * // Finally, we print the phenomeAThreeMap into the output plain file and we
-		 * will // compress it String plainPhenomeBFile = phenomeBFile.substring(0,
-		 * phenomeBFile.length() - 3); try (BufferedWriter writer = new
-		 * BufferedWriter(new FileWriter(plainPhenomeBFile))) { // Write the header
-		 * writer.write(phenomeAHeader); writer.newLine();
-		 * 
-		 * mySet = phenomeATreeMap.entrySet(); // Move next key and value of Map by
-		 * iterator iter = mySet.iterator(); while (iter.hasNext()) { Entry<String,
-		 * ArrayList<String>> m = iter.next(); ArrayList<String> firstTmp =
-		 * m.getValue();
-		 * 
-		 * writer.write(firstTmp.get(0)); for (int j = 1; j < firstTmp.size(); j++) {
-		 * writer.write(TAB + firstTmp.get(j)); }
-		 * 
-		 * writer.newLine(); }
-		 * 
-		 * writer.flush(); } catch (IOException ioe) { throw new
-		 * GuidanceTaskException(ioe); }
-		 * 
-		 * // Then, we create the gz file and rename it
-		 * FileUtils.gzipFile(plainPhenomeBFile, phenomeBFile);
-		 * FileUtils.delete(plainPhenomeBFile);
-		 * 
-		 * long stopTime = System.currentTimeMillis(); long elapsedTime = (stopTime -
-		 * startTime) / 1_000; if (DEBUG) {
-		 * System.out.println("\n[DEBUG] filloutPhenoMatrix startTime: " + startTime);
-		 * System.out.println("\n[DEBUG] filloutPhenoMatrix endTime: " + stopTime);
-		 * System.out.println("\n[DEBUG] filloutPhenoMatrix elapsedTime: " + elapsedTime
-		 * + " seconds");
-		 * System.out.println("\n[DEBUG] Finished execution of filloutPhenoMatrix."); }
-		 */
-	}
 
 	/**
 	 * Method to finalize the pheno matrix
@@ -5316,158 +5006,128 @@ public class GuidanceImpl {
 	 * @throws InterruptedException
 	 * @throws Exception
 	 */
-	public static void finalizePhenoMatrix(String phenomeAFile, String phenomeBFile, String ttName, String rpName,
-			String phenomeCFile, String cmdToStore) throws GuidanceTaskException {
-
-		if (DEBUG) {
-			System.out.println("\n[DEBUG] Running finalizePhenoMatrix with parameters:");
-			System.out.println("[DEBUG] \t- Input phenomeAFile  : " + phenomeAFile);
-			System.out.println("[DEBUG] \t- Input phenomeBFile  : " + phenomeBFile);
-			System.out.println("[DEBUG] \t- Input ttName        : " + ttName);
-			System.out.println("[DEBUG] \t- Input rpName        : " + rpName);
-			System.out.println("[DEBUG] \t- Output phenomeCFile : " + phenomeCFile);
-			System.out.println(NEW_LINE);
-			System.out.println("[DEBUG] \t- Command: " + cmdToStore);
-			System.out.println("--------------------------------------");
-		}
-		long startTime = System.currentTimeMillis();
-
-		// A place to store the data
-		TreeMap<String, ArrayList<String>> phenomeATreeMap = new TreeMap<>();
-		HashMap<String, Integer> phenomeAHashTableIndex = new HashMap<>();
-		// HashMap<Integer, String> phenomeAHashTableIndexReversed = new HashMap<>();
-
-		// We start reading the phenomeFileA
-		String phenomeAHeader = null;
-		try (GZIPInputStream phenomeAFileGz = new GZIPInputStream(new FileInputStream(phenomeAFile));
-				InputStreamReader decoder = new InputStreamReader(phenomeAFileGz);
-				BufferedReader br = new BufferedReader(decoder)) {
-
-			// First of all, the header
-			phenomeAHeader = br.readLine();
-			phenomeAHashTableIndex = Headers.createHashWithHeader(phenomeAHeader, TAB);
-
-			int indexChrInPhenomeAFile = phenomeAHashTableIndex.get("chr");
-			int indexPositionInPhenomeAFile = phenomeAHashTableIndex.get("position");
-
-			// Then, we read the rest of the file and put the information into the
-			// phenomeATreeMap
-			String chrAndPosition = null;
-			String line = null;
-			while ((line = br.readLine()) != null) {
-				ArrayList<String> firstList = new ArrayList<>();
-				// delimiter,I assume TAP space.
-				String[] splitted = line.split(TAB);
-
-				chrAndPosition = splitted[indexChrInPhenomeAFile] + "_" + splitted[indexPositionInPhenomeAFile];
-
-				// Store chr:position
-				for (int i = 0; i < splitted.length; i++) {
-					firstList.add(splitted[i]);
-				}
-				// Finally, we put this data into the phenomeATreeMap, using chrPosition as key
-				// and the firstList as
-				// value
-				phenomeATreeMap.put(chrAndPosition, firstList);
-			}
-		} catch (IOException ioe) {
-			throw new GuidanceTaskException(ioe);
-		}
-
-		// Second we read the phenomeBFile and load the information into the
-		// phenomeATreeMap
-		String phenomeBHeader = null;
-		HashMap<String, Integer> phenomeBHashTableIndex = new HashMap<>();
-		HashMap<Integer, String> phenomeBHashTableIndexReversed = new HashMap<>();
-		try (GZIPInputStream phenomeBFileGz = new GZIPInputStream(new FileInputStream(phenomeBFile));
-				InputStreamReader decoder = new InputStreamReader(phenomeBFileGz);
-				BufferedReader br = new BufferedReader(decoder)) {
-
-			// We start reading the phenomeFileA
-			// First of all, the header
-			phenomeBHeader = br.readLine();
-			phenomeBHashTableIndex = Headers.createHashWithHeader(phenomeBHeader, TAB);
-			phenomeBHashTableIndexReversed = Headers.createHashWithHeaderReversed(phenomeBHeader, TAB);
-
-			int indexChrInPhenomeBFile = phenomeBHashTableIndex.get("chr");
-			int indexPositionInPhenomeBFile = phenomeBHashTableIndex.get("position");
-
-			// Then, we read the rest of the file and put the information into the
-			// phenomeATreeMap
-			String chrAndPosition = null;
-			String line = null;
-			while ((line = br.readLine()) != null) {
-				ArrayList<String> firstList = new ArrayList<>();
-				// delimiter,I assume tab space.
-				String[] splitted = line.split(TAB);
-
-				chrAndPosition = splitted[indexChrInPhenomeBFile] + "_" + splitted[indexPositionInPhenomeBFile];
-
-				if (phenomeATreeMap.containsKey(chrAndPosition)) {
-					firstList = phenomeATreeMap.get(chrAndPosition);
-
-					for (int i = 2; i < splitted.length; i++) {
-						firstList.add(splitted[i]);
-					}
-
-					// Finally, we put this data into the phenomeATreeMap, using chrPosition as key
-					// and the firstList as
-					// value.
-					phenomeATreeMap.put(chrAndPosition, firstList);
-				}
-			}
-		} catch (IOException ioe) {
-			throw new GuidanceTaskException(ioe);
-		}
-
-		String finalHeader = phenomeAHeader;
-		for (int i = 2; i < phenomeBHashTableIndex.size(); i++) {
-			finalHeader = finalHeader + TAB + phenomeBHashTableIndexReversed.get(i);
-		}
-
-		// Finally, we print the phenomeAThreeMap into the output plain file and we will
-		// compress it
-		String plainPhenomeCFile = phenomeCFile.substring(0, phenomeCFile.length() - 3);
-		try (BufferedWriter writer = new BufferedWriter(new FileWriter(plainPhenomeCFile))) {
-			// Write the header
-			writer.write(finalHeader);
-			writer.newLine();
-
-			Set<Entry<String, ArrayList<String>>> mySet = phenomeATreeMap.entrySet();
-			// Move next key and value of Map by iterator
-			Iterator<Entry<String, ArrayList<String>>> iter = mySet.iterator();
-			while (iter.hasNext()) {
-				Entry<String, ArrayList<String>> m = iter.next();
-				ArrayList<String> firstTmp = m.getValue();
-
-				writer.write(firstTmp.get(0));
-				for (int j = 1; j < firstTmp.size(); j++) {
-					writer.write(TAB + firstTmp.get(j));
-				}
-
-				writer.newLine();
-			}
-
-			writer.flush();
-		} catch (IOException ioe) {
-			throw new GuidanceTaskException(ioe);
-		}
-
-		// Then, we create the gz file and rename it
-		FileUtils.gzipFile(plainPhenomeCFile, phenomeCFile);
-		FileUtils.delete(plainPhenomeCFile);
-
-		// <----------
-		long stopTime = System.currentTimeMillis();
-		long elapsedTime = (stopTime - startTime) / 1_000;
-		if (DEBUG) {
-			System.out.println("\n[DEBUG] finalizePhenoMatrix startTime: " + startTime);
-			System.out.println("\n[DEBUG] finalizePhenoMatrix endTime: " + stopTime);
-			System.out.println("\n[DEBUG] finalizePhenoMatrix elapsedTime: " + elapsedTime + " seconds");
-			System.out.println("\n[DEBUG] Finished execution of finalizePhenoMatrix.");
-		}
-
-	}
+	/*
+	 * public static void finalizePhenoMatrix(String phenomeAFile, String
+	 * phenomeBFile, String ttName, String rpName, String phenomeCFile, String
+	 * cmdToStore) throws GuidanceTaskException {
+	 * 
+	 * if (DEBUG) {
+	 * System.out.println("\n[DEBUG] Running finalizePhenoMatrix with parameters:");
+	 * System.out.println("[DEBUG] \t- Input phenomeAFile  : " + phenomeAFile);
+	 * System.out.println("[DEBUG] \t- Input phenomeBFile  : " + phenomeBFile);
+	 * System.out.println("[DEBUG] \t- Input ttName        : " + ttName);
+	 * System.out.println("[DEBUG] \t- Input rpName        : " + rpName);
+	 * System.out.println("[DEBUG] \t- Output phenomeCFile : " + phenomeCFile);
+	 * System.out.println(NEW_LINE); System.out.println("[DEBUG] \t- Command: " +
+	 * cmdToStore); System.out.println("--------------------------------------"); }
+	 * long startTime = System.currentTimeMillis();
+	 * 
+	 * // A place to store the data TreeMap<String, ArrayList<String>>
+	 * phenomeATreeMap = new TreeMap<>(); HashMap<String, Integer>
+	 * phenomeAHashTableIndex = new HashMap<>(); // HashMap<Integer, String>
+	 * phenomeAHashTableIndexReversed = new HashMap<>();
+	 * 
+	 * // We start reading the phenomeFileA String phenomeAHeader = null; try
+	 * (GZIPInputStream phenomeAFileGz = new GZIPInputStream(new
+	 * FileInputStream(phenomeAFile)); InputStreamReader decoder = new
+	 * InputStreamReader(phenomeAFileGz); BufferedReader br = new
+	 * BufferedReader(decoder)) {
+	 * 
+	 * // First of all, the header phenomeAHeader = br.readLine();
+	 * phenomeAHashTableIndex = Headers.createHashWithHeader(phenomeAHeader, TAB);
+	 * 
+	 * int indexChrInPhenomeAFile = phenomeAHashTableIndex.get("chr"); int
+	 * indexPositionInPhenomeAFile = phenomeAHashTableIndex.get("position");
+	 * 
+	 * // Then, we read the rest of the file and put the information into the //
+	 * phenomeATreeMap String chrAndPosition = null; String line = null; while
+	 * ((line = br.readLine()) != null) { ArrayList<String> firstList = new
+	 * ArrayList<>(); // delimiter,I assume TAP space. String[] splitted =
+	 * line.split(TAB);
+	 * 
+	 * chrAndPosition = splitted[indexChrInPhenomeAFile] + "_" +
+	 * splitted[indexPositionInPhenomeAFile];
+	 * 
+	 * // Store chr:position for (int i = 0; i < splitted.length; i++) {
+	 * firstList.add(splitted[i]); } // Finally, we put this data into the
+	 * phenomeATreeMap, using chrPosition as key // and the firstList as // value
+	 * phenomeATreeMap.put(chrAndPosition, firstList); } } catch (IOException ioe) {
+	 * throw new GuidanceTaskException(ioe); }
+	 * 
+	 * // Second we read the phenomeBFile and load the information into the //
+	 * phenomeATreeMap String phenomeBHeader = null; HashMap<String, Integer>
+	 * phenomeBHashTableIndex = new HashMap<>(); HashMap<Integer, String>
+	 * phenomeBHashTableIndexReversed = new HashMap<>(); try (GZIPInputStream
+	 * phenomeBFileGz = new GZIPInputStream(new FileInputStream(phenomeBFile));
+	 * InputStreamReader decoder = new InputStreamReader(phenomeBFileGz);
+	 * BufferedReader br = new BufferedReader(decoder)) {
+	 * 
+	 * // We start reading the phenomeFileA // First of all, the header
+	 * phenomeBHeader = br.readLine(); phenomeBHashTableIndex =
+	 * Headers.createHashWithHeader(phenomeBHeader, TAB);
+	 * phenomeBHashTableIndexReversed =
+	 * Headers.createHashWithHeaderReversed(phenomeBHeader, TAB);
+	 * 
+	 * int indexChrInPhenomeBFile = phenomeBHashTableIndex.get("chr"); int
+	 * indexPositionInPhenomeBFile = phenomeBHashTableIndex.get("position");
+	 * 
+	 * // Then, we read the rest of the file and put the information into the //
+	 * phenomeATreeMap String chrAndPosition = null; String line = null; while
+	 * ((line = br.readLine()) != null) { ArrayList<String> firstList = new
+	 * ArrayList<>(); // delimiter,I assume tab space. String[] splitted =
+	 * line.split(TAB);
+	 * 
+	 * chrAndPosition = splitted[indexChrInPhenomeBFile] + "_" +
+	 * splitted[indexPositionInPhenomeBFile];
+	 * 
+	 * if (phenomeATreeMap.containsKey(chrAndPosition)) { firstList =
+	 * phenomeATreeMap.get(chrAndPosition);
+	 * 
+	 * for (int i = 2; i < splitted.length; i++) { firstList.add(splitted[i]); }
+	 * 
+	 * // Finally, we put this data into the phenomeATreeMap, using chrPosition as
+	 * key // and the firstList as // value. phenomeATreeMap.put(chrAndPosition,
+	 * firstList); } } } catch (IOException ioe) { throw new
+	 * GuidanceTaskException(ioe); }
+	 * 
+	 * String finalHeader = phenomeAHeader; for (int i = 2; i <
+	 * phenomeBHashTableIndex.size(); i++) { finalHeader = finalHeader + TAB +
+	 * phenomeBHashTableIndexReversed.get(i); }
+	 * 
+	 * // Finally, we print the phenomeAThreeMap into the output plain file and we
+	 * will // compress it String plainPhenomeCFile = phenomeCFile.substring(0,
+	 * phenomeCFile.length() - 3); try (BufferedWriter writer = new
+	 * BufferedWriter(new FileWriter(plainPhenomeCFile))) { // Write the header
+	 * writer.write(finalHeader); writer.newLine();
+	 * 
+	 * Set<Entry<String, ArrayList<String>>> mySet = phenomeATreeMap.entrySet(); //
+	 * Move next key and value of Map by iterator Iterator<Entry<String,
+	 * ArrayList<String>>> iter = mySet.iterator(); while (iter.hasNext()) {
+	 * Entry<String, ArrayList<String>> m = iter.next(); ArrayList<String> firstTmp
+	 * = m.getValue();
+	 * 
+	 * writer.write(firstTmp.get(0)); for (int j = 1; j < firstTmp.size(); j++) {
+	 * writer.write(TAB + firstTmp.get(j)); }
+	 * 
+	 * writer.newLine(); }
+	 * 
+	 * writer.flush(); } catch (IOException ioe) { throw new
+	 * GuidanceTaskException(ioe); }
+	 * 
+	 * // Then, we create the gz file and rename it
+	 * FileUtils.gzipFile(plainPhenomeCFile, phenomeCFile);
+	 * FileUtils.delete(plainPhenomeCFile);
+	 * 
+	 * // <---------- long stopTime = System.currentTimeMillis(); long elapsedTime =
+	 * (stopTime - startTime) / 1_000; if (DEBUG) {
+	 * System.out.println("\n[DEBUG] finalizePhenoMatrix startTime: " + startTime);
+	 * System.out.println("\n[DEBUG] finalizePhenoMatrix endTime: " + stopTime);
+	 * System.out.println("\n[DEBUG] finalizePhenoMatrix elapsedTime: " +
+	 * elapsedTime + " seconds");
+	 * System.out.println("\n[DEBUG] Finished execution of finalizePhenoMatrix."); }
+	 * 
+	 * }
+	 */
 
 	/**
 	 * Method to merge arrays
