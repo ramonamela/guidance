@@ -1787,7 +1787,7 @@ public class ParseCmdLine {
 			wfPossibleDeeps.put("from_qctoolS_to_association", 0x0010000);
 			wfPossibleDeeps.put("from_association", 0x000FF80);
 			wfPossibleDeeps.put("from_association_to_filterByAll", 0x000E000);
-			wfPossibleDeeps.put("from_association_to_summary", 0x000FF80);
+			wfPossibleDeeps.put("from_association_to_summary", 0x000FF00);
 			wfPossibleDeeps.put("from_filterByAll", 0x0001F80);
 			wfPossibleDeeps.put("from_filterByAll_to_summary", 0x0001F00);
 			wfPossibleDeeps.put("from_summary", 0x0000080);
@@ -1824,10 +1824,10 @@ public class ParseCmdLine {
 		}
 
 		String[] steps = { "convertFromBedToBed", "createRsIdList", "phasingBed", "phasing", "createListOfExcludedSnps",
-				"filterHaplotypes", "imputeWithImpute", "imputeWithMinimac", "filterByInfo", "qctoolS", "snpTest",
+				"filterHaplotypes", "imputeWithImpute", "imputeWithMinimac", "filterByInfo", "qctoolS", "snptest",
 				"collectSummary", "mergeTwoChunks", "filterByAll", "jointCondensedFiles", "jointFilteredByAllFiles",
-				"generateTopHits", "generateQQManhatanPlots", "combinePanelsComplex", "phenoAnalysis", "ttask", "utask",
-				"vtask", "wtask", "xtask", "ytask", "ztask" };
+				"generateTopHits", "generateQQManhattanPlots", "combinePanelsComplex", "phenoAnalysis", "taskt", "tasku",
+				"taskv", "taskw", "taskx", "tasky", "taskz" };
 
 		final Integer MASK1 = 0x00001;
 

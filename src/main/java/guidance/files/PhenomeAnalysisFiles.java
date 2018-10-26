@@ -67,7 +67,7 @@ public class PhenomeAnalysisFiles {
 		this.phenomeAnalysisOutDir = baseOutDir + File.separator + "associations" + File.separator + "pheno_analysis"
 				+ File.separator + mixedCohort;
 
-		String basePrefixPhenomeName = "phenome_analysis_" + mixedCohort;
+		String basePrefixPhenomeName = this.phenomeAnalysisOutDir;
 		
 		topHitsAllPhenos = new GenericFile(basePrefixPhenomeName, "tophits_all_phenotypes.txt", "decompressed", "none");
 

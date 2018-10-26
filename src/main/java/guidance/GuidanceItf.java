@@ -391,43 +391,6 @@ public interface GuidanceItf {
 			@Parameter(type = Type.STRING, direction = Direction.IN) String cmdToStore);
 
 	@Method(declaringClass = "guidance.GuidanceImpl")
-	@Constraints(computingUnits = "1", memorySize = "${initPhenoMatrixMem}")
-	void initPhenoMatrix(@Parameter(type = Type.FILE, direction = Direction.IN) String topHitsFile,
-			@Parameter(type = Type.STRING, direction = Direction.IN) String ttName,
-			@Parameter(type = Type.STRING, direction = Direction.IN) String rpName,
-			@Parameter(type = Type.FILE, direction = Direction.OUT) String phenomeFile,
-			@Parameter(type = Type.STRING, direction = Direction.IN) String cmdToStore);
-
-	@Method(declaringClass = "guidance.GuidanceImpl")
-	@Constraints(computingUnits = "1", memorySize = "${addPhenoMatrixMem}")
-	void addToPhenoMatrix(@Parameter(type = Type.FILE, direction = Direction.IN) String phenomeAFile,
-			@Parameter(type = Type.FILE, direction = Direction.IN) String topHitsFile,
-			@Parameter(type = Type.STRING, direction = Direction.IN) String ttName,
-			@Parameter(type = Type.STRING, direction = Direction.IN) String rpName,
-			@Parameter(type = Type.FILE, direction = Direction.OUT) String phenomeBFile,
-			@Parameter(type = Type.STRING, direction = Direction.IN) String cmdToStore);
-
-	@Method(declaringClass = "guidance.GuidanceImpl")
-	@Constraints(computingUnits = "1", memorySize = "${filloutPhenoMatrixMem}")
-	void filloutPhenoMatrix(@Parameter(type = Type.FILE, direction = Direction.IN) String phenomeAFile,
-			@Parameter(type = Type.FILE, direction = Direction.IN) String filteredByAllFile,
-			@Parameter(type = Type.FILE, direction = Direction.IN) String filteredByAllXFile,
-			@Parameter(type = Type.STRING, direction = Direction.IN) String thereisX,
-			@Parameter(type = Type.STRING, direction = Direction.IN) String ttName,
-			@Parameter(type = Type.STRING, direction = Direction.IN) String rpName,
-			@Parameter(type = Type.FILE, direction = Direction.OUT) String phenomeBFile,
-			@Parameter(type = Type.STRING, direction = Direction.IN) String cmdToStore);
-
-	@Method(declaringClass = "guidance.GuidanceImpl")
-	@Constraints(computingUnits = "1", memorySize = "${finalizePhenoMatrixMem}")
-	void finalizePhenoMatrix(@Parameter(type = Type.FILE, direction = Direction.IN) String phenomeAFile,
-			@Parameter(type = Type.FILE, direction = Direction.IN) String phenomeBFile,
-			@Parameter(type = Type.STRING, direction = Direction.IN) String ttName,
-			@Parameter(type = Type.STRING, direction = Direction.IN) String rpName,
-			@Parameter(type = Type.FILE, direction = Direction.OUT) String phenomeCFile,
-			@Parameter(type = Type.STRING, direction = Direction.IN) String cmdToStore);
-
-	@Method(declaringClass = "guidance.GuidanceImpl")
 	@Constraints(computingUnits = "1", memorySize = "${mergeTwoChunksMem}")
 	void mergeTwoChunks(@Parameter(type = Type.FILE, direction = Direction.IN) String reduceFileA,
 			@Parameter(type = Type.FILE, direction = Direction.IN) String reduceFileB,

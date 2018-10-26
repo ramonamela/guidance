@@ -773,8 +773,8 @@ public class Guidance {
 				String manhattanPlotTiffFile = resultsFilesInfo.getManhattanTiffFile(test, panel);
 
 				if (parsingArgs.getStageStatus("generateQQManhattanPlots") == 1) {
-					doGenerateQQManhattanPlots(parsingArgs, lastCondensedFile, qqPlotPdfFile, manhattanPlotPdfFile,
-							qqPlotTiffFile, manhattanPlotTiffFile);
+					//doGenerateQQManhattanPlots(parsingArgs, lastCondensedFile, qqPlotPdfFile, manhattanPlotPdfFile,
+					//		qqPlotTiffFile, manhattanPlotTiffFile);
 				}
 
 				flushCommands();
@@ -2507,8 +2507,8 @@ public class Guidance {
 		String combinedManhattanPlotPdfFile = combinedPanelsFilesInfo.getManhattanPdfFile(ttIndex);
 		String combinedManhattanPlotTiffFile = combinedPanelsFilesInfo.getManhattanTiffFile(ttIndex);
 
-		doGenerateQQManhattanPlots(parsingArgs, condensedCombineAll, combinedQqPlotPdfFile,
-				combinedManhattanPlotPdfFile, combinedQqPlotTiffFile, combinedManhattanPlotTiffFile);
+		//doGenerateQQManhattanPlots(parsingArgs, condensedCombineAll, combinedQqPlotPdfFile,
+		//		combinedManhattanPlotPdfFile, combinedQqPlotTiffFile, combinedManhattanPlotTiffFile);
 
 	}
 

@@ -20,3 +20,9 @@ TOOLS_INSTALLED
 
 #COMPSs scripts to launch jobs
 scripts
+
+*txt.gz
+
+#Results
+*tiff
+*pdf

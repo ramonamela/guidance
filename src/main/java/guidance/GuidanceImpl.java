@@ -43,10 +43,6 @@ import java.io.FileWriter;
 import java.io.FileReader;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
-import java.nio.file.DirectoryStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.io.IOException;
 
 import java.util.ArrayList;
@@ -68,7 +64,6 @@ public class GuidanceImpl {
 	private static final String PLINKBINARY = "PLINKBINARY";
 	private static final String GTOOLBINARY = "GTOOLBINARY";
 	private static final String QCTOOLBINARY = "QCTOOLBINARY";
-	private static final String QCTOOLBINARYNEW = "QCTOOLSNEWBINARY";
 	private static final String SHAPEITBINARY = "SHAPEITBINARY";
 	private static final String EAGLEBINARY = "EAGLEBINARY";
 	private static final String SAMTOOLSBINARY = "SAMTOOLSBINARY";
