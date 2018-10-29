@@ -18,22 +18,23 @@ public class TestFunction {
 
 	private static void collectSummaryWrapper(String[] args) {
 		String chr = args[0];
-		String firstImputeFileInfo = args[1];
-		String snptestOutFile = args[2];
-		String reduceFile = args[3];
-		String mafThresholdS = args[4];
-		String infoThresholdS = args[5];
+		String imputeTool = args[1];
+		String firstImputeFileInfo = args[2];
+		String snptestOutFile = args[3];
+		String reduceFile = args[4];
+		String mafThresholdS = args[5];
 		String hweCohortThresholdS = args[6];
 		String hweCasesThresholdS = args[7];
 		String hweControlsThresholdS = args[8];
-		String cmdToStore = args[9];
-		/*
-		 * try { GuidanceImpl.collectSummary(chr, firstImputeFileInfo, snptestOutFile,
-		 * reduceFile, mafThresholdS, infoThresholdS, hweCohortThresholdS,
-		 * hweCasesThresholdS, hweControlsThresholdS, cmdToStore); } catch
-		 * (GuidanceTaskException e) { // TODO Auto-generated catch block
-		 * e.printStackTrace(); }
-		 */
+		String sex = args[9];
+
+		try {
+			GuidanceImpl.collectSummary(chr, imputeTool, firstImputeFileInfo, snptestOutFile, reduceFile, mafThresholdS,
+					hweCohortThresholdS, hweCasesThresholdS, hweControlsThresholdS, sex, "");
+		} catch (GuidanceTaskException e) { // TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
 	}
 
 	private static void filterByAllWrapper(String[] args) {
@@ -142,7 +143,7 @@ public class TestFunction {
 			e.printStackTrace();
 		}
 	}
-	
+
 	private static void filterByInfo(String[] args) {
 		String imputationTool = args[0];
 		String imputeFileInfo = args[1];
@@ -150,7 +151,8 @@ public class TestFunction {
 		String infoThresholdS = args[3];
 		String mafThresholdS = args[4];
 		try {
-			GuidanceImpl.filterByInfo(imputationTool, imputeFileInfo, inclusionRsIdFile, infoThresholdS, mafThresholdS, "");
+			GuidanceImpl.filterByInfo(imputationTool, imputeFileInfo, inclusionRsIdFile, infoThresholdS, mafThresholdS,
+					"");
 		} catch (GuidanceTaskException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

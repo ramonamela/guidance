@@ -33,8 +33,6 @@ package guidance;
 
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -90,8 +88,9 @@ public class Guidance {
 	private static final boolean BARRIERS = false;
 
 	// Threshold
-	//private static final double PVA_THRESHOLD = 5e-8;
-	//private static final String PVA_THRESHOLD_STR = Double.toString(PVA_THRESHOLD);
+	// private static final double PVA_THRESHOLD = 5e-8;
+	// private static final String PVA_THRESHOLD_STR =
+	// Double.toString(PVA_THRESHOLD);
 
 	// Execution mode variables
 	private static final String FILTERED = "filtered";
@@ -525,7 +524,7 @@ public class Guidance {
 					if (parsingArgs.getStageStatus("phasingBed") == 1) {
 						String cmd = JAVA_HOME + " newSample.jar " + mixedSampleFile + " " + mixedPhasingSampleMalesFile
 								+ " " + mixedPhasingNewSampleMalesFile + " " + covariables + " " + responseVar;
-	
+
 						listOfCommands.add(new String(cmd));
 						try {
 							GuidanceImpl.newSample(mixedSampleFile, mixedPhasingSampleMalesFile,
@@ -534,10 +533,10 @@ public class Guidance {
 							System.err.println("[Guidance] Exception trying the execution of snptest task");
 							System.err.println(e.getMessage());
 						}
-	
-						cmd = JAVA_HOME + " newSample.jar " + mixedSampleFile + " " + mixedPhasingSampleFemalesFile + " "
-								+ mixedPhasingNewSampleFemalesFile + " " + covariables + " " + responseVar;
-	
+
+						cmd = JAVA_HOME + " newSample.jar " + mixedSampleFile + " " + mixedPhasingSampleFemalesFile
+								+ " " + mixedPhasingNewSampleFemalesFile + " " + covariables + " " + responseVar;
+
 						listOfCommands.add(new String(cmd));
 						try {
 							GuidanceImpl.newSample(mixedSampleFile, mixedPhasingSampleFemalesFile,
@@ -690,7 +689,6 @@ public class Guidance {
 							LOGGER.debug("Making association for TEST " + testName + ", PANEL " + panelName
 									+ ", CHROMO " + chr + ", CHUNK " + lim1 + " - " + lim2);
 						}
-						String testName = parsingArgs.getTestTypeName(test);
 						makeAssociationPerChunk(parsingArgs, test, panel, panelName, chr, lim1, lim2,
 								imputationFilesInfo, commonFilesInfo, assocFilesInfo);
 
@@ -765,8 +763,8 @@ public class Guidance {
 				String manhattanPlotTiffFile = resultsFilesInfo.getManhattanTiffFile(test, panel);
 
 				if (parsingArgs.getStageStatus("generateQQManhattanPlots") == 1) {
-					//doGenerateQQManhattanPlots(parsingArgs, lastCondensedFile, qqPlotPdfFile, manhattanPlotPdfFile,
-					//		qqPlotTiffFile, manhattanPlotTiffFile);
+					doGenerateQQManhattanPlots(parsingArgs, lastCondensedFile, qqPlotPdfFile, manhattanPlotPdfFile,
+							qqPlotTiffFile, manhattanPlotTiffFile);
 				}
 
 				flushCommands();
@@ -786,23 +784,13 @@ public class Guidance {
 		} // End for test types
 
 		if (1 < numberOfTestTypes) {
-			makePhenotypeAnalysis(parsingArgs, combinedPanelsFilesInfo, resultsFilesInfo,
-			phenomeAnalysisFilesInfo);
+			makePhenotypeAnalysis(parsingArgs, combinedPanelsFilesInfo, resultsFilesInfo, phenomeAnalysisFilesInfo);
+			flushCommands();
 		} else {
 			LOGGER.info("\n[Guidance] No cross-phenotype analysis. Only one phenotype available");
 		}
 
 		LOGGER.info("\n[Guidance] All tasks are in execution, please wait...");
-
-		/**
-		 * Now it is a good moment to start with the cleaning and compression of the
-		 * temporal files. It should be done if variable removeTemporalFiles and
-		 * compressFiles where enabled. We compress and clean in this order: -
-		 * commonFilesInfo - imputationFilesInfo - assocFilesInfo Due to that currently
-		 * COMPSs does not allow us to delete de temporal files, then we will compress
-		 * them and then we create a text file that list the files that we want to
-		 * clean. After the end of the execution, the user can delete them.
-		 */
 
 	}
 
@@ -1092,8 +1080,8 @@ public class Guidance {
 
 				String mixedFilteredHaplotypesVcfFileBgzip = commonFilesInfo
 						.getFilteredHaplotypesVcfFileBgzip(chrNumber);
-				String mixedImputeMMDoseVCFFile = imputationFilesInfo.getImputedMMDoseVCFFile(panelIndex, chrNumber,
-						lim1, lim2, chunkSize);
+				//String mixedImputeMMDoseVCFFile = imputationFilesInfo.getImputedMMDoseVCFFile(panelIndex, chrNumber,
+				//		lim1, lim2, chunkSize);
 				String mixedImputeMMInfoFile = imputationFilesInfo.getImputedMMInfoFile(panelIndex, chrNumber, lim1,
 						lim2, chunkSize);
 				String mixedImputeMMErateFile = imputationFilesInfo.getImputedMMErateFile(panelIndex, chrNumber, lim1,
@@ -1112,8 +1100,8 @@ public class Guidance {
 						lim2, chunkSize);
 				String mixedImputeFileBgzip = imputationFilesInfo.getImputedFileBgzip(panelIndex, chrNumber, lim1, lim2,
 						chunkSize);
-				String mixedImputeMMM3VCFFileBgzip = imputationFilesInfo.getImputedMMM3VCFFileBgzip(panelIndex,
-						chrNumber, lim1, lim2, chunkSize);
+				//String mixedImputeMMM3VCFFileBgzip = imputationFilesInfo.getImputedMMM3VCFFileBgzip(panelIndex,
+				//		chrNumber, lim1, lim2, chunkSize);
 				String mixedImputeFileTbi = imputationFilesInfo.getImputedFileTbi(panelIndex, chrNumber, lim1, lim2,
 						chunkSize);
 
@@ -1353,7 +1341,8 @@ public class Guidance {
 				doFilterByAll(parsingArgs, summaryFemalesFile, assocFemalesFilteredByAll, assocFemalesCondensed, SEX2,
 						rpanelName);
 
-			} else if (imputationTool.equals("minimac")) {
+			} /*else if (imputationTool.equals("minimac")) {
+				
 				String mixedImputedMMInfoMalesFile = imputationFilesInfo.getImputedMMInfoMalesFile(panelIndex,
 						chrNumber, lim1, lim2, chunkSize);
 				String mixedImputedMMInfoFemalesFile = imputationFilesInfo.getImputedMMInfoFemalesFile(panelIndex,
@@ -1385,7 +1374,8 @@ public class Guidance {
 
 				doFilterByAll(parsingArgs, summaryFemalesFile, assocFemalesFilteredByAll, assocFemalesCondensed, SEX2,
 						rpanelName);
-			}
+				
+			}*/
 
 		} else {
 			String snptestOutFile = assocFilesInfo.getSnptestOutFile(testTypeIndex, panelIndex, chrNumber, lim1, lim2,
@@ -1396,12 +1386,12 @@ public class Guidance {
 					chunkSize);
 			String mixedPhasingNewSampleFile = commonFilesInfo.getPhasingNewSampleFile(chrNumber);
 
-			String mixedSampleFile = commonFilesInfo.getSampleFile(chrNumber);
+			//String mixedSampleFile = commonFilesInfo.getSampleFile(chrNumber);
 
-			String mixedPhasingSampleFile = commonFilesInfo.getPhasingSampleFile(chrNumber);
+			//String mixedPhasingSampleFile = commonFilesInfo.getPhasingSampleFile(chrNumber);
 
-			String cmd = JAVA_HOME + " newSample.jar " + mixedSampleFile + " " + mixedPhasingSampleFile + " "
-					+ mixedPhasingNewSampleFile + " " + covariables + " " + responseVar;
+			//String cmd = JAVA_HOME + " newSample.jar " + mixedSampleFile + " " + mixedPhasingSampleFile + " "
+			//		+ mixedPhasingNewSampleFile + " " + covariables + " " + responseVar;
 
 			doSnptest(parsingArgs, chrS, mixedFilteredFile, mixedPhasingNewSampleFile, snptestOutFile, snptestLogFile,
 					responseVar, covariables);
@@ -2047,6 +2037,7 @@ public class Guidance {
 	 * @param mergeFilesInfo
 	 * @throws GuidanceTaskException
 	 */
+	/*
 	private static void makeJointCondensedFiles(ParseCmdLine parsingArgs, int ttIndex, int rpanelIndex, int startChr,
 			int endChr, MergeFiles mergeFilesInfo) throws GuidanceTaskException {
 
@@ -2114,6 +2105,7 @@ public class Guidance {
 		// File fB = new File(condensedB);
 		// fB.delete();
 	}
+	*/
 
 	/**
 	 * Method to perform the joint of filteredByAll files of each rpanel.
@@ -2309,7 +2301,7 @@ public class Guidance {
 		// TODO Until here we initialize the filtered and condensed files
 
 		LinkedList<String> filteredCombined = new LinkedList<>();
-		LinkedList<String> condensedCombined = new LinkedList<>();
+		//LinkedList<String> condensedCombined = new LinkedList<>();
 
 		// CHR LOOP
 		for (int chr = startChr; chr <= endChr; chr++) {
@@ -2490,16 +2482,16 @@ public class Guidance {
 
 		String topHitsCombinedResults = combinedPanelsFilesInfo.getTopHitsFile(ttIndex);
 
-		doGenerateCondensedAndTopHitsFile(parsingArgs, filteredCombineAll, filteredCombineAllXMales, filteredCombineAllXFemales,
-				condensedCombineAll, topHitsCombinedResults);
+		doGenerateCondensedAndTopHitsFile(parsingArgs, filteredCombineAll, filteredCombineAllXMales,
+				filteredCombineAllXFemales, condensedCombineAll, topHitsCombinedResults);
 
 		String combinedQqPlotPdfFile = combinedPanelsFilesInfo.getQqPlotPdfFile(ttIndex);
 		String combinedQqPlotTiffFile = combinedPanelsFilesInfo.getQqPlotTiffFile(ttIndex);
 		String combinedManhattanPlotPdfFile = combinedPanelsFilesInfo.getManhattanPdfFile(ttIndex);
 		String combinedManhattanPlotTiffFile = combinedPanelsFilesInfo.getManhattanTiffFile(ttIndex);
 
-		//doGenerateQQManhattanPlots(parsingArgs, condensedCombineAll, combinedQqPlotPdfFile,
-		//		combinedManhattanPlotPdfFile, combinedQqPlotTiffFile, combinedManhattanPlotTiffFile);
+		doGenerateQQManhattanPlots(parsingArgs, condensedCombineAll, combinedQqPlotPdfFile,
+				combinedManhattanPlotPdfFile, combinedQqPlotTiffFile, combinedManhattanPlotTiffFile);
 
 	}
 
@@ -2512,24 +2504,24 @@ public class Guidance {
 	 * @param filteredFemalesFile
 	 * @param condensedFile
 	 */
-	private static void doGenerateCondensedAndTopHitsFile(ParseCmdLine parsingArgs, String filteredFile, String filteredMalesFile,
-			String filteredFemalesFile, String condensedFile, String topHitsFile) {
+	private static void doGenerateCondensedAndTopHitsFile(ParseCmdLine parsingArgs, String filteredFile,
+			String filteredMalesFile, String filteredFemalesFile, String condensedFile, String topHitsFile) {
 
 		String cmdToStore = R_SCRIPT_BIN_DIR + "/Rscript " + R_SCRIPT_DIR + "/condensed_tophits.R " + filteredFile + " "
 				+ filteredMalesFile + " " + filteredFemalesFile + " " + condensedFile + " " + topHitsFile;
 		listOfCommands.add(cmdToStore);
-		
+
 		String pvaThreshold = Double.toString(parsingArgs.getPvaThreshold());
 
 		try {
-			GuidanceImpl.generateCondensedAndTopHitsFile(filteredFile, filteredMalesFile, filteredFemalesFile, condensedFile,
-					topHitsFile, pvaThreshold, cmdToStore);
+			GuidanceImpl.generateCondensedAndTopHitsFile(filteredFile, filteredMalesFile, filteredFemalesFile,
+					condensedFile, topHitsFile, pvaThreshold, cmdToStore);
 		} catch (GuidanceTaskException gte) {
 			LOGGER.error("[Guidance] Exception trying the execution of generateCondensedFile task", gte);
 		}
 
 	}
-	
+
 	/**
 	 * Method that performs the last part of the work flow corresponding to the
 	 * phenome Analysis, combining the results of each phenoType analysis
@@ -2540,60 +2532,85 @@ public class Guidance {
 	 * @param phenomeAnalysisFilesInfo
 	 * @param rpanelTypes
 	 * @param listOfCommands
-	 * @throws GuidanceTaskException 
+	 * @throws GuidanceTaskException
 	 */
 	private static void makePhenotypeAnalysis(ParseCmdLine parsingArgs, CombinedPanelsFiles combinedPanelsFilesInfo,
 			ResultsFiles resultsFilesInfo, PhenomeAnalysisFiles phenomeAnalysisFilesInfo) throws GuidanceTaskException {
-		
+
 		if (parsingArgs.getStageStatus("phenoAnalysis") != 1) {
 			return;
 		}
-		
-		
+
 		List<String> combinedTopHits = new ArrayList<>();
-		
+
 		int numberOfTestTypes = parsingArgs.getNumberOfTestTypeName();
-				
+
 		for (int test = 0; test < numberOfTestTypes; ++test) {
 			combinedTopHits.add(combinedPanelsFilesInfo.getTopHitsFile(test));
 			FileUtils.getFile(combinedPanelsFilesInfo.getTopHitsFile(test));
 		}
-		
+
 		String topHitsAllPheno = phenomeAnalysisFilesInfo.getTopHitsAllPhenos();
 		
-		//This is a sequential invocation that implies bringing back all the combined condensed files to the master
+		String combinedTopHitsString = combinedTopHits.get(0);
+		for (int i = 1; i < combinedTopHits.size(); ++i) {
+			combinedTopHitsString += ("," + combinedTopHits.get(i));
+		}
+
+		String cmdToStore = R_SCRIPT_BIN_DIR + "/Rscript " + R_SCRIPT_DIR + "/tophits_all_phenotypes.R "
+				+ combinedTopHitsString + " " + topHitsAllPheno;
+		listOfCommands.add(cmdToStore);
+
+		// This is a sequential invocation that implies bringing back all the combined
+		// condensed files to the master
 		GuidanceImpl.generateTopHitsAllPhenos(combinedTopHits, topHitsAllPheno);
-		
+
 		String condensedFile = null;
 		String mergedPhenoFile = null;
 		String pheno = null;
-		for(int test = 0; test < numberOfTestTypes; ++test) {
+		for (int test = 0; test < numberOfTestTypes; ++test) {
 			condensedFile = combinedPanelsFilesInfo.getCombinedCondensedFile(test);
 			mergedPhenoFile = phenomeAnalysisFilesInfo.getCrossPhenoMergedTop(test);
 			pheno = parsingArgs.getTestTypeName(test);
-			//This is a task
+
+			cmdToStore = R_SCRIPT_BIN_DIR + "/Rscript " + R_SCRIPT_DIR + "/merging_tophits_all_pheno.R "
+					+ topHitsAllPheno + " " + condensedFile + " " + mergedPhenoFile + " " + pheno;
+			listOfCommands.add(cmdToStore);
+
+			// This is a task
 			GuidanceImpl.generateMergedPhenoTopHits(topHitsAllPheno, condensedFile, mergedPhenoFile, pheno);
 		}
-		
+
 		List<String> phenoMergedTopHits = new ArrayList<>();
-		for(int test = 0; test < numberOfTestTypes; ++ test) {
+		for (int test = 0; test < numberOfTestTypes; ++test) {
 			phenoMergedTopHits.add(phenomeAnalysisFilesInfo.getCrossPhenoMergedTop(test));
 			FileUtils.getFile(phenomeAnalysisFilesInfo.getCrossPhenoMergedTop(test));
 		}
-		
+
 		String pvaThreshold = Double.toString(parsingArgs.getPvaThreshold());
-		
+
 		String crossPhenoAll = phenomeAnalysisFilesInfo.getCrossPhenoAll();
 		String crossPhenoRanges = phenomeAnalysisFilesInfo.getCrossPhenoRanges();
 		String crossPhenoTopVariants = phenomeAnalysisFilesInfo.getCrossPhenoAssocTop();
+
+		String mergedTopHitsString = phenoMergedTopHits.get(0);
+		for (int i = 1; i < phenoMergedTopHits.size(); ++i) {
+			mergedTopHitsString += ("," + phenoMergedTopHits.get(i));
+		}
 		
-		//This is a sequential invocation that implies bringing back all the phenoMerged files
-		GuidanceImpl.computeCrossPheno(phenoMergedTopHits, crossPhenoAll, crossPhenoRanges, crossPhenoTopVariants, pvaThreshold);
-		
+		cmdToStore = R_SCRIPT_BIN_DIR + "/Rscript " + R_SCRIPT_DIR + "/crossphenotype.R " + mergedTopHitsString + " "
+				+ crossPhenoAll + " " + crossPhenoRanges + " " + crossPhenoTopVariants + " " + pvaThreshold;
+		listOfCommands.add(cmdToStore);
+
+		// This is a sequential invocation that implies bringing back all the
+		// phenoMerged files
+		GuidanceImpl.computeCrossPheno(phenoMergedTopHits, crossPhenoAll, crossPhenoRanges, crossPhenoTopVariants,
+				pvaThreshold);
+
 		FileUtils.getFile(crossPhenoAll);
 		FileUtils.getFile(crossPhenoRanges);
 		FileUtils.getFile(crossPhenoTopVariants);
-		
+
 	}
 
 	/**
@@ -2642,8 +2659,8 @@ public class Guidance {
 		if (parsingArgs.getStageStatus("convertFromBedToBed") == 1) {
 			// Task
 			String basePath = mixedBedFile.substring(0, mixedBedFile.length() - 4);
-			String cmdToStore = PLINKBINARY + " --noweb --bed " + bedFile + " --bim " + bimFile + " --fam " + famFile + " --chr "
-					+ theChromo + " --out " + basePath + " --make-bed";
+			String cmdToStore = PLINKBINARY + " --noweb --bed " + bedFile + " --bim " + bimFile + " --fam " + famFile
+					+ " --chr " + theChromo + " --out " + basePath + " --make-bed";
 			listOfCommands.add(cmdToStore);
 			try {
 				GuidanceImpl.convertFromBedToBed(bedFile, bimFile, famFile, mixedBedFile, mixedBimFile, mixedFamFile,
@@ -2682,8 +2699,8 @@ public class Guidance {
 
 			listOfCommands.add(cmdToStore);
 			try {
-				GuidanceImpl.splitChr23(bedFile, bimFile, famFile, bedChr23File, bimChr23File, famChr23File,
-						logFile, sex, theChromo, cmdToStore);
+				GuidanceImpl.splitChr23(bedFile, bimFile, famFile, bedChr23File, bimChr23File, famChr23File, logFile,
+						sex, theChromo, cmdToStore);
 			} catch (Exception e) {
 				System.err.println("[Guidance] Exception trying the execution of splitChr23 task");
 				System.err.println(e.getMessage());
@@ -3005,7 +3022,7 @@ public class Guidance {
 			String lim2S, String pairsFile, String imputeFile, String imputeFileInfo, String imputeFileSummary,
 			String imputeFileWarnings, String sex, int refpanel) {
 		String cmdToStore = null;
-		
+
 		System.out.println("Entering imputation with Impute");
 		// TODO: remove when minimac es fixed
 		if ((parsingArgs.getStageStatus("imputeWithImpute") == 1)
@@ -3380,6 +3397,7 @@ public class Guidance {
 	 * @param condensedB
 	 * @param condensedC
 	 */
+	/*
 	private static void doJointCondenseFiles(ParseCmdLine parsingArgs, String condensedA, String condensedB,
 			String condensedC) {
 
@@ -3399,6 +3417,7 @@ public class Guidance {
 			}
 		}
 	}
+	*/
 
 	/**
 	 * Method that wraps the doJointFilteredByAllFiles task and store the command in
@@ -3501,6 +3520,7 @@ public class Guidance {
 	 * @param theChromo
 	 * @param type
 	 */
+	/*
 	private static void doMergeTwoChunks(ParseCmdLine parsingArgs, String reduceA, String reduceB, String reduceC) {
 
 		if (parsingArgs.getStageStatus("mergeTwoChunks") == 1) {
@@ -3520,6 +3540,7 @@ public class Guidance {
 
 		}
 	}
+	*/
 
 	/**
 	 * Method that wraps the mergeTwoChunks task and store the command in the
@@ -3654,22 +3675,18 @@ public class Guidance {
 	 * @param phenomeFile
 	 */
 	/*
-	private static void doInitPhenoMatrix(ParseCmdLine parsingArgs, String topHitsFile, String ttName, String rpName,
-			String phenomeFile) {
-
-		if (parsingArgs.getStageStatus("initPhenoMatrix") == 1) {
-			String cmdToStore = JAVA_HOME + "/java initPhenoMatrix " + topHitsFile + " " + ttName + " " + rpName + " "
-					+ phenomeFile;
-			listOfCommands.add(cmdToStore);
-
-			try {
-				GuidanceImpl.initPhenoMatrix(topHitsFile, ttName, rpName, phenomeFile, cmdToStore);
-			} catch (GuidanceTaskException gte) {
-				LOGGER.error("[Guidance] Exception trying the execution of initPhenoMatrix task", gte);
-			}
-		}
-	}
-	*/
+	 * private static void doInitPhenoMatrix(ParseCmdLine parsingArgs, String
+	 * topHitsFile, String ttName, String rpName, String phenomeFile) {
+	 * 
+	 * if (parsingArgs.getStageStatus("initPhenoMatrix") == 1) { String cmdToStore =
+	 * JAVA_HOME + "/java initPhenoMatrix " + topHitsFile + " " + ttName + " " +
+	 * rpName + " " + phenomeFile; listOfCommands.add(cmdToStore);
+	 * 
+	 * try { GuidanceImpl.initPhenoMatrix(topHitsFile, ttName, rpName, phenomeFile,
+	 * cmdToStore); } catch (GuidanceTaskException gte) { LOGGER.
+	 * error("[Guidance] Exception trying the execution of initPhenoMatrix task",
+	 * gte); } } }
+	 */
 
 	/**
 	 * Method that wraps the addToPhenoMatrix task and store the command in the
@@ -3684,22 +3701,21 @@ public class Guidance {
 	 * @param phenomeFileB
 	 */
 	/*
-	private static void doAddToPhenoMatrix(ParseCmdLine parsingArgs, String phenomeFileA, String topHitsFile,
-			String ttName, String rpName, String phenomeFileB) {
-
-		if (parsingArgs.getStageStatus("addToPhenoMatrix") == 1) {
-			String cmdToStore = JAVA_HOME + "/java addToPhenoMatrix " + phenomeFileA + " " + topHitsFile + " " + ttName
-					+ " " + rpName + " " + phenomeFileB;
-			listOfCommands.add(cmdToStore);
-
-			try {
-				GuidanceImpl.addToPhenoMatrix(phenomeFileA, topHitsFile, ttName, rpName, phenomeFileB, cmdToStore);
-			} catch (GuidanceTaskException gte) {
-				LOGGER.error("[Guidance] Exception trying the execution of addToPhenoMatrix task", gte);
-			}
-		}
-	}
-	*/
+	 * private static void doAddToPhenoMatrix(ParseCmdLine parsingArgs, String
+	 * phenomeFileA, String topHitsFile, String ttName, String rpName, String
+	 * phenomeFileB) {
+	 * 
+	 * if (parsingArgs.getStageStatus("addToPhenoMatrix") == 1) { String cmdToStore
+	 * = JAVA_HOME + "/java addToPhenoMatrix " + phenomeFileA + " " + topHitsFile +
+	 * " " + ttName + " " + rpName + " " + phenomeFileB;
+	 * listOfCommands.add(cmdToStore);
+	 * 
+	 * try { GuidanceImpl.addToPhenoMatrix(phenomeFileA, topHitsFile, ttName,
+	 * rpName, phenomeFileB, cmdToStore); } catch (GuidanceTaskException gte) {
+	 * LOGGER.
+	 * error("[Guidance] Exception trying the execution of addToPhenoMatrix task",
+	 * gte); } } }
+	 */
 
 	/**
 	 * Method that wraps the filloutPhenoMatrix task and store the command in the
@@ -3716,25 +3732,23 @@ public class Guidance {
 	 * @param phenomeFileB
 	 */
 	/*
-	private static void doFilloutPhenoMatrix(ParseCmdLine parsingArgs, String phenomeFileA, String filteredByAllFile,
-			String filteredByAllXMalesFile, String filteredByAllXFemalesFile, String endChrS, String ttName,
-			String rpName, String phenomeFileB) {
-
-		if (parsingArgs.getStageStatus("filloutPhenoMatrix") == 1) {
-			String cmdToStore = JAVA_HOME + "/java filloutPhenoMatrix " + phenomeFileA + " " + filteredByAllFile + " "
-					+ filteredByAllXMalesFile + " " + filteredByAllXFemalesFile + " " + endChrS + " " + ttName + " "
-					+ rpName + " " + phenomeFileB;
-			listOfCommands.add(cmdToStore);
-
-			try {
-				GuidanceImpl.filloutPhenoMatrix(phenomeFileA, filteredByAllFile, filteredByAllXMalesFile,
-						filteredByAllXFemalesFile, endChrS, ttName, rpName, phenomeFileB, cmdToStore);
-			} catch (GuidanceTaskException gte) {
-				LOGGER.error("[Guidance] Exception trying the execution of filloutPhenoMatrix task", gte);
-			}
-		}
-	}
-	*/
+	 * private static void doFilloutPhenoMatrix(ParseCmdLine parsingArgs, String
+	 * phenomeFileA, String filteredByAllFile, String filteredByAllXMalesFile,
+	 * String filteredByAllXFemalesFile, String endChrS, String ttName, String
+	 * rpName, String phenomeFileB) {
+	 * 
+	 * if (parsingArgs.getStageStatus("filloutPhenoMatrix") == 1) { String
+	 * cmdToStore = JAVA_HOME + "/java filloutPhenoMatrix " + phenomeFileA + " " +
+	 * filteredByAllFile + " " + filteredByAllXMalesFile + " " +
+	 * filteredByAllXFemalesFile + " " + endChrS + " " + ttName + " " + rpName + " "
+	 * + phenomeFileB; listOfCommands.add(cmdToStore);
+	 * 
+	 * try { GuidanceImpl.filloutPhenoMatrix(phenomeFileA, filteredByAllFile,
+	 * filteredByAllXMalesFile, filteredByAllXFemalesFile, endChrS, ttName, rpName,
+	 * phenomeFileB, cmdToStore); } catch (GuidanceTaskException gte) { LOGGER.
+	 * error("[Guidance] Exception trying the execution of filloutPhenoMatrix task",
+	 * gte); } } }
+	 */
 
 	/**
 	 * Method that wraps the finalizePhenoMatrix task and store the command in the
@@ -3749,22 +3763,21 @@ public class Guidance {
 	 * @param phenomeFileC
 	 */
 	/*
-	private static void doFinalizePhenoMatrix(ParseCmdLine parsingArgs, String phenomeFileA, String phenomeFileB,
-			String ttName, String rpName, String phenomeFileC) {
-
-		if (parsingArgs.getStageStatus("finalizePhenoMatrix") == 1) {
-			String cmdToStore = JAVA_HOME + "/java finalizePhenoMatrix " + phenomeFileA + " " + phenomeFileB + " "
-					+ ttName + " " + rpName + " " + phenomeFileC;
-			listOfCommands.add(cmdToStore);
-
-			try {
-				GuidanceImpl.finalizePhenoMatrix(phenomeFileA, phenomeFileB, ttName, rpName, phenomeFileC, cmdToStore);
-			} catch (GuidanceTaskException gte) {
-				LOGGER.error("[Guidance] Exception trying the execution of finalizePhenoMatrix task", gte);
-			}
-		}
-	}
-	*/
+	 * private static void doFinalizePhenoMatrix(ParseCmdLine parsingArgs, String
+	 * phenomeFileA, String phenomeFileB, String ttName, String rpName, String
+	 * phenomeFileC) {
+	 * 
+	 * if (parsingArgs.getStageStatus("finalizePhenoMatrix") == 1) { String
+	 * cmdToStore = JAVA_HOME + "/java finalizePhenoMatrix " + phenomeFileA + " " +
+	 * phenomeFileB + " " + ttName + " " + rpName + " " + phenomeFileC;
+	 * listOfCommands.add(cmdToStore);
+	 * 
+	 * try { GuidanceImpl.finalizePhenoMatrix(phenomeFileA, phenomeFileB, ttName,
+	 * rpName, phenomeFileC, cmdToStore); } catch (GuidanceTaskException gte) {
+	 * LOGGER.
+	 * error("[Guidance] Exception trying the execution of finalizePhenoMatrix task"
+	 * , gte); } } }
+	 */
 
 	private static void doCopyFile(ParseCmdLine parsingArgs, String originPath, String destinationPath)
 			throws IOException, GuidanceTaskException {

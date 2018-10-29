@@ -1,11 +1,15 @@
 package guidance.files;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.io.Reader;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -363,7 +367,7 @@ public class FileUtils {
 		}
 	}
 	
-	static public void recursiveSearch(String filePath) {
+	public static void recursiveSearch(String filePath) {
 		System.out.println("Looking into the folder of " + filePath);
 		File file = new File(filePath);
 		file = new File(file.getParent());
@@ -376,14 +380,13 @@ public class FileUtils {
 		}
 	}
 	
-	static public void getFile(String filename) {
-		File file = new File(filename);
-		PrintWriter writer;
-		try {
-			writer = new PrintWriter(file);
-			writer.close();
+	public static void getFile(String filename) {
+		try (BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(filename)))){
+			String line = reader.readLine();
 		} catch (FileNotFoundException e) {
-			LOGGER.debug("[DEBUG] File " + filename + " does not exist");
+			System.err.println("[DEBUG] File " + filename + " does not exist");
+		} catch (IOException e) {
+			System.err.println("[DEBUG] Error when bringing back " + filename);
 		}
 	}
 
