@@ -124,15 +124,19 @@ manhattan <- function(dataframe, colors=c("lightsteelblue4","lightyellow2"),
                 d$pos=d$position
                 ticks=floor(length(d$pos))/2+1
         } else {
-                for (i in unique(d$chr)) {
-                        if (i==as.vector(unique(d$chr))[1]) {
-                                d[d$chr==i, ]$pos=d[d$chr==i, ]$position
-                        } else {
-                                lastbase=lastbase+tail(subset(d,chr==i-1)$position, 1)
-                                d[d$chr==i, ]$pos=d[d$chr==i, ]$position+lastbase
-                        }
-                        ticks=c(ticks, d[d$chr==i, ]$pos[floor(length(d[d$chr==i, ]$pos)/2)+1])
-                }
+          unique_chr = as.vector(unique(d$chr))
+          for (i in 1:numchroms) {
+            if (i == 1) {
+              d[d$chr == unique_chr[i],]$pos = d[d$chr == unique_chr[i],]$position
+            } else {
+              lastbase = lastbase + tail(subset(d, chr == unique_chr[i - 1])$position, 1)
+              
+              d[d$chr == unique_chr[i],]$pos = d[d$chr == unique_chr[i],]$position +
+                lastbase
+            }
+            ticks = c(ticks, d[d$chr == unique_chr[i],]$pos[floor(length(d[d$chr ==
+                                                                             unique_chr[i],]$pos) / 2) + 1])
+          }
         }
 
 		chr <- unique(d$chr)
