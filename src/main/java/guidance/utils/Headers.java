@@ -193,10 +193,8 @@ public class Headers {
      */
     public static HashMap<String, Integer> createHashWithHeader(String line, String separator) {
         HashMap<String, Integer> myHashLine = new HashMap<>();
-        System.out.println("Starting hash creation");
         String[] splitted = line.split(separator);
         for (int i = 0; i < splitted.length; i++) {
-        	System.out.println("Index: " + Integer.toString(i) + " has value " + splitted[i]);
             myHashLine.put(splitted[i], i);
         }
         return myHashLine;

@@ -149,8 +149,6 @@ public class Guidance {
 		// Verify that all environment variables have been defined correctly
 		verifyEnvVar();
 
-		System.out.println("Environment variables have been verified");
-
 		// Print information of Guidance version
 		printGuidancePackageVersion();
 		if (DEBUG) {
@@ -693,17 +691,12 @@ public class Guidance {
 									+ ", CHROMO " + chr + ", CHUNK " + lim1 + " - " + lim2);
 						}
 						String testName = parsingArgs.getTestTypeName(test);
-						System.out.println("Making association for TEST " + testName + ", PANEL " + panelName
-								+ ", CHROMO " + chr + ", CHUNK " + lim1 + " - " + lim2);
 						makeAssociationPerChunk(parsingArgs, test, panel, panelName, chr, lim1, lim2,
 								imputationFilesInfo, commonFilesInfo, assocFilesInfo);
 
 						lim1 = lim1 + chunkSize;
 						lim2 = lim2 + chunkSize;
 					}
-
-					System.out.println("Association per chunk finished successfully for chromosome " + chr
-							+ " and panel " + panelName);
 
 					flushCommands();
 
@@ -750,7 +743,6 @@ public class Guidance {
 				String filteredByAllXMalesFile;
 				String filteredByAllXFemalesFile;
 				if (endChr == 23) {
-					System.out.println("Asking for filtered 23 files");
 					filteredByAllXMalesFile = mergeFilesInfo.getAdditionalFilteredByAllXMalesFile(test, panel, 0);
 					filteredByAllXFemalesFile = mergeFilesInfo.getAdditionalFilteredByAllXFemalesFile(test, panel, 0);
 					if (startChr == 23) {
@@ -2349,7 +2341,6 @@ public class Guidance {
 
 						String filteredPanelFemales = assocFilesInfo.getSummaryFilteredFemalesFile(ttIndex, k, lim1,
 								lim2, chunkSize);
-						System.out.println("[Guidance] Adding filtered file to combine " + filteredPanelFemales);
 						if (DEBUG) {
 							System.out.println("[Guidance] Adding filtered file to combine " + filteredPanelFemales);
 						}
@@ -2622,7 +2613,6 @@ public class Guidance {
 
 		try {
 			GuidanceImpl.createSplitedFiles(gmapFile, gmapFileChr, theChromo, cmdToStore);
-			System.out.println("Executing command " + cmdToStore);
 		} catch (Exception e) {
 			System.err.println("[Guidance] Exception trying the execution of createSplitedFiles task");
 			System.err.println(e.getMessage());
@@ -3014,9 +3004,9 @@ public class Guidance {
 			String knownHapFile, String legendFile, String phasingHapsFile, String phasingSampleFile, String lim1S,
 			String lim2S, String pairsFile, String imputeFile, String imputeFileInfo, String imputeFileSummary,
 			String imputeFileWarnings, String sex, int refpanel) {
-		System.out.println(gmapFile + " " + knownHapFile + " " + legendFile + " " + phasingHapsFile + " "
-				+ phasingSampleFile + " " + imputeFile);
 		String cmdToStore = null;
+		
+		System.out.println("Entering imputation with Impute");
 		// TODO: remove when minimac es fixed
 		if ((parsingArgs.getStageStatus("imputeWithImpute") == 1)
 				|| ((parsingArgs.getStageStatus("imputeWithMinimac") == 1) && chrS.equals("23"))) {
@@ -3130,8 +3120,6 @@ public class Guidance {
 			} catch (IOException e) {
 				LOGGER.error("[Guidance] Exception writing to list of commands file " + e);
 			}
-			System.out.println("[Minimac] " + imputeFileInfo + " " + imputeFileErate + " " + imputeFileRec + " "
-					+ imputeFileM3vcf + " " + imputeFileLog);
 
 			try {
 				String panelMemory = parsingArgs.getRpanelMemory(refpanel);
@@ -3168,8 +3156,6 @@ public class Guidance {
 			 * 
 			 */
 
-			System.out.println("Handling samtoolsTabix for " + chrS + " from " + lim1S + " to " + lim2S);
-
 			cmdToStore = SAMTOOLSBINARY + "/tabix -p vcf --force " + imputeFileBgzip + " " + imputeFileTbi;
 
 			listOfCommands.add(cmdToStore);
@@ -3183,7 +3169,6 @@ public class Guidance {
 			} catch (Exception e) {
 				LOGGER.error("[Guidance] Exception trying the execution of samtoolsTabix task");
 			}
-			System.out.println("Ended minimac imputation for crhomo " + chrS + " from " + lim1S + " to " + lim2S);
 		}
 	}
 
@@ -3917,22 +3902,15 @@ public class Guidance {
 							 * imputationFilesInfo.setImputedMMInfoFemalesFileFinalStatus(j, chromo, lim1,
 							 * lim2, chunkSize, finalStatus);
 							 */
-							System.out.println("Males imputed file");
 							imputationFilesInfo.setImputedMalesFileFinalStatus(j, lim1, lim2, chunkSize, finalStatus);
-							System.out.println("Males filtered file");
 							imputationFilesInfo.setFilteredMalesFileFinalStatus(j, lim1, lim2, chunkSize, finalStatus);
-							System.out.println("Males imputed info file");
 							imputationFilesInfo.setImputedMalesInfoFileFinalStatus(j, lim1, lim2, chunkSize,
 									finalStatus);
-							System.out.println("Females imputed file");
 							imputationFilesInfo.setImputedFemalesFileFinalStatus(j, lim1, lim2, chunkSize, finalStatus);
-							System.out.println("Females filtered file");
 							imputationFilesInfo.setFilteredFemalesFileFinalStatus(j, lim1, lim2, chunkSize,
 									finalStatus);
-							System.out.println("Females imputed info file");
 							imputationFilesInfo.setImputedFemalesInfoFileFinalStatus(j, lim1, lim2, chunkSize,
 									finalStatus);
-							System.out.println("End of setting imputed files");
 						} else {
 							imputationFilesInfo.setImputedMMInfoFileFinalStatus(j, chromo, lim1, lim2, chunkSize,
 									finalStatus);

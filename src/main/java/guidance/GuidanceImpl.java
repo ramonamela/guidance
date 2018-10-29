@@ -3236,20 +3236,11 @@ public class GuidanceImpl {
 
 		long startTime = System.currentTimeMillis();
 
-		// int chrStart = Integer.parseInt(chromoStart);
-		// int chrEnd = Integer.parseInt(chromoEnd);
-
-		/*
-		 * int posIdx = 0; int a1Idx = 4; int a2Idx = 5; int chrIdx = 35; int infoIdx =
-		 * 2;
-		 */
 		int posIdx = 0;
 		int a1Idx = 0;
 		int a2Idx = 0;
 		int chrIdx = 0;
 		int infoIdx = 0;
-
-		System.out.println("Unzipping files " + resultsPanelA + " and " + resultsPanelB);
 
 		// First, we uncompress the input files
 		String resultsPanelAUnzip = resultsPanelA + ".temp";
@@ -3272,8 +3263,6 @@ public class GuidanceImpl {
 		final String EMPTY_HEADER = "chr\tposition\trs_id_all\tinfo_all\tcertainty_all\t";
 		String finalHeader = EMPTY_HEADER;
 		String positionA1A2Chr = null;
-
-		System.out.println("Treating panel A");
 
 		// Treat results Panel A if it is not empty
 		if (new File(resultsPanelAUnzip).exists()) {
@@ -3317,8 +3306,6 @@ public class GuidanceImpl {
 		// Create the second treeMap for the chromo
 		TreeMap<String, String> fileTreeMapB = new TreeMap<>();
 		// contador=0;
-
-		System.out.println("Treating panel B");
 
 		// Treat results Panel B if it is not empty
 		if (new File(resultsPanelBUnzip).exists()) {
@@ -3369,8 +3356,6 @@ public class GuidanceImpl {
 
 		TreeMap<String, String> fileTreeMapC = new TreeMap<>();
 		// contador=0;
-
-		System.out.println("Creating result");
 
 		// We first iterate the fileTreeMapA
 		Set<Entry<String, String>> mySet = fileTreeMapA.entrySet();
@@ -3529,10 +3514,6 @@ public class GuidanceImpl {
 		}
 
 		fileTreeMapB.clear();
-		// System.out.println("\n[DEBUG] We have processed the chromosome " + chromoS +
-		// ". contador " + contador);
-
-		System.out.println("Saving output in the result file " + resultsPanelC);
 
 		// Finally we put the fileTreeMapC into the plain output file and then compress
 		// it
@@ -3541,7 +3522,6 @@ public class GuidanceImpl {
 		try {
 			resultFile.createNewFile();
 		} catch (IOException ioe) {
-			System.out.println("Couldn't create file " + plainResultsPanelC);
 			throw new GuidanceTaskException(ioe);
 		}
 		try (BufferedWriter writer = new BufferedWriter(new FileWriter(resultFile))) {
