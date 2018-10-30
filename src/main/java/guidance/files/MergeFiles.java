@@ -286,11 +286,6 @@ public class MergeFiles {
 
 							listReducedFilteredFemalesFile.add(myReducedFilteredFemalesFile);
 							listReducedCondensedFemalesFile.add(myReducedCondensedFemalesFile);
-
-							System.out.println(
-									"Filling name for reduced males file with " + tmpReducedFilteredMalesFileName);
-							System.out.println(
-									"Filling name for reduced males file with " + tmpReducedCondensedMalesFileName);
 						} else {
 							String tmpReducedFilteredFileName = "chr_" + chromo + "_" + testTypeName + "_" + rPanel
 									+ REDUCE_FILTERED_FILENAME + counter + EXT_TXT_GZ;
@@ -813,15 +808,6 @@ public class MergeFiles {
 	 * @return
 	 */
 	public String getReducedFilteredMalesFile(int testTypeIndex, int rPanelIndex, int index) {
-		System.out.println(testTypeIndex + " " + rPanelIndex + " " + index);
-		System.out.println("Size 1: " + this.testTypeReducedFilteredMalesFile.size());
-		System.out.println("Size 2: " + this.testTypeReducedFilteredMalesFile.get(testTypeIndex).size());
-		System.out
-				.println("Size 3: " + this.testTypeReducedFilteredMalesFile.get(testTypeIndex).get(rPanelIndex).size());
-		System.out.println(
-				"Size 4: " + this.testTypeReducedFilteredMalesFile.get(testTypeIndex).get(rPanelIndex).get(0).size());
-		System.out
-				.println("Size 5: " + this.testTypeReducedFilteredMalesFile.get(testTypeIndex).get(rPanelIndex).get(0));
 		return this.testTypeReducedFilteredMalesFile.get(testTypeIndex).get(rPanelIndex).get(0).get(index)
 				.getFullName();
 	}

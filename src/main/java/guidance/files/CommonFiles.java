@@ -630,7 +630,6 @@ public class CommonFiles {
 		checkChromoIndex(chromo);
 
 		int index = chromo - startChr;
-		System.out.println("Serving " + mixedPairsFile.get(index).getFullName());
 		return mixedPairsFile.get(index).getFullName();
 	}
 

@@ -714,8 +714,6 @@ public class Guidance {
 									assocFilesInfo, mergeFilesInfo, FILTERED);
 						}
 					}
-
-					System.out.println("Filtered files successfuly generated");
 				} // End for Chromo
 
 				// Now we have to joint the condensedFiles of each chromosome. There is not
@@ -778,7 +776,6 @@ public class Guidance {
 			// Now we continue with the combining of the results of the different reference
 			// panels.
 			// It is done if the refPanelCombine flag is true.
-			System.out.println("Combining all the panels");
 			makeCombinePanels(parsingArgs, assocFilesInfo, mergeFilesInfo, combinedPanelsFilesInfo, rpanelTypes, test);
 
 		} // End for test types
@@ -2428,19 +2425,11 @@ public class Guidance {
 			if (chr == 23) {
 				makeMergeOfChunksCombinedSex(parsingArgs, ttIndex, 0, minSize, maxSize, chunkSize, assocFilesInfo,
 						mergeFilesInfo, FILTERED);
-
-				// makeMergeOfChunksCombinedSex(parsingArgs, ttIndex, 0, minSize, maxSize,
-				// chunkSize, assocFilesInfo,
-				// mergeFilesInfo, CONDENSED);
 			} else {
 				makeMergeOfChunksCombined(parsingArgs, ttIndex, 0, chr, minSize, maxSize, chunkSize, assocFilesInfo,
 						mergeFilesInfo, FILTERED);
-
-				// makeMergeOfChunksCombined(parsingArgs, ttIndex, 0, chr, minSize, maxSize,
-				// chunkSize, assocFilesInfo,
-				// mergeFilesInfo, CONDENSED);
 			}
-			// TODO look at the condensed part
+
 			if (chr != 23) {
 				String filteredByAllCurrentFile = mergeFilesInfo.getCombinedFilteredByAllFile(ttIndex, 0, chr);
 				filteredCombined.add(filteredByAllCurrentFile);
@@ -3023,7 +3012,6 @@ public class Guidance {
 			String imputeFileWarnings, String sex, int refpanel) {
 		String cmdToStore = null;
 
-		System.out.println("Entering imputation with Impute");
 		// TODO: remove when minimac es fixed
 		if ((parsingArgs.getStageStatus("imputeWithImpute") == 1)
 				|| ((parsingArgs.getStageStatus("imputeWithMinimac") == 1) && chrS.equals("23"))) {
@@ -3471,13 +3459,14 @@ public class Guidance {
 		String cmdToStore = R_SCRIPT_BIN_DIR + "/Rscript " + R_SCRIPT_DIR + "/qqplot_manhattan.R " + condensedFile + " "
 				+ qqPlotFile + " " + manhattanPlotFile + " " + qqPlotTiffFile + " " + manhattanPlotTiffFile;
 		listOfCommands.add(cmdToStore);
-
+		/*
 		try {
 			GuidanceImpl.generateQQManhattanPlots(condensedFile, qqPlotFile, manhattanPlotFile, qqPlotTiffFile,
 					manhattanPlotTiffFile, cmdToStore);
 		} catch (GuidanceTaskException gte) {
 			LOGGER.error("[Guidance] Exception trying the execution of generateQQManhattanPlots task", gte);
 		}
+		*/
 
 	}
 

@@ -1085,8 +1085,6 @@ public class ImputationFiles {
 
 		int indexChr = chromo - this.startChr;
 		int indexChunk = lim1 / chunkSize;
-		System.out.println("Asking for imputation file of panel " + rPanelIndex + " and chromo " + chromo
-				+ " and serving " + this.imputedFile.get(rPanelIndex).get(indexChr).get(indexChunk).getFullName());
 		return this.imputedFile.get(rPanelIndex).get(indexChr).get(indexChunk).getFullName();
 	}
 

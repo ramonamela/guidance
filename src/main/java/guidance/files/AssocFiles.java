@@ -322,8 +322,6 @@ public class AssocFiles {
 
 					for (int k = 0; k < totalChunks; k++) {
 						
-						System.out.println("Generating assoc files for chromosome " + i + " for chunk " + lim1 + " to " + lim2);
-						
 						if (chromo == 23) {
 							// Now we have to create the impute files for this iteration
 							String tmpSnptestOutMalesFileName = "chr_" + chromo + "_" + testTypeName + "_" + rPanel
