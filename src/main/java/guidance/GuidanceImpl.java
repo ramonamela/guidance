@@ -285,23 +285,6 @@ public class GuidanceImpl {
 			throw new GuidanceTaskException(HEADER_CONVERT_FROM_BED_TO_BED + ERROR_BINARY_EXEC + exitValue);
 		}
 
-		/*
-		 * // Rename file (or directory) boolean success = FileUtils.move(basePath +
-		 * ".bed", newBedFile); if (!success) { // File was not successfully renamed
-		 * throw new GuidanceTaskException( HEADER_CONVERT_FROM_BED_TO_BED +
-		 * ERROR_ON_FILE + newBedFile + ERROR_SUFFIX_RENAMED_FILE); } // Rename file (or
-		 * directory) success = FileUtils.move(basePath + ".bim", newBimFile); if
-		 * (!success) { // File was not successfully renamed throw new
-		 * GuidanceTaskException( HEADER_CONVERT_FROM_BED_TO_BED + ERROR_ON_FILE +
-		 * newBimFile + ERROR_SUFFIX_RENAMED_FILE); } // Rename file (or directory)
-		 * success = FileUtils.move(basePath + ".fam", newFamFile); if (!success) {
-		 * throw new GuidanceTaskException( HEADER_CONVERT_FROM_BED_TO_BED +
-		 * ERROR_ON_FILE + newFamFile + ERROR_SUFFIX_RENAMED_FILE); // File was not
-		 * successfully renamed } // Rename file (or directory) success =
-		 * FileUtils.move(basePath + ".log", logFile); if (!success) { throw new
-		 * GuidanceTaskException( HEADER_CONVERT_FROM_BED_TO_BED + ERROR_ON_FILE +
-		 * logFile + ERROR_SUFFIX_RENAMED_FILE); // File was not successfully renamed }
-		 */
 		// If there is not output in the convertFromBedToBed process. Then we have to
 		// create some empty outputs
 		try {
@@ -366,13 +349,6 @@ public class GuidanceImpl {
 			System.out.println("[DEBUG] \t- Chromosome      : " + theChromo);
 			System.out.println("\n");
 			System.out.println("[DEBUG] \t- Command: " + cmdToStore);
-
-			// Map<String, String> env = System.getenv();
-			// System.out.println("--------------------------------------");
-			// System.out.println("Environmental Variables in Workers:");
-			// for (String envName : env.keySet()) {
-			// System.out.format("%s=%s%n",envName,env.get(envName));
-			// }
 			System.out.println("--------------------------------------");
 		}
 
@@ -2653,7 +2629,7 @@ public class GuidanceImpl {
 
 		if (DEBUG) {
 			System.out.println("\n[DEBUG] Running filterByAll with parameters:");
-			System.out.println("[DEBUG] \\t- Input imputationTool         : " + imputationTool);
+			System.out.println("[DEBUG] \t- Input imputationTool          : " + imputationTool);
 			System.out.println("[DEBUG] \t- Input summaryFile             : " + inputFile);
 			System.out.println("[DEBUG] \t- Output outputFile             : " + outputFile);
 			System.out.println("[DEBUG] \t- Output outputCondensedFile    : " + outputCondensedFile);
@@ -4619,13 +4595,6 @@ public class GuidanceImpl {
 			a2Complement = a2Complement + aChar;
 		}
 
-		// Lets compute the reverse of a1Complement
-		// String a1ComplementAndReverse = new
-		// StringBuffer().reverse(a1Complement).toString();
-		// Lets compute the reverse of a2Complement
-		// String a2ComplementAndReverse = new
-		// StringBuffer().reverse(a2Complement).toString();
-
 		if (typeAllele.equals("reverse")) {
 			return allele2 + "_" + allele1;
 		} else if (typeAllele.equals("complement")) {
@@ -4639,12 +4608,6 @@ public class GuidanceImpl {
 	}
 
 	public static void copyFile(String fileA, String fileB) throws IOException, GuidanceTaskException {
-		// File srcFile = new File(fileA);
-		// File destFile = new File(fileB);
-
-		// Rename file (or directory)
-		// Files.copy(srcFile.toPath(), destFile.toPath(),
-		// StandardCopyOption.REPLACE_EXISTING);
 
 		long startTime = System.currentTimeMillis();
 

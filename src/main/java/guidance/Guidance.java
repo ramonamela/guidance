@@ -3459,15 +3459,13 @@ public class Guidance {
 		String cmdToStore = R_SCRIPT_BIN_DIR + "/Rscript " + R_SCRIPT_DIR + "/qqplot_manhattan.R " + condensedFile + " "
 				+ qqPlotFile + " " + manhattanPlotFile + " " + qqPlotTiffFile + " " + manhattanPlotTiffFile;
 		listOfCommands.add(cmdToStore);
-		/*
+		
 		try {
 			GuidanceImpl.generateQQManhattanPlots(condensedFile, qqPlotFile, manhattanPlotFile, qqPlotTiffFile,
 					manhattanPlotTiffFile, cmdToStore);
 		} catch (GuidanceTaskException gte) {
 			LOGGER.error("[Guidance] Exception trying the execution of generateQQManhattanPlots task", gte);
 		}
-		*/
-
 	}
 
 	/**
