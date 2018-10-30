@@ -171,6 +171,7 @@ public class ParseCmdLine {
 		wfPossibleDeeps.put("from_association_to_summary", EMPTY_MASK);
 		wfPossibleDeeps.put("from_filterByAll", EMPTY_MASK);
 		wfPossibleDeeps.put("from_filterByAll_to_summary", EMPTY_MASK);
+		wfPossibleDeeps.put("from_manhattan_to_combine", EMPTY_MASK);
 		wfPossibleDeeps.put("from_combine_to_summary", EMPTY_MASK);
 		wfPossibleDeeps.put("from_combine", EMPTY_MASK);
 		wfPossibleDeeps.put("from_summary", EMPTY_MASK);
@@ -1792,6 +1793,7 @@ public class ParseCmdLine {
 			wfPossibleDeeps.put("from_association_to_summary", 0x000FF00);
 			wfPossibleDeeps.put("from_filterByAll", 0x0001F80);
 			wfPossibleDeeps.put("from_filterByAll_to_summary", 0x0001F00);
+			wfPossibleDeeps.put("from_manhattan_to_combine", 0x0000200);
 			wfPossibleDeeps.put("from_combine_to_summary", 0x0000100);
 			wfPossibleDeeps.put("from_combine", 0x0000180);
 			wfPossibleDeeps.put("from_summary", 0x0000080);
@@ -1820,6 +1822,7 @@ public class ParseCmdLine {
 			wfPossibleDeeps.put("from_association_to_summary", 0x000FF00);
 			wfPossibleDeeps.put("from_filterByAll", 0x0001F80);
 			wfPossibleDeeps.put("from_filterByAll_to_summary", 0x0001F00);
+			wfPossibleDeeps.put("from_manhattan_to_combine", 0x0000200);
 			wfPossibleDeeps.put("from_combine_to_summary", 0x0000100);
 			wfPossibleDeeps.put("from_combine", 0x0000180);
 			wfPossibleDeeps.put("from_summary", 0x0000080);
