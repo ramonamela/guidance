@@ -3024,164 +3024,6 @@ public class GuidanceImpl {
 	}
 
 	/**
-	 * Method to combine panels
-	 * 
-	 * @param resultsPanelA
-	 * @param resultsPanelB
-	 * @param resultsPanelC
-	 * @param cmdToStore
-	 * @throws IOException
-	 * @throws InterruptedException
-	 * @throws Exception
-	 */
-	public static void combinePanels(String resultsPanelA, String resultsPanelB, String resultsPanelC,
-			String cmdToStore) throws GuidanceTaskException {
-
-		if (DEBUG) {
-			System.out.println("\n[DEBUG] Running combinePanels with parameters:");
-			System.out.println("[DEBUG] \t- resultsPanelA             : " + resultsPanelA);
-			System.out.println("[DEBUG] \t- resultsPanelB             : " + resultsPanelB);
-			System.out.println("[DEBUG] \t- resultsPanelC             : " + resultsPanelC);
-			System.out.println(NEW_LINE);
-			System.out.println("[DEBUG] \t- Command: " + cmdToStore);
-			System.out.println("--------------------------------------");
-		}
-		long startTime = System.currentTimeMillis();
-
-		// We read each line of the resultsPanelA and put them into the String
-		// IMPORTANT: In that case we sort by position and not by position_rsID. So,
-		// maybe we
-		// are going to lose some SNPs...
-		TreeMap<Integer, String> fileTreeMapA = new TreeMap<>();
-		String header = null;
-		try (FileReader frA = new FileReader(resultsPanelA); BufferedReader brA = new BufferedReader(frA)) {
-			String line = null;
-			// First: read the header and avoid it
-			header = brA.readLine();
-
-			while ((line = brA.readLine()) != null) {
-				String[] splitted = line.split(TAB);
-				int position = Integer.parseInt(splitted[0]);
-
-				// Now, we put this String into the treemap with the key positionAndRsId
-				fileTreeMapA.put(position, line);
-			}
-		} catch (IOException ioe) {
-			throw new GuidanceTaskException(ioe);
-		}
-
-		// We read each line of the resultsPanelB and put them into fileAList array of
-		// Strings
-		TreeMap<Integer, String> fileTreeMapB = new TreeMap<>();
-		try (FileReader frB = new FileReader(resultsPanelB); BufferedReader brB = new BufferedReader(frB)) {
-			// First: read the header and avoid it
-			String line = brB.readLine();
-
-			while ((line = brB.readLine()) != null) {
-				String[] splitted = line.split(TAB);
-				int position = Integer.parseInt(splitted[0]);
-
-				// Now, we put this String into the treemap with the key positionAndRsId
-				fileTreeMapB.put(position, line);
-			}
-		} catch (IOException ioe) {
-			throw new GuidanceTaskException(ioe);
-		}
-
-		// A place to store the results of this combining
-		TreeMap<Integer, String> fileTreeMapC = new TreeMap<>();
-		// We first iterate the fileTreeMapA
-		Set<Entry<Integer, String>> mySet = fileTreeMapA.entrySet();
-		// Move next key and value of Map by iterator
-		Iterator<Entry<Integer, String>> iter = mySet.iterator();
-		while (iter.hasNext()) {
-			Entry<Integer, String> m = iter.next();
-			int position = m.getKey();
-			String lineA = m.getValue();
-
-			if (fileTreeMapB.containsKey(position)) {
-				// If the fileTreeMapB contains this key, then we have to choose
-				// the ones that have a better info (greater info).
-				String[] lineASplitted = lineA.split(TAB);
-				Double infoA = Double.parseDouble(lineASplitted[2]);
-
-				String lineB = fileTreeMapB.get(position);
-				String[] lineBSplitted = lineB.split(TAB);
-				Double infoB = Double.parseDouble(lineBSplitted[2]);
-
-				// Then we have to choose between A o B.
-				if (infoA >= infoB) {
-					fileTreeMapC.put(position, lineA);
-				} else {
-					fileTreeMapC.put(position, lineB);
-				}
-				// Now we can remove this value from the fileTreeMapB
-				fileTreeMapB.remove(position);
-			} else {
-				// Then, the fileTreeMapB does not contain this key.
-				// therefore we keep the one in fileTreeMapA.
-				fileTreeMapC.put(position, lineA);
-			}
-		}
-
-		// Now we have to put in fileTreeMapC the rest of values that remain in
-		// fileTreeMapB.
-		// We iterate the fileTreeMapB (the rest of the...)
-		mySet = fileTreeMapB.entrySet();
-		// Move next key and value of Map by iterator
-		iter = mySet.iterator();
-		while (iter.hasNext()) {
-			Entry<Integer, String> m = iter.next();
-			int position = m.getKey();
-			String lineB = m.getValue();
-			// Then we have to choose the value in fileTreeMapC
-			fileTreeMapC.put(position, lineB);
-		}
-
-		// Finally we put the fileTreeMapC into the outputFile
-		// We have to create the outputFile for this combination:
-		// We verify that a file with the same name does not exist.
-		File outputFile = new File(resultsPanelC);
-		try {
-			if (!outputFile.createNewFile()) {
-				throw new IOException(ERROR_FILE_CREATION + outputFile + FILE_SUFFIX);
-			}
-		} catch (IOException ioe) {
-			throw new GuidanceTaskException(ioe);
-		}
-
-		try (BufferedWriter writer = new BufferedWriter(new FileWriter(outputFile))) {
-			// We print the header which is the same always!.
-			writer.write(header);
-			writer.newLine();
-
-			mySet = fileTreeMapC.entrySet();
-			// Move next key and value of Map by iterator
-			iter = mySet.iterator();
-			while (iter.hasNext()) {
-				Entry<Integer, String> m = iter.next();
-				String myLine = m.getValue();
-
-				writer.write(myLine);
-				writer.newLine();
-			}
-
-			writer.flush();
-		} catch (IOException ioe) {
-			throw new GuidanceTaskException(ioe);
-		}
-
-		long stopTime = System.currentTimeMillis();
-		long elapsedTime = (stopTime - startTime) / 1_000;
-		if (DEBUG) {
-			System.out.println("\n[DEBUG] combinePanels startTime: " + startTime);
-			System.out.println("\n[DEBUG] combinePanels endTime: " + stopTime);
-			System.out.println("\n[DEBUG] combinePanels elapsedTime: " + elapsedTime + " seconds");
-			System.out.println("\n[DEBUG] Finished execution of combinePanels");
-		}
-	}
-
-	/**
 	 * Method to combine panels complex
 	 * 
 	 * @param resultsPanelA
@@ -3194,15 +3036,14 @@ public class GuidanceImpl {
 	 * @throws InterruptedException
 	 * @throws Exception
 	 */
-	public static void combinePanelsComplex(String resultsPanelA, String resultsPanelB, int lim1, int lim2,
+	public static void combinePanelsComplex(String resultsPanelA, String resultsPanelB, String resultsPanelC, int lim1, int lim2,
 			String cmdToStore) throws GuidanceTaskException {
-
-		String resultsPanelC = resultsPanelA;
 
 		if (DEBUG) {
 			System.out.println("\n[DEBUG] Running combinePanelsComplex with parameters:");
 			System.out.println("[DEBUG] \t- resultsPanelA             : " + resultsPanelA);
 			System.out.println("[DEBUG] \t- resultsPanelB             : " + resultsPanelB);
+			System.out.println("[DEBUG] \t- resultsPanelC             : " + resultsPanelC);
 			System.out.println("[DEBUG] \t- lim1               : " + lim1);
 			System.out.println("[DEBUG] \t- lim2                 : " + lim2);
 			System.out.println(NEW_LINE);
@@ -3224,14 +3065,7 @@ public class GuidanceImpl {
 		FileUtils.gunzipFile(resultsPanelA, resultsPanelAUnzip);
 		FileUtils.gunzipFile(resultsPanelB, resultsPanelBUnzip);
 
-		// We read each line of the resultsPanelA and put them into the String
-		// IMPORTANT: In that case we sort by position and not by position_rsID. So,
-		// maybe we
-		// are going to lose some SNPs...
-		// for(int chromo=chrStart; chromo <=chrEnd; chromo++) {
-
 		HashMap<String, Integer> resultsHashTableIndex = new HashMap<>();
-		// String chromoS = Integer.toString(chromo);
 
 		// Create the first treeMap for the chromo
 		TreeMap<String, String> fileTreeMapA = new TreeMap<>();
@@ -3261,23 +3095,16 @@ public class GuidanceImpl {
 					while ((line = br.readLine()) != null) {
 						String[] splitted = line.split(TAB);
 
-						// if(splitted[chrIdx].equals(chromoS)) {
 						positionA1A2Chr = splitted[posIdx] + "_" + splitted[a1Idx] + "_" + splitted[a2Idx] + "_"
 								+ splitted[chrIdx];
 						// Now, we put this String into the treemap with the key positionA1A1Chr
 						fileTreeMapA.put(positionA1A2Chr, line);
-						// contador++;
-						// }
 					}
 				}
 			} catch (IOException ioe) {
 				throw new GuidanceTaskException(ioe);
 			}
 		}
-
-		// System.out.println("i\n[DEBUG] We have read the chromo " + chromoS + " from
-		// first File. contador = " +
-		// contador);
 
 		// Create the second treeMap for the chromo
 		TreeMap<String, String> fileTreeMapB = new TreeMap<>();
@@ -4170,25 +3997,6 @@ public class GuidanceImpl {
 			System.out.println("\n[DEBUG] mergeTwoChunks elapsedTime: " + elapsedTime + " seconds");
 			System.out.println("\n[DEBUG] Finished execution of mergeTwoChunks.");
 		}
-	}
-
-	/**
-	 * Method to merge two chunks in the first one
-	 * 
-	 * @param reduceFileA
-	 * @param reduceFileB
-	 * @param reduceFileC
-	 * @param chrS
-	 * @param type
-	 * @param cmdToStore
-	 * @throws IOException
-	 * @throws InterruptedException
-	 * @throws Exception
-	 */
-	public static void mergeTwoChunksInTheFirst(String reduceFileA, String reduceFileB, String cmdToStore)
-			throws GuidanceTaskException {
-
-		mergeTwoChunks(reduceFileA, reduceFileB, reduceFileA, cmdToStore);
 	}
 
 	/**
