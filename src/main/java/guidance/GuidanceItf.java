@@ -319,6 +319,7 @@ public interface GuidanceItf {
 			@Parameter(type = Type.FILE, direction = Direction.IN) String filteredFemalesFile, 
 			@Parameter(type = Type.FILE, direction = Direction.OUT) String condensedFile, 
 			@Parameter(type = Type.FILE, direction = Direction.OUT) String topHitsFile,
+			@Parameter(type = Type.FILE, direction = Direction.OUT) String crossRanges,
 			@Parameter(type = Type.STRING, direction = Direction.IN) String pvaThresholdStr,
 			@Parameter(type = Type.STRING, direction = Direction.IN) String cmdToStore);
 	

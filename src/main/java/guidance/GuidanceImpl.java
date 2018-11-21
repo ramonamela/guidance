@@ -2332,20 +2332,21 @@ public class GuidanceImpl {
 	}
 
 	public static void generateCondensedAndTopHitsFile(String filteredFile, String filteredMalesFile,
-			String filteredFemalesFile, String condensedFile, String topHitsFile, String pvaThresholdStr,
-			String cmdToStore) throws GuidanceTaskException {
+			String filteredFemalesFile, String condensedFile, String topHitsFile, String crossRangesFile,
+			String pvaThresholdStr, String cmdToStore) throws GuidanceTaskException {
 
 		String command = null;
 		long startTime = System.currentTimeMillis();
 		String condensedPlain = condensedFile.substring(0, condensedFile.length() - 3);
 		String topHitsPlain = topHitsFile.substring(0, topHitsFile.length() - 3);
+		String crossRangesPlain = crossRangesFile.substring(0, topHitsFile.length() - 3);
 
 		String rScriptBinDir = loadFromEnvironment(RSCRIPTBINDIR, HEADER_GENERATE_QQ_MANHATTAN_PLOTS);
 		String rScriptDir = loadFromEnvironment(RSCRIPTDIR, HEADER_GENERATE_QQ_MANHATTAN_PLOTS);
 
-		command = rScriptBinDir + "Rscript --verbose " + rScriptDir + "/condensed_tophits.R " + filteredFile + " "
-				+ filteredMalesFile + " " + filteredFemalesFile + " " + condensedPlain + " " + topHitsPlain + " "
-				+ pvaThresholdStr;
+		command = rScriptBinDir + "Rscript --verbose " + rScriptDir + "/condensed_tophits_crossmodel.R " + filteredFile
+				+ " " + filteredMalesFile + " " + filteredFemalesFile + " " + condensedPlain + " " + topHitsPlain + " "
+				+ crossRangesPlain + " " + pvaThresholdStr;
 
 		if (DEBUG) {
 			System.out.println("\n[DEBUG] Launched command:                 : " + command);
@@ -2359,6 +2360,7 @@ public class GuidanceImpl {
 
 		FileUtils.gzipFile(condensedPlain, condensedFile);
 		FileUtils.gzipFile(topHitsPlain, topHitsFile);
+		FileUtils.gzipFile(crossRangesPlain, crossRangesFile);
 
 		long stopTime = System.currentTimeMillis();
 		long elapsedTime = (stopTime - startTime) / 1_000;
@@ -3036,8 +3038,8 @@ public class GuidanceImpl {
 	 * @throws InterruptedException
 	 * @throws Exception
 	 */
-	public static void combinePanelsComplex(String resultsPanelA, String resultsPanelB, String resultsPanelC, int lim1, int lim2,
-			String cmdToStore) throws GuidanceTaskException {
+	public static void combinePanelsComplex(String resultsPanelA, String resultsPanelB, String resultsPanelC, int lim1,
+			int lim2, String cmdToStore) throws GuidanceTaskException {
 
 		if (DEBUG) {
 			System.out.println("\n[DEBUG] Running combinePanelsComplex with parameters:");

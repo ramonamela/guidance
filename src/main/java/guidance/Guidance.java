@@ -732,6 +732,7 @@ public class Guidance {
 				String lastCondensedFile = mergeFilesInfo.getFinalCondensedFile(test, panel);
 				String lastFilteredByAllFile = mergeFilesInfo.getFinalFilteredByAllFile(test, panel);
 				String topHitsResults = resultsFilesInfo.getTopHitsFile(test, panel);
+				String crossRangesResults = resultsFilesInfo.getCrossRangesFile(test, panel);
 				String filteredByAllXMalesFile;
 				String filteredByAllXFemalesFile;
 				if (endChr == 23) {
@@ -747,7 +748,7 @@ public class Guidance {
 
 				if (parsingArgs.getStageStatus("jointCondensedFiles") == 1) {
 					doGenerateCondensedAndTopHitsFile(parsingArgs, lastFilteredByAllFile, filteredByAllXMalesFile,
-							filteredByAllXFemalesFile, lastCondensedFile, topHitsResults);
+							filteredByAllXFemalesFile, lastCondensedFile, topHitsResults, crossRangesResults);
 				}
 
 				// Generate QQManhattan Plots
@@ -2457,9 +2458,10 @@ public class Guidance {
 		if (refPanelCombine && parsingArgs.getStageStatus("combGenerateManhattanTop") == 1) {
 
 			String topHitsCombinedResults = combinedPanelsFilesInfo.getTopHitsFile(ttIndex);
+			String topHitsCrossRanges = combinedPanelsFilesInfo.getCrossRangesFile(ttIndex);
 
 			doGenerateCondensedAndTopHitsFile(parsingArgs, filteredCombineAll, filteredCombineAllXMales,
-					filteredCombineAllXFemales, condensedCombineAll, topHitsCombinedResults);
+					filteredCombineAllXFemales, condensedCombineAll, topHitsCombinedResults, topHitsCrossRanges);
 
 			String combinedQqPlotPdfFile = combinedPanelsFilesInfo.getQqPlotPdfFile(ttIndex);
 			String combinedQqPlotTiffFile = combinedPanelsFilesInfo.getQqPlotTiffFile(ttIndex);
@@ -2482,17 +2484,17 @@ public class Guidance {
 	 * @param condensedFile
 	 */
 	private static void doGenerateCondensedAndTopHitsFile(ParseCmdLine parsingArgs, String filteredFile,
-			String filteredMalesFile, String filteredFemalesFile, String condensedFile, String topHitsFile) {
+			String filteredMalesFile, String filteredFemalesFile, String condensedFile, String topHitsFile, String crossRanges) {
 
 		String cmdToStore = R_SCRIPT_BIN_DIR + "/Rscript " + R_SCRIPT_DIR + "/condensed_tophits.R " + filteredFile + " "
-				+ filteredMalesFile + " " + filteredFemalesFile + " " + condensedFile + " " + topHitsFile;
+				+ filteredMalesFile + " " + filteredFemalesFile + " " + condensedFile + " " + topHitsFile + " " + crossRanges;
 		listOfCommands.add(cmdToStore);
 
 		String pvaThreshold = Double.toString(parsingArgs.getPvaThreshold());
 
 		try {
 			GuidanceImpl.generateCondensedAndTopHitsFile(filteredFile, filteredMalesFile, filteredFemalesFile,
-					condensedFile, topHitsFile, pvaThreshold, cmdToStore);
+					condensedFile, topHitsFile, crossRanges, pvaThreshold, cmdToStore);
 		} catch (GuidanceTaskException gte) {
 			LOGGER.error("[Guidance] Exception trying the execution of generateCondensedFile task", gte);
 		}

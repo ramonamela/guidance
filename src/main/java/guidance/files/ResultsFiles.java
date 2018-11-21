@@ -44,6 +44,7 @@ public class ResultsFiles {
     private ArrayList<ArrayList<String>> testTypeListOutDir = new ArrayList<>();
 
     private ArrayList<ArrayList<GenericFile>> testTypeTopHitsFile = new ArrayList<>();
+    private ArrayList<ArrayList<GenericFile>> testTypeCrossRangesFile = new ArrayList<>();
     private ArrayList<ArrayList<GenericFile>> testTypeCorrectedPvaluesFile = new ArrayList<>();
     private ArrayList<ArrayList<GenericFile>> testTypeQqPlotPdfFile = new ArrayList<>();
     private ArrayList<ArrayList<GenericFile>> testTypeManhattanPdfFile = new ArrayList<>();
@@ -71,6 +72,7 @@ public class ResultsFiles {
             ArrayList<String> rpanelListOutDir = new ArrayList<>();
 
             ArrayList<GenericFile> rpanelTopHitsFile = new ArrayList<>();
+            ArrayList<GenericFile> rpanelCrossRangesFile = new ArrayList<>();
             ArrayList<GenericFile> rpanelCorrectedPvaluesFile = new ArrayList<>();
 
             ArrayList<GenericFile> rpanelQqPlotPdfFile = new ArrayList<>();
@@ -86,6 +88,10 @@ public class ResultsFiles {
                 String tmpTopHitsFileName = "tophits_" + testTypeName + "_" + mixedCohort + "_" + rPanel + ".txt.gz";
                 GenericFile myTopHitsFile = new GenericFile(rpanelOutDirSummary, tmpTopHitsFileName, "compressed", "none");
                 rpanelTopHitsFile.add(myTopHitsFile);
+                
+                String tmpCrossRangesFileName = "tophits_" + testTypeName + "_" + mixedCohort + "_" + rPanel + "_crossmodel_ranges.txt.gz";
+                GenericFile myCrossRangesFile = new GenericFile(rpanelOutDirSummary, tmpCrossRangesFileName, "compressed", "none");
+                rpanelCrossRangesFile.add(myCrossRangesFile);
 
                 String tmpCorrectedPvaluesFileName = "corrected_pvalues_" + testTypeName + "_" + mixedCohort + "_" + rPanel + ".txt";
                 GenericFile myCorrectedPvaluesFile = new GenericFile(rpanelOutDirSummary, tmpCorrectedPvaluesFileName, "uncompressed",
@@ -112,6 +118,7 @@ public class ResultsFiles {
             // Now we have to build the list of reduced files for the type of Test. We store this list
             testTypeListOutDir.add(rpanelListOutDir);
             testTypeTopHitsFile.add(rpanelTopHitsFile);
+            testTypeCrossRangesFile.add(rpanelCrossRangesFile);
             testTypeCorrectedPvaluesFile.add(rpanelCorrectedPvaluesFile);
 
             testTypeQqPlotPdfFile.add(rpanelQqPlotPdfFile);
@@ -143,6 +150,17 @@ public class ResultsFiles {
      */
     public String getTopHitsFile(int testTypeIndex, int rPanelIndex) {
         return this.testTypeTopHitsFile.get(testTypeIndex).get(rPanelIndex).getFullName();
+    }
+    
+    /**
+     * Method to access crossRangesFile
+     * 
+     * @param testTypeIndex
+     * @param rPanelIndex
+     * @return
+     */
+    public String getCrossRangesFile(int testTypeIndex, int rPanelIndex) {
+        return this.testTypeCrossRangesFile.get(testTypeIndex).get(rPanelIndex).getFullName();
     }
 
     /**

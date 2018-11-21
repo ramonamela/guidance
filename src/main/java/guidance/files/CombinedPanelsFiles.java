@@ -56,6 +56,7 @@ public class CombinedPanelsFiles {
 	private ArrayList<GenericFile> testTypeCombinedCondensedFile = new ArrayList<>();
 
 	private ArrayList<GenericFile> testTypeTopHitsFile = new ArrayList<>();
+	private ArrayList<GenericFile> testTypeCrossRangesFile = new ArrayList<>();
 	private ArrayList<GenericFile> testTypeCorrectedPvaluesFile = new ArrayList<>();
 	private ArrayList<GenericFile> testTypeQqPlotPdfFile = new ArrayList<>();
 	private ArrayList<GenericFile> testTypeManhattanPdfFile = new ArrayList<>();
@@ -218,6 +219,15 @@ public class CombinedPanelsFiles {
 			}
 			GenericFile myTopHitsFile = new GenericFile(testTypeOutDir, tmpTopHitsFileName, "compressed", "none");
 			this.testTypeTopHitsFile.add(myTopHitsFile);
+			
+			String tmpCrossRangesFileName = null;
+			if (startChr == endChr) {
+				tmpCrossRangesFileName = prefixTopHitsName + "_chr_" + startChrS + "_crossmodel_ranges.txt.gz";
+			} else {
+				tmpCrossRangesFileName = prefixTopHitsName + "_chr_" + startChrS + "_to_" + endChrS + "_crossmodel_ranges.txt.gz";
+			}
+			GenericFile myCrossRangesFile = new GenericFile(testTypeOutDir, tmpCrossRangesFileName, "compressed", "none");
+			this.testTypeCrossRangesFile.add(myCrossRangesFile);
 
 			String tmpQqPlotPdfFileName = null;
 			if (startChr == endChr) {
@@ -530,13 +540,13 @@ public class CombinedPanelsFiles {
 	}
 
 	/**
-	 * Method to set the finalStatus of the testTypeTopHitsFile
+	 * Method to access testTypeTopHitsFile
 	 * 
 	 * @param testTypeIndex
-	 * @param finalStatus
+	 * @return
 	 */
-	public void setTopHitsFileFinalStatus(int testTypeIndex, String finalStatus) {
-		this.testTypeTopHitsFile.get(testTypeIndex).setFinalStatus(finalStatus);
+	public String getCrossRangesFile(int testTypeIndex) {
+		return this.testTypeCrossRangesFile.get(testTypeIndex).getFullName();
 	}
 
 	/**
