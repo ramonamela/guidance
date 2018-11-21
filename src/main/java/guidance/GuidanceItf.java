@@ -306,14 +306,14 @@ public interface GuidanceItf {
 			@Parameter(type = Type.STRING, direction = Direction.IN) String cmdToStore);
 	
 	@Method(declaringClass = "guidance.GuidanceImpl")
-	@Constraints(computingUnits = "1", memorySize = "1.0f")
+	@Constraints(computingUnits = "1", memorySize = "${phenoMergeMem}")
 	void generateMergedPhenoTopHits(@Parameter(type = Type.FILE, direction = Direction.IN) String topHitsAllPheno, 
 			@Parameter(type = Type.FILE, direction = Direction.IN) String condensedFile, 
 			@Parameter(type = Type.FILE, direction = Direction.OUT) String mergedPhenoFile, 
 			@Parameter(type = Type.STRING, direction = Direction.IN) String pheno);
 
 	@Method(declaringClass = "guidance.GuidanceImpl")
-	@Constraints(computingUnits = "12", memorySize = "1.0f")
+	@Constraints(computingUnits = "${generateCondensedTopHitsCU}", memorySize = "${generateCondensedTopHitsMem}")
 	void generateCondensedAndTopHitsFile(@Parameter(type = Type.FILE, direction = Direction.IN) String filteredFile, 
 			@Parameter(type = Type.FILE, direction = Direction.IN) String filteredMalesFile,
 			@Parameter(type = Type.FILE, direction = Direction.IN) String filteredFemalesFile, 
@@ -362,7 +362,7 @@ public interface GuidanceItf {
 			@Parameter(type = Type.STRING, direction = Direction.IN) String cmdToStore);
 
 	@Method(declaringClass = "guidance.GuidanceImpl")
-	@Constraints(computingUnits = "1", memorySize = "${generateQQManhattanPlotsMem}")
+	@Constraints(computingUnits = "${generateQQManhattanPlotsCU}", memorySize = "${generateQQManhattanPlotsMem}")
 	void generateQQManhattanPlots(@Parameter(type = Type.FILE, direction = Direction.IN) String lastCondensedFile,
 			@Parameter(type = Type.FILE, direction = Direction.OUT) String qqPlotFile,
 			@Parameter(type = Type.FILE, direction = Direction.OUT) String manhattanPlotFile,
