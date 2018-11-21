@@ -1,3 +1,5 @@
+.libPaths("/gpfs/projects/bsc05/ramon/R_libs")
+
 library(data.table)
 library(plyr)
 library(dplyr)
@@ -29,7 +31,7 @@ table(duplicated(tophits_all$rs_id_all))
 
 cat("#####                	Removing Duplicated Variant         	     #####\n")
 
-tophits_all <- distinct(tophits_all, rs_id_all)
+tophits_all <- distinct(tophits_all, rs_id_all, .keep_all = TRUE)
 table(duplicated(tophits_all$rs_id_all))
 
 tophits_all_final <- tophits_all[,c("chr","position","rs_id_all","alleleA","alleleB")]
