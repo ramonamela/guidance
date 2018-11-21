@@ -172,8 +172,10 @@ public class ParseCmdLine {
 		wfPossibleDeeps.put("from_filterByAll", EMPTY_MASK);
 		wfPossibleDeeps.put("from_filterByAll_to_summary", EMPTY_MASK);
 		wfPossibleDeeps.put("from_manhattan_to_combine", EMPTY_MASK);
+		wfPossibleDeeps.put("from_combine_to_manhattan", EMPTY_MASK);
 		wfPossibleDeeps.put("from_combine_to_summary", EMPTY_MASK);
 		wfPossibleDeeps.put("from_combine", EMPTY_MASK);
+		wfPossibleDeeps.put("from_combineGenManTop_to_summary", EMPTY_MASK);
 		wfPossibleDeeps.put("from_summary", EMPTY_MASK);
 
 		// Step 1: We read the file with the configuration and
@@ -1774,58 +1776,62 @@ public class ParseCmdLine {
 			wfPossibleDeeps.put("until_imputation", 0x7900000);
 			wfPossibleDeeps.put("until_association", 0x7970000);
 			wfPossibleDeeps.put("until_filterByAll", 0x797E000);
-			wfPossibleDeeps.put("until_summary", 0x797FF00);
-			wfPossibleDeeps.put("whole_workflow", 0x797FF80);
-			wfPossibleDeeps.put("from_phasing", 0x017FF80);
-			wfPossibleDeeps.put("from_phasing_to_summary", 0x017FF00);
+			wfPossibleDeeps.put("until_summary", 0x797FF80);
+			wfPossibleDeeps.put("whole_workflow", 0x797FFC0);
+			wfPossibleDeeps.put("from_phasing", 0x017FFC0);
+			wfPossibleDeeps.put("from_phasing_to_summary", 0x017FF80);
 			wfPossibleDeeps.put("from_phasing_to_filterByAll", 0x017E000);
 			wfPossibleDeeps.put("from_phasing_to_association", 0x0170000);
 			wfPossibleDeeps.put("from_phasing_to_imputation", 0x0100000);
-			wfPossibleDeeps.put("from_imputation", 0x007FF80);
+			wfPossibleDeeps.put("from_imputation", 0x007FFC0);
 			wfPossibleDeeps.put("from_imputation_to_summary", 0x007FF00);
 			wfPossibleDeeps.put("from_imputation_to_filterByAll", 0x007E000);
 			wfPossibleDeeps.put("from_imputation_to_association", 0x0070000);
 			wfPossibleDeeps.put("from_imputation_to_filterByInfo", 0x0040000);
 			wfPossibleDeeps.put("from_filterByInfo_to_qctoolS", 0x0020000);
 			wfPossibleDeeps.put("from_qctoolS_to_association", 0x0010000);
-			wfPossibleDeeps.put("from_association", 0x000FF80);
+			wfPossibleDeeps.put("from_association", 0x000FFC0);
 			wfPossibleDeeps.put("from_association_to_filterByAll", 0x000E000);
-			wfPossibleDeeps.put("from_association_to_summary", 0x000FF00);
-			wfPossibleDeeps.put("from_filterByAll", 0x0001F80);
-			wfPossibleDeeps.put("from_filterByAll_to_summary", 0x0001F00);
+			wfPossibleDeeps.put("from_association_to_summary", 0x000FF80);
+			wfPossibleDeeps.put("from_filterByAll", 0x0001FC0);
+			wfPossibleDeeps.put("from_filterByAll_to_summary", 0x0001F80);
 			wfPossibleDeeps.put("from_manhattan_to_combine", 0x0000200);
-			wfPossibleDeeps.put("from_combine_to_summary", 0x0000100);
-			wfPossibleDeeps.put("from_combine", 0x0000180);
-			wfPossibleDeeps.put("from_summary", 0x0000080);
+			wfPossibleDeeps.put("from_combine_to_manhattan", 0x0000100);
+			wfPossibleDeeps.put("from_combine_to_summary", 0x0000180);
+			wfPossibleDeeps.put("from_combine", 0x00001C0);
+			wfPossibleDeeps.put("from_combineGenManTop_to_summary", 0x0000080);
+			wfPossibleDeeps.put("from_summary", 0x0000040);
 		} else if (imputationTool.equals("minimac")) {
 			wfPossibleDeeps.put("until_convertFromBedToBed", 0x6000000);
 			wfPossibleDeeps.put("until_phasing", 0x7E00000);
 			wfPossibleDeeps.put("until_imputation", 0x7E80000);
 			wfPossibleDeeps.put("until_association", 0x7EF0000);
 			wfPossibleDeeps.put("until_filterByAll", 0x7EFE000);
-			wfPossibleDeeps.put("until_summary", 0x7EFFF00);
-			wfPossibleDeeps.put("whole_workflow", 0x7EFFF80);
-			wfPossibleDeeps.put("from_phasing", 0x00FFF00);
+			wfPossibleDeeps.put("until_summary", 0x7EFFF80);
+			wfPossibleDeeps.put("whole_workflow", 0x7EFFFC0);
+			wfPossibleDeeps.put("from_phasing", 0x00FFFC0);
 			wfPossibleDeeps.put("from_phasing_to_summary", 0x00FFF00);
 			wfPossibleDeeps.put("from_phasing_to_filterByAll", 0x00FE000);
 			wfPossibleDeeps.put("from_phasing_to_association", 0x00F0000);
 			wfPossibleDeeps.put("from_phasing_to_imputation", 0x0080000);
-			wfPossibleDeeps.put("from_imputation", 0x007FF80);
+			wfPossibleDeeps.put("from_imputation", 0x007FFC0);
 			wfPossibleDeeps.put("from_imputation_to_summary", 0x007FF00);
 			wfPossibleDeeps.put("from_imputation_to_filterByAll", 0x007E000);
 			wfPossibleDeeps.put("from_imputation_to_association", 0x0070000);
 			wfPossibleDeeps.put("from_imputation_to_filterByInfo", 0x0040000);
 			wfPossibleDeeps.put("from_filterByInfo_to_qctoolS", 0x0020000);
 			wfPossibleDeeps.put("from_qctoolS_to_association", 0x0010000);
-			wfPossibleDeeps.put("from_association", 0x000FF80);
+			wfPossibleDeeps.put("from_association", 0x000FFC0);
 			wfPossibleDeeps.put("from_association_to_filterByAll", 0x000E000);
-			wfPossibleDeeps.put("from_association_to_summary", 0x000FF00);
-			wfPossibleDeeps.put("from_filterByAll", 0x0001F80);
-			wfPossibleDeeps.put("from_filterByAll_to_summary", 0x0001F00);
+			wfPossibleDeeps.put("from_association_to_summary", 0x000FF80);
+			wfPossibleDeeps.put("from_filterByAll", 0x0001FC0);
+			wfPossibleDeeps.put("from_filterByAll_to_summary", 0x0001F80);
 			wfPossibleDeeps.put("from_manhattan_to_combine", 0x0000200);
-			wfPossibleDeeps.put("from_combine_to_summary", 0x0000100);
-			wfPossibleDeeps.put("from_combine", 0x0000180);
-			wfPossibleDeeps.put("from_summary", 0x0000080);
+			wfPossibleDeeps.put("from_combine_to_manhattan", 0x0000100);
+			wfPossibleDeeps.put("from_combine_to_summary", 0x0000180);
+			wfPossibleDeeps.put("from_combine", 0x00001C0);
+			wfPossibleDeeps.put("from_combineGenManTop_to_summary", 0x0000080);
+			wfPossibleDeeps.put("from_summary", 0x0000040);
 		} else {
 			LOGGER.fatal(CLASS_HEADER + " Error, the imputation tool: " + imputationTool
 					+ " is not supported in this version...");
@@ -1835,7 +1841,7 @@ public class ParseCmdLine {
 		String[] steps = { "convertFromBedToBed", "createRsIdList", "phasingBed", "phasing", "createListOfExcludedSnps",
 				"filterHaplotypes", "imputeWithImpute", "imputeWithMinimac", "filterByInfo", "qctoolS", "snptest",
 				"collectSummary", "mergeTwoChunks", "filterByAll", "jointCondensedFiles", "jointFilteredByAllFiles",
-				"generateTopHits", "generateQQManhattanPlots", "combinePanelsComplex", "phenoAnalysis", "taskt", "tasku",
+				"generateTopHits", "generateQQManhattanPlots", "combinePanelsComplex", "combGenerateManhattanTop", "phenoAnalysis", "tasku",
 				"taskv", "taskw", "taskx", "tasky", "taskz" };
 
 		final Integer MASK1 = 0x00001;

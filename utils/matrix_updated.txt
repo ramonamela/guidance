@@ -1,118 +1,122 @@
 -----------------------------------------------------------------------------------------------
                                 |                      S   T   A   G   E                      |
                                 ---------------------------------------------------------------
-                                |          c                                                  |
-                                |          r                        j   g                     |
-                                |          e                        o   e                     |
-                                |          a                        i   n                     |
-                                |          t                        n   e c                   |
-                                | c        e                     j  t   r o                   |
-                                | o        L                     o  F   a m                   |
-                                | n        i      i              i  i   t b                   |
-                                | v        s f i  m              n  l   e i                   |
-                                | e        t i m  p              t  t g Q n                   |
-                                | r c      O l p  u        c m   C  e e Q e                   |
-                                | t r      f t u  t        o e   o  r n M P  p                |
-                                | F e      E e t  e f      l r   n  e e a a  h                |
-                                | r a      x r e  W i      l g f d  d r n n  e                |
-                                | o t p    c H W  i l      e e i e  B a h e  n                |
-                                | m e h    l a i  t t      c T l n  y t a l  o                |
-wfRequiredDeep                  | B R a    u p t  h e      t w t s  A e t s  A                |
-                                | e s s  p d l h  M r q s  S o e e  l T a C  n                |
-Matrix of Stages when           | d I i  h e o I  i B c n  u C r d  l o n o  a                |
-IMPUTE tool is used             | T d n  a d t m  n y t p  m h B F  F p P m  l t u v  w x y z |
-                                | o L g  s S y p  i I o t  m u y i  i H l p  y t t t  t t t t |
-                                | B i B  i n p u  m n o e  a n A l  l i o l  s a a a  a a a a |
-                                | e s e  n p e t  a f l s  r k l e  e t t e  i s s s  s s s s |
-                                | d t d  g s s e  c o S t  y s l s  s s s x  s k k k  k k k k |
+                                |          c                                 c                |
+                                |          r                        j   g    o                |
+                                |          e                        o   e    m                |
+                                |          a                        i   n    b                |
+                                |          t                        n   e c  G                |
+                                | c        e                     j  t   r o  e                |
+                                | o        L                     o  F   a m  n                |
+                                | n        i      i              i  i   t b  e                |
+                                | v        s f i  m              n  l   e i  r                |
+                                | e        t i m  p              t  t g Q n  a                |
+                                | r c      O l p  u        c m   C  e e Q e  t                |
+                                | t r      f t u  t        o e   o  r n M P  e p              |
+                                | F e      E e t  e f      l r   n  e e a a  M h              |
+                                | r a      x r e  W i      l g f d  d r n n  a e              |
+                                | o t p    c H W  i l      e e i e  B a h e  n n              |
+                                | m e h    l a i  t t      c T l n  y t a l  h o              |
+wfRequiredDeep                  | B R a    u p t  h e      t w t s  A e t s  a A              |
+                                | e s s  p d l h  M r q s  S o e e  l T a C  t n              |
+Matrix of Stages when           | d I i  h e o I  i B c n  u C r d  l o n o  t a              |
+IMPUTE tool is used             | T d n  a d t m  n y t p  m h B F  F p P m  a l u v  w x y z |
+                                | o L g  s S y p  i I o t  m u y i  i H l p  n y t t  t t t t |
+                                | B i B  i n p u  m n o e  a n A l  l i o l  T s a a  a a a a |
+                                | e s e  n p e t  a f l s  r k l e  e t t e  o i s s  s s s s |
+                                | d t d  g s s e  c o S t  y s l s  s s s x  p s k k  k k k k |
 ---------------------------------------- --------- --------------------------------------------
 until_convertFromBedToBed       | 1 1 0  0 0 0 0  0 0 0 0  0 0 0 0  0 0 0 0  0 0 0 0  0 0 0 0 | 0x6000000
 until_phasing			        | 1 1 1  1 0 0 0  0 0 0 0  0 0 0 0  0 0 0 0  0 0 0 0  0 0 0 0 | 0x7800000
 until_imputation		        | 1 1 1  1 0 0 1  0 0 0 0  0 0 0 0  0 0 0 0  0 0 0 0  0 0 0 0 | 0x7900000
 until_association		        | 1 1 1  1 0 0 1  0 1 1 1  0 0 0 0  0 0 0 0  0 0 0 0  0 0 0 0 | 0x7970000
 until_filterByAll               | 1 1 1  1 0 0 1  0 1 1 1  1 1 1 0  0 0 0 0  0 0 0 0  0 0 0 0 | 0x797E000 
-until_summary			        | 1 1 1  1 0 0 1  0 1 1 1  1 1 1 1  1 1 1 1  0 0 0 0  0 0 0 0 | 0x797FF00
-whole_workflow			        | 1 1 1  1 0 0 1  0 1 1 1  1 1 1 1  1 1 1 1  1 0 0 0  0 0 0 0 | 0x797FF80 
-from_phasing			        | 0 0 0  0 0 0 1  0 1 1 1  1 1 1 1  1 1 1 1  1 0 0 0  0 0 0 0 | 0x017FF80
-from_phasing_to_summary		    | 0 0 0  0 0 0 1  0 1 1 1  1 1 1 1  1 1 1 1  0 0 0 0  0 0 0 0 | 0x017FF00
+until_summary			        | 1 1 1  1 0 0 1  0 1 1 1  1 1 1 1  1 1 1 1  1 0 0 0  0 0 0 0 | 0x797FF80
+whole_workflow			        | 1 1 1  1 0 0 1  0 1 1 1  1 1 1 1  1 1 1 1  1 1 0 0  0 0 0 0 | 0x797FFC0 
+from_phasing			        | 0 0 0  0 0 0 1  0 1 1 1  1 1 1 1  1 1 1 1  1 1 0 0  0 0 0 0 | 0x017FFC0
+from_phasing_to_summary		    | 0 0 0  0 0 0 1  0 1 1 1  1 1 1 1  1 1 1 1  1 0 0 0  0 0 0 0 | 0x017FF80
 from_phasing_to_filterByAll     | 0 0 0  0 0 0 1  0 1 1 1  1 1 1 0  0 0 0 0  0 0 0 0  0 0 0 0 | 0x017E000
 from_phasing_to_association	    | 0 0 0  0 0 0 1  0 1 1 1  0 0 0 0  0 0 0 0  0 0 0 0  0 0 0 0 | 0x0170000
 from_phasing_to_imputation	    | 0 0 0  0 0 0 1  0 0 0 0  0 0 0 0  0 0 0 0  0 0 0 0  0 0 0 0 | 0x0100000
-from_imputation			        | 0 0 0  0 0 0 0  0 1 1 1  1 1 1 1  1 1 1 1  1 0 0 0  0 0 0 0 | 0x007FF80
+from_imputation			        | 0 0 0  0 0 0 0  0 1 1 1  1 1 1 1  1 1 1 1  1 1 0 0  0 0 0 0 | 0x007FFC0
 from_imputation_to_summary	    | 0 0 0  0 0 0 0  0 1 1 1  1 1 1 1  1 1 1 1  0 0 0 0  0 0 0 0 | 0x007FF00
 from_imputation_to_filterByAll  | 0 0 0  0 0 0 0  0 1 1 1  1 1 1 0  0 0 0 0  0 0 0 0  0 0 0 0 | 0x007E000
 from_imputation_to_association	| 0 0 0  0 0 0 0  0 1 1 1  0 0 0 0  0 0 0 0  0 0 0 0  0 0 0 0 | 0x0070000
 from_imputation_to_filterByInfo | 0 0 0  0 0 0 0  0 1 0 0  0 0 0 0  0 0 0 0  0 0 0 0  0 0 0 0 | 0x0040000
 from_filterByInfo_to_qctoolS    | 0 0 0  0 0 0 0  0 0 1 0  0 0 0 0  0 0 0 0  0 0 0 0  0 0 0 0 | 0x0020000
 from_qctoolS_to_association     | 0 0 0  0 0 0 0  0 0 0 1  0 0 0 0  0 0 0 0  0 0 0 0  0 0 0 0 | 0x0010000
-from_association		        | 0 0 0  0 0 0 0  0 0 0 0  1 1 1 1  1 1 1 1  1 0 0 0  0 0 0 0 | 0x000FF80
+from_association		        | 0 0 0  0 0 0 0  0 0 0 0  1 1 1 1  1 1 1 1  1 1 0 0  0 0 0 0 | 0x000FFC0
 from_association_to_filterByAll | 0 0 0  0 0 0 0  0 0 0 0  1 1 1 0  0 0 0 0  0 0 0 0  0 0 0 0 | 0x000E000
-from_association_to_summary	    | 0 0 0  0 0 0 0  0 0 0 0  1 1 1 1  1 1 1 1  0 0 0 0  0 0 0 0 | 0x000FF80
-from_filterByAll                | 0 0 0  0 0 0 0  0 0 0 0  0 0 0 1  1 1 1 1  1 0 0 0  0 0 0 0 | 0x0001F80
-from_filterByAll_to_summary     | 0 0 0  0 0 0 0  0 0 0 0  0 0 0 1  1 1 1 1  0 0 0 0  0 0 0 0 | 0x0001F00
+from_association_to_summary	    | 0 0 0  0 0 0 0  0 0 0 0  1 1 1 1  1 1 1 1  1 0 0 0  0 0 0 0 | 0x000FF80
+from_filterByAll                | 0 0 0  0 0 0 0  0 0 0 0  0 0 0 1  1 1 1 1  1 1 0 0  0 0 0 0 | 0x0001FC0
+from_filterByAll_to_summary     | 0 0 0  0 0 0 0  0 0 0 0  0 0 0 1  1 1 1 1  1 0 0 0  0 0 0 0 | 0x0001F80
 from_manhattan_to_combine       | 0 0 0  0 0 0 0  0 0 0 0  0 0 0 0  0 0 1 0  0 0 0 0  0 0 0 0 | 0x0000200
-from_combine_to_summary         | 0 0 0  0 0 0 0  0 0 0 0  0 0 0 0  0 0 0 1  0 0 0 0  0 0 0 0 | 0x0000100
-from_combine                    | 0 0 0  0 0 0 0  0 0 0 0  0 0 0 0  0 0 0 1  1 0 0 0  0 0 0 0 | 0x0000180
-from_summary			        | 0 0 0  0 0 0 0  0 0 0 0  0 0 0 0  0 0 0 0  1 0 0 0  0 0 0 0 | 0x0000080
+from_combine_to_manhattan       | 0 0 0  0 0 0 0  0 0 0 0  0 0 0 0  0 0 0 1  0 0 0 0  0 0 0 0 | 0x0000100
+from_combine_to_summary         | 0 0 0  0 0 0 0  0 0 0 0  0 0 0 0  0 0 0 1  1 0 0 0  0 0 0 0 | 0x0000180
+from_combine                    | 0 0 0  0 0 0 0  0 0 0 0  0 0 0 0  0 0 0 1  1 1 0 0  0 0 0 0 | 0x00001C0
+from_combineGenManTop_to_summary| 0 0 0  0 0 0 0  0 0 0 0  0 0 0 0  0 0 0 0  1 0 0 0  0 0 0 0 | 0x0000080
+from_summary			        | 0 0 0  0 0 0 0  0 0 0 0  0 0 0 0  0 0 0 0  0 1 0 0  0 0 0 0 | 0x0000040
 -----------------------------------------------------------------------------------------------
 
 
 -----------------------------------------------------------------------------------------------
                                 |                      S   T   A   G   E                      |
                                 ---------------------------------------------------------------
-                                |          c                                                  |
-                                |          r                        j   g                     |
-                                |          e                        o   e                     |
-                                |          a                        i   n                     |
-                                |          t                        n   e c                   |
-                                | c        e                     j  t   r o                   |
-                                | o        L                     o  F   a m                   |
-                                | n        i      i              i  i   t b                   |
-                                | v        s f i  m              n  l   e i                   |
-                                | e        t i m  p              t  t g Q n                   |
-                                | r c      O l p  u        c m   C  e e Q e                   |
-                                | t r      f t u  t        o e   o  r n M P  p                |
-                                | F e      E e t  e f      l r   n  e e a a  h                |
-                                | r a      x r e  W i      l g f d  d r n n  e                |
-                                | o t p    c H W  i l      e e i e  B a h e  n                |
-                                | m e h    l a i  t t      c T l n  y t a l  o                |
-wfRequiredDeep                  | B R a    u p t  h e      t w t s  A e t s  A                |
-                                | e s s  p d l h  M r q s  S o e e  l T a C  n                |
-Matrix of Stages when           | d I i  h e o I  i B c n  u C r d  l o n o  a                |
-Minimac3 tool is used           | T d n  a d t m  n y t p  m h B F  F p P m  l t u v  w x y z |
-                                | o L g  s S y p  i I o t  m u y i  i H l p  y t t t  t t t t |
-                                | B i B  i n p u  m n o e  a n A l  l i o l  s a a a  a a a a |
-                                | e s e  n p e t  a f l s  r k l e  e t t e  i s s s  s s s s |
-                                | d t d  g s s e  c o S t  y s l s  s s s x  s k k k  k k k k |
+                                |          c                                 c                |
+                                |          r                        j   g    o                |
+                                |          e                        o   e    m                |
+                                |          a                        i   n    b                |
+                                |          t                        n   e c  G                |
+                                | c        e                     j  t   r o  e                |
+                                | o        L                     o  F   a m  n                |
+                                | n        i      i              i  i   t b  e                |
+                                | v        s f i  m              n  l   e i  r                |
+                                | e        t i m  p              t  t g Q n  a                |
+                                | r c      O l p  u        c m   C  e e Q e  t                |
+                                | t r      f t u  t        o e   o  r n M P  e p              |
+                                | F e      E e t  e f      l r   n  e e a a  M h              |
+                                | r a      x r e  W i      l g f d  d r n n  a e              |
+                                | o t p    c H W  i l      e e i e  B a h e  n n              |
+                                | m e h    l a i  t t      c T l n  y t a l  h o              |
+wfRequiredDeep                  | B R a    u p t  h e      t w t s  A e t s  a A              |
+                                | e s s  p d l h  M r q s  S o e e  l T a C  t n              |
+Matrix of Stages when           | d I i  h e o I  i B c n  u C r d  l o n o  t a              |
+Minimac3 tool is used           | T d n  a d t m  n y t p  m h B F  F p P m  a l u v  w x y z |
+                                | o L g  s S y p  i I o t  m u y i  i H l p  n y t t  t t t t |
+                                | B i B  i n p u  m n o e  a n A l  l i o l  T s a a  a a a a |
+                                | e s e  n p e t  a f l s  r k l e  e t t e  o i s s  s s s s |
+                                | d t d  g s s e  c o S t  y s l s  s s s x  p s k k  k k k k |
 ------------------------------------------ ----- --- ------------------------------------------
 until_convertFromBedToBed       | 1 1 0  0 0 0 0  0 0 0 0  0 0 0 0  0 0 0 0  0 0 0 0  0 0 0 0 | 0x6000000
 until_phasing                   | 1 1 1  1 1 1 0  0 0 0 0  0 0 0 0  0 0 0 0  0 0 0 0  0 0 0 0 | 0x7E00000
 until_imputation                | 1 1 1  1 1 1 0  1 0 0 0  0 0 0 0  0 0 0 0  0 0 0 0  0 0 0 0 | 0x7E80000
 until_association               | 1 1 1  1 1 1 0  1 1 1 1  0 0 0 0  0 0 0 0  0 0 0 0  0 0 0 0 | 0x7EF0000
 until_filterByAll               | 1 1 1  1 1 1 0  1 1 1 1  1 1 1 0  0 0 0 0  0 0 0 0  0 0 0 0 | 0x7EFE000
-until_summary                   | 1 1 1  1 1 1 0  1 1 1 1  1 1 1 1  1 1 1 1  0 0 0 0  0 0 0 0 | 0x7EFFF00
-whole_workflow                  | 1 1 1  1 1 1 0  1 1 1 1  1 1 1 1  1 1 1 1  1 0 0 0  0 0 0 0 | 0x7EFFF80
-from_phasing                    | 0 0 0  0 0 0 0  1 1 1 1  1 1 1 1  1 1 1 1  1 0 0 0  0 0 0 0 | 0x00FFF80
+until_summary                   | 1 1 1  1 1 1 0  1 1 1 1  1 1 1 1  1 1 1 1  1 0 0 0  0 0 0 0 | 0x7EFFF80
+whole_workflow                  | 1 1 1  1 1 1 0  1 1 1 1  1 1 1 1  1 1 1 1  1 1 0 0  0 0 0 0 | 0x7EFFFC0
+from_phasing                    | 0 0 0  0 0 0 0  1 1 1 1  1 1 1 1  1 1 1 1  1 1 0 0  0 0 0 0 | 0x00FFFC0
 from_phasing_to_summary         | 0 0 0  0 0 0 0  1 1 1 1  1 1 1 1  1 1 1 1  0 0 0 0  0 0 0 0 | 0x00FFF00
 from_phasing_to_filterByAll     | 0 0 0  0 0 0 0  1 1 1 1  1 1 1 0  0 0 0 0  0 0 0 0  0 0 0 0 | 0x00FE000
 from_phasing_to_association     | 0 0 0  0 0 0 0  1 1 1 1  0 0 0 0  0 0 0 0  0 0 0 0  0 0 0 0 | 0x00F0000
 from_phasing_to_imputation      | 0 0 0  0 0 0 0  1 0 0 0  0 0 0 0  0 0 0 0  0 0 0 0  0 0 0 0 | 0x0080000
-from_imputation                 | 0 0 0  0 0 0 0  0 1 1 1  1 1 1 1  1 1 1 1  1 0 0 0  0 0 0 0 | 0x007FF80
-from_imputation_to_summary      | 0 0 0  0 0 0 0  0 1 1 1  1 1 1 1  1 1 1 1  0 0 0 0  0 0 0 0 | 0x007FF00
+from_imputation                 | 0 0 0  0 0 0 0  0 1 1 1  1 1 1 1  1 1 1 1  1 1 0 0  0 0 0 0 | 0x007FFC0
+from_imputation_to_summary      | 0 0 0  0 0 0 0  0 1 1 1  1 1 1 1  1 1 1 1  1 0 0 0  0 0 0 0 | 0x007FF80
 from_imputation_to_filterByAll  | 0 0 0  0 0 0 0  0 1 1 1  1 1 1 0  0 0 0 0  0 0 0 0  0 0 0 0 | 0x007E000
 from_imputation_to_association  | 0 0 0  0 0 0 0  0 1 1 1  0 0 0 0  0 0 0 0  0 0 0 0  0 0 0 0 | 0x0070000
 from_imputation_to_filterByInfo | 0 0 0  0 0 0 0  0 1 0 0  0 0 0 0  0 0 0 0  0 0 0 0  0 0 0 0 | 0x0040000
 from_filterByInfo_to_qctoolS    | 0 0 0  0 0 0 0  0 0 1 0  0 0 0 0  0 0 0 0  0 0 0 0  0 0 0 0 | 0x0020000
 from_qctoolS_to_association     | 0 0 0  0 0 0 0  0 0 0 1  0 0 0 0  0 0 0 0  0 0 0 0  0 0 0 0 | 0x0010000
-from_association                | 0 0 0  0 0 0 0  0 0 0 0  1 1 1 1  1 1 1 1  0 0 0 0  0 0 0 0 | 0x000FF80
+from_association                | 0 0 0  0 0 0 0  0 0 0 0  1 1 1 1  1 1 1 1  1 1 0 0  0 0 0 0 | 0x000FFC0
 from_association_to_filterByAll | 0 0 0  0 0 0 0  0 0 0 0  1 1 1 0  0 0 0 0  0 0 0 0  0 0 0 0 | 0x000E000
-from_association_to_summary     | 0 0 0  0 0 0 0  0 0 0 0  1 1 1 1  1 1 1 1  0 0 0 0  0 0 0 0 | 0x000FF00
-from_filterByAll                | 0 0 0  0 0 0 0  0 0 0 0  0 0 0 1  1 1 1 1  1 0 0 0  0 0 0 0 | 0x0001F80
-from_filterByAll_to_summary     | 0 0 0  0 0 0 0  0 0 0 0  0 0 0 1  1 1 1 1  0 0 0 0  0 0 0 0 | 0x0001F00
+from_association_to_summary     | 0 0 0  0 0 0 0  0 0 0 0  1 1 1 1  1 1 1 1  1 0 0 0  0 0 0 0 | 0x000FF80
+from_filterByAll                | 0 0 0  0 0 0 0  0 0 0 0  0 0 0 1  1 1 1 1  1 1 0 0  0 0 0 0 | 0x0001FC0
+from_filterByAll_to_summary     | 0 0 0  0 0 0 0  0 0 0 0  0 0 0 1  1 1 1 1  1 0 0 0  0 0 0 0 | 0x0001F80
 from_manhattan_to_combine       | 0 0 0  0 0 0 0  0 0 0 0  0 0 0 0  0 0 1 0  0 0 0 0  0 0 0 0 | 0x0000200
-from_combine_to_summary         | 0 0 0  0 0 0 0  0 0 0 0  0 0 0 0  0 0 0 1  0 0 0 0  0 0 0 0 | 0x0000100
-from_combine                    | 0 0 0  0 0 0 0  0 0 0 0  0 0 0 0  0 0 0 1  1 0 0 0  0 0 0 0 | 0x0000180
-from_summary                    | 0 0 0  0 0 0 0  0 0 0 0  0 0 0 0  0 0 0 0  1 0 0 0  0 0 0 0 | 0x0000080
+from_combine_to_manhattan       | 0 0 0  0 0 0 0  0 0 0 0  0 0 0 0  0 0 0 1  0 0 0 0  0 0 0 0 | 0x0000100
+from_combine_to_summary         | 0 0 0  0 0 0 0  0 0 0 0  0 0 0 0  0 0 0 1  1 0 0 0  0 0 0 0 | 0x0000180
+from_combine                    | 0 0 0  0 0 0 0  0 0 0 0  0 0 0 0  0 0 0 1  1 1 0 0  0 0 0 0 | 0x00001C0
+from_combineGenManTop_to_summary| 0 0 0  0 0 0 0  0 0 0 0  0 0 0 0  0 0 0 0  1 0 0 0  0 0 0 0 | 0x0000080
+from_summary                    | 0 0 0  0 0 0 0  0 0 0 0  0 0 0 0  0 0 0 0  0 1 0 0  0 0 0 0 | 0x0000040
 -----------------------------------------------------------------------------------------------
 
 
@@ -135,8 +139,8 @@ jointFilteredByAllFiles
 generateTopHits
 generateQQManhattanPlots
 combinePanelsComplex
+combGenerateManhattanTop
 phenoAnalysis
-taskt
 tasku
 taskv
 taskw
