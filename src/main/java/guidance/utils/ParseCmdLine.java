@@ -59,6 +59,7 @@ public class ParseCmdLine {
 	// Chromosome sizes
 	private static final int MINIMUMCHUNKSIZE = 1_000;
 	private static final int MAX_NUMBER_OF_CHROMOSOMES = 23;
+	private static final String[] validManhattans = {"add", "dom", "rec", "gen", "het"};
 
 	private String gwasConfigFile = null;
 	private ArrayList<String> argumentsArray = new ArrayList<>();
@@ -84,6 +85,7 @@ public class ParseCmdLine {
 	private String exclSVSnp = "NO";
 	private String imputationTool = null;
 	private String phasingTool = null;
+	private String[] manhattans = null;
 
 	// chunkSize is always rewritten below.
 	private int chunkSize;
@@ -459,6 +461,20 @@ public class ParseCmdLine {
 		if ((myArgument.length > 0) && (myArgument.length < 3)) {
 			if (myArgument[0].equals("imputation_tool")) {
 				imputationTool = myArgument[1];
+			} else {
+				LOGGER.fatal(CLASS_HEADER + ERROR_PARAM_ORDER + myArgument[0]);
+				System.exit(1);
+			}
+		} else {
+			LOGGER.fatal(CLASS_HEADER + ERROR_SYNTAX + gwasConfigFile + ERROR_SYNTAX_SUFFIX + myArgument[0]);
+			System.exit(1);
+		}
+		
+		tmpArg = argumentsArray.get(i++);
+		myArgument = tmpArg.split("=");
+		if ((myArgument.length > 0) && (myArgument.length < 3)) {
+			if (myArgument[0].equals("manhattans")) {
+				manhattans = myArgument[1].split(",");
 			} else {
 				LOGGER.fatal(CLASS_HEADER + ERROR_PARAM_ORDER + myArgument[0]);
 				System.exit(1);
@@ -1633,6 +1649,14 @@ public class ParseCmdLine {
 
 		return rpanelLeg23FileName.get(indexRpanel).get(0);
 	}
+	
+	/**
+	 * Method to get the manhattan plots to launch
+	 * 
+	 */
+	public String[] getManhattanOptions() {
+		return manhattans;
+	}
 
 	/**
 	 * Method to get outDir information
@@ -1850,6 +1874,19 @@ public class ParseCmdLine {
 		for (int stageNumber = 0; stageNumber < steps.length; ++stageNumber) {
 			int tmpVar = (wfPossibleDeeps.get(wfDeepRequired) >> stageNumber) & MASK1;
 			wfAllStages.put(steps[steps.length - stageNumber - 1], tmpVar);
+		}
+		
+		if (this.wfAllStages.get("generateQQManhattanPlots") == 1 || this.wfAllStages.get("combGenerateManhattanTop") == 1) {
+			for(String elem: manhattans) {
+				if(!Arrays.asList(validManhattans).contains(elem)) {
+					String errorMessage = CLASS_HEADER + " " + elem + " is not between the supported manhattan plot types: " + validManhattans[0];
+					for(int i = 1; i < validManhattans.length; ++i) {
+						errorMessage += (" " + validManhattans[i]);
+					}
+					LOGGER.fatal(errorMessage);
+					System.exit(1);
+				}
+			}
 		}
 	}
 

@@ -369,8 +369,8 @@ public interface GuidanceItf {
 			@Parameter(type = Type.FILE, direction = Direction.OUT) String manhattanPlotFile,
 			@Parameter(type = Type.FILE, direction = Direction.OUT) String qqPlotTiffFile,
 			@Parameter(type = Type.FILE, direction = Direction.OUT) String manhattanPlotTiffFile,
-			// @Parameter(type = Type.FILE, direction = Direction.OUT) String
-			// correctedPvaluesFile,
+			@Parameter(type = Type.STRING, direction = Direction.IN) String manhattanOption, 
+			@Parameter(type = Type.STRING, direction = Direction.IN) String thresh, 
 			@Parameter(type = Type.STRING, direction = Direction.IN) String cmdToStore);
 
 	@Method(declaringClass = "guidance.GuidanceImpl")

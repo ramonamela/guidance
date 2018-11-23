@@ -3740,9 +3740,8 @@ public class GuidanceImpl {
 	 * @throws Exception
 	 */
 	public static void generateQQManhattanPlots(String lastCondensedFile, String qqPlotFile, String manhattanPlotFile,
-			// String qqPlotTiffFile, String manhattanPlotTiffFile, String
-			// correctedPvaluesFile, String cmdToStore)
-			String qqPlotTiffFile, String manhattanPlotTiffFile, String cmdToStore) throws GuidanceTaskException {
+			String qqPlotTiffFile, String manhattanPlotTiffFile, String manhattanOption, String thresh, String cmdToStore)
+			throws GuidanceTaskException {
 
 		String rScriptBinDir = loadFromEnvironment(RSCRIPTBINDIR, HEADER_GENERATE_QQ_MANHATTAN_PLOTS);
 		String rScriptDir = loadFromEnvironment(RSCRIPTDIR, HEADER_GENERATE_QQ_MANHATTAN_PLOTS);
@@ -3754,9 +3753,8 @@ public class GuidanceImpl {
 			System.out.println("[DEBUG] \t- manhattanPlotFile             : " + manhattanPlotFile);
 			System.out.println("[DEBUG] \t- qqPlotTiffFile                : " + qqPlotTiffFile);
 			System.out.println("[DEBUG] \t- manhattanPlotTiffFile         : " + manhattanPlotTiffFile);
-			System.out.println(NEW_LINE);
-			System.out.println("[DEBUG] \t- WARN: R Binary output on file " + lastCondensedFile + STDOUT_EXTENSION);
-			System.out.println("[DEBUG] \t- WARN: R Binary error on file " + lastCondensedFile + STDERR_EXTENSION);
+			System.out.println("[DEBUG] \t- manhattanPlotType             : " + manhattanOption);
+			System.out.println("[DEBUG] \t- threshold                     : " + thresh);
 			System.out.println(NEW_LINE);
 			System.out.println("[DEBUG] \t- Command: " + cmdToStore);
 			System.out.println("--------------------------------------");
@@ -3769,8 +3767,8 @@ public class GuidanceImpl {
 		FileUtils.gunzipFile(lastCondensedFile, theInputFile);
 
 		String cmd = null;
-		cmd = rScriptBinDir + "/Rscript " + rScriptDir + "/qqplot_manhattan.R " + theInputFile + " " + qqPlotFile + " "
-				+ manhattanPlotFile + " " + qqPlotTiffFile + " " + manhattanPlotTiffFile;
+		cmd = rScriptBinDir + "/Rscript " + rScriptDir + "/qqplot_manhattan_all_models.R " + theInputFile + " " + qqPlotFile + " "
+				+ manhattanPlotFile + " " + qqPlotTiffFile + " " + manhattanPlotTiffFile + " " + manhattanOption + " " + thresh;
 
 		if (DEBUG) {
 			System.out.println("\n[DEBUG] Cmd -> " + cmd);

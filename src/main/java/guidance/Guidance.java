@@ -776,7 +776,7 @@ public class Guidance {
 			makeCombinePanels(parsingArgs, assocFilesInfo, mergeFilesInfo, combinedPanelsFilesInfo, rpanelTypes, test);
 
 		} // End for test types
-		
+
 		flushCommands(true);
 
 		if (1 < numberOfTestTypes) {
@@ -2484,10 +2484,12 @@ public class Guidance {
 	 * @param condensedFile
 	 */
 	private static void doGenerateCondensedAndTopHitsFile(ParseCmdLine parsingArgs, String filteredFile,
-			String filteredMalesFile, String filteredFemalesFile, String condensedFile, String topHitsFile, String crossRanges) {
+			String filteredMalesFile, String filteredFemalesFile, String condensedFile, String topHitsFile,
+			String crossRanges) {
 
 		String cmdToStore = R_SCRIPT_BIN_DIR + "/Rscript " + R_SCRIPT_DIR + "/condensed_tophits.R " + filteredFile + " "
-				+ filteredMalesFile + " " + filteredFemalesFile + " " + condensedFile + " " + topHitsFile + " " + crossRanges;
+				+ filteredMalesFile + " " + filteredFemalesFile + " " + condensedFile + " " + topHitsFile + " "
+				+ crossRanges;
 		listOfCommands.add(cmdToStore);
 
 		String pvaThreshold = Double.toString(parsingArgs.getPvaThreshold());
@@ -3439,16 +3441,39 @@ public class Guidance {
 	private static void doGenerateQQManhattanPlots(ParseCmdLine parsingArgs, String condensedFile, String qqPlotFile,
 			String manhattanPlotFile, String qqPlotTiffFile, String manhattanPlotTiffFile) {
 
-		String cmdToStore = R_SCRIPT_BIN_DIR + "/Rscript " + R_SCRIPT_DIR + "/qqplot_manhattan.R " + condensedFile + " "
-				+ qqPlotFile + " " + manhattanPlotFile + " " + qqPlotTiffFile + " " + manhattanPlotTiffFile;
-		listOfCommands.add(cmdToStore);
+		String[] manhattans = parsingArgs.getManhattanOptions();
+		String thresh = String.valueOf(parsingArgs.getPvaThreshold());
+		String columnName = null;
+		String manpdf = null;
+		String mantiff = null;
+		String qqpdf = null;
+		String qqtiff = null;
 
-		try {
-			GuidanceImpl.generateQQManhattanPlots(condensedFile, qqPlotFile, manhattanPlotFile, qqPlotTiffFile,
-					manhattanPlotTiffFile, cmdToStore);
-		} catch (GuidanceTaskException gte) {
-			LOGGER.error("[Guidance] Exception trying the execution of generateQQManhattanPlots task", gte);
+		for (String option : manhattans) {
+			manpdf = fileToInheritance(manhattanPlotFile, 4, option);
+			mantiff = fileToInheritance(manhattanPlotTiffFile, 5, option);
+			qqpdf = fileToInheritance(qqPlotFile, 4, option);
+			qqtiff = fileToInheritance(qqPlotTiffFile, 5, option);
+			columnName = "frequentist_" + option + "_pvalue";
+
+			String cmdToStore = R_SCRIPT_BIN_DIR + "/Rscript " + R_SCRIPT_DIR + "/qqplot_manhattan_all_models.R "
+					+ condensedFile + " " + qqpdf + " " + manpdf + " " + qqtiff + " " + mantiff + " " + columnName + " "
+					+ thresh;
+			listOfCommands.add(cmdToStore);
+			/*
+			try {
+				GuidanceImpl.generateQQManhattanPlots(condensedFile, qqPlotFile, manhattanPlotFile, qqPlotTiffFile,
+						manhattanPlotTiffFile, option, thresh, cmdToStore);
+			} catch (GuidanceTaskException gte) {
+				LOGGER.error("[Guidance] Exception trying the execution of generateQQManhattanPlots task", gte);
+			}
+			*/
 		}
+	}
+
+	private static String fileToInheritance(String filename, int length, String option) {
+		return filename.substring(0, filename.length() - length) + "_" + option
+				+ filename.substring(filename.length() - length, filename.length());
 	}
 
 	/**
