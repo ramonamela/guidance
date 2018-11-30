@@ -49,8 +49,9 @@ from_association		        | 0 0 0  0 0 0 0  0 0 0 0  1 1 1 1  1 1 1 1  1 1 0 0  
 from_association_to_filterByAll | 0 0 0  0 0 0 0  0 0 0 0  1 1 1 0  0 0 0 0  0 0 0 0  0 0 0 0 | 0x000E000
 from_association_to_summary	    | 0 0 0  0 0 0 0  0 0 0 0  1 1 1 1  1 1 1 1  1 0 0 0  0 0 0 0 | 0x000FF80
 from_filterByAll                | 0 0 0  0 0 0 0  0 0 0 0  0 0 0 1  1 1 1 1  1 1 0 0  0 0 0 0 | 0x0001FC0
+from_jointFiltered_to_condensed | 0 0 0  0 0 0 0  0 0 0 0  0 0 0 0  1 0 0 0  0 0 0 0  0 0 0 0 | 0x0000800
 from_filterByAll_to_summary     | 0 0 0  0 0 0 0  0 0 0 0  0 0 0 1  1 1 1 1  1 0 0 0  0 0 0 0 | 0x0001F80
-from_manhattan_to_combine       | 0 0 0  0 0 0 0  0 0 0 0  0 0 0 0  0 0 1 0  0 0 0 0  0 0 0 0 | 0x0000200
+from_manhattan_to_combine       | 0 0 0  0 0 0 0  0 0 0 0  0 0 0 1  0 0 1 0  0 0 0 0  0 0 0 0 | 0x0001200
 from_combine_to_manhattan       | 0 0 0  0 0 0 0  0 0 0 0  0 0 0 0  0 0 0 1  0 0 0 0  0 0 0 0 | 0x0000100
 from_combine_to_summary         | 0 0 0  0 0 0 0  0 0 0 0  0 0 0 0  0 0 0 1  1 0 0 0  0 0 0 0 | 0x0000180
 from_combine                    | 0 0 0  0 0 0 0  0 0 0 0  0 0 0 0  0 0 0 1  1 1 0 0  0 0 0 0 | 0x00001C0
@@ -110,8 +111,9 @@ from_association                | 0 0 0  0 0 0 0  0 0 0 0  1 1 1 1  1 1 1 1  1 1
 from_association_to_filterByAll | 0 0 0  0 0 0 0  0 0 0 0  1 1 1 0  0 0 0 0  0 0 0 0  0 0 0 0 | 0x000E000
 from_association_to_summary     | 0 0 0  0 0 0 0  0 0 0 0  1 1 1 1  1 1 1 1  1 0 0 0  0 0 0 0 | 0x000FF80
 from_filterByAll                | 0 0 0  0 0 0 0  0 0 0 0  0 0 0 1  1 1 1 1  1 1 0 0  0 0 0 0 | 0x0001FC0
+from_jointFiltered_to_condensed | 0 0 0  0 0 0 0  0 0 0 0  0 0 0 0  1 0 0 0  0 0 0 0  0 0 0 0 | 0x0000800
 from_filterByAll_to_summary     | 0 0 0  0 0 0 0  0 0 0 0  0 0 0 1  1 1 1 1  1 0 0 0  0 0 0 0 | 0x0001F80
-from_manhattan_to_combine       | 0 0 0  0 0 0 0  0 0 0 0  0 0 0 0  0 0 1 0  0 0 0 0  0 0 0 0 | 0x0000200
+from_manhattan_to_combine       | 0 0 0  0 0 0 0  0 0 0 0  0 0 0 1  0 0 1 0  0 0 0 0  0 0 0 0 | 0x0001200
 from_combine_to_manhattan       | 0 0 0  0 0 0 0  0 0 0 0  0 0 0 0  0 0 0 1  0 0 0 0  0 0 0 0 | 0x0000100
 from_combine_to_summary         | 0 0 0  0 0 0 0  0 0 0 0  0 0 0 0  0 0 0 1  1 0 0 0  0 0 0 0 | 0x0000180
 from_combine                    | 0 0 0  0 0 0 0  0 0 0 0  0 0 0 0  0 0 0 1  1 1 0 0  0 0 0 0 | 0x00001C0

@@ -747,8 +747,8 @@ public class Guidance {
 				}
 
 				if (parsingArgs.getStageStatus("jointCondensedFiles") == 1) {
-					doGenerateCondensedAndTopHitsFile(parsingArgs, lastFilteredByAllFile, filteredByAllXMalesFile,
-							filteredByAllXFemalesFile, lastCondensedFile, topHitsResults, crossRangesResults);
+					//doGenerateCondensedAndTopHitsFile(parsingArgs, lastFilteredByAllFile, filteredByAllXMalesFile,
+					//		filteredByAllXFemalesFile, lastCondensedFile, topHitsResults, crossRangesResults);
 				}
 
 				// Generate QQManhattan Plots
@@ -2026,65 +2026,6 @@ public class Guidance {
 	}
 
 	/**
-	 * Method to perform the joint of condensed files of each rpanel
-	 * 
-	 * @param parsingArgs
-	 * @param listOfCommands
-	 * @param ttIndex
-	 * @param rpanelIndex
-	 * @param startChr
-	 * @param endChr
-	 * @param mergeFilesInfo
-	 * @throws GuidanceTaskException
-	 */
-	/*
-	 * private static void makeJointCondensedFiles(ParseCmdLine parsingArgs, int
-	 * ttIndex, int rpanelIndex, int startChr, int endChr, MergeFiles
-	 * mergeFilesInfo) throws GuidanceTaskException {
-	 * 
-	 * int indexA = 0; int indexC = 0; int i = 0; String condensedA = null; String
-	 * condensedB = null; String condensedC = null; int numberOfChrs = endChr -
-	 * startChr + 1;
-	 * 
-	 * if (numberOfChrs == 1) { // There is only one chr to process. // DO
-	 * something. condensedA = mergeFilesInfo.getCondensedFile(ttIndex, rpanelIndex,
-	 * startChr);
-	 * 
-	 * condensedC = mergeFilesInfo.getAdditionalCondensedFile(ttIndex, rpanelIndex,
-	 * indexA);
-	 * 
-	 * try { GuidanceImpl.copyFile(condensedA, condensedC); } catch (Exception e) {
-	 * throw new GuidanceTaskException("Error copying the file " + e); }
-	 * 
-	 * // doJointCondenseFiles(parsingArgs, condensedA, condensedB, condensedC); }
-	 * else { if (endChr == 23) ++numberOfChrs; for (int processedCondensed = 0;
-	 * processedCondensed < 2 * numberOfChrs - 2; processedCondensed =
-	 * processedCondensed + 2) { if (processedCondensed < numberOfChrs) { if
-	 * (numberOfChrs == processedCondensed + 1 && endChr == 23) { condensedA =
-	 * mergeFilesInfo.getCondensedFemalesFile(ttIndex, rpanelIndex); } else { i =
-	 * startChr + processedCondensed; condensedA =
-	 * mergeFilesInfo.getCondensedFile(ttIndex, rpanelIndex, i); } } else {
-	 * condensedA = mergeFilesInfo.getAdditionalCondensedFile(ttIndex, rpanelIndex,
-	 * indexA); indexA++; }
-	 * 
-	 * if (processedCondensed < numberOfChrs - 1) { if (numberOfChrs ==
-	 * processedCondensed + 2 && endChr == 23) { condensedB =
-	 * mergeFilesInfo.getCondensedFemalesFile(ttIndex, rpanelIndex); } else { i =
-	 * startChr + processedCondensed + 1; condensedB =
-	 * mergeFilesInfo.getCondensedFile(ttIndex, rpanelIndex, i); } } else {
-	 * condensedB = mergeFilesInfo.getAdditionalCondensedFile(ttIndex, rpanelIndex,
-	 * indexA); indexA++; } condensedC =
-	 * mergeFilesInfo.getAdditionalCondensedFile(ttIndex, rpanelIndex, indexC);
-	 * 
-	 * doJointCondenseFiles(parsingArgs, condensedA, condensedB, condensedC);
-	 * indexC++; } // End for(int processedCondensed=0; processedCondensed<=
-	 * 2*numberOfChrs -2; // processedCondensed = // processedCondensed +2) }
-	 * 
-	 * // Clean intermediate files // File fA = new File(condensedA); //
-	 * fA.delete(); // File fB = new File(condensedB); // fB.delete(); }
-	 */
-
-	/**
 	 * Method to perform the joint of filteredByAll files of each rpanel.
 	 * 
 	 * @param parsingArgs
@@ -2217,50 +2158,6 @@ public class Guidance {
 
 			// INITIALIZE THE FILES TO STORE ALL COMBINED INFORMATION (ADD HEADER AND
 			// COMPRESS)
-			/*
-			 * String filteredHeader = null; if (startChr < 23) { filteredHeader =
-			 * Headers.constructHeader(); final String plainfilteredCombineAll =
-			 * filteredCombineAll.substring(0, filteredCombineAll.length() - 3); try
-			 * (BufferedWriter writer = new BufferedWriter(new
-			 * FileWriter(plainfilteredCombineAll))) { writer.write(filteredHeader);
-			 * writer.newLine(); writer.flush(); } catch (IOException ioe) { LOGGER.
-			 * error("[Guidance] Exception when initializing makeCombinePanel filtered ALL file"
-			 * , ioe); } FileUtils.gzipFile(plainfilteredCombineAll, filteredCombineAll);
-			 * new File(plainfilteredCombineAll).delete(); }
-			 * 
-			 * if (endChr == 23) {
-			 * 
-			 * String filteredXHeaderMales = Headers.constructHeaderX(SEX1); final String
-			 * plainfilteredCombineAllXMales = filteredCombineAllXMales.substring(0,
-			 * filteredCombineAllXMales.length() - 3); try (BufferedWriter writer = new
-			 * BufferedWriter(new FileWriter(plainfilteredCombineAllXMales))) {
-			 * writer.write(filteredXHeaderMales); writer.newLine(); writer.flush(); } catch
-			 * (IOException ioe) { LOGGER.
-			 * error("[Guidance] Exception when initializing makeCombinePanel filteredX ALL file"
-			 * , ioe); } FileUtils.gzipFile(plainfilteredCombineAllXMales,
-			 * filteredCombineAllXMales); new File(plainfilteredCombineAllXMales).delete();
-			 * 
-			 * String filteredXHeaderFemales = Headers.constructHeaderX(SEX2); final String
-			 * plainfilteredCombineAllXFemales = filteredCombineAllXFemales.substring(0,
-			 * filteredCombineAllXFemales.length() - 3); try (BufferedWriter writer = new
-			 * BufferedWriter(new FileWriter(plainfilteredCombineAllXFemales))) {
-			 * writer.write(filteredXHeaderFemales); writer.newLine(); writer.flush(); }
-			 * catch (IOException ioe) { LOGGER.
-			 * error("[Guidance] Exception when initializing makeCombinePanel filteredX ALL file"
-			 * , ioe); } FileUtils.gzipFile(plainfilteredCombineAllXFemales,
-			 * filteredCombineAllXFemales); new
-			 * File(plainfilteredCombineAllXFemales).delete(); }
-			 * 
-			 * final String condensedHeader = Headers.constructCondensedHeader(); final
-			 * String plainCondensedCombineAll = condensedCombineAll.substring(0,
-			 * condensedCombineAll.length() - 3); try (BufferedWriter writer = new
-			 * BufferedWriter(new FileWriter(plainCondensedCombineAll))) {
-			 * writer.write(condensedHeader); writer.newLine(); writer.flush(); } catch
-			 * (IOException ioe) { LOGGER.
-			 * error("[Guidance] Exception when initializing makeCombinePanel condensed ALL file"
-			 * , ioe); } FileUtils.gzipFile(plainCondensedCombineAll, condensedCombineAll);
-			 * new File(plainCondensedCombineAll).delete();
-			 */
 
 			LinkedList<String> filteredCombined = new LinkedList<>();
 			// LinkedList<String> condensedCombined = new LinkedList<>();
@@ -2487,12 +2384,13 @@ public class Guidance {
 			String filteredMalesFile, String filteredFemalesFile, String condensedFile, String topHitsFile,
 			String crossRanges) {
 
-		String cmdToStore = R_SCRIPT_BIN_DIR + "/Rscript " + R_SCRIPT_DIR + "/condensed_tophits.R " + filteredFile + " "
-				+ filteredMalesFile + " " + filteredFemalesFile + " " + condensedFile + " " + topHitsFile + " "
-				+ crossRanges;
-		listOfCommands.add(cmdToStore);
-
 		String pvaThreshold = Double.toString(parsingArgs.getPvaThreshold());
+
+		String cmdToStore = R_SCRIPT_BIN_DIR + "/Rscript " + R_SCRIPT_DIR + "/condensed_tophits_crossmodel.R "
+				+ filteredFile + " " + filteredMalesFile + " " + filteredFemalesFile + " " + condensedFile + " "
+				+ topHitsFile + " " + crossRanges + " " + pvaThreshold;
+
+		listOfCommands.add(cmdToStore);
 
 		try {
 			GuidanceImpl.generateCondensedAndTopHitsFile(filteredFile, filteredMalesFile, filteredFemalesFile,
@@ -3460,14 +3358,14 @@ public class Guidance {
 					+ condensedFile + " " + qqpdf + " " + manpdf + " " + qqtiff + " " + mantiff + " " + columnName + " "
 					+ thresh;
 			listOfCommands.add(cmdToStore);
-			/*
+
 			try {
-				GuidanceImpl.generateQQManhattanPlots(condensedFile, qqPlotFile, manhattanPlotFile, qqPlotTiffFile,
-						manhattanPlotTiffFile, option, thresh, cmdToStore);
+				GuidanceImpl.generateQQManhattanPlots(condensedFile, qqpdf, manpdf, qqtiff, mantiff, columnName, thresh,
+						cmdToStore);
 			} catch (GuidanceTaskException gte) {
 				LOGGER.error("[Guidance] Exception trying the execution of generateQQManhattanPlots task", gte);
 			}
-			*/
+
 		}
 	}
 

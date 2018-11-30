@@ -2339,7 +2339,7 @@ public class GuidanceImpl {
 		long startTime = System.currentTimeMillis();
 		String condensedPlain = condensedFile.substring(0, condensedFile.length() - 3);
 		String topHitsPlain = topHitsFile.substring(0, topHitsFile.length() - 3);
-		String crossRangesPlain = crossRangesFile.substring(0, topHitsFile.length() - 3);
+		String crossRangesPlain = crossRangesFile.substring(0, crossRangesFile.length() - 3);
 
 		String rScriptBinDir = loadFromEnvironment(RSCRIPTBINDIR, HEADER_GENERATE_QQ_MANHATTAN_PLOTS);
 		String rScriptDir = loadFromEnvironment(RSCRIPTDIR, HEADER_GENERATE_QQ_MANHATTAN_PLOTS);
@@ -3763,11 +3763,11 @@ public class GuidanceImpl {
 		long startTime = System.currentTimeMillis();
 
 		// First, we have to uncompress the input file
-		String theInputFile = lastCondensedFile + TEMP_EXTENSION;
-		FileUtils.gunzipFile(lastCondensedFile, theInputFile);
+		//String theInputFile = lastCondensedFile + TEMP_EXTENSION;
+		//FileUtils.gunzipFile(lastCondensedFile, theInputFile);
 
 		String cmd = null;
-		cmd = rScriptBinDir + "/Rscript " + rScriptDir + "/qqplot_manhattan_all_models.R " + theInputFile + " " + qqPlotFile + " "
+		cmd = rScriptBinDir + "/Rscript " + rScriptDir + "/qqplot_manhattan_all_models.R " + lastCondensedFile + " " + qqPlotFile + " "
 				+ manhattanPlotFile + " " + qqPlotTiffFile + " " + manhattanPlotTiffFile + " " + manhattanOption + " " + thresh;
 
 		if (DEBUG) {
@@ -3778,8 +3778,7 @@ public class GuidanceImpl {
 		// Execute the command retrieving its exitValue, output and error
 		int exitValue = -1;
 		try {
-			exitValue = ProcessUtils.execute(cmd, lastCondensedFile + STDOUT_EXTENSION,
-					lastCondensedFile + STDERR_EXTENSION);
+			exitValue = ProcessUtils.executeWithoutOutputs(cmd);
 		} catch (IOException ioe) {
 			throw new GuidanceTaskException(ioe);
 		}
@@ -3791,7 +3790,7 @@ public class GuidanceImpl {
 		}
 
 		// Clean unziped file
-		FileUtils.delete(theInputFile);
+		//FileUtils.delete(theInputFile);
 
 		long stopTime = System.currentTimeMillis();
 		long elapsedTime = (stopTime - startTime) / 1_000;

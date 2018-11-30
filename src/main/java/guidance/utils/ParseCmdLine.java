@@ -172,6 +172,7 @@ public class ParseCmdLine {
 		wfPossibleDeeps.put("from_association_to_filterByAll", EMPTY_MASK);
 		wfPossibleDeeps.put("from_association_to_summary", EMPTY_MASK);
 		wfPossibleDeeps.put("from_filterByAll", EMPTY_MASK);
+		wfPossibleDeeps.put("from_jointFiltered_to_condensed", EMPTY_MASK);
 		wfPossibleDeeps.put("from_filterByAll_to_summary", EMPTY_MASK);
 		wfPossibleDeeps.put("from_manhattan_to_combine", EMPTY_MASK);
 		wfPossibleDeeps.put("from_combine_to_manhattan", EMPTY_MASK);
@@ -1667,46 +1668,6 @@ public class ParseCmdLine {
 		return this.outDir;
 	}
 
-	/*
-	 * // Method for printing the help public void printHelp() {
-	 * LOGGER.info("Usage: Guidance [options]");
-	 * LOGGER.info("All Possible options:"); LOGGER.
-	 * info("   -gmapdir          : Directroy where the genetic map file is stored."
-	 * ); LOGGER.
-	 * info("   -rpaneldir        : Directroy where the directories of the reference panels are stored"
-	 * ); LOGGER.
-	 * info("   -rpaneltypes      : The current reference panels supported are:");
-	 * LOGGER.info("                       1kg, dceg, hapmap, 1kg_xxx"); LOGGER.
-	 * info("   -exclude_cgat_snps: Flag to indicate if we want to have CGAT exclusions:"
-	 * ); LOGGER.info("                     : YES/NO"); LOGGER.
-	 * info("   -outdir           : Directory where the GWAS results will be stored."
-	 * ); LOGGER.
-	 * info("   -start            : First chromosome to process, from 1 to 23.");
-	 * LOGGER.
-	 * info("   -end              : Last chromosome to process, from 1 to 23.");
-	 * LOGGER.
-	 * info("   -totalprocs       : Total number of processors to use in the execution."
-	 * ); LOGGER.
-	 * info("   -chrdir           : Directory where the chromosomes for cases are stores"
-	 * ); LOGGER.
-	 * info("   -sampledir        : Directory where the sample files for cases are stored."
-	 * ); LOGGER.
-	 * info("   -cohort           : The current supported cohorts for cases are:");
-	 * LOGGER.info("                       58C, NBS, T2D"); LOGGER.
-	 * info("   -gmapdir          : Directroy where the genetic map files are stored."
-	 * );
-	 * LOGGER.info("   -gmaptype         : The current genetic maps supported are:"
-	 * ); LOGGER.info("                       1kg, dceg, hapmap"); LOGGER.
-	 * info("   -exclude_cgat_snps: Flag to indicate if we want to have CGAT exclusions:"
-	 * ); LOGGER.info("                     : YES/NO"); LOGGER.
-	 * info("   -outdir           : Directory where the GWAS results will be stored."
-	 * ); LOGGER.
-	 * info("   -start            : First chromosome to process, from 1 to 23.");
-	 * LOGGER.
-	 * info("   -end              : Last chromosome to process, from 1 to 23.");
-	 * LOGGER.info("---------------------------------"); }
-	 */
-
 	/**
 	 * Method for printing the input command line
 	 * 
@@ -1818,8 +1779,9 @@ public class ParseCmdLine {
 			wfPossibleDeeps.put("from_association_to_filterByAll", 0x000E000);
 			wfPossibleDeeps.put("from_association_to_summary", 0x000FF80);
 			wfPossibleDeeps.put("from_filterByAll", 0x0001FC0);
+			wfPossibleDeeps.put("from_jointFiltered_to_condensed", 0x0000800);
 			wfPossibleDeeps.put("from_filterByAll_to_summary", 0x0001F80);
-			wfPossibleDeeps.put("from_manhattan_to_combine", 0x0000200);
+			wfPossibleDeeps.put("from_manhattan_to_combine", 0x0001200);
 			wfPossibleDeeps.put("from_combine_to_manhattan", 0x0000100);
 			wfPossibleDeeps.put("from_combine_to_summary", 0x0000180);
 			wfPossibleDeeps.put("from_combine", 0x00001C0);
@@ -1849,8 +1811,9 @@ public class ParseCmdLine {
 			wfPossibleDeeps.put("from_association_to_filterByAll", 0x000E000);
 			wfPossibleDeeps.put("from_association_to_summary", 0x000FF80);
 			wfPossibleDeeps.put("from_filterByAll", 0x0001FC0);
+			wfPossibleDeeps.put("from_jointFiltered_to_condensed", 0x0000800);
 			wfPossibleDeeps.put("from_filterByAll_to_summary", 0x0001F80);
-			wfPossibleDeeps.put("from_manhattan_to_combine", 0x0000200);
+			wfPossibleDeeps.put("from_manhattan_to_combine", 0x0001200);
 			wfPossibleDeeps.put("from_combine_to_manhattan", 0x0000100);
 			wfPossibleDeeps.put("from_combine_to_summary", 0x0000180);
 			wfPossibleDeeps.put("from_combine", 0x00001C0);
