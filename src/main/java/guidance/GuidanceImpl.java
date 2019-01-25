@@ -98,7 +98,8 @@ public class GuidanceImpl {
 	// Commonly used characters
 	private static final String NEW_LINE = "\n";
 	private static final String TAB = "\t";
-	private static final String SPACE = "\\s+";
+	private static final String SPACE = "\\s+"; // "\\s+";
+        private static final String SPACE_WRITE = " "; //"\u0020";
 	private static final String CHR_23 = "23";
 
 	// File extensions
@@ -730,7 +731,7 @@ public class GuidanceImpl {
 			if (inputFormat.equals("BED")) {
 				String line = null;
 				while ((line = br.readLine()) != null) {
-					String[] splittedLine = line.split(TAB);// delimiter I assume single space.
+					String[] splittedLine = line.split(SPACE);// delimiter I assume single space.
 					String allele = splittedLine[4] + splittedLine[5]; // store Allele (AC,GC,AG, GT,..., etc.)
 
 					// Store rsID of the SNP which its allele is AT or TA or GC or CG into the
@@ -1507,13 +1508,13 @@ public class GuidanceImpl {
 			String valueCovar = lineSplited[columnsHeaderCovar.get(0)];
 
 			for (int i = 1; i < columnsHeaderCovar.size(); i++) {
-				valueCovar += "\t" + lineSplited[columnsHeaderCovar.get(i)];
+				valueCovar += SPACE_WRITE + lineSplited[columnsHeaderCovar.get(i)];
 			}
 
 			String valueResponse = lineSplited[columnsHeaderResponse.get(0)];
 
 			for (int i = 1; i < columnsHeaderResponse.size(); i++) {
-				valueResponse += "\t" + lineSplited[columnsHeaderResponse.get(i)];
+				valueResponse += SPACE_WRITE + lineSplited[columnsHeaderResponse.get(i)];
 			}
 
 			valuesJoined = new ArrayList<String>();
@@ -1527,17 +1528,17 @@ public class GuidanceImpl {
 		// Prepearing header output file
 		String outputFile = "";
 		for (int i = 0; i < 3; i++) {
-			outputFile += splitHeaderSF[i] + SPACE;
+			outputFile += splitHeaderSF[i] + SPACE_WRITE;
 		}
 
 		outputFile += splitHeaderSF[columnsHeaderCovar.get(0)];
 		for (int i = 1; i < columnsHeaderCovar.size(); i++) {
-			outputFile += SPACE + splitHeaderSF[columnsHeaderCovar.get(i)];
+			outputFile += SPACE_WRITE + splitHeaderSF[columnsHeaderCovar.get(i)];
 		}
 
-		outputFile += SPACE + splitHeaderSF[columnsHeaderResponse.get(0)];
+		outputFile += SPACE_WRITE + splitHeaderSF[columnsHeaderResponse.get(0)];
 		for (int i = 1; i < columnsHeaderResponse.size(); i++) {
-			outputFile += SPACE + splitHeaderSF[columnsHeaderResponse.get(i)];
+			outputFile += SPACE_WRITE + splitHeaderSF[columnsHeaderResponse.get(i)];
 		}
 
 		outputFile += "\n";
@@ -1546,22 +1547,25 @@ public class GuidanceImpl {
 		br = new BufferedReader(new FileReader(phasingSampleFile));
 		line = br.readLine(); // reading the header
 
+
 		while ((line = br.readLine()) != null) {
+
 
 			String[] lineSplited = line.split(SPACE);
 			String key = lineSplited[1];
+
 
 			valuesJoined = new ArrayList<String>();
 			valuesJoined = loadSampleFile.get(key);
 
 			// Add "key" Pos0 Pos1, Pos2
-			outputFile += lineSplited[0] + SPACE + lineSplited[1] + SPACE + lineSplited[2];
+			outputFile += lineSplited[0] + SPACE_WRITE + lineSplited[1] + SPACE_WRITE + lineSplited[2];
 
 			// Add the Covar and Response columns
 			for (int i = 0; i < valuesJoined.size(); i++) {
 
 				String values = valuesJoined.get(i);
-				outputFile += SPACE + values;
+				outputFile += SPACE_WRITE + values;
 			}
 			outputFile += "\n";
 		}
