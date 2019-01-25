@@ -22,6 +22,7 @@ import java.util.zip.GZIPOutputStream;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import guidance.GuidanceImpl;
 import guidance.exceptions.GuidanceTaskException;
 import guidance.processes.ProcessUtils;
 import guidance.utils.ParseCmdLine;
@@ -381,6 +382,8 @@ public class FileUtils {
 	}
 	
 	public static void getFile(String filename) {
+		GuidanceImpl.getFile(filename, filename);
+		/*
 		try (BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(filename)))){
 			String line = reader.readLine();
 		} catch (FileNotFoundException e) {
@@ -388,6 +391,7 @@ public class FileUtils {
 		} catch (IOException e) {
 			System.err.println("[DEBUG] Error when bringing back " + filename);
 		}
+		*/
 	}
 
 }

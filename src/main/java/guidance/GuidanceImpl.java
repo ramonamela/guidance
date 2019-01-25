@@ -42,6 +42,7 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.FileReader;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.InputStreamReader;
 import java.io.IOException;
 
@@ -54,6 +55,8 @@ import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.zip.GZIPInputStream;
+
+import es.bsc.compss.api.COMPSs;
 
 public class GuidanceImpl {
 
@@ -99,7 +102,7 @@ public class GuidanceImpl {
 	private static final String NEW_LINE = "\n";
 	private static final String TAB = "\t";
 	private static final String SPACE = "\\s+"; // "\\s+";
-        private static final String SPACE_WRITE = " "; //"\u0020";
+	private static final String SPACE_WRITE = " "; // "\u0020";
 	private static final String CHR_23 = "23";
 
 	// File extensions
@@ -1547,13 +1550,10 @@ public class GuidanceImpl {
 		br = new BufferedReader(new FileReader(phasingSampleFile));
 		line = br.readLine(); // reading the header
 
-
 		while ((line = br.readLine()) != null) {
-
 
 			String[] lineSplited = line.split(SPACE);
 			String key = lineSplited[1];
-
 
 			valuesJoined = new ArrayList<String>();
 			valuesJoined = loadSampleFile.get(key);
@@ -2231,8 +2231,10 @@ public class GuidanceImpl {
 		String rScriptDir = loadFromEnvironment(RSCRIPTDIR, HEADER_PHENO);
 
 		String combinedTopHitsString = combinedTopHits.get(0);
+		FileUtils.getFile(combinedTopHits.get(0));
 		for (int i = 1; i < combinedTopHits.size(); ++i) {
 			combinedTopHitsString += ("," + combinedTopHits.get(i));
+			FileUtils.getFile(combinedTopHits.get(i));
 		}
 		String command = rScriptBinDir + "Rscript --verbose " + rScriptDir + "/tophits_all_phenotypes.R "
 				+ combinedTopHitsString + " " + topHitsAllPheno;
@@ -2242,7 +2244,7 @@ public class GuidanceImpl {
 			startTime = System.currentTimeMillis();
 			System.out.println("\n[DEBUG] [pheno] Launched command:                 : " + command);
 		}
-
+		COMPSs.barrier();
 		try {
 			ProcessUtils.executeWithoutOutputs(command);
 		} catch (IOException ioe) {
@@ -2306,8 +2308,10 @@ public class GuidanceImpl {
 		String rScriptDir = loadFromEnvironment(RSCRIPTDIR, HEADER_PHENO);
 
 		String mergedTopHitsString = phenoMergedTopHits.get(0);
+		FileUtils.getFile(mergedTopHitsString);
 		for (int i = 1; i < phenoMergedTopHits.size(); ++i) {
 			mergedTopHitsString += ("," + phenoMergedTopHits.get(i));
+			FileUtils.getFile(phenoMergedTopHits.get(i));
 		}
 
 		String command = rScriptBinDir + "Rscript --verbose " + rScriptDir + "/crossphenotype.R " + mergedTopHitsString
@@ -2319,6 +2323,8 @@ public class GuidanceImpl {
 			System.out.println("\n[DEBUG] [pheno] Launched command:                 : " + command);
 		}
 
+		COMPSs.barrier();
+		
 		try {
 			ProcessUtils.executeWithoutOutputs(command);
 		} catch (IOException ioe) {
@@ -3744,8 +3750,8 @@ public class GuidanceImpl {
 	 * @throws Exception
 	 */
 	public static void generateQQManhattanPlots(String lastCondensedFile, String qqPlotFile, String manhattanPlotFile,
-			String qqPlotTiffFile, String manhattanPlotTiffFile, String manhattanOption, String thresh, String cmdToStore)
-			throws GuidanceTaskException {
+			String qqPlotTiffFile, String manhattanPlotTiffFile, String manhattanOption, String thresh,
+			String cmdToStore) throws GuidanceTaskException {
 
 		String rScriptBinDir = loadFromEnvironment(RSCRIPTBINDIR, HEADER_GENERATE_QQ_MANHATTAN_PLOTS);
 		String rScriptDir = loadFromEnvironment(RSCRIPTDIR, HEADER_GENERATE_QQ_MANHATTAN_PLOTS);
@@ -3767,12 +3773,13 @@ public class GuidanceImpl {
 		long startTime = System.currentTimeMillis();
 
 		// First, we have to uncompress the input file
-		//String theInputFile = lastCondensedFile + TEMP_EXTENSION;
-		//FileUtils.gunzipFile(lastCondensedFile, theInputFile);
+		// String theInputFile = lastCondensedFile + TEMP_EXTENSION;
+		// FileUtils.gunzipFile(lastCondensedFile, theInputFile);
 
 		String cmd = null;
-		cmd = rScriptBinDir + "/Rscript " + rScriptDir + "/qqplot_manhattan_all_models.R " + lastCondensedFile + " " + qqPlotFile + " "
-				+ manhattanPlotFile + " " + qqPlotTiffFile + " " + manhattanPlotTiffFile + " " + manhattanOption + " " + thresh;
+		cmd = rScriptBinDir + "/Rscript " + rScriptDir + "/qqplot_manhattan_all_models.R " + lastCondensedFile + " "
+				+ qqPlotFile + " " + manhattanPlotFile + " " + qqPlotTiffFile + " " + manhattanPlotTiffFile + " "
+				+ manhattanOption + " " + thresh;
 
 		if (DEBUG) {
 			System.out.println("\n[DEBUG] Cmd -> " + cmd);
@@ -3794,7 +3801,7 @@ public class GuidanceImpl {
 		}
 
 		// Clean unziped file
-		//FileUtils.delete(theInputFile);
+		// FileUtils.delete(theInputFile);
 
 		long stopTime = System.currentTimeMillis();
 		long elapsedTime = (stopTime - startTime) / 1_000;
@@ -4446,6 +4453,14 @@ public class GuidanceImpl {
 			System.out.println("\n[DEBUG] copyFile endTime: " + stopTime);
 			System.out.println("\n[DEBUG] copyFile elapsedTime: " + elapsedTime + " seconds");
 			System.out.println("\n[DEBUG] Finished execution of mergeTwoChunks.");
+		}
+	}
+	
+	public static void getFile(String runtimeFilename, String realFilename) {
+		try {
+			FileUtils.copy(runtimeFilename, realFilename);
+		} catch (IOException e) {
+			System.err.println("[DEBUG] Error when bringing back " + realFilename);
 		}
 	}
 

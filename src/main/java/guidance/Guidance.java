@@ -747,8 +747,8 @@ public class Guidance {
 				}
 
 				if (parsingArgs.getStageStatus("jointCondensedFiles") == 1) {
-					//doGenerateCondensedAndTopHitsFile(parsingArgs, lastFilteredByAllFile, filteredByAllXMalesFile,
-					//		filteredByAllXFemalesFile, lastCondensedFile, topHitsResults, crossRangesResults);
+					doGenerateCondensedAndTopHitsFile(parsingArgs, lastFilteredByAllFile, filteredByAllXMalesFile,
+							filteredByAllXFemalesFile, lastCondensedFile, topHitsResults, crossRangesResults);
 				}
 
 				// Generate QQManhattan Plots
@@ -2426,7 +2426,6 @@ public class Guidance {
 
 		for (int test = 0; test < numberOfTestTypes; ++test) {
 			combinedTopHits.add(combinedPanelsFilesInfo.getTopHitsFile(test));
-			FileUtils.getFile(combinedPanelsFilesInfo.getTopHitsFile(test));
 		}
 
 		String topHitsAllPheno = phenomeAnalysisFilesInfo.getTopHitsAllPhenos();
@@ -2443,7 +2442,7 @@ public class Guidance {
 		// This is a sequential invocation that implies bringing back all the combined
 		// condensed files to the master
 		GuidanceImpl.generateTopHitsAllPhenos(combinedTopHits, topHitsAllPheno);
-
+		
 		String condensedFile = null;
 		String mergedPhenoFile = null;
 		String pheno = null;
@@ -2459,7 +2458,7 @@ public class Guidance {
 			// This is a task
 			GuidanceImpl.generateMergedPhenoTopHits(topHitsAllPheno, condensedFile, mergedPhenoFile, pheno);
 		}
-
+		
 		List<String> phenoMergedTopHits = new ArrayList<>();
 		for (int test = 0; test < numberOfTestTypes; ++test) {
 			phenoMergedTopHits.add(phenomeAnalysisFilesInfo.getCrossPhenoMergedTop(test));
@@ -2485,11 +2484,11 @@ public class Guidance {
 		// phenoMerged files
 		GuidanceImpl.computeCrossPheno(phenoMergedTopHits, crossPhenoAll, crossPhenoRanges, crossPhenoTopVariants,
 				pvaThreshold);
-
+		
 		FileUtils.getFile(crossPhenoAll);
 		FileUtils.getFile(crossPhenoRanges);
 		FileUtils.getFile(crossPhenoTopVariants);
-
+		
 	}
 
 	/**
