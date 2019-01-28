@@ -2431,12 +2431,12 @@ public class Guidance {
 		String topHitsAllPheno = phenomeAnalysisFilesInfo.getTopHitsAllPhenos();
 
 		String combinedTopHitsString = combinedTopHits.get(0);
-		FileUtils.getFile(combinedTopHits.get(0));
+		GuidanceImpl.getFile(combinedTopHits.get(0), combinedTopHits.get(0));
 		for (int i = 1; i < combinedTopHits.size(); ++i) {
 			combinedTopHitsString += ("," + combinedTopHits.get(i));
-			FileUtils.getFile(combinedTopHits.get(i));
+			GuidanceImpl.getFile(combinedTopHits.get(i), combinedTopHits.get(i));
 		}
-
+		COMPSs.barrier();
 		String cmdToStore = R_SCRIPT_BIN_DIR + "/Rscript " + R_SCRIPT_DIR + "/tophits_all_phenotypes.R "
 				+ combinedTopHitsString + " " + topHitsAllPheno;
 		listOfCommands.add(cmdToStore);
@@ -2463,11 +2463,11 @@ public class Guidance {
 		
 		List<String> phenoMergedTopHits = new ArrayList<>();
 		phenoMergedTopHits.add(phenomeAnalysisFilesInfo.getCrossPhenoMergedTop(0));
-		FileUtils.getFile(phenomeAnalysisFilesInfo.getCrossPhenoMergedTop(0));
+		GuidanceImpl.getFile(phenomeAnalysisFilesInfo.getCrossPhenoMergedTop(0), phenomeAnalysisFilesInfo.getCrossPhenoMergedTop(0));
 		String mergedTopHitsString = phenomeAnalysisFilesInfo.getCrossPhenoMergedTop(0);
 		for (int test = 1; test < numberOfTestTypes; ++test) {
 			phenoMergedTopHits.add(phenomeAnalysisFilesInfo.getCrossPhenoMergedTop(test));
-			FileUtils.getFile(phenomeAnalysisFilesInfo.getCrossPhenoMergedTop(test));
+			GuidanceImpl.getFile(phenomeAnalysisFilesInfo.getCrossPhenoMergedTop(test), phenomeAnalysisFilesInfo.getCrossPhenoMergedTop(test));
 			mergedTopHitsString += ("," + phenomeAnalysisFilesInfo.getCrossPhenoMergedTop(test));
 		}
 
@@ -2480,15 +2480,15 @@ public class Guidance {
 		cmdToStore = R_SCRIPT_BIN_DIR + "/Rscript " + R_SCRIPT_DIR + "/crossphenotype.R " + mergedTopHitsString + " "
 				+ crossPhenoAll + " " + crossPhenoRanges + " " + crossPhenoTopVariants + " " + pvaThreshold;
 		listOfCommands.add(cmdToStore);
-
+		COMPSs.barrier();
 		// This is a sequential invocation that implies bringing back all the
 		// phenoMerged files
 		GuidanceImpl.computeCrossPheno(phenoMergedTopHits, crossPhenoAll, crossPhenoRanges, crossPhenoTopVariants,
 				pvaThreshold);
 		
-		FileUtils.getFile(crossPhenoAll);
-		FileUtils.getFile(crossPhenoRanges);
-		FileUtils.getFile(crossPhenoTopVariants);
+		//FileUtils.getFile(crossPhenoAll);
+		//FileUtils.getFile(crossPhenoRanges);
+		//FileUtils.getFile(crossPhenoTopVariants);
 		
 	}
 

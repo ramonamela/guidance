@@ -4450,5 +4450,13 @@ public class GuidanceImpl {
 			System.out.println("\n[DEBUG] Finished execution of mergeTwoChunks.");
 		}
 	}
+	
+	public static void getFile(String runtimeFilename, String realFilename) {
+		try {
+			FileUtils.copy(runtimeFilename, realFilename);
+		} catch (IOException e) {
+			System.err.println("[DEBUG] Error when bringing back " + realFilename);
+		}
+	}
 
 }

@@ -385,6 +385,7 @@ public class FileUtils {
 	public static void getFile(String filename) {
 		try (FileInputStream fis = new FileInputStream(filename)){
 			int line = fis.read();
+			System.out.println("The byte read has a value of " + line);
 		} catch (FileNotFoundException e) {
 			System.err.println("[DEBUG] File " + filename + " does not exist");
 		} catch (IOException e) {
