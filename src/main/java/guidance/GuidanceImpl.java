@@ -2244,7 +2244,7 @@ public class GuidanceImpl {
 			startTime = System.currentTimeMillis();
 			System.out.println("\n[DEBUG] [pheno] Launched command:                 : " + command);
 		}
-		COMPSs.barrier();
+
 		try {
 			ProcessUtils.executeWithoutOutputs(command);
 		} catch (IOException ioe) {
@@ -2322,8 +2322,6 @@ public class GuidanceImpl {
 			startTime = System.currentTimeMillis();
 			System.out.println("\n[DEBUG] [pheno] Launched command:                 : " + command);
 		}
-
-		COMPSs.barrier();
 		
 		try {
 			ProcessUtils.executeWithoutOutputs(command);
@@ -4453,14 +4451,6 @@ public class GuidanceImpl {
 			System.out.println("\n[DEBUG] copyFile endTime: " + stopTime);
 			System.out.println("\n[DEBUG] copyFile elapsedTime: " + elapsedTime + " seconds");
 			System.out.println("\n[DEBUG] Finished execution of mergeTwoChunks.");
-		}
-	}
-	
-	public static void getFile(String runtimeFilename, String realFilename) {
-		try {
-			FileUtils.copy(runtimeFilename, realFilename);
-		} catch (IOException e) {
-			System.err.println("[DEBUG] Error when bringing back " + realFilename);
 		}
 	}
 

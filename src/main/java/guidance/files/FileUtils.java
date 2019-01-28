@@ -22,6 +22,7 @@ import java.util.zip.GZIPOutputStream;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import es.bsc.compss.api.COMPSs;
 import guidance.GuidanceImpl;
 import guidance.exceptions.GuidanceTaskException;
 import guidance.processes.ProcessUtils;
@@ -381,17 +382,14 @@ public class FileUtils {
 		}
 	}
 	
-	public static void getFile(String filename) {
-		GuidanceImpl.getFile(filename, filename);
-		/*
-		try (BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(filename)))){
-			String line = reader.readLine();
+	public static void getFile(String filename) {	
+		try (FileInputStream fis = new FileInputStream(filename)){
+			int line = fis.read();
 		} catch (FileNotFoundException e) {
 			System.err.println("[DEBUG] File " + filename + " does not exist");
 		} catch (IOException e) {
 			System.err.println("[DEBUG] Error when bringing back " + filename);
 		}
-		*/
 	}
 
 }

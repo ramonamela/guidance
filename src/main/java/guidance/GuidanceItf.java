@@ -437,10 +437,5 @@ public interface GuidanceItf {
 	@Constraints(computingUnits = "1", memorySize = "1.0f")
 	void copyFile(@Parameter(type = Type.FILE, direction = Direction.IN) String fileA,
 			@Parameter(type = Type.FILE, direction = Direction.OUT) String fileB);
-	
-	@Method(declaringClass = "guidance.GuidanceImpl")
-	@Constraints(computingUnits = "1", memorySize = "1.0f")
-	void getFile(@Parameter(type = Type.FILE, direction = Direction.IN) String runtimeFilename, 
-			@Parameter(type = Type.STRING, direction = Direction.IN)String realFilename);
 
 }
