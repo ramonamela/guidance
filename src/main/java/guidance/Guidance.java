@@ -2431,8 +2431,10 @@ public class Guidance {
 		String topHitsAllPheno = phenomeAnalysisFilesInfo.getTopHitsAllPhenos();
 
 		String combinedTopHitsString = combinedTopHits.get(0);
+		FileUtils.getFile(combinedTopHits.get(0));
 		for (int i = 1; i < combinedTopHits.size(); ++i) {
 			combinedTopHitsString += ("," + combinedTopHits.get(i));
+			FileUtils.getFile(combinedTopHits.get(i));
 		}
 
 		String cmdToStore = R_SCRIPT_BIN_DIR + "/Rscript " + R_SCRIPT_DIR + "/tophits_all_phenotypes.R "
@@ -2460,9 +2462,13 @@ public class Guidance {
 		}
 		
 		List<String> phenoMergedTopHits = new ArrayList<>();
-		for (int test = 0; test < numberOfTestTypes; ++test) {
+		phenoMergedTopHits.add(phenomeAnalysisFilesInfo.getCrossPhenoMergedTop(0));
+		FileUtils.getFile(phenomeAnalysisFilesInfo.getCrossPhenoMergedTop(0));
+		String mergedTopHitsString = phenomeAnalysisFilesInfo.getCrossPhenoMergedTop(0);
+		for (int test = 1; test < numberOfTestTypes; ++test) {
 			phenoMergedTopHits.add(phenomeAnalysisFilesInfo.getCrossPhenoMergedTop(test));
 			FileUtils.getFile(phenomeAnalysisFilesInfo.getCrossPhenoMergedTop(test));
+			mergedTopHitsString += ("," + phenomeAnalysisFilesInfo.getCrossPhenoMergedTop(test));
 		}
 
 		String pvaThreshold = Double.toString(parsingArgs.getPvaThreshold());
@@ -2470,11 +2476,6 @@ public class Guidance {
 		String crossPhenoAll = phenomeAnalysisFilesInfo.getCrossPhenoAll();
 		String crossPhenoRanges = phenomeAnalysisFilesInfo.getCrossPhenoRanges();
 		String crossPhenoTopVariants = phenomeAnalysisFilesInfo.getCrossPhenoAssocTop();
-
-		String mergedTopHitsString = phenoMergedTopHits.get(0);
-		for (int i = 1; i < phenoMergedTopHits.size(); ++i) {
-			mergedTopHitsString += ("," + phenoMergedTopHits.get(i));
-		}
 
 		cmdToStore = R_SCRIPT_BIN_DIR + "/Rscript " + R_SCRIPT_DIR + "/crossphenotype.R " + mergedTopHitsString + " "
 				+ crossPhenoAll + " " + crossPhenoRanges + " " + crossPhenoTopVariants + " " + pvaThreshold;

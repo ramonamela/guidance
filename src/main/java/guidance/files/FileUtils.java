@@ -382,7 +382,7 @@ public class FileUtils {
 		}
 	}
 	
-	public static void getFile(String filename) {	
+	public static void getFile(String filename) {
 		try (FileInputStream fis = new FileInputStream(filename)){
 			int line = fis.read();
 		} catch (FileNotFoundException e) {

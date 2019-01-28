@@ -2231,11 +2231,10 @@ public class GuidanceImpl {
 		String rScriptDir = loadFromEnvironment(RSCRIPTDIR, HEADER_PHENO);
 
 		String combinedTopHitsString = combinedTopHits.get(0);
-		FileUtils.getFile(combinedTopHits.get(0));
 		for (int i = 1; i < combinedTopHits.size(); ++i) {
 			combinedTopHitsString += ("," + combinedTopHits.get(i));
-			FileUtils.getFile(combinedTopHits.get(i));
 		}
+
 		String command = rScriptBinDir + "Rscript --verbose " + rScriptDir + "/tophits_all_phenotypes.R "
 				+ combinedTopHitsString + " " + topHitsAllPheno;
 
@@ -2251,7 +2250,7 @@ public class GuidanceImpl {
 			throw new GuidanceTaskException(ioe);
 		}
 
-		FileUtils.getFile(topHitsAllPheno);
+		//FileUtils.getFile(topHitsAllPheno);
 
 		if (DEBUG) {
 			long stopTime = System.currentTimeMillis();
@@ -2308,10 +2307,8 @@ public class GuidanceImpl {
 		String rScriptDir = loadFromEnvironment(RSCRIPTDIR, HEADER_PHENO);
 
 		String mergedTopHitsString = phenoMergedTopHits.get(0);
-		FileUtils.getFile(mergedTopHitsString);
 		for (int i = 1; i < phenoMergedTopHits.size(); ++i) {
 			mergedTopHitsString += ("," + phenoMergedTopHits.get(i));
-			FileUtils.getFile(phenoMergedTopHits.get(i));
 		}
 
 		String command = rScriptBinDir + "Rscript --verbose " + rScriptDir + "/crossphenotype.R " + mergedTopHitsString
