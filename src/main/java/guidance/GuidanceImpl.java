@@ -936,23 +936,13 @@ public class GuidanceImpl {
 			int exitValue = -1;
 			try {
 				String outputBase = filteredFile.substring(0, filteredFile.length() - 3);
-				exitValue = ProcessUtils.execute(cmd, outputBase + STDOUT_EXTENSION, outputBase + STDERR_EXTENSION,
-						"LD_LIBRARY_PATH");
+				//exitValue = ProcessUtils.execute(cmd, outputBase + STDOUT_EXTENSION, outputBase + STDERR_EXTENSION,
+				//		"LD_LIBRARY_PATH");
+				exitValue = ProcessUtils.execute(cmd, outputBase + STDOUT_EXTENSION, outputBase + STDERR_EXTENSION);
 			} catch (IOException ioe) {
 				throw new GuidanceTaskException(ioe);
 			}
 
-			// Check process exit value
-			/*
-			 * if (exitValue != 0) { String sandBox = new File(filteredFile).getParent();
-			 * try { System.out.println("mv " + sandBox +
-			 * "/* /gpfs/scratch/pr1ees00/pr1ees14/GCAT/SHAPEIT_IMPUTE/qctoolsLogs/");
-			 * ProcessUtils.executeWithoutOutputs("mv " + sandBox +
-			 * "/* /gpfs/scratch/pr1ees00/pr1ees14/GCAT/SHAPEIT_IMPUTE/qctoolsLogs/"); }
-			 * catch (IOException ioe) {
-			 * System.out.println("IOException when moving the files " + ioe); } throw new
-			 * GuidanceTaskException(HEADER_QCTOOLS + ERROR_BINARY_EXEC + exitValue); }
-			 */
 			if (exitValue != 0) {
 				throw new GuidanceTaskException(HEADER_QCTOOLS + ERROR_BINARY_EXEC + exitValue);
 			}
@@ -969,7 +959,10 @@ public class GuidanceImpl {
 				System.out.println(gte);
 			}
 			try {
-				FileUtils.createEmptyFile(filteredFile, HEADER_GTOOLS);
+				String plainOutputFilteredFile = filteredFile.substring(0, filteredFile.length() - 3);
+				FileUtils.createEmptyFile(plainOutputFilteredFile, HEADER_GTOOLS);
+				FileUtils.gzipFile(plainOutputFilteredFile, filteredFile);
+				FileUtils.delete(plainOutputFilteredFile);
 				FileUtils.createEmptyFile(filteredLogFile, HEADER_GTOOLS);
 			} catch (IOException gte) {
 				throw new GuidanceTaskException(HEADER_QCTOOLS + ERROR_BINARY_EXEC + gte);

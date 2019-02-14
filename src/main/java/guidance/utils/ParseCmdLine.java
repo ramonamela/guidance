@@ -159,6 +159,7 @@ public class ParseCmdLine {
 		wfPossibleDeeps.put("from_phasing", EMPTY_MASK);
 		wfPossibleDeeps.put("from_phasing_to_summary", EMPTY_MASK);
 		wfPossibleDeeps.put("from_phasing_to_filterByAll", EMPTY_MASK);
+		wfPossibleDeeps.put("from_phasing_to_qctools", EMPTY_MASK);
 		wfPossibleDeeps.put("from_phasing_to_association", EMPTY_MASK);
 		wfPossibleDeeps.put("from_phasing_to_imputation", EMPTY_MASK);
 		wfPossibleDeeps.put("from_imputation", EMPTY_MASK);
@@ -1766,6 +1767,7 @@ public class ParseCmdLine {
 			wfPossibleDeeps.put("from_phasing", 0x017FFC0);
 			wfPossibleDeeps.put("from_phasing_to_summary", 0x017FF80);
 			wfPossibleDeeps.put("from_phasing_to_filterByAll", 0x017E000);
+			wfPossibleDeeps.put("from_phasing_to_qctools", 0x0160000);
 			wfPossibleDeeps.put("from_phasing_to_association", 0x0170000);
 			wfPossibleDeeps.put("from_phasing_to_imputation", 0x0100000);
 			wfPossibleDeeps.put("from_imputation", 0x007FFC0);
@@ -1798,6 +1800,7 @@ public class ParseCmdLine {
 			wfPossibleDeeps.put("from_phasing", 0x00FFFC0);
 			wfPossibleDeeps.put("from_phasing_to_summary", 0x00FFF00);
 			wfPossibleDeeps.put("from_phasing_to_filterByAll", 0x00FE000);
+			wfPossibleDeeps.put("from_phasing_to_qctools", 0x00E0000);
 			wfPossibleDeeps.put("from_phasing_to_association", 0x00F0000);
 			wfPossibleDeeps.put("from_phasing_to_imputation", 0x0080000);
 			wfPossibleDeeps.put("from_imputation", 0x007FFC0);

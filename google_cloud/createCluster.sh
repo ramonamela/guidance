@@ -6,6 +6,8 @@ source ./configure.sh
 
 ./createBaseInstance.sh
 
+./stopInstance.sh
+
 ./createSnapshot.sh
 
 serviceAccount=$(gcloud compute instances describe ${instanceName} | grep service | awk '{ print $3 }')

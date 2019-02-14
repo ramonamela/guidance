@@ -1453,10 +1453,11 @@ public class Guidance {
 	 * @param assocFilesInfo
 	 * @param mergeFilesInfo
 	 * @param type
+	 * @throws GuidanceTaskException 
 	 */
 	private static void makeMergeOfChunksSex(ParseCmdLine parsingArgs, int ttIndex, String sex, int rpanelIndex,
 			int minSize, int maxSize, int chunkSize, AssocFiles assocFilesInfo, MergeFiles mergeFilesInfo,
-			String type) {
+			String type) throws GuidanceTaskException {
 		int lim1 = minSize;
 		int lim2 = lim1 + chunkSize - 1;
 
@@ -1475,6 +1476,8 @@ public class Guidance {
 				String filteredByAllFile = mergeFilesInfo.getFilteredByAllMalesFile(ttIndex, rpanelIndex);
 				for (int processedChunks = 0; processedChunks < 2 * numberOfChunks
 						- 2; processedChunks = processedChunks + 2) {
+					boolean eraseA = false;
+					boolean eraseB = false;
 					if (processedChunks < numberOfChunks) {
 						reducedA = assocFilesInfo.getSummaryFilteredMalesFile(ttIndex, rpanelIndex, lim1, lim2,
 								chunkSize);
@@ -1482,6 +1485,7 @@ public class Guidance {
 						lim2 = lim2 + chunkSize;
 					} else {
 						reducedA = mergeFilesInfo.getReducedFilteredMalesFile(ttIndex, rpanelIndex, indexA);
+						eraseA = true;
 						indexA++;
 					}
 					if (processedChunks < numberOfChunks - 1) {
@@ -1491,6 +1495,7 @@ public class Guidance {
 						lim2 = lim2 + chunkSize;
 					} else {
 						reducedB = mergeFilesInfo.getReducedFilteredMalesFile(ttIndex, rpanelIndex, indexA);
+						eraseB = true;
 						indexA++;
 					}
 
@@ -1502,6 +1507,12 @@ public class Guidance {
 						doMergeTwoChunksUnconditional(parsingArgs, reducedA, reducedB, reducedC);
 						indexC++;
 					}
+					if (eraseA) {
+						FileUtils.delete(reducedA);
+					}
+					if (eraseB) {
+						FileUtils.delete(reducedB);
+					}
 
 					// Clean intermediate files
 					// File fA = new File(reducedA);
@@ -1511,7 +1522,9 @@ public class Guidance {
 
 				} // End for Chunks
 
-			} else if (type.equals(CONDENSED)) {
+			} 
+			/*
+			else if (type.equals(CONDENSED)) {
 				String condensedFile = mergeFilesInfo.getCondensedMalesFile(ttIndex, rpanelIndex);
 				for (int processedChunks = 0; processedChunks < 2 * numberOfChunks
 						- 2; processedChunks = processedChunks + 2) {
@@ -1551,6 +1564,7 @@ public class Guidance {
 
 				} // End of for Chunks
 			}
+			*/
 		} else if (sex.equals(SEX2)) {
 			if (type.equals(FILTERED)) {
 				// LOGGER.info("Number of chunks for testType " + ttIndex + " | rpanel " +
@@ -1595,7 +1609,9 @@ public class Guidance {
 
 				} // End for Chunks
 
-			} else if (type.equals(CONDENSED)) {
+			} 
+			/*
+			else if (type.equals(CONDENSED)) {
 				String condensedFile = mergeFilesInfo.getCondensedFemalesFile(ttIndex, rpanelIndex);
 				for (int processedChunks = 0; processedChunks < 2 * numberOfChunks
 						- 2; processedChunks = processedChunks + 2) {
@@ -1635,6 +1651,7 @@ public class Guidance {
 
 				} // End of for Chunks
 			}
+			*/
 		}
 	}
 
@@ -1883,10 +1900,11 @@ public class Guidance {
 	 * @param assocFilesInfo
 	 * @param mergeFilesInfo
 	 * @param type
+	 * @throws GuidanceTaskException 
 	 */
 	private static void makeMergeOfChunksCombinedSex(ParseCmdLine parsingArgs, int ttIndex, int rpanelIndex,
 			int minSize, int maxSize, int chunkSize, AssocFiles assocFilesInfo, MergeFiles mergeFilesInfo,
-			String type) {
+			String type) throws GuidanceTaskException {
 
 		int lim1 = minSize;
 		int lim2 = lim1 + chunkSize - 1;
@@ -1904,7 +1922,7 @@ public class Guidance {
 
 		String filteredByAllFileMales = mergeFilesInfo.getCombinedFilteredByAllMalesFile(ttIndex, rpanelIndex);
 		String filteredByAllFileFemales = mergeFilesInfo.getCombinedFilteredByAllFemalesFile(ttIndex, rpanelIndex);
-		String condensedFileMales = mergeFilesInfo.getCombinedCondensedMalesFile(ttIndex, rpanelIndex);
+		//String condensedFileMales = mergeFilesInfo.getCombinedCondensedMalesFile(ttIndex, rpanelIndex);
 
 		if (type.equals(FILTERED)) {
 			// LOGGER.info("Number of chunks for testType " + ttIndex + " | rpanel " +
@@ -1937,6 +1955,8 @@ public class Guidance {
 					doMergeTwoChunksUnconditional(parsingArgs, reducedA, reducedB, reducedC);
 					indexC++;
 				}
+				FileUtils.delete(reducedA);
+				FileUtils.delete(reducedB);
 
 			} // End for Chunks
 
@@ -1975,7 +1995,8 @@ public class Guidance {
 					doMergeTwoChunksUnconditional(parsingArgs, reducedA, reducedB, reducedC);
 					indexC++;
 				}
-
+				FileUtils.delete(reducedA);
+				FileUtils.delete(reducedB);
 				// Clean intermediate files
 				// File fA = new File(reducedA);
 				// fA.delete();
@@ -1984,7 +2005,9 @@ public class Guidance {
 
 			} // End for Chunks
 
-		} else if (type.equals(CONDENSED)) {
+		} 
+		/*
+		else if (type.equals(CONDENSED)) {
 			for (int processedChunks = 0; processedChunks < 2 * numberOfChunks - 2; processedChunks = processedChunks
 					+ 2) {
 				if (processedChunks < numberOfChunks) {
@@ -2023,6 +2046,7 @@ public class Guidance {
 
 			} // End of for Chunks
 		}
+		*/
 	}
 
 	/**
@@ -2233,6 +2257,8 @@ public class Guidance {
 							}
 							doCombinePanelsComplex(parsingArgs, filteredPanelA, filteredPanelB, filteredPanelC, lim1,
 									lim2);
+							FileUtils.delete(filteredPanelA);
+							FileUtils.delete(filteredPanelB);
 							filteredPanelsToCombineMales.add(filteredPanelC);
 						}
 
@@ -2260,6 +2286,8 @@ public class Guidance {
 							}
 							doCombinePanelsComplex(parsingArgs, filteredPanelA, filteredPanelB, filteredPanelC, lim1,
 									lim2);
+							FileUtils.delete(filteredPanelA);
+							FileUtils.delete(filteredPanelB);
 							filteredPanelsToCombineFemales.add(filteredPanelC);
 						}
 					} else {
@@ -2287,6 +2315,8 @@ public class Guidance {
 							}
 							doCombinePanelsComplex(parsingArgs, filteredPanelA, filteredPanelB, filteredPanelC, lim1,
 									lim2);
+							FileUtils.delete(filteredPanelA);
+							FileUtils.delete(filteredPanelB);
 							filteredPanelsToCombine.add(filteredPanelC);
 						}
 					}
@@ -2336,18 +2366,21 @@ public class Guidance {
 				String originFilteredFileB = filteredCombined.poll();
 
 				String destinationFilteredFile;
-
+				boolean erase = false;
 				if (filteredCombined.isEmpty()) {
 					destinationFilteredFile = filteredCombineAll;
 				} else {
 					destinationFilteredFile = filteredCombineAll.substring(0, filteredCombineAll.length() - 7)
 							+ "_reduce_" + Integer.toString(reduceCounter) + ".txt.gz";
+					erase = true;
 				}
 
 				doMergeTwoChunksUnconditional(parsingArgs, originFilteredFileA, originFilteredFileB,
 						destinationFilteredFile);
 				filteredCombined.add(destinationFilteredFile);
-
+				if (erase) {
+					FileUtils.delete(destinationFilteredFile);
+				}
 				reduceCounter += 1;
 			}
 		}
@@ -2444,7 +2477,7 @@ public class Guidance {
 		// This is a sequential invocation that implies bringing back all the combined
 		// condensed files to the master
 		GuidanceImpl.generateTopHitsAllPhenos(combinedTopHits, topHitsAllPheno);
-		
+
 		String condensedFile = null;
 		String mergedPhenoFile = null;
 		String pheno = null;
@@ -2460,14 +2493,16 @@ public class Guidance {
 			// This is a task
 			GuidanceImpl.generateMergedPhenoTopHits(topHitsAllPheno, condensedFile, mergedPhenoFile, pheno);
 		}
-		
+
 		List<String> phenoMergedTopHits = new ArrayList<>();
 		phenoMergedTopHits.add(phenomeAnalysisFilesInfo.getCrossPhenoMergedTop(0));
-		GuidanceImpl.getFile(phenomeAnalysisFilesInfo.getCrossPhenoMergedTop(0), phenomeAnalysisFilesInfo.getCrossPhenoMergedTop(0));
+		GuidanceImpl.getFile(phenomeAnalysisFilesInfo.getCrossPhenoMergedTop(0),
+				phenomeAnalysisFilesInfo.getCrossPhenoMergedTop(0));
 		String mergedTopHitsString = phenomeAnalysisFilesInfo.getCrossPhenoMergedTop(0);
 		for (int test = 1; test < numberOfTestTypes; ++test) {
 			phenoMergedTopHits.add(phenomeAnalysisFilesInfo.getCrossPhenoMergedTop(test));
-			GuidanceImpl.getFile(phenomeAnalysisFilesInfo.getCrossPhenoMergedTop(test), phenomeAnalysisFilesInfo.getCrossPhenoMergedTop(test));
+			GuidanceImpl.getFile(phenomeAnalysisFilesInfo.getCrossPhenoMergedTop(test),
+					phenomeAnalysisFilesInfo.getCrossPhenoMergedTop(test));
 			mergedTopHitsString += ("," + phenomeAnalysisFilesInfo.getCrossPhenoMergedTop(test));
 		}
 
@@ -2485,11 +2520,11 @@ public class Guidance {
 		// phenoMerged files
 		GuidanceImpl.computeCrossPheno(phenoMergedTopHits, crossPhenoAll, crossPhenoRanges, crossPhenoTopVariants,
 				pvaThreshold);
-		
-		//FileUtils.getFile(crossPhenoAll);
-		//FileUtils.getFile(crossPhenoRanges);
-		//FileUtils.getFile(crossPhenoTopVariants);
-		
+
+		// FileUtils.getFile(crossPhenoAll);
+		// FileUtils.getFile(crossPhenoRanges);
+		// FileUtils.getFile(crossPhenoTopVariants);
+
 	}
 
 	/**
@@ -2982,8 +3017,6 @@ public class Guidance {
 			String filteredHaplotypesVcfFileBgzip, String chrS, String lim1S, String lim2S, String imputeFileInfo,
 			String imputeFileErate, String imputeFileRec, String imputeFileM3vcf, String imputeFileLog,
 			String imputeFileBgzip, String imputeFileTbi, String sex, int refpanel) {
-
-		System.out.println("Entering imputation with Minimac");
 
 		if (parsingArgs.getStageStatus("imputeWithMinimac") == 1) {
 			// Submitting the impute task per chunk
