@@ -732,51 +732,6 @@ public class MergeFiles {
 	}
 
 	/**
-	 * Method to set the finalStatus of the reducedFile
-	 * 
-	 * @param testTypeIndex
-	 * @param rPanelIndex
-	 * @param chromo
-	 * @param index
-	 * @param finalStatus
-	 */
-	public void setReducedFileFinalStatus(int testTypeIndex, int rPanelIndex, int chromo, int index,
-			String finalStatus) {
-		// Check that chromo index is within the bounds
-		checkChromoIndex(chromo);
-
-		int i = chromo - this.startChr;
-
-		// Check the index
-		int maxIndex = this.testTypeReducedFile.get(testTypeIndex).get(rPanelIndex).get(i).size();
-		checkIndex(index, maxIndex, chromo);
-
-		this.testTypeReducedFile.get(testTypeIndex).get(rPanelIndex).get(i).get(index).setFinalStatus(finalStatus);
-	}
-
-	/**
-	 * Method to access the finalStatus of the reducedFile
-	 * 
-	 * @param testTypeIndex
-	 * @param rPanelIndex
-	 * @param chromo
-	 * @param index
-	 * @return
-	 */
-	public String getReducedFileFinalStatus(int testTypeIndex, int rPanelIndex, int chromo, int index) {
-		// Check that chromo index is within the bounds
-		checkChromoIndex(chromo);
-
-		int i = chromo - this.startChr;
-
-		// Check the index
-		int maxIndex = this.testTypeReducedFile.get(testTypeIndex).get(rPanelIndex).get(i).size();
-		checkIndex(index, maxIndex, chromo);
-
-		return this.testTypeReducedFile.get(testTypeIndex).get(rPanelIndex).get(i).get(index).getFinalStatus();
-	}
-
-	/**
 	 * Method to access reducedFilteredFile
 	 * 
 	 * @param testTypeIndex
@@ -827,52 +782,6 @@ public class MergeFiles {
 	}
 
 	/**
-	 * Method to set the finalStatus of the reducedFilteredFile
-	 * 
-	 * @param testTypeIndex
-	 * @param rPanelIndex
-	 * @param chromo
-	 * @param index
-	 * @param finalStatus
-	 */
-	public void setReducedFilteredFileFinalStatus(int testTypeIndex, int rPanelIndex, int chromo, int index,
-			String finalStatus) {
-		// Check that chromo index is within the bounds
-		checkChromoIndex(chromo);
-
-		int i = chromo - this.startChr;
-
-		// Check the index
-		int maxIndex = this.testTypeReducedFilteredFile.get(testTypeIndex).get(rPanelIndex).get(i).size();
-		checkIndex(index, maxIndex, chromo);
-
-		this.testTypeReducedFilteredFile.get(testTypeIndex).get(rPanelIndex).get(i).get(index)
-				.setFinalStatus(finalStatus);
-	}
-
-	/**
-	 * Method to access the finalStatus of the reducedFilteredFile
-	 * 
-	 * @param testTypeIndex
-	 * @param rPanelIndex
-	 * @param chromo
-	 * @param index
-	 * @return
-	 */
-	public String getReducedFilteredFileFinalStatus(int testTypeIndex, int rPanelIndex, int chromo, int index) {
-		// Check that chromo index is within the bounds
-		checkChromoIndex(chromo);
-
-		int i = chromo - this.startChr;
-
-		// Check the index
-		int maxIndex = this.testTypeReducedFilteredFile.get(testTypeIndex).get(rPanelIndex).get(i).size();
-		checkIndex(index, maxIndex, chromo);
-
-		return this.testTypeReducedFilteredFile.get(testTypeIndex).get(rPanelIndex).get(i).get(index).getFinalStatus();
-	}
-
-	/**
 	 * Method to access reducedCondensedFile
 	 * 
 	 * @param testTypeIndex
@@ -920,52 +829,6 @@ public class MergeFiles {
 	public String getReducedCondensedFemalesFile(int testTypeIndex, int rPanelIndex, int index) {
 		return this.testTypeReducedCondensedFemalesFile.get(testTypeIndex).get(rPanelIndex).get(0).get(index)
 				.getFullName();
-	}
-
-	/**
-	 * Method to set the finalStatus of the reducedCondensedFile
-	 * 
-	 * @param testTypeIndex
-	 * @param rPanelIndex
-	 * @param chromo
-	 * @param index
-	 * @param finalStatus
-	 */
-	public void setReducedCondensedFileFinalStatus(int testTypeIndex, int rPanelIndex, int chromo, int index,
-			String finalStatus) {
-		// Check that chromo index is within the bounds
-		checkChromoIndex(chromo);
-
-		int i = chromo - this.startChr;
-
-		// Check the index
-		int maxIndex = this.testTypeReducedCondensedFile.get(testTypeIndex).get(rPanelIndex).get(i).size();
-		checkIndex(index, maxIndex, chromo);
-
-		this.testTypeReducedCondensedFile.get(testTypeIndex).get(rPanelIndex).get(i).get(index)
-				.setFinalStatus(finalStatus);
-	}
-
-	/**
-	 * Method to access the finalStatus of the reducedCondensedFile
-	 * 
-	 * @param testTypeIndex
-	 * @param rPanelIndex
-	 * @param chromo
-	 * @param index
-	 * @return
-	 */
-	public String getReducedCondensedFileFinalStatus(int testTypeIndex, int rPanelIndex, int chromo, int index) {
-		// Check that chromo index is within the bounds
-		checkChromoIndex(chromo);
-
-		int i = chromo - this.startChr;
-
-		// Check the index
-		int maxIndex = this.testTypeReducedCondensedFile.get(testTypeIndex).get(rPanelIndex).get(i).size();
-		checkIndex(index, maxIndex, chromo);
-
-		return this.testTypeReducedCondensedFile.get(testTypeIndex).get(rPanelIndex).get(i).get(index).getFinalStatus();
 	}
 
 	/**
@@ -1020,53 +883,6 @@ public class MergeFiles {
 	}
 
 	/**
-	 * Method to set the finalStatus of the reducedCombinedReducedFilteredFile
-	 * 
-	 * @param testTypeIndex
-	 * @param rPanelIndex
-	 * @param chromo
-	 * @param index
-	 * @param finalStatus
-	 */
-	public void setCombinedReducedFilteredFileFinalStatus(int testTypeIndex, int rPanelIndex, int chromo, int index,
-			String finalStatus) {
-		// Check that chromo index is within the bounds
-		checkChromoIndex(chromo);
-
-		int i = chromo - this.startChr;
-
-		// Check the index
-		int maxIndex = this.testTypeCombinedReducedFilteredFile.get(testTypeIndex).get(rPanelIndex).get(i).size();
-		checkIndex(index, maxIndex, chromo);
-
-		this.testTypeCombinedReducedFilteredFile.get(testTypeIndex).get(rPanelIndex).get(i).get(index)
-				.setFinalStatus(finalStatus);
-	}
-
-	/**
-	 * Method to access the finalStatus of the reducedCombinedReducedFilteredFile
-	 * 
-	 * @param testTypeIndex
-	 * @param rPanelIndex
-	 * @param chromo
-	 * @param index
-	 * @return
-	 */
-	public String getCombinedReducedFilteredFileFinalStatus(int testTypeIndex, int rPanelIndex, int chromo, int index) {
-		// Check that chromo index is within the bounds
-		checkChromoIndex(chromo);
-
-		int i = chromo - this.startChr;
-
-		// Check the index
-		int maxIndex = this.testTypeCombinedReducedFilteredFile.get(testTypeIndex).get(rPanelIndex).get(i).size();
-		checkIndex(index, maxIndex, chromo);
-
-		return this.testTypeCombinedReducedFilteredFile.get(testTypeIndex).get(rPanelIndex).get(i).get(index)
-				.getFinalStatus();
-	}
-
-	/**
 	 * Method to access reducedCombinedReducedCondensedFile
 	 * 
 	 * @param testTypeIndex
@@ -1115,54 +931,6 @@ public class MergeFiles {
 	public String getCombinedReducedCondensedFemalesFile(int testTypeIndex, int rPanelIndex, int index) {
 		return this.testTypeCombinedReducedCondensedFile.get(testTypeIndex).get(rPanelIndex).get(0).get(index)
 				.getFullName();
-	}
-
-	/**
-	 * Method to set the finalStatus of the reducedCombinedReducedCondensedFile
-	 * 
-	 * @param testTypeIndex
-	 * @param rPanelIndex
-	 * @param chromo
-	 * @param index
-	 * @param finalStatus
-	 */
-	public void setCombinedReducedCondensedFileFinalStatus(int testTypeIndex, int rPanelIndex, int chromo, int index,
-			String finalStatus) {
-		// Check that chromo index is within the bounds
-		checkChromoIndex(chromo);
-
-		int i = chromo - this.startChr;
-
-		// Check the index
-		int maxIndex = this.testTypeCombinedReducedCondensedFile.get(testTypeIndex).get(rPanelIndex).get(i).size();
-		checkIndex(index, maxIndex, chromo);
-
-		this.testTypeCombinedReducedCondensedFile.get(testTypeIndex).get(rPanelIndex).get(i).get(index)
-				.setFinalStatus(finalStatus);
-	}
-
-	/**
-	 * Method to access the finalStatus of the reducedCombinedReducedCondensedFile
-	 * 
-	 * @param testTypeIndex
-	 * @param rPanelIndex
-	 * @param chromo
-	 * @param index
-	 * @return
-	 */
-	public String getCombinedReducedCondensedFileFinalStatus(int testTypeIndex, int rPanelIndex, int chromo,
-			int index) {
-		// Check that chromo index is within the bounds
-		checkChromoIndex(chromo);
-
-		int i = chromo - this.startChr;
-
-		// Check the index
-		int maxIndex = this.testTypeCombinedReducedCondensedFile.get(testTypeIndex).get(rPanelIndex).get(i).size();
-		checkIndex(index, maxIndex, chromo);
-
-		return this.testTypeCombinedReducedCondensedFile.get(testTypeIndex).get(rPanelIndex).get(i).get(index)
-				.getFinalStatus();
 	}
 
 	/**
@@ -1265,48 +1033,6 @@ public class MergeFiles {
 	}
 
 	/**
-	 * Method to set the finalStatus of the filteredByAllFile
-	 * 
-	 * @param testTypeIndex
-	 * @param rPanelIndex
-	 * @param chromo
-	 * @param finalStatus
-	 */
-	public void setFilteredByAllFileFinalStatus(int testTypeIndex, int rPanelIndex, int chromo, String finalStatus) {
-		// Check that chromo index is within the bounds
-		checkChromoIndex(chromo);
-
-		int i = chromo - this.startChr;
-
-		// Check the index
-		int maxIndex = this.testTypeFilteredByAllFile.get(testTypeIndex).get(rPanelIndex).size();
-		checkIndex(i, maxIndex, chromo);
-
-		this.testTypeFilteredByAllFile.get(testTypeIndex).get(rPanelIndex).get(i).setFinalStatus(finalStatus);
-	}
-
-	/**
-	 * Method to access the finalStatus of the filteredByAllFile
-	 * 
-	 * @param testTypeIndex
-	 * @param rPanelIndex
-	 * @param chromo
-	 * @return
-	 */
-	public String getFilteredByAllFileFinalStatus(int testTypeIndex, int rPanelIndex, int chromo) {
-		// Check that chromo index is within the bounds
-		checkChromoIndex(chromo);
-
-		int i = chromo - this.startChr;
-
-		// Check the index
-		int maxIndex = this.testTypeFilteredByAllFile.get(testTypeIndex).get(rPanelIndex).size();
-		checkIndex(i, maxIndex, chromo);
-
-		return this.testTypeFilteredByAllFile.get(testTypeIndex).get(rPanelIndex).get(i).getFinalStatus();
-	}
-
-	/**
 	 * Method to access filteredByAllFile
 	 * 
 	 * @param testTypeIndex
@@ -1349,49 +1075,6 @@ public class MergeFiles {
 	 */
 	public String getCombinedFilteredByAllFemalesFile(int testTypeIndex, int rPanelIndex) {
 		return this.testTypeCombinedFilteredByAllFemalesFile.get(testTypeIndex).get(rPanelIndex).get(0).getFullName();
-	}
-
-	/**
-	 * Method to set the finalStatus of the filteredByAllFile
-	 * 
-	 * @param testTypeIndex
-	 * @param rPanelIndex
-	 * @param chromo
-	 * @param finalStatus
-	 */
-	public void setCombinedFilteredByAllFileFinalStatus(int testTypeIndex, int rPanelIndex, int chromo,
-			String finalStatus) {
-		// Check that chromo index is within the bounds
-		checkChromoIndex(chromo);
-
-		int i = chromo - this.startChr;
-
-		// Check the index
-		int maxIndex = this.testTypeCombinedFilteredByAllFile.get(testTypeIndex).get(rPanelIndex).size();
-		checkIndex(i, maxIndex, chromo);
-
-		this.testTypeCombinedFilteredByAllFile.get(testTypeIndex).get(rPanelIndex).get(i).setFinalStatus(finalStatus);
-	}
-
-	/**
-	 * Method to access the finalStatus of the filteredByAllFile
-	 * 
-	 * @param testTypeIndex
-	 * @param rPanelIndex
-	 * @param chromo
-	 * @return
-	 */
-	public String getCombinedFilteredByAllFileFinalStatus(int testTypeIndex, int rPanelIndex, int chromo) {
-		// Check that chromo index is within the bounds
-		checkChromoIndex(chromo);
-
-		int i = chromo - this.startChr;
-
-		// Check the index
-		int maxIndex = this.testTypeCombinedFilteredByAllFile.get(testTypeIndex).get(rPanelIndex).size();
-		checkIndex(i, maxIndex, chromo);
-
-		return this.testTypeCombinedFilteredByAllFile.get(testTypeIndex).get(rPanelIndex).get(i).getFinalStatus();
 	}
 
 	/**
@@ -1440,48 +1123,6 @@ public class MergeFiles {
 	}
 
 	/**
-	 * Method to set the finalStatus of the condensedFile
-	 * 
-	 * @param testTypeIndex
-	 * @param rPanelIndex
-	 * @param chromo
-	 * @param finalStatus
-	 */
-	public void setCondensedFileFinalStatus(int testTypeIndex, int rPanelIndex, int chromo, String finalStatus) {
-		// Check that chromo index is within the bounds
-		checkChromoIndex(chromo);
-
-		int i = chromo - this.startChr;
-
-		// Check the index
-		int maxIndex = this.testTypeCondensedFile.get(testTypeIndex).get(rPanelIndex).size();
-		checkIndex(i, maxIndex, chromo);
-
-		this.testTypeCondensedFile.get(testTypeIndex).get(rPanelIndex).get(i).setFinalStatus(finalStatus);
-	}
-
-	/**
-	 * Method to access the finalStatus of the condensedFile
-	 * 
-	 * @param testTypeIndex
-	 * @param rPanelIndex
-	 * @param chromo
-	 * @return
-	 */
-	public String getCondensedFileFinalStatus(int testTypeIndex, int rPanelIndex, int chromo) {
-		// Check that chromo index is within the bounds
-		checkChromoIndex(chromo);
-
-		int i = chromo - this.startChr;
-
-		// Check the index
-		int maxIndex = this.testTypeCondensedFile.get(testTypeIndex).get(rPanelIndex).size();
-		checkIndex(i, maxIndex, chromo);
-
-		return this.testTypeCondensedFile.get(testTypeIndex).get(rPanelIndex).get(i).getFinalStatus();
-	}
-
-	/**
 	 * Method to access condensedFile
 	 * 
 	 * @param testTypeIndex
@@ -1527,27 +1168,6 @@ public class MergeFiles {
 	}
 
 	/**
-	 * Method to access the finalStatus of the condensedFile
-	 * 
-	 * @param testTypeIndex
-	 * @param rPanelIndex
-	 * @param chromo
-	 * @return
-	 */
-	public String getCombinedCondensedFileFinalStatus(int testTypeIndex, int rPanelIndex, int chromo) {
-		// Check that chromo index is within the bounds
-		checkChromoIndex(chromo);
-
-		int i = chromo - this.startChr;
-
-		// Check the index
-		int maxIndex = this.testTypeCombinedCondensedFile.get(testTypeIndex).get(rPanelIndex).size();
-		checkIndex(i, maxIndex, chromo);
-
-		return this.testTypeCombinedCondensedFile.get(testTypeIndex).get(rPanelIndex).get(i).getFinalStatus();
-	}
-
-	/**
 	 * Method to access additionalCondensedFile
 	 * 
 	 * @param testTypeIndex
@@ -1561,39 +1181,6 @@ public class MergeFiles {
 		checkIndex(index, maxIndex, index);
 
 		return this.testTypeAdditionalCondensedFile.get(testTypeIndex).get(rPanelIndex).get(index).getFullName();
-	}
-
-	/**
-	 * Method to set the finalStatus of the additionalCondensedFile
-	 * 
-	 * @param testTypeIndex
-	 * @param rPanelIndex
-	 * @param index
-	 * @param finalStatus
-	 */
-	public void setAdditionalCondensedFileFinalStatus(int testTypeIndex, int rPanelIndex, int index,
-			String finalStatus) {
-		// Check the index
-		int maxIndex = this.testTypeAdditionalCondensedFile.get(testTypeIndex).get(rPanelIndex).size();
-		checkIndex(index, maxIndex, index);
-
-		this.testTypeAdditionalCondensedFile.get(testTypeIndex).get(rPanelIndex).get(index).setFinalStatus(finalStatus);
-	}
-
-	/**
-	 * Method to access the finalStatus of the additionalCondensedFile
-	 * 
-	 * @param testTypeIndex
-	 * @param rPanelIndex
-	 * @param index
-	 * @return
-	 */
-	public String getAdditionalCondensedFileFinalStatus(int testTypeIndex, int rPanelIndex, int index) {
-		// Check the index
-		int maxIndex = this.testTypeAdditionalCondensedFile.get(testTypeIndex).get(rPanelIndex).size();
-		checkIndex(index, maxIndex, index);
-
-		return this.testTypeAdditionalCondensedFile.get(testTypeIndex).get(rPanelIndex).get(index).getFinalStatus();
 	}
 
 	/**
@@ -1637,40 +1224,6 @@ public class MergeFiles {
 	}
 
 	/**
-	 * Method to set the finalStatus of the additionalCondensedFile
-	 * 
-	 * @param testTypeIndex
-	 * @param rPanelIndex
-	 * @param index
-	 * @param finalStatus
-	 */
-	public void setAdditionalFilteredByAllFileFinalStatus(int testTypeIndex, int rPanelIndex, int index,
-			String finalStatus) {
-		// Check the index
-		int maxIndex = this.testTypeAdditionalFilteredByAllFile.get(testTypeIndex).get(rPanelIndex).size();
-		checkIndex(index, maxIndex, index);
-
-		this.testTypeAdditionalFilteredByAllFile.get(testTypeIndex).get(rPanelIndex).get(index)
-				.setFinalStatus(finalStatus);
-	}
-
-	/**
-	 * Method to access the finalStatus of the additionalFilteredByAllFile
-	 * 
-	 * @param testTypeIndex
-	 * @param rPanelIndex
-	 * @param index
-	 * @return
-	 */
-	public String getAdditionalFilteredByAllFileFinalStatus(int testTypeIndex, int rPanelIndex, int index) {
-		// Check the index
-		int maxIndex = this.testTypeAdditionalFilteredByAllFile.get(testTypeIndex).get(rPanelIndex).size();
-		checkIndex(index, maxIndex, index);
-
-		return this.testTypeAdditionalFilteredByAllFile.get(testTypeIndex).get(rPanelIndex).get(index).getFinalStatus();
-	}
-
-	/**
 	 * Method to access additionalFilteredByAllXFile
 	 * 
 	 * @param testTypeIndex
@@ -1702,76 +1255,6 @@ public class MergeFiles {
 
 		return this.testTypeAdditionalFilteredByAllFemalesFile.get(testTypeIndex).get(rPanelIndex).get(index)
 				.getFullName();
-	}
-
-	/**
-	 * Method to set the finalStatus of the additionalCondensedFile
-	 * 
-	 * @param testTypeIndex
-	 * @param rPanelIndex
-	 * @param index
-	 * @param finalStatus
-	 */
-	public void setAdditionalFilteredByAllXMalesFileFinalStatus(int testTypeIndex, int rPanelIndex, int index,
-			String finalStatus) {
-		// Check the index
-		int maxIndex = this.testTypeAdditionalFilteredByAllMalesFile.get(testTypeIndex).get(rPanelIndex).size();
-		checkIndex(index, maxIndex, index);
-
-		this.testTypeAdditionalFilteredByAllMalesFile.get(testTypeIndex).get(rPanelIndex).get(index)
-				.setFinalStatus(finalStatus);
-	}
-
-	/**
-	 * Method to set the finalStatus of the additionalCondensedFile
-	 * 
-	 * @param testTypeIndex
-	 * @param rPanelIndex
-	 * @param index
-	 * @param finalStatus
-	 */
-	public void setAdditionalFilteredByAllXFemalesFileFinalStatus(int testTypeIndex, int rPanelIndex, int index,
-			String finalStatus) {
-		// Check the index
-		int maxIndex = this.testTypeAdditionalFilteredByAllFemalesFile.get(testTypeIndex).get(rPanelIndex).size();
-		checkIndex(index, maxIndex, index);
-
-		this.testTypeAdditionalFilteredByAllFemalesFile.get(testTypeIndex).get(rPanelIndex).get(index)
-				.setFinalStatus(finalStatus);
-	}
-
-	/**
-	 * Method to access the finalStatus of the additionalFilteredByAllXFile
-	 * 
-	 * @param testTypeIndex
-	 * @param rPanelIndex
-	 * @param index
-	 * @return
-	 */
-	public String getAdditionalFilteredByAllXMalesFileFinalStatus(int testTypeIndex, int rPanelIndex, int index) {
-		// Check the index
-		int maxIndex = this.testTypeAdditionalFilteredByAllMalesFile.get(testTypeIndex).get(rPanelIndex).size();
-		checkIndex(index, maxIndex, index);
-
-		return this.testTypeAdditionalFilteredByAllMalesFile.get(testTypeIndex).get(rPanelIndex).get(index)
-				.getFinalStatus();
-	}
-
-	/**
-	 * Method to access the finalStatus of the additionalFilteredByAllXFile
-	 * 
-	 * @param testTypeIndex
-	 * @param rPanelIndex
-	 * @param index
-	 * @return
-	 */
-	public String getAdditionalFilteredByAllXFemalesFileFinalStatus(int testTypeIndex, int rPanelIndex, int index) {
-		// Check the index
-		int maxIndex = this.testTypeAdditionalFilteredByAllFemalesFile.get(testTypeIndex).get(rPanelIndex).size();
-		checkIndex(index, maxIndex, index);
-
-		return this.testTypeAdditionalFilteredByAllFemalesFile.get(testTypeIndex).get(rPanelIndex).get(index)
-				.getFinalStatus();
 	}
 
 	/**

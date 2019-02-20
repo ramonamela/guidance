@@ -60,8 +60,6 @@ public class GenericFile {
         this.fullName = myDir + File.separator + myName;
 
         this.generatedBy = null;
-
-        this.finalStatus = myFinalStatus;
     }
 
     /**
@@ -82,30 +80,12 @@ public class GenericFile {
     }
 
     /**
-     * A method to set finalStatus field
-     * 
-     * @param myFinalStatus
-     */
-    public void setFinalStatus(String myFinalStatus) {
-        this.finalStatus = myFinalStatus;
-    }
-
-    /**
      * A method to get dir field
      * 
      * @return
      */
     public String getDir() {
         return this.dir;
-    }
-
-    /**
-     * A method to get finalStatus field
-     * 
-     * @return
-     */
-    public String getFinalStatus() {
-        return this.finalStatus;
     }
 
     /**

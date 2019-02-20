@@ -164,28 +164,6 @@ public class ResultsFiles {
     }
 
     /**
-     * Method to set the finalStatus of the topHitsFile
-     * 
-     * @param testTypeIndex
-     * @param rPanelIndex
-     * @param finalStatus
-     */
-    public void setTopHitsFileFinalStatus(int testTypeIndex, int rPanelIndex, String finalStatus) {
-        this.testTypeTopHitsFile.get(testTypeIndex).get(rPanelIndex).setFinalStatus(finalStatus);
-    }
-
-    /**
-     * Method to access the finalStatus of the topHitsFile
-     * 
-     * @param testTypeIndex
-     * @param rPanelIndex
-     * @return
-     */
-    public String getTopHitsFileFinalStatus(int testTypeIndex, int rPanelIndex) {
-        return this.testTypeTopHitsFile.get(testTypeIndex).get(rPanelIndex).getFinalStatus();
-    }
-
-    /**
      * Method to access CorrectedPvaluesFile
      * 
      * @param testTypeIndex
@@ -194,28 +172,6 @@ public class ResultsFiles {
      */
     public String getCorrectedPvaluesFile(int testTypeIndex, int rPanelIndex) {
         return this.testTypeCorrectedPvaluesFile.get(testTypeIndex).get(rPanelIndex).getFullName();
-    }
-
-    /**
-     * Method to set the finalStatus of the CorrectedPvaluesFile
-     * 
-     * @param testTypeIndex
-     * @param rPanelIndex
-     * @param finalStatus
-     */
-    public void setCorrectedPvaluesFinalStatus(int testTypeIndex, int rPanelIndex, String finalStatus) {
-        this.testTypeCorrectedPvaluesFile.get(testTypeIndex).get(rPanelIndex).setFinalStatus(finalStatus);
-    }
-
-    /**
-     * Method to access the finalStatus of the CorrectedPvaluesFile
-     * 
-     * @param testTypeIndex
-     * @param rPanelIndex
-     * @return
-     */
-    public String getCorrectedPvaluesFileFinalStatus(int testTypeIndex, int rPanelIndex) {
-        return this.testTypeCorrectedPvaluesFile.get(testTypeIndex).get(rPanelIndex).getFinalStatus();
     }
 
     /**
@@ -230,28 +186,6 @@ public class ResultsFiles {
     }
 
     /**
-     * Method to set the finalStatus of the qqPlotPdfFile
-     * 
-     * @param testTypeIndex
-     * @param rPanelIndex
-     * @param finalStatus
-     */
-    public void setQqPlotPdfFileFinalStatus(int testTypeIndex, int rPanelIndex, String finalStatus) {
-        this.testTypeQqPlotPdfFile.get(testTypeIndex).get(rPanelIndex).setFinalStatus(finalStatus);
-    }
-
-    /**
-     * Method to access the finalStatus of the qqPlotPdfFile
-     * 
-     * @param testTypeIndex
-     * @param rPanelIndex
-     * @return
-     */
-    public String getQqPlotPdfFileFinalStatus(int testTypeIndex, int rPanelIndex) {
-        return this.testTypeQqPlotPdfFile.get(testTypeIndex).get(rPanelIndex).getFinalStatus();
-    }
-
-    /**
      * Method to access qqPlotTiffFile
      * 
      * @param testTypeIndex
@@ -260,28 +194,6 @@ public class ResultsFiles {
      */
     public String getQqPlotTiffFile(int testTypeIndex, int rPanelIndex) {
         return this.testTypeQqPlotTiffFile.get(testTypeIndex).get(rPanelIndex).getFullName();
-    }
-
-    /**
-     * Method to set the finalStatus of the qqPlotPdfFile
-     * 
-     * @param testTypeIndex
-     * @param rPanelIndex
-     * @param finalStatus
-     */
-    public void setQqPlotTiffFileFinalStatus(int testTypeIndex, int rPanelIndex, String finalStatus) {
-        this.testTypeQqPlotTiffFile.get(testTypeIndex).get(rPanelIndex).setFinalStatus(finalStatus);
-    }
-
-    /**
-     * Method to access the finalStatus of the qqPlotTiffFile
-     * 
-     * @param testTypeIndex
-     * @param rPanelIndex
-     * @return
-     */
-    public String getQqPlotTiffFileFinalStatus(int testTypeIndex, int rPanelIndex) {
-        return this.testTypeQqPlotTiffFile.get(testTypeIndex).get(rPanelIndex).getFinalStatus();
     }
 
     /**
@@ -296,28 +208,6 @@ public class ResultsFiles {
     }
 
     /**
-     * Method to set the finalStatus of the manhattanPdfFile
-     * 
-     * @param testTypeIndex
-     * @param rPanelIndex
-     * @param finalStatus
-     */
-    public void setManhattanPdfFileFinalStatus(int testTypeIndex, int rPanelIndex, String finalStatus) {
-        this.testTypeManhattanPdfFile.get(testTypeIndex).get(rPanelIndex).setFinalStatus(finalStatus);
-    }
-
-    /**
-     * Method to access the finalStatus of the manhattanPdfFile
-     * 
-     * @param testTypeIndex
-     * @param rPanelIndex
-     * @return
-     */
-    public String getManhattanPdfFileFinalStatus(int testTypeIndex, int rPanelIndex) {
-        return this.testTypeManhattanPdfFile.get(testTypeIndex).get(rPanelIndex).getFinalStatus();
-    }
-
-    /**
      * Method to access manhattanTiffFile
      * 
      * @param testTypeIndex
@@ -326,28 +216,6 @@ public class ResultsFiles {
      */
     public String getManhattanTiffFile(int testTypeIndex, int rPanelIndex) {
         return this.testTypeManhattanTiffFile.get(testTypeIndex).get(rPanelIndex).getFullName();
-    }
-
-    /**
-     * Method to set the finalStatus of the manhattanPdfFile
-     * 
-     * @param testTypeIndex
-     * @param rPanelIndex
-     * @param finalStatus
-     */
-    public void setManhattanTiffFileFinalStatus(int testTypeIndex, int rPanelIndex, String finalStatus) {
-        this.testTypeManhattanTiffFile.get(testTypeIndex).get(rPanelIndex).setFinalStatus(finalStatus);
-    }
-
-    /**
-     * Method to access the finalStatus of the manhattanTiffFile
-     * 
-     * @param testTypeIndex
-     * @param rPanelIndex
-     * @return
-     */
-    public String getManhattanTiffFileFinalStatus(int testTypeIndex, int rPanelIndex) {
-        return this.testTypeManhattanTiffFile.get(testTypeIndex).get(rPanelIndex).getFinalStatus();
     }
 
 }

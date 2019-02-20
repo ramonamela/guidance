@@ -304,28 +304,6 @@ public class CombinedPanelsFiles {
 	}
 
 	/**
-	 * Method to set the finalStatus of the testTypeCorrectedPvaluesFile
-	 * 
-	 * @param testTypeIndex
-	 * @param index
-	 * @param finalStatus
-	 */
-	public void setCombinedFilteredByAllFileFinalStatus(int testTypeIndex, String finalStatus) {
-		this.testTypeCombinedFilteredByAllFile.get(testTypeIndex).setFinalStatus(finalStatus);
-	}
-
-	/**
-	 * Method to access the finalStatus of the testTypeCombinedFilteredByAllFile
-	 * 
-	 * @param testTypeIndex
-	 * @param index
-	 * @return
-	 */
-	public String getCombinedFilteredByAllFileFinalStatus(int testTypeIndex) {
-		return this.testTypeCombinedFilteredByAllFile.get(testTypeIndex).getFinalStatus();
-	}
-
-	/**
 	 * Method to access testTypeCombinedFilteredByAllFile
 	 * 
 	 * @param testTypeIndex
@@ -348,28 +326,6 @@ public class CombinedPanelsFiles {
 	}
 
 	/**
-	 * Method to set the finalStatus of the testTypeCorrectedPvaluesFile
-	 * 
-	 * @param testTypeIndex
-	 * @param index
-	 * @param finalStatus
-	 */
-	public void setCombinedFilteredByAllXMalesFileFinalStatus(int testTypeIndex, String finalStatus) {
-		this.testTypeCombinedFilteredByAllXMalesFile.get(testTypeIndex).setFinalStatus(finalStatus);
-	}
-
-	/**
-	 * Method to set the finalStatus of the testTypeCorrectedPvaluesFile
-	 * 
-	 * @param testTypeIndex
-	 * @param index
-	 * @param finalStatus
-	 */
-	public void setCombinedFilteredByAllXFemalesFileFinalStatus(int testTypeIndex, String finalStatus) {
-		this.testTypeCombinedFilteredByAllXFemalesFile.get(testTypeIndex).setFinalStatus(finalStatus);
-	}
-
-	/**
 	 * Method to access testTypeCombinedCondensedFile
 	 * 
 	 * @param testTypeIndex
@@ -377,26 +333,6 @@ public class CombinedPanelsFiles {
 	 */
 	public String getCombinedCondensedFile(int testTypeIndex) {
 		return this.testTypeCombinedCondensedFile.get(testTypeIndex).getFullName();
-	}
-
-	/**
-	 * Method to set the finalStatus of the testTypeCombinedCondensedFile
-	 * 
-	 * @param testTypeIndex
-	 * @param finalStatus
-	 */
-	public void setCombinedCondensedFileFinalStatus(int testTypeIndex, String finalStatus) {
-		this.testTypeCombinedCondensedFile.get(testTypeIndex).setFinalStatus(finalStatus);
-	}
-
-	/**
-	 * Method to access the finalStatus of the testTypeCombinedCondensedFile
-	 * 
-	 * @param testTypeIndex
-	 * @return
-	 */
-	public String getCombinedCondensedFileFinalStatus(int testTypeIndex) {
-		return this.testTypeCombinedCondensedFile.get(testTypeIndex).getFinalStatus();
 	}
 
 	/**
@@ -408,28 +344,6 @@ public class CombinedPanelsFiles {
 	 */
 	public String getCombinedFilteredByAllChromoFile(int testTypeIndex, int index) {
 		return this.testTypeCombinedFilteredByAllChromoFile.get(testTypeIndex).get(index).getFullName();
-	}
-
-	/**
-	 * Method to set the finalStatus of the testTypeCorrectedPvaluesFile
-	 * 
-	 * @param testTypeIndex
-	 * @param index
-	 * @param finalStatus
-	 */
-	public void setCombinedFilteredByAllFileFinalStatus(int testTypeIndex, int index, String finalStatus) {
-		this.testTypeCombinedFilteredByAllChromoFile.get(testTypeIndex).get(index).setFinalStatus(finalStatus);
-	}
-
-	/**
-	 * Method to access the finalStatus of the testTypeCombinedFilteredByAllFile
-	 * 
-	 * @param testTypeIndex
-	 * @param index
-	 * @return
-	 */
-	public String getCombinedFilteredByAllFileFinalStatus(int testTypeIndex, int index) {
-		return this.testTypeCombinedFilteredByAllChromoFile.get(testTypeIndex).get(index).getFinalStatus();
 	}
 
 	/**
@@ -455,51 +369,6 @@ public class CombinedPanelsFiles {
 	}
 
 	/**
-	 * Method to set the finalStatus of the testTypeCorrectedPvaluesFile
-	 * 
-	 * @param testTypeIndex
-	 * @param index
-	 * @param finalStatus
-	 */
-	public void setCombinedFilteredByAllXMalesChromoFileFinalStatus(int testTypeIndex, int index, String finalStatus) {
-		this.testTypeCombinedFilteredByAllXMalesChromoFile.get(testTypeIndex).get(index).setFinalStatus(finalStatus);
-	}
-
-	/**
-	 * Method to set the finalStatus of the testTypeCorrectedPvaluesFile
-	 * 
-	 * @param testTypeIndex
-	 * @param index
-	 * @param finalStatus
-	 */
-	public void setCombinedFilteredByAllXFemalesChromoFileFinalStatus(int testTypeIndex, int index,
-			String finalStatus) {
-		this.testTypeCombinedFilteredByAllXFemalesChromoFile.get(testTypeIndex).get(index).setFinalStatus(finalStatus);
-	}
-
-	/**
-	 * Method to access the finalStatus of the testTypeCombinedFilteredByAllFile
-	 * 
-	 * @param testTypeIndex
-	 * @param index
-	 * @return
-	 */
-	public String getCombinedFilteredByAllXMalesChromoFileFinalStatus(int testTypeIndex, int index) {
-		return this.testTypeCombinedFilteredByAllXMalesChromoFile.get(testTypeIndex).get(index).getFinalStatus();
-	}
-
-	/**
-	 * Method to access the finalStatus of the testTypeCombinedFilteredByAllFile
-	 * 
-	 * @param testTypeIndex
-	 * @param index
-	 * @return
-	 */
-	public String getCombinedFilteredByAllXFemalesChromoFileFinalStatus(int testTypeIndex, int index) {
-		return this.testTypeCombinedFilteredByAllXFemalesChromoFile.get(testTypeIndex).get(index).getFinalStatus();
-	}
-
-	/**
 	 * Method to access testTypeCombinedCondensedFile
 	 * 
 	 * @param testTypeIndex
@@ -507,26 +376,6 @@ public class CombinedPanelsFiles {
 	 */
 	public String getCombinedCondensedChromoFile(int testTypeIndex, int index) {
 		return this.testTypeCombinedCondensedChromoFile.get(testTypeIndex).get(index).getFullName();
-	}
-
-	/**
-	 * Method to set the finalStatus of the testTypeCombinedCondensedFile
-	 * 
-	 * @param testTypeIndex
-	 * @param finalStatus
-	 */
-	public void setCombinedCondensedChromoFileFinalStatus(int testTypeIndex, String finalStatus, int index) {
-		this.testTypeCombinedCondensedChromoFile.get(testTypeIndex).get(index).setFinalStatus(finalStatus);
-	}
-
-	/**
-	 * Method to access the finalStatus of the testTypeCombinedCondensedFile
-	 * 
-	 * @param testTypeIndex
-	 * @return
-	 */
-	public String getCombinedCondensedChromoFileFinalStatus(int testTypeIndex, int index) {
-		return this.testTypeCombinedCondensedChromoFile.get(testTypeIndex).get(index).getFinalStatus();
 	}
 
 	/**
@@ -550,16 +399,6 @@ public class CombinedPanelsFiles {
 	}
 
 	/**
-	 * Method to access the finalStatus of the testTypeTopHitsFile
-	 * 
-	 * @param testTypeIndex
-	 * @return
-	 */
-	public String getTopHitsFileFinalStatus(int testTypeIndex) {
-		return this.testTypeTopHitsFile.get(testTypeIndex).getFinalStatus();
-	}
-
-	/**
 	 * Method to access qqPlotPdfFile
 	 * 
 	 * @param testTypeIndex
@@ -570,26 +409,6 @@ public class CombinedPanelsFiles {
 	}
 
 	/**
-	 * Method to set the finalStatus of the qqPlotPdfFile
-	 * 
-	 * @param testTypeIndex
-	 * @param finalStatus
-	 */
-	public void setQqPlotPdfFileFinalStatus(int testTypeIndex, String finalStatus) {
-		this.testTypeQqPlotPdfFile.get(testTypeIndex).setFinalStatus(finalStatus);
-	}
-
-	/**
-	 * Method to access the finalStatus of the qqPlotPdfFile
-	 * 
-	 * @param testTypeIndex
-	 * @return
-	 */
-	public String getQqPlotPdfFileFinalStatus(int testTypeIndex) {
-		return this.testTypeQqPlotPdfFile.get(testTypeIndex).getFinalStatus();
-	}
-
-	/**
 	 * Method to access qqPlotTiffFile
 	 * 
 	 * @param testTypeIndex
@@ -597,26 +416,6 @@ public class CombinedPanelsFiles {
 	 */
 	public String getQqPlotTiffFile(int testTypeIndex) {
 		return this.testTypeQqPlotTiffFile.get(testTypeIndex).getFullName();
-	}
-
-	/**
-	 * Method to set the finalStatus of the qqPlotPdfFile
-	 * 
-	 * @param testTypeIndex
-	 * @param finalStatus
-	 */
-	public void setQqPlotTiffFileFinalStatus(int testTypeIndex, String finalStatus) {
-		this.testTypeQqPlotTiffFile.get(testTypeIndex).setFinalStatus(finalStatus);
-	}
-
-	/**
-	 * Method to access the finalStatus of the qqPlotTiffFile
-	 * 
-	 * @param testTypeIndex
-	 * @return
-	 */
-	public String getQqPlotTiffFileFinalStatus(int testTypeIndex) {
-		return this.testTypeQqPlotTiffFile.get(testTypeIndex).getFinalStatus();
 	}
 
 	/**
@@ -647,26 +446,6 @@ public class CombinedPanelsFiles {
 	 */
 	public String getCorrectedPvaluesFile(int testTypeIndex) {
 		return this.testTypeCorrectedPvaluesFile.get(testTypeIndex).getFullName();
-	}
-
-	/**
-	 * Method to set the finalStatus of the CorrectedPvaluesFile
-	 * 
-	 * @param testTypeIndex
-	 * @param finalStatus
-	 */
-	public void setCorrectedPvaluesFinalStatus(int testTypeIndex, String finalStatus) {
-		this.testTypeCorrectedPvaluesFile.get(testTypeIndex).setFinalStatus(finalStatus);
-	}
-
-	/**
-	 * Method to access the finalStatus of the CorrectedPvaluesFile
-	 * 
-	 * @param testTypeIndex
-	 * @return
-	 */
-	public String getCorrectedPvaluesFileFinalStatus(int testTypeIndex) {
-		return this.testTypeCorrectedPvaluesFile.get(testTypeIndex).getFinalStatus();
 	}
 
 }
