@@ -73,7 +73,6 @@ public class CommonFiles {
 
 	private String mixedBedDir = null;
 
-	private ArrayList<GenericFile> mixedGenFile = new ArrayList<>();
 	private ArrayList<GenericFile> mixedPairsFile = new ArrayList<>();
 	private ArrayList<GenericFile> mixedSampleFile = new ArrayList<>();
 
@@ -167,8 +166,6 @@ public class CommonFiles {
 			String theOutputDir = tmpOutDir + File.separator + "Chr_" + chromo;
 			outputMixedDir.add(theOutputDir);
 
-			String aTmpDir = null;
-			String aTmpFileName = null;
 			String aTmpSampleFileName = null;
 			// String aTmpSampleFile = null;
 
@@ -233,13 +230,6 @@ public class CommonFiles {
 					mixedSplitChr23FemalesLogFile.add(myMixedSplitChr23FemalesLogFile);
 				}
 
-			} else if (inputFormat.equals("GEN")) {
-				/* We create the input gen file name */
-				// mixedGenDir.add(parsingArgs.getChrDir("mixed"));
-				aTmpDir = parsingArgs.getChrDir();
-				aTmpFileName = parsingArgs.getGenFileName(chromo);
-				GenericFile myMixedGenFile = new GenericFile(aTmpDir, aTmpFileName, "decompressed", "none");
-				mixedGenFile.add(myMixedGenFile);
 			} else {
 				System.err.println(
 						"[CommonFiles] Error, this type of input format: " + inputFormat + " does not exist!.");
@@ -578,48 +568,6 @@ public class CommonFiles {
 	}
 
 	/**
-	 * Method to access genDir information
-	 * 
-	 * @param chromo
-	 * @return
-	 */
-	public String getGenDir(int chromo) {
-		// Check that chromo index is within the bounds
-		checkChromoIndex(chromo);
-
-		int index = chromo - startChr;
-		return mixedGenFile.get(index).getDir();
-	}
-
-	/**
-	 * Method to access genFile information
-	 * 
-	 * @param chromo
-	 * @return
-	 */
-	public String getGenFile(int chromo) {
-		// Check that chromo index is within the bounds
-		checkChromoIndex(chromo);
-
-		int index = chromo - startChr;
-		return mixedGenFile.get(index).getFullName();
-	}
-
-	/**
-	 * Method to access the final status of a genFile
-	 * 
-	 * @param chromo
-	 * @return
-	 */
-	public String getGenFileFinalStatus(int chromo) {
-		// Check that chromo index is within the bounds
-		checkChromoIndex(chromo);
-
-		int index = chromo - startChr;
-		return mixedGenFile.get(index).getFinalStatus();
-	}
-
-	/**
 	 * Method to access pairsFile information
 	 * 
 	 * @param chromo
@@ -631,34 +579,6 @@ public class CommonFiles {
 
 		int index = chromo - startChr;
 		return mixedPairsFile.get(index).getFullName();
-	}
-
-	/**
-	 * Method to set the finalStatus of pairsFile
-	 * 
-	 * @param chromo
-	 * @param finalStatus
-	 */
-	public void setPairsFileFinalStatus(int chromo, String finalStatus) {
-		// Check that chromo index is within the bounds
-		checkChromoIndex(chromo);
-
-		int index = chromo - startChr;
-		mixedPairsFile.get(index).setFinalStatus(finalStatus);
-	}
-
-	/**
-	 * Method to access pairsFile information
-	 * 
-	 * @param chromo
-	 * @return
-	 */
-	public String getPairsFileFinalStatus(int chromo) {
-		// Check that chromo index is within the bounds
-		checkChromoIndex(chromo);
-
-		int index = chromo - startChr;
-		return mixedPairsFile.get(index).getFinalStatus();
 	}
 
 	/**
@@ -690,20 +610,6 @@ public class CommonFiles {
 	}
 
 	/**
-	 * Method to access the final status of a sampleFile
-	 * 
-	 * @param chromo
-	 * @return
-	 */
-	public String getSampleFileFinalStatus(int chromo) {
-		// Check that chromo index is within the bounds
-		checkChromoIndex(chromo);
-
-		int index = chromo - startChr;
-		return mixedSampleFile.get(index).getFinalStatus();
-	}
-
-	/**
 	 * Method to access typeSample information
 	 * 
 	 * @param chromo
@@ -729,48 +635,6 @@ public class CommonFiles {
 
 		int index = chromo - startChr;
 		return mixedPhasingHapsFile.get(index).getFullName();
-	}
-
-	/**
-	 * Method to set finalStatus of shapeitHapsFile
-	 * 
-	 * @param chromo
-	 * @param finalStatus
-	 */
-	public void setPhasingHapsFileFinalStatus(int chromo, String finalStatus) {
-		// Check that chromo index is within the bounds
-		checkChromoIndex(chromo);
-
-		int index = chromo - startChr;
-		mixedPhasingHapsFile.get(index).setFinalStatus(finalStatus);
-	}
-
-	/**
-	 * Method to set finalStatus of shapeit Sample file
-	 * 
-	 * @param chromo
-	 * @param finalStatus
-	 */
-	public void setPhasingSampleFileFinalStatus(int chromo, String finalStatus) {
-		// Check that chromo index is within the bounds
-		checkChromoIndex(chromo);
-
-		int index = chromo - startChr;
-		mixedPhasingSampleFile.get(index).setFinalStatus(finalStatus);
-	}
-
-	/**
-	 * Method to access the final status information of shapeitHapsFile
-	 * 
-	 * @param chromo
-	 * @return
-	 */
-	public String getPhasingHapsFileFinalStatus(int chromo) {
-		// Check that chromo index is within the bounds
-		checkChromoIndex(chromo);
-
-		int index = chromo - startChr;
-		return mixedPhasingHapsFile.get(index).getFinalStatus();
 	}
 
 	/**
@@ -802,20 +666,6 @@ public class CommonFiles {
 	}
 
 	/**
-	 * Method to access the final status information of a shapeitSampleFile
-	 * 
-	 * @param chromo
-	 * @return
-	 */
-	public String getPhasingSampleFileFinalStatus(int chromo) {
-		// Check that chromo index is within the bounds
-		checkChromoIndex(chromo);
-
-		int index = chromo - startChr;
-		return mixedPhasingSampleFile.get(index).getFinalStatus();
-	}
-
-	/**
 	 * Method to access shapeitLogFile information
 	 * 
 	 * @param chromo
@@ -827,20 +677,6 @@ public class CommonFiles {
 
 		int index = chromo - startChr;
 		return mixedPhasingLogFile.get(index).getFullName();
-	}
-
-	/**
-	 * Method to access the final status information of a shapeitLogFile
-	 * 
-	 * @param chromo
-	 * @return
-	 */
-	public String getPhasingLogFileFinalStatus(int chromo) {
-		// Check that chromo index is within the bounds
-		checkChromoIndex(chromo);
-
-		int index = chromo - startChr;
-		return mixedPhasingLogFile.get(index).getFinalStatus();
 	}
 
 	// Method to access getPhasingHapsMalesFile
@@ -897,20 +733,6 @@ public class CommonFiles {
 		return mixedExcludedSnpsFile.get(index).getFullName();
 	}
 
-	/**
-	 * Method to access the final status information of a excludedSnpsFile
-	 * 
-	 * @param chromo
-	 * @return
-	 */
-	public String getExcludedSnpsFileFinalStatus(int chromo) {
-		// Check that chromo index is within the bounds
-		checkChromoIndex(chromo);
-
-		int index = chromo - startChr;
-		return mixedExcludedSnpsFile.get(index).getFinalStatus();
-	}
-
 	// Method to access getExcludedSnpsFileMales
 	public String getExcludedSnpsMalesFile() {
 		return mixedExcludedSnpsMalesFile.get(0).getFullName();
@@ -933,20 +755,6 @@ public class CommonFiles {
 
 		int index = chromo - startChr;
 		return mixedFilteredHaplotypesFile.get(index).getFullName();
-	}
-
-	/**
-	 * Method to set finalStatus of shapeitHapsFile
-	 * 
-	 * @param chromo
-	 * @param finalStatus
-	 */
-	public void setFilteredHaplotypesFileFinalStatus(int chromo, String finalStatus) {
-		// Check that chromo index is within the bounds
-		checkChromoIndex(chromo);
-
-		int index = chromo - startChr;
-		mixedFilteredHaplotypesFile.get(index).setFinalStatus(finalStatus);
 	}
 
 	// Method to access filteredHaplotypesMalesFile
@@ -973,20 +781,6 @@ public class CommonFiles {
 		return mixedFilteredHaplotypesSampleFile.get(index).getFullName();
 	}
 
-	/**
-	 * Method to set finalStatus of shapeitHapsFile
-	 * 
-	 * @param chromo
-	 * @param finalStatus
-	 */
-	public void setFilteredHaplotypesSampleFileFinalStatus(int chromo, String finalStatus) {
-		// Check that chromo index is within the bounds
-		checkChromoIndex(chromo);
-
-		int index = chromo - startChr;
-		mixedFilteredHaplotypesSampleFile.get(index).setFinalStatus(finalStatus);
-	}
-
 	// Method to access filteredHaplotypesSampleMalesFile
 	public String getFilteredHaplotypesSampleMalesFile() {
 		return mixedFilteredHaplotypesSampleMalesFile.get(0).getFullName();
@@ -1009,20 +803,6 @@ public class CommonFiles {
 
 		int index = chromo - startChr;
 		return mixedFilteredHaplotypesLogFile.get(index).getFullName();
-	}
-
-	/**
-	 * Method to set finalStatus of shapeitHapsFile
-	 * 
-	 * @param chromo
-	 * @param finalStatus
-	 */
-	public void setFilteredHaplotypesLogFileFinalStatus(int chromo, String finalStatus) {
-		// Check that chromo index is within the bounds
-		checkChromoIndex(chromo);
-
-		int index = chromo - startChr;
-		mixedFilteredHaplotypesLogFile.get(index).setFinalStatus(finalStatus);
 	}
 
 	// Method to access filteredHaplotypesLogMalesFile
@@ -1059,34 +839,12 @@ public class CommonFiles {
 		return mixedFilteredHaplotypesVcfFemalesFile.get(0).getFullName();
 	}
 
-	/**
-	 * Method to set finalStatus of setFilteredHaplotypesVcfFileFinalStatus
-	 * 
-	 * @param chromo
-	 * @param finalStatus
-	 */
-	public void setFilteredHaplotypesVcfFileFinalStatus(int chromo, String finalStatus) {
-		// Check that chromo index is within the bounds
-		checkChromoIndex(chromo);
-
-		int index = chromo - startChr;
-		mixedFilteredHaplotypesVcfFile.get(index).setFinalStatus(finalStatus);
-	}
-
 	// Method to access filteredHaplotypesVcfFile information
 	public String getFilteredHaplotypesVcfFileBgzip(int chromo) {
 		checkChromoIndex(chromo);
 
 		int index = chromo - startChr;
 		return mixedFilteredHaplotypesVcfFileBgzip.get(index).getFullName();
-	}
-
-	// Method to set finalStatus of setFilteredHaplotypesVcfFileFinalStatus
-	public void setFilteredHaplotypesVcfFileBgzipFinalStatus(int chromo, String finalStatus) {
-		checkChromoIndex(chromo);
-
-		int index = chromo - startChr;
-		mixedFilteredHaplotypesVcfFileBgzip.get(index).setFinalStatus(finalStatus);
 	}
 
 	// Method to access filteredHaplotypesVcfMalesBgzipFile
@@ -1105,14 +863,6 @@ public class CommonFiles {
 
 		int index = chromo - startChr;
 		return mixedFilteredHaplotypesVcfFileBgzipIndexed.get(index).getFullName();
-	}
-
-	// Method to set finalStatus of setFilteredHaplotypesVcfFileFinalStatus
-	public void setFilteredHaplotypesVcfFileBgzipIndexedFinalStatus(int chromo, String finalStatus) {
-		checkChromoIndex(chromo);
-
-		int index = chromo - startChr;
-		mixedFilteredHaplotypesVcfFileBgzipIndexed.get(index).setFinalStatus(finalStatus);
 	}
 
 	// Method to access filteredHaplotypesVcfMalesBgzipFileIndexed
@@ -1145,38 +895,11 @@ public class CommonFiles {
 	 * @param chromo
 	 * @param finalStatus
 	 */
-	public void setListOfSnpsFileFinalStatus(int chromo, String finalStatus) {
-		// Check that chromo index is within the bounds
-		checkChromoIndex(chromo);
-
-		int index = chromo - startChr;
-		mixedListOfSnpsFile.get(index).setFinalStatus(finalStatus);
-	}
-
-	/**
-	 * Method to set finalStatus of listOfSnpsFile
-	 * 
-	 * @param chromo
-	 * @param finalStatus
-	 */
 	public String getGmapFile(int chromo) {
 		checkChromoIndex(chromo);
 
 		int index = chromo - startChr;
 		return mixedGmapFile.get(index).getFullName();
-	}
-
-	/**
-	 * Method to set finalStatus of listOfSnpsFile
-	 * 
-	 * @param chromo
-	 * @param finalStatus
-	 */
-	public void setGmapFileFinalStatus(int chromo, String finalStatus) {
-		checkChromoIndex(chromo);
-
-		int index = chromo - startChr;
-		mixedGmapFile.get(index).setFinalStatus(finalStatus);
 	}
 
 	/**
@@ -1191,7 +914,6 @@ public class CommonFiles {
 		int index = chromo - startChr;
 		LOGGER.info("-------------------------------------------------");
 		LOGGER.info("Mixed files information for the chromosome " + chromo + "(" + index + ")");
-		LOGGER.info("mixedGenFile         : " + mixedGenFile.get(index).getFullName());
 
 		LOGGER.info("mixedPairsFile       : " + mixedPairsFile.get(index).getFullName());
 		LOGGER.info("mixedSampleFile      : " + mixedSampleFile.get(index));

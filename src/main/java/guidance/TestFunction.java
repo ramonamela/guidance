@@ -40,17 +40,16 @@ public class TestFunction {
 	private static void filterByAllWrapper(String[] args) {
 		String inputFile = args[0];
 		String outputFile = args[1];
-		String outputCondesedFile = args[2];
-		String panelName = args[3];
-		String mafThresholdS = args[4];
-		String infoThresholdS = args[5];
-		String hweCohortThresholdS = args[6];
-		String hweCasesThresholdS = args[7];
-		String hweControlsThresholdS = args[8];
+		String panelName = args[2];
+		String mafThresholdS = args[3];
+		String infoThresholdS = args[4];
+		String hweCohortThresholdS = args[5];
+		String hweCasesThresholdS = args[6];
+		String hweControlsThresholdS = args[7];
 		String cmdToStore = "";
 		try {
-			GuidanceImpl.filterByAll(inputFile, outputFile, outputCondesedFile, panelName, mafThresholdS,
-					infoThresholdS, hweCohortThresholdS, hweCasesThresholdS, hweControlsThresholdS, "", "", cmdToStore);
+			GuidanceImpl.filterByAll(inputFile, outputFile, panelName, mafThresholdS, infoThresholdS,
+					hweCohortThresholdS, hweCasesThresholdS, hweControlsThresholdS, "", "", cmdToStore);
 		} catch (GuidanceTaskException e) {
 			e.printStackTrace();
 		}
@@ -112,11 +111,9 @@ public class TestFunction {
 		String phasingNewSampleFile = args[2];
 		String responseVar = args[3];
 		String covariables = args[4];
-		try {
-			GuidanceImpl.newSample(sampleFile, phasingSampleFile, phasingNewSampleFile, responseVar, covariables, "");
-		} catch (GuidanceTaskException e) {
-			e.printStackTrace();
-		}
+
+		GuidanceImpl.newSample(sampleFile, phasingSampleFile, phasingNewSampleFile, responseVar, covariables, "");
+
 	}
 
 	private static void imputeWithImpute(String[] args) {

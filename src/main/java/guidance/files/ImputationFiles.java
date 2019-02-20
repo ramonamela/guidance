@@ -432,49 +432,49 @@ public class ImputationFiles {
 					numberOfChunks++;
 
 				for (int k = 0; k < numberOfChunks; k++) {
-					if (chromo < 23) {
+					// if (chromo < 23) {
 
-						String imputedFileName = "chr_" + chromo + "_mixed_" + rPanel + "_" + lim1 + "_" + lim2
-								+ ".impute";
-						GenericFile myChunkListImputedFile = new GenericFile(tmpChrDir, imputedFileName + ".gz",
-								"compressed", "none");
-						chunkListImputedFile.add(myChunkListImputedFile);
+					String imputedFileName = "chr_" + chromo + "_mixed_" + rPanel + "_" + lim1 + "_" + lim2 + ".impute";
+					GenericFile myChunkListImputedFile = new GenericFile(tmpChrDir, imputedFileName + ".gz",
+							"compressed", "none");
+					chunkListImputedFile.add(myChunkListImputedFile);
 
-						GenericFile myChunkListImputedInfoFile = new GenericFile(tmpChrDir, imputedFileName + "_info",
-								"compressed", "none");
-						chunkListImputedInfoFile.add(myChunkListImputedInfoFile);
+					GenericFile myChunkListImputedInfoFile = new GenericFile(tmpChrDir, imputedFileName + "_info",
+							"compressed", "none");
+					chunkListImputedInfoFile.add(myChunkListImputedInfoFile);
 
-						GenericFile myChunkListImputedSummaryFile = new GenericFile(tmpChrDir,
-								imputedFileName + "_summary", "decompressed", "none");
-						chunkListImputedSummaryFile.add(myChunkListImputedSummaryFile);
+					GenericFile myChunkListImputedSummaryFile = new GenericFile(tmpChrDir, imputedFileName + "_summary",
+							"decompressed", "none");
+					chunkListImputedSummaryFile.add(myChunkListImputedSummaryFile);
 
-						GenericFile myChunkListImputedWarningsFile = new GenericFile(tmpChrDir,
-								imputedFileName + "_warnings", "decompressed", "none");
-						chunkListImputedWarningsFile.add(myChunkListImputedWarningsFile);
+					GenericFile myChunkListImputedWarningsFile = new GenericFile(tmpChrDir,
+							imputedFileName + "_warnings", "decompressed", "none");
+					chunkListImputedWarningsFile.add(myChunkListImputedWarningsFile);
 
-						GenericFile myChunkListImputedLogFile = new GenericFile(tmpChrDir, imputedFileName + ".log",
-								"decompressed", "none");
-						chunkListImputedLogFile.add(myChunkListImputedLogFile);
+					GenericFile myChunkListImputedLogFile = new GenericFile(tmpChrDir, imputedFileName + ".log",
+							"decompressed", "none");
+					chunkListImputedLogFile.add(myChunkListImputedLogFile);
 
-						String filteredFileName = "chr_" + chromo + "_mixed_" + rPanel + "_" + lim1 + "_" + lim2
-								+ "_filtered.impute.gz";
-						GenericFile myChunkListFilteredFile = new GenericFile(tmpChrDir, filteredFileName, "compressed",
-								"none");
-						chunkListFilteredFile.add(myChunkListFilteredFile);
+					String filteredFileName = "chr_" + chromo + "_mixed_" + rPanel + "_" + lim1 + "_" + lim2
+							+ "_filtered.impute.gz";
+					GenericFile myChunkListFilteredFile = new GenericFile(tmpChrDir, filteredFileName, "compressed",
+							"none");
+					chunkListFilteredFile.add(myChunkListFilteredFile);
 
-						String filteredLogFileName = "chr_" + chromo + "_mixed_" + rPanel + "_" + lim1 + "_" + lim2
-								+ "_filtered.impute.log";
-						GenericFile myChunkListFilteredLogFile = new GenericFile(tmpChrDir, filteredLogFileName,
-								"decompressed", "none");
-						chunkListFilteredLogFile.add(myChunkListFilteredLogFile);
+					String filteredLogFileName = "chr_" + chromo + "_mixed_" + rPanel + "_" + lim1 + "_" + lim2
+							+ "_filtered.impute.log";
+					GenericFile myChunkListFilteredLogFile = new GenericFile(tmpChrDir, filteredLogFileName,
+							"decompressed", "none");
+					chunkListFilteredLogFile.add(myChunkListFilteredLogFile);
 
-						String filteredRsIdFileName = "chr_" + chromo + "_mixed_" + rPanel + "_" + lim1 + "_" + lim2
-								+ "_filtered_rsid.txt";
-						GenericFile myChunkListFilteredRsIdFile = new GenericFile(tmpChrDir, filteredRsIdFileName,
-								"compressed", "none");
-						chunkListFilteredRsIdFile.add(myChunkListFilteredRsIdFile);
+					String filteredRsIdFileName = "chr_" + chromo + "_mixed_" + rPanel + "_" + lim1 + "_" + lim2
+							+ "_filtered_rsid.txt";
+					GenericFile myChunkListFilteredRsIdFile = new GenericFile(tmpChrDir, filteredRsIdFileName,
+							"compressed", "none");
+					chunkListFilteredRsIdFile.add(myChunkListFilteredRsIdFile);
 
-					} else if (i == 23) {
+					// } else if (i == 23) {
+					if (i == 23) {
 						String imputedFileMalesName = "chr_" + chromo + "_mixed_" + rPanel + "_" + lim1 + "_" + lim2
 								+ "_males.impute";
 						GenericFile myChunkListImputedMalesFile = new GenericFile(tmpChrDir,
@@ -561,16 +561,17 @@ public class ImputationFiles {
 					lim2 = lim2 + chunkSize;
 				}
 
-				if (chromo < 23) {
-					chromoListImputedFile.add(chunkListImputedFile);
-					chromoListImputedInfoFile.add(chunkListImputedInfoFile);
-					chromoListImputedSummaryFile.add(chunkListImputedSummaryFile);
-					chromoListImputedWarningsFile.add(chunkListImputedWarningsFile);
-					chromoListImputedLogFile.add(chunkListImputedLogFile);
-					chromoListFilteredFile.add(chunkListFilteredFile);
-					chromoListFilteredLogFile.add(chunkListFilteredLogFile);
-					chromoListFilteredRsIdFile.add(chunkListFilteredRsIdFile);
-				} else if (chromo == 23) {
+				// if (chromo < 23) {
+				chromoListImputedFile.add(chunkListImputedFile);
+				chromoListImputedInfoFile.add(chunkListImputedInfoFile);
+				chromoListImputedSummaryFile.add(chunkListImputedSummaryFile);
+				chromoListImputedWarningsFile.add(chunkListImputedWarningsFile);
+				chromoListImputedLogFile.add(chunkListImputedLogFile);
+				chromoListFilteredFile.add(chunkListFilteredFile);
+				chromoListFilteredLogFile.add(chunkListFilteredLogFile);
+				chromoListFilteredRsIdFile.add(chunkListFilteredRsIdFile);
+				// } else if (chromo == 23) {
+				if (chromo == 23) {
 					chromoListImputedMalesFile.add(chunkListImputedMalesFile);
 					chromoListImputedInfoMalesFile.add(chunkListImputedInfoMalesFile);
 					chromoListImputedSummaryMalesFile.add(chunkListImputedSummaryMalesFile);
@@ -751,253 +752,243 @@ public class ImputationFiles {
 
 				for (int k = 0; k < numberOfChunks; k++) {
 
-					if (chromo < 23) {
+					// if (chromo < 23) {
 
-						String imputedMMFileName = "chr_" + chromo + "_mixed_" + rPanel + "_" + lim1 + "_" + lim2
-								+ "_minimac";
-						GenericFile myChunkListImputedMMDoseVCFFile = new GenericFile(tmpChrDir,
-								imputedMMFileName + ".dose.vcf.gz", "decompressed", "none");
-						chunkListImputedMMDoseVCFFile.add(myChunkListImputedMMDoseVCFFile);
+					String imputedMMFileName = "chr_" + chromo + "_mixed_" + rPanel + "_" + lim1 + "_" + lim2
+							+ "_minimac";
+					GenericFile myChunkListImputedMMDoseVCFFile = new GenericFile(tmpChrDir,
+							imputedMMFileName + ".dose.vcf.gz", "decompressed", "none");
+					chunkListImputedMMDoseVCFFile.add(myChunkListImputedMMDoseVCFFile);
 
-						GenericFile myChunkListImputedFileBgzip = new GenericFile(tmpChrDir,
-								imputedMMFileName + ".dose.vcf.gz", "decompressed", "none");
-						chunkListImputedFileBgzip.add(myChunkListImputedFileBgzip);
+					GenericFile myChunkListImputedFileBgzip = new GenericFile(tmpChrDir,
+							imputedMMFileName + ".dose.vcf.gz", "decompressed", "none");
+					chunkListImputedFileBgzip.add(myChunkListImputedFileBgzip);
 
-						GenericFile myChunkListImputedFileTbi = new GenericFile(tmpChrDir,
-								imputedMMFileName + ".dose.vcf.gz.tbi", "decompressed", "none");
-						chunkListImputedFileTbi.add(myChunkListImputedFileTbi);
+					GenericFile myChunkListImputedFileTbi = new GenericFile(tmpChrDir,
+							imputedMMFileName + ".dose.vcf.gz.tbi", "decompressed", "none");
+					chunkListImputedFileTbi.add(myChunkListImputedFileTbi);
 
-						GenericFile myChunkListImputedMMInfoFile = new GenericFile(tmpChrDir,
-								imputedMMFileName + ".info", "decompressed", "none");
-						chunkListImputedMMInfoFile.add(myChunkListImputedMMInfoFile);
+					GenericFile myChunkListImputedMMInfoFile = new GenericFile(tmpChrDir, imputedMMFileName + ".info",
+							"decompressed", "none");
+					chunkListImputedMMInfoFile.add(myChunkListImputedMMInfoFile);
 
-						GenericFile myChunkListImputedMMErateFile = new GenericFile(tmpChrDir,
-								imputedMMFileName + ".erate", "decompressed", "none");
-						chunkListImputedMMErateFile.add(myChunkListImputedMMErateFile);
+					GenericFile myChunkListImputedMMErateFile = new GenericFile(tmpChrDir, imputedMMFileName + ".erate",
+							"decompressed", "none");
+					chunkListImputedMMErateFile.add(myChunkListImputedMMErateFile);
 
-						GenericFile myChunkListImputedMMRecFile = new GenericFile(tmpChrDir, imputedMMFileName + ".rec",
-								"decompressed", "none");
-						chunkListImputedMMRecFile.add(myChunkListImputedMMRecFile);
+					GenericFile myChunkListImputedMMRecFile = new GenericFile(tmpChrDir, imputedMMFileName + ".rec",
+							"decompressed", "none");
+					chunkListImputedMMRecFile.add(myChunkListImputedMMRecFile);
 
-						GenericFile myChunkListImputedMMM3VCFFile = new GenericFile(tmpChrDir,
-								imputedMMFileName + ".m3vcf.gz", "decompressed", "none");
-						chunkListImputedMMM3VCFFile.add(myChunkListImputedMMM3VCFFile);
+					GenericFile myChunkListImputedMMM3VCFFile = new GenericFile(tmpChrDir,
+							imputedMMFileName + ".m3vcf.gz", "decompressed", "none");
+					chunkListImputedMMM3VCFFile.add(myChunkListImputedMMM3VCFFile);
 
-						GenericFile myChunkListImputedMMM3VCFFileBgzip = new GenericFile(tmpChrDir,
-								imputedMMFileName + ".m3vcf.gz", "decompressed", "none");
-						chunkListImputedMMM3VCFFileBgzip.add(myChunkListImputedMMM3VCFFileBgzip);
+					GenericFile myChunkListImputedMMM3VCFFileBgzip = new GenericFile(tmpChrDir,
+							imputedMMFileName + ".m3vcf.gz", "decompressed", "none");
+					chunkListImputedMMM3VCFFileBgzip.add(myChunkListImputedMMM3VCFFileBgzip);
 
-						GenericFile myChunkListImputedMMM3VCFFileTbi = new GenericFile(tmpChrDir,
-								imputedMMFileName + ".m3vcf.gz.tbi", "decompressed", "none");
-						chunkListImputedMMM3VCFFileTbi.add(myChunkListImputedMMM3VCFFileTbi);
+					GenericFile myChunkListImputedMMM3VCFFileTbi = new GenericFile(tmpChrDir,
+							imputedMMFileName + ".m3vcf.gz.tbi", "decompressed", "none");
+					chunkListImputedMMM3VCFFileTbi.add(myChunkListImputedMMM3VCFFileTbi);
 
-						GenericFile myChunkListImputedMMLogFile = new GenericFile(tmpChrDir,
-								imputedMMFileName + ".logfile", "decompressed", "none");
-						chunkListImputedMMLogFile.add(myChunkListImputedMMLogFile);
+					GenericFile myChunkListImputedMMLogFile = new GenericFile(tmpChrDir, imputedMMFileName + ".logfile",
+							"decompressed", "none");
+					chunkListImputedMMLogFile.add(myChunkListImputedMMLogFile);
 
-						String filteredFileName = "chr_" + chromo + "_mixed_" + rPanel + "_" + lim1 + "_" + lim2
-								+ "_filtered.minimac.gz";
-						GenericFile myChunkListFilteredFile = new GenericFile(tmpChrDir, filteredFileName, "compressed",
-								"none");
-						chunkListFilteredFile.add(myChunkListFilteredFile);
+					String filteredFileName = "chr_" + chromo + "_mixed_" + rPanel + "_" + lim1 + "_" + lim2
+							+ "_filtered.minimac.gz";
+					GenericFile myChunkListFilteredFile = new GenericFile(tmpChrDir, filteredFileName, "compressed",
+							"none");
+					chunkListFilteredFile.add(myChunkListFilteredFile);
 
-						String filteredLogFileName = "chr_" + chromo + "_mixed_" + rPanel + "_" + lim1 + "_" + lim2
-								+ "_filtered.minimac.log";
-						GenericFile myChunkListFilteredLogFile = new GenericFile(tmpChrDir, filteredLogFileName,
-								"decompressed", "none");
-						chunkListFilteredLogFile.add(myChunkListFilteredLogFile);
+					String filteredLogFileName = "chr_" + chromo + "_mixed_" + rPanel + "_" + lim1 + "_" + lim2
+							+ "_filtered.minimac.log";
+					GenericFile myChunkListFilteredLogFile = new GenericFile(tmpChrDir, filteredLogFileName,
+							"decompressed", "none");
+					chunkListFilteredLogFile.add(myChunkListFilteredLogFile);
 
-						// //String filteredRsIdFileName = parsingArgs.getGenFileName(chromo) + "_" +
-						// rPanel + "_" + lim1 + "_" + lim2 +"_filtered_rsid.txt";
-						String filteredRsIdFileName = "chr_" + chromo + "_mixed_" + rPanel + "_" + lim1 + "_" + lim2
-								+ "_filtered_rsid.txt";
-						GenericFile myChunkListFilteredRsIdFile = new GenericFile(tmpChrDir, filteredRsIdFileName,
+					// //String filteredRsIdFileName = parsingArgs.getGenFileName(chromo) + "_" +
+					// rPanel + "_" + lim1 + "_" + lim2 +"_filtered_rsid.txt";
+					String filteredRsIdFileName = "chr_" + chromo + "_mixed_" + rPanel + "_" + lim1 + "_" + lim2
+							+ "_filtered_rsid.txt";
+					GenericFile myChunkListFilteredRsIdFile = new GenericFile(tmpChrDir, filteredRsIdFileName,
+							"compressed", "none");
+					chunkListFilteredRsIdFile.add(myChunkListFilteredRsIdFile);
+					// } else if (chromo == 23) {
+					if (chromo == 23) {
+
+						// initializeChr23ForImpute(parsingArgs, myOutDir, refPanels);
+
+						String imputedMMMalesFileName = "chr_" + chromo + "_mixed_" + rPanel + "_" + lim1 + "_" + lim2
+								+ "_males_minimac";
+						GenericFile myChunkListImputedMMDoseVCFMalesFile = new GenericFile(tmpChrDir,
+								imputedMMMalesFileName + ".dose.vcf.gz", "decompressed", "none");
+						chunkListImputedMMDoseVCFMalesFile.add(myChunkListImputedMMDoseVCFMalesFile);
+
+						GenericFile myChunkListImputedMalesFileBgzip = new GenericFile(tmpChrDir,
+								imputedMMMalesFileName + ".dose.vcf.gz", "decompressed", "none");
+						chunkListImputedMalesFileBgzip.add(myChunkListImputedMalesFileBgzip);
+
+						GenericFile myChunkListImputedMalesFileTbi = new GenericFile(tmpChrDir,
+								imputedMMMalesFileName + ".dose.vcf.gz.tbi", "decompressed", "none");
+						chunkListImputedMalesFileTbi.add(myChunkListImputedMalesFileTbi);
+
+						GenericFile myChunkListImputedMMInfoMalesFile = new GenericFile(tmpChrDir,
+								imputedMMMalesFileName + ".info", "decompressed", "none");
+						chunkListImputedMMInfoMalesFile.add(myChunkListImputedMMInfoMalesFile);
+
+						GenericFile myChunkListImputedMMErateMalesFile = new GenericFile(tmpChrDir,
+								imputedMMMalesFileName + ".erate", "decompressed", "none");
+						chunkListImputedMMErateMalesFile.add(myChunkListImputedMMErateMalesFile);
+
+						GenericFile myChunkListImputedMMRecMalesFile = new GenericFile(tmpChrDir,
+								imputedMMMalesFileName + ".rec", "decompressed", "none");
+						chunkListImputedMMRecMalesFile.add(myChunkListImputedMMRecMalesFile);
+
+						GenericFile myChunkListImputedMMM3VCFMalesFile = new GenericFile(tmpChrDir,
+								imputedMMMalesFileName + ".m3vcf.gz", "decompressed", "none");
+						chunkListImputedMMM3VCFMalesFile.add(myChunkListImputedMMM3VCFMalesFile);
+
+						GenericFile myChunkListImputedMMM3VCFMalesFileBgzip = new GenericFile(tmpChrDir,
+								imputedMMMalesFileName + ".m3vcf.gz", "decompressed", "none");
+						chunkListImputedMMM3VCFMalesFileBgzip.add(myChunkListImputedMMM3VCFMalesFileBgzip);
+
+						GenericFile myChunkListImputedMMM3VCFMalesFileTbi = new GenericFile(tmpChrDir,
+								imputedMMMalesFileName + ".m3vcf.gz.tbi", "decompressed", "none");
+						chunkListImputedMMM3VCFMalesFileTbi.add(myChunkListImputedMMM3VCFMalesFileTbi);
+
+						GenericFile myChunkListImputedMMLogMalesFile = new GenericFile(tmpChrDir,
+								imputedMMMalesFileName + ".logfile", "decompressed", "none");
+						chunkListImputedMMLogMalesFile.add(myChunkListImputedMMLogMalesFile);
+
+						String filteredMalesFileName = "chr_" + chromo + "_mixed_" + rPanel + "_" + lim1 + "_" + lim2
+								+ "_males_filtered.minimac.gz";
+						GenericFile myChunkListFilteredMalesFile = new GenericFile(tmpChrDir, filteredMalesFileName,
 								"compressed", "none");
-						chunkListFilteredRsIdFile.add(myChunkListFilteredRsIdFile);
-					} else if (chromo == 23) {
+						chunkListFilteredMalesFile.add(myChunkListFilteredMalesFile);
 
-						initializeChr23ForImpute(parsingArgs, myOutDir, refPanels);
+						String filteredLogMalesFileName = "chr_" + chromo + "_mixed_" + rPanel + "_" + lim1 + "_" + lim2
+								+ "_males_filtered.minimac.log";
+						GenericFile myChunkListFilteredLogMalesFile = new GenericFile(tmpChrDir,
+								filteredLogMalesFileName, "decompressed", "none");
+						chunkListFilteredLogMalesFile.add(myChunkListFilteredLogMalesFile);
+						String filteredRsIdMalesFileName = "chr_" + chromo + "_mixed_" + rPanel + "_" + lim1 + "_"
+								+ lim2 + "_males_filtered_rsid.txt";
+						GenericFile myChunkListFilteredRsIdMalesFile = new GenericFile(tmpChrDir,
+								filteredRsIdMalesFileName, "compressed", "none");
+						chunkListFilteredRsIdMalesFile.add(myChunkListFilteredRsIdMalesFile);
 
-						/*
-						 * 
-						 * String imputedMMMalesFileName = "chr_" + chromo + "_mixed_" + rPanel + "_" +
-						 * lim1 + "_" + lim2 + "_males_minimac"; GenericFile
-						 * myChunkListImputedMMDoseVCFMalesFile = new GenericFile(tmpChrDir,
-						 * imputedMMMalesFileName + ".dose.vcf.gz", "decompressed", "none");
-						 * chunkListImputedMMDoseVCFMalesFile.add(myChunkListImputedMMDoseVCFMalesFile);
-						 * 
-						 * GenericFile myChunkListImputedMalesFileBgzip = new GenericFile(tmpChrDir,
-						 * imputedMMMalesFileName + ".dose.vcf.gz", "decompressed", "none");
-						 * chunkListImputedMalesFileBgzip.add(myChunkListImputedMalesFileBgzip);
-						 * 
-						 * GenericFile myChunkListImputedMalesFileTbi = new GenericFile(tmpChrDir,
-						 * imputedMMMalesFileName + ".dose.vcf.gz.tbi", "decompressed", "none");
-						 * chunkListImputedMalesFileTbi.add(myChunkListImputedMalesFileTbi);
-						 * 
-						 * GenericFile myChunkListImputedMMInfoMalesFile = new GenericFile(tmpChrDir,
-						 * imputedMMMalesFileName + ".info", "decompressed", "none");
-						 * chunkListImputedMMInfoMalesFile.add(myChunkListImputedMMInfoMalesFile);
-						 * 
-						 * GenericFile myChunkListImputedMMErateMalesFile = new GenericFile(tmpChrDir,
-						 * imputedMMMalesFileName + ".erate", "decompressed", "none");
-						 * chunkListImputedMMErateMalesFile.add(myChunkListImputedMMErateMalesFile);
-						 * 
-						 * GenericFile myChunkListImputedMMRecMalesFile = new GenericFile(tmpChrDir,
-						 * imputedMMMalesFileName + ".rec", "decompressed", "none");
-						 * chunkListImputedMMRecMalesFile.add(myChunkListImputedMMRecMalesFile);
-						 * 
-						 * GenericFile myChunkListImputedMMM3VCFMalesFile = new GenericFile(tmpChrDir,
-						 * imputedMMMalesFileName + ".m3vcf.gz", "decompressed", "none");
-						 * chunkListImputedMMM3VCFMalesFile.add(myChunkListImputedMMM3VCFMalesFile);
-						 * 
-						 * GenericFile myChunkListImputedMMM3VCFMalesFileBgzip = new
-						 * GenericFile(tmpChrDir, imputedMMMalesFileName + ".m3vcf.gz", "decompressed",
-						 * "none"); chunkListImputedMMM3VCFMalesFileBgzip.add(
-						 * myChunkListImputedMMM3VCFMalesFileBgzip);
-						 * 
-						 * GenericFile myChunkListImputedMMM3VCFMalesFileTbi = new
-						 * GenericFile(tmpChrDir, imputedMMMalesFileName + ".m3vcf.gz.tbi",
-						 * "decompressed", "none");
-						 * chunkListImputedMMM3VCFMalesFileTbi.add(myChunkListImputedMMM3VCFMalesFileTbi
-						 * );
-						 * 
-						 * GenericFile myChunkListImputedMMLogMalesFile = new GenericFile(tmpChrDir,
-						 * imputedMMMalesFileName + ".logfile", "decompressed", "none");
-						 * chunkListImputedMMLogMalesFile.add(myChunkListImputedMMLogMalesFile);
-						 * 
-						 * String filteredMalesFileName = "chr_" + chromo + "_mixed_" + rPanel + "_" +
-						 * lim1 + "_" + lim2 + "_males_filtered.minimac.gz"; GenericFile
-						 * myChunkListFilteredMalesFile = new GenericFile(tmpChrDir,
-						 * filteredMalesFileName, "compressed", "none");
-						 * chunkListFilteredMalesFile.add(myChunkListFilteredMalesFile);
-						 * 
-						 * String filteredLogMalesFileName = "chr_" + chromo + "_mixed_" + rPanel + "_"
-						 * + lim1 + "_" + lim2 + "_males_filtered.minimac.log"; GenericFile
-						 * myChunkListFilteredLogMalesFile = new GenericFile(tmpChrDir,
-						 * filteredLogMalesFileName, "decompressed", "none");
-						 * chunkListFilteredLogMalesFile.add(myChunkListFilteredLogMalesFile); String
-						 * filteredRsIdMalesFileName = "chr_" + chromo + "_mixed_" + rPanel + "_" + lim1
-						 * + "_" + lim2 + "_males_filtered_rsid.txt"; GenericFile
-						 * myChunkListFilteredRsIdMalesFile = new GenericFile(tmpChrDir,
-						 * filteredRsIdMalesFileName, "compressed", "none");
-						 * chunkListFilteredRsIdMalesFile.add(myChunkListFilteredRsIdMalesFile);
-						 * 
-						 * String imputedMMFemalesFileName = "chr_" + chromo + "_mixed_" + rPanel + "_"
-						 * + lim1 + "_" + lim2 + "_females_minimac"; GenericFile
-						 * myChunkListImputedMMDoseVCFFemalesFile = new GenericFile(tmpChrDir,
-						 * imputedMMFemalesFileName + ".dose.vcf.gz", "decompressed", "none");
-						 * chunkListImputedMMDoseVCFFemalesFile.add(
-						 * myChunkListImputedMMDoseVCFFemalesFile);
-						 * 
-						 * GenericFile myChunkListImputedFemalesFileBgzip = new GenericFile(tmpChrDir,
-						 * imputedMMFemalesFileName + ".dose.vcf.gz", "decompressed", "none");
-						 * chunkListImputedFemalesFileBgzip.add(myChunkListImputedFemalesFileBgzip);
-						 * 
-						 * GenericFile myChunkListImputedFemalesFileTbi = new GenericFile(tmpChrDir,
-						 * imputedMMFemalesFileName + ".dose.vcf.gz.tbi", "decompressed", "none");
-						 * chunkListImputedFemalesFileTbi.add(myChunkListImputedFemalesFileTbi);
-						 * 
-						 * GenericFile myChunkListImputedMMInfoFemalesFile = new GenericFile(tmpChrDir,
-						 * imputedMMFemalesFileName + ".info", "decompressed", "none");
-						 * chunkListImputedMMInfoFemalesFile.add(myChunkListImputedMMInfoFemalesFile);
-						 * 
-						 * GenericFile myChunkListImputedMMErateFemalesFile = new GenericFile(tmpChrDir,
-						 * imputedMMFemalesFileName + ".erate", "decompressed", "none");
-						 * chunkListImputedMMErateFemalesFile.add(myChunkListImputedMMErateFemalesFile);
-						 * 
-						 * GenericFile myChunkListImputedMMRecFemalesFile = new GenericFile(tmpChrDir,
-						 * imputedMMFemalesFileName + ".rec", "decompressed", "none");
-						 * chunkListImputedMMRecFemalesFile.add(myChunkListImputedMMRecFemalesFile);
-						 * 
-						 * GenericFile myChunkListImputedMMM3VCFFemalesFile = new GenericFile(tmpChrDir,
-						 * imputedMMFemalesFileName + ".m3vcf.gz", "decompressed", "none");
-						 * chunkListImputedMMM3VCFFemalesFile.add(myChunkListImputedMMM3VCFFemalesFile);
-						 * 
-						 * GenericFile myChunkListImputedMMM3VCFFemalesFileBgzip = new
-						 * GenericFile(tmpChrDir, imputedMMFemalesFileName + ".m3vcf.gz",
-						 * "decompressed", "none"); chunkListImputedMMM3VCFFemalesFileBgzip.add(
-						 * myChunkListImputedMMM3VCFFemalesFileBgzip);
-						 * 
-						 * GenericFile myChunkListImputedMMM3VCFFemalesFileTbi = new
-						 * GenericFile(tmpChrDir, imputedMMFemalesFileName + ".m3vcf.gz.tbi",
-						 * "decompressed", "none"); chunkListImputedMMM3VCFFemalesFileTbi.add(
-						 * myChunkListImputedMMM3VCFFemalesFileTbi);
-						 * 
-						 * GenericFile myChunkListImputedMMLogFemalesFile = new GenericFile(tmpChrDir,
-						 * imputedMMFemalesFileName + ".logfile", "decompressed", "none");
-						 * chunkListImputedMMLogFemalesFile.add(myChunkListImputedMMLogFemalesFile);
-						 * 
-						 * String filteredFemalesFileName = "chr_" + chromo + "_mixed_" + rPanel + "_" +
-						 * lim1 + "_" + lim2 + "_females_filtered.minimac.gz"; GenericFile
-						 * myChunkListFilteredFemalesFile = new GenericFile(tmpChrDir,
-						 * filteredFemalesFileName, "compressed", "none");
-						 * chunkListFilteredFemalesFile.add(myChunkListFilteredFemalesFile);
-						 * 
-						 * String filteredLogFemalesFileName = "chr_" + chromo + "_mixed_" + rPanel +
-						 * "_" + lim1 + "_" + lim2 + "_females_filtered.minimac.log"; GenericFile
-						 * myChunkListFilteredLogFemalesFile = new GenericFile(tmpChrDir,
-						 * filteredLogFemalesFileName, "decompressed", "none");
-						 * chunkListFilteredLogFemalesFile.add(myChunkListFilteredLogFemalesFile);
-						 * 
-						 * String filteredRsIdFemalesFileName = "chr_" + chromo + "_mixed_" + rPanel +
-						 * "_" + lim1 + "_" + lim2 + "_females_filtered_rsid.txt"; GenericFile
-						 * myChunkListFilteredRsIdFemalesFile = new GenericFile(tmpChrDir,
-						 * filteredRsIdFemalesFileName, "compressed", "none");
-						 * chunkListFilteredRsIdFemalesFile.add(myChunkListFilteredRsIdFemalesFile);
-						 */
+						String imputedMMFemalesFileName = "chr_" + chromo + "_mixed_" + rPanel + "_" + lim1 + "_" + lim2
+								+ "_females_minimac";
+						GenericFile myChunkListImputedMMDoseVCFFemalesFile = new GenericFile(tmpChrDir,
+								imputedMMFemalesFileName + ".dose.vcf.gz", "decompressed", "none");
+						chunkListImputedMMDoseVCFFemalesFile.add(myChunkListImputedMMDoseVCFFemalesFile);
+
+						GenericFile myChunkListImputedFemalesFileBgzip = new GenericFile(tmpChrDir,
+								imputedMMFemalesFileName + ".dose.vcf.gz", "decompressed", "none");
+						chunkListImputedFemalesFileBgzip.add(myChunkListImputedFemalesFileBgzip);
+
+						GenericFile myChunkListImputedFemalesFileTbi = new GenericFile(tmpChrDir,
+								imputedMMFemalesFileName + ".dose.vcf.gz.tbi", "decompressed", "none");
+						chunkListImputedFemalesFileTbi.add(myChunkListImputedFemalesFileTbi);
+
+						GenericFile myChunkListImputedMMInfoFemalesFile = new GenericFile(tmpChrDir,
+								imputedMMFemalesFileName + ".info", "decompressed", "none");
+						chunkListImputedMMInfoFemalesFile.add(myChunkListImputedMMInfoFemalesFile);
+
+						GenericFile myChunkListImputedMMErateFemalesFile = new GenericFile(tmpChrDir,
+								imputedMMFemalesFileName + ".erate", "decompressed", "none");
+						chunkListImputedMMErateFemalesFile.add(myChunkListImputedMMErateFemalesFile);
+
+						GenericFile myChunkListImputedMMRecFemalesFile = new GenericFile(tmpChrDir,
+								imputedMMFemalesFileName + ".rec", "decompressed", "none");
+						chunkListImputedMMRecFemalesFile.add(myChunkListImputedMMRecFemalesFile);
+
+						GenericFile myChunkListImputedMMM3VCFFemalesFile = new GenericFile(tmpChrDir,
+								imputedMMFemalesFileName + ".m3vcf.gz", "decompressed", "none");
+						chunkListImputedMMM3VCFFemalesFile.add(myChunkListImputedMMM3VCFFemalesFile);
+
+						GenericFile myChunkListImputedMMM3VCFFemalesFileBgzip = new GenericFile(tmpChrDir,
+								imputedMMFemalesFileName + ".m3vcf.gz", "decompressed", "none");
+						chunkListImputedMMM3VCFFemalesFileBgzip.add(myChunkListImputedMMM3VCFFemalesFileBgzip);
+
+						GenericFile myChunkListImputedMMM3VCFFemalesFileTbi = new GenericFile(tmpChrDir,
+								imputedMMFemalesFileName + ".m3vcf.gz.tbi", "decompressed", "none");
+						chunkListImputedMMM3VCFFemalesFileTbi.add(myChunkListImputedMMM3VCFFemalesFileTbi);
+
+						GenericFile myChunkListImputedMMLogFemalesFile = new GenericFile(tmpChrDir,
+								imputedMMFemalesFileName + ".logfile", "decompressed", "none");
+						chunkListImputedMMLogFemalesFile.add(myChunkListImputedMMLogFemalesFile);
+
+						String filteredFemalesFileName = "chr_" + chromo + "_mixed_" + rPanel + "_" + lim1 + "_" + lim2
+								+ "_females_filtered.minimac.gz";
+						GenericFile myChunkListFilteredFemalesFile = new GenericFile(tmpChrDir, filteredFemalesFileName,
+								"compressed", "none");
+						chunkListFilteredFemalesFile.add(myChunkListFilteredFemalesFile);
+
+						String filteredLogFemalesFileName = "chr_" + chromo + "_mixed_" + rPanel + "_" + lim1 + "_"
+								+ lim2 + "_females_filtered.minimac.log";
+						GenericFile myChunkListFilteredLogFemalesFile = new GenericFile(tmpChrDir,
+								filteredLogFemalesFileName, "decompressed", "none");
+						chunkListFilteredLogFemalesFile.add(myChunkListFilteredLogFemalesFile);
+
+						String filteredRsIdFemalesFileName = "chr_" + chromo + "_mixed_" + rPanel + "_" + lim1 + "_"
+								+ lim2 + "_females_filtered_rsid.txt";
+						GenericFile myChunkListFilteredRsIdFemalesFile = new GenericFile(tmpChrDir,
+								filteredRsIdFemalesFileName, "compressed", "none");
+						chunkListFilteredRsIdFemalesFile.add(myChunkListFilteredRsIdFemalesFile);
+
 					}
 
 					lim1 = lim1 + chunkSize;
 					lim2 = lim2 + chunkSize;
 				}
-				if (chromo < 23) {
-					chromoListImputedMMDoseVCFFile.add(chunkListImputedMMDoseVCFFile);
-					chromoListImputedFileBgzip.add(chunkListImputedFileBgzip);
-					chromoListImputedFileTbi.add(chunkListImputedFileTbi);
-					chromoListImputedMMInfoFile.add(chunkListImputedMMInfoFile);
-					chromoListImputedMMErateFile.add(chunkListImputedMMErateFile);
-					chromoListImputedMMRecFile.add(chunkListImputedMMRecFile);
-					chromoListImputedMMM3VCFFile.add(chunkListImputedMMM3VCFFile);
-					chromoListImputedMMM3VCFFileBgzip.add(chunkListImputedMMM3VCFFileBgzip);
-					chromoListImputedMMM3VCFFileTbi.add(chunkListImputedMMM3VCFFileTbi);
-					chromoListImputedMMLogFile.add(chunkListImputedMMLogFile);
-					chromoListFilteredFile.add(chunkListFilteredFile);
-					chromoListFilteredLogFile.add(chunkListFilteredLogFile);
-					chromoListFilteredRsIdFile.add(chunkListFilteredRsIdFile);
-				} else if (chromo == 23) {
-					/*
-					 * chromoListImputedMMDoseVCFMalesFile.add(chunkListImputedMMDoseVCFMalesFile);
-					 * chromoListImputedMalesFileBgzip.add(chunkListImputedMalesFileBgzip);
-					 * chromoListImputedMalesFileTbi.add(chunkListImputedMalesFileTbi);
-					 * chromoListImputedMMInfoMalesFile.add(chunkListImputedMMInfoMalesFile);
-					 * chromoListImputedMMErateMalesFile.add(chunkListImputedMMErateMalesFile);
-					 * chromoListImputedMMRecMalesFile.add(chunkListImputedMMRecMalesFile);
-					 * chromoListImputedMMM3VCFMalesFile.add(chunkListImputedMMM3VCFMalesFile);
-					 * chromoListImputedMMM3VCFMalesFileBgzip.add(
-					 * chunkListImputedMMM3VCFMalesFileBgzip);
-					 * chromoListImputedMMM3VCFMalesFileTbi.add(chunkListImputedMMM3VCFMalesFileTbi)
-					 * ; chromoListImputedMMLogMalesFile.add(chunkListImputedMMLogMalesFile);
-					 * chromoListFilteredMalesFile.add(chunkListFilteredMalesFile);
-					 * chromoListFilteredLogMalesFile.add(chunkListFilteredLogMalesFile);
-					 * chromoListFilteredRsIdMalesFile.add(chunkListFilteredRsIdMalesFile);
-					 * 
-					 * chromoListImputedMMDoseVCFFemalesFile.add(
-					 * chunkListImputedMMDoseVCFFemalesFile);
-					 * chromoListImputedFemalesFileBgzip.add(chunkListImputedFemalesFileBgzip);
-					 * chromoListImputedFemalesFileTbi.add(chunkListImputedFemalesFileTbi);
-					 * chromoListImputedMMInfoFemalesFile.add(chunkListImputedMMInfoFemalesFile);
-					 * chromoListImputedMMErateFemalesFile.add(chunkListImputedMMErateFemalesFile);
-					 * chromoListImputedMMRecFemalesFile.add(chunkListImputedMMRecFemalesFile);
-					 * chromoListImputedMMM3VCFFemalesFile.add(chunkListImputedMMM3VCFFemalesFile);
-					 * chromoListImputedMMM3VCFFemalesFileBgzip.add(
-					 * chunkListImputedMMM3VCFFemalesFileBgzip);
-					 * chromoListImputedMMM3VCFFemalesFileTbi.add(
-					 * chunkListImputedMMM3VCFFemalesFileTbi);
-					 * chromoListImputedMMLogFemalesFile.add(chunkListImputedMMLogFemalesFile);
-					 * chromoListFilteredFemalesFile.add(chunkListFilteredFemalesFile);
-					 * chromoListFilteredLogFemalesFile.add(chunkListFilteredLogFemalesFile);
-					 * chromoListFilteredRsIdFemalesFile.add(chunkListFilteredRsIdFemalesFile);
-					 */
+				// if (chromo < 23) {
+				chromoListImputedMMDoseVCFFile.add(chunkListImputedMMDoseVCFFile);
+				chromoListImputedFileBgzip.add(chunkListImputedFileBgzip);
+				chromoListImputedFileTbi.add(chunkListImputedFileTbi);
+				chromoListImputedMMInfoFile.add(chunkListImputedMMInfoFile);
+				chromoListImputedMMErateFile.add(chunkListImputedMMErateFile);
+				chromoListImputedMMRecFile.add(chunkListImputedMMRecFile);
+				chromoListImputedMMM3VCFFile.add(chunkListImputedMMM3VCFFile);
+				chromoListImputedMMM3VCFFileBgzip.add(chunkListImputedMMM3VCFFileBgzip);
+				chromoListImputedMMM3VCFFileTbi.add(chunkListImputedMMM3VCFFileTbi);
+				chromoListImputedMMLogFile.add(chunkListImputedMMLogFile);
+				chromoListFilteredFile.add(chunkListFilteredFile);
+				chromoListFilteredLogFile.add(chunkListFilteredLogFile);
+				chromoListFilteredRsIdFile.add(chunkListFilteredRsIdFile);
+				// } else if (chromo == 23) {
+				if (chromo == 23) {
+
+					chromoListImputedMMDoseVCFMalesFile.add(chunkListImputedMMDoseVCFMalesFile);
+					chromoListImputedMalesFileBgzip.add(chunkListImputedMalesFileBgzip);
+					chromoListImputedMalesFileTbi.add(chunkListImputedMalesFileTbi);
+					chromoListImputedMMInfoMalesFile.add(chunkListImputedMMInfoMalesFile);
+					chromoListImputedMMErateMalesFile.add(chunkListImputedMMErateMalesFile);
+					chromoListImputedMMRecMalesFile.add(chunkListImputedMMRecMalesFile);
+					chromoListImputedMMM3VCFMalesFile.add(chunkListImputedMMM3VCFMalesFile);
+					chromoListImputedMMM3VCFMalesFileBgzip.add(chunkListImputedMMM3VCFMalesFileBgzip);
+					chromoListImputedMMM3VCFMalesFileTbi.add(chunkListImputedMMM3VCFMalesFileTbi);
+					chromoListImputedMMLogMalesFile.add(chunkListImputedMMLogMalesFile);
+					chromoListFilteredMalesFile.add(chunkListFilteredMalesFile);
+					chromoListFilteredLogMalesFile.add(chunkListFilteredLogMalesFile);
+					chromoListFilteredRsIdMalesFile.add(chunkListFilteredRsIdMalesFile);
+
+					chromoListImputedMMDoseVCFFemalesFile.add(chunkListImputedMMDoseVCFFemalesFile);
+					chromoListImputedFemalesFileBgzip.add(chunkListImputedFemalesFileBgzip);
+					chromoListImputedFemalesFileTbi.add(chunkListImputedFemalesFileTbi);
+					chromoListImputedMMInfoFemalesFile.add(chunkListImputedMMInfoFemalesFile);
+					chromoListImputedMMErateFemalesFile.add(chunkListImputedMMErateFemalesFile);
+					chromoListImputedMMRecFemalesFile.add(chunkListImputedMMRecFemalesFile);
+					chromoListImputedMMM3VCFFemalesFile.add(chunkListImputedMMM3VCFFemalesFile);
+					chromoListImputedMMM3VCFFemalesFileBgzip.add(chunkListImputedMMM3VCFFemalesFileBgzip);
+					chromoListImputedMMM3VCFFemalesFileTbi.add(chunkListImputedMMM3VCFFemalesFileTbi);
+					chromoListImputedMMLogFemalesFile.add(chunkListImputedMMLogFemalesFile);
+					chromoListFilteredFemalesFile.add(chunkListFilteredFemalesFile);
+					chromoListFilteredLogFemalesFile.add(chunkListFilteredLogFemalesFile);
+					chromoListFilteredRsIdFemalesFile.add(chunkListFilteredRsIdFemalesFile);
+
 				}
 
 			}
@@ -1018,35 +1009,33 @@ public class ImputationFiles {
 			filteredFileLogFile.add(chromoListFilteredLogFile);
 			filteredFileRsIdFile.add(chromoListFilteredRsIdFile);
 
-			/*
-			 * imputedMMDoseVCFMalesFile.add(chromoListImputedMMDoseVCFMalesFile);
-			 * imputedMalesFileBgzip.add(chromoListImputedMalesFileBgzip);
-			 * imputedMalesFileTbi.add(chromoListImputedMalesFileTbi);
-			 * imputedMMInfoMalesFile.add(chromoListImputedMMInfoMalesFile);
-			 * imputedMMErateMalesFile.add(chromoListImputedMMErateMalesFile);
-			 * imputedMMRecMalesFile.add(chromoListImputedMMRecMalesFile);
-			 * imputedMMM3VCFMalesFile.add(chromoListImputedMMM3VCFMalesFile);
-			 * imputedMMM3VCFMalesFileBgzip.add(chromoListImputedMMM3VCFMalesFileBgzip);
-			 * imputedMMM3VCFMalesFileTbi.add(chromoListImputedMMM3VCFMalesFileTbi);
-			 * imputedMMLogMalesFile.add(chromoListImputedMMLogMalesFile);
-			 * filteredMalesFile.add(chromoListFilteredMalesFile);
-			 * filteredLogMalesFile.add(chromoListFilteredLogMalesFile);
-			 * filteredRsIdMalesFile.add(chromoListFilteredRsIdMalesFile);
-			 * 
-			 * imputedMMDoseVCFFemalesFile.add(chromoListImputedMMDoseVCFFemalesFile);
-			 * imputedFemalesFileBgzip.add(chromoListImputedFemalesFileBgzip);
-			 * imputedFemalesFileTbi.add(chromoListImputedFemalesFileTbi);
-			 * imputedMMInfoFemalesFile.add(chromoListImputedMMInfoFemalesFile);
-			 * imputedMMErateFemalesFile.add(chromoListImputedMMErateFemalesFile);
-			 * imputedMMRecFemalesFile.add(chromoListImputedMMRecFemalesFile);
-			 * imputedMMM3VCFFemalesFile.add(chromoListImputedMMM3VCFFemalesFile);
-			 * imputedMMM3VCFFemalesFileBgzip.add(chromoListImputedMMM3VCFFemalesFileBgzip);
-			 * imputedMMM3VCFFemalesFileTbi.add(chromoListImputedMMM3VCFFemalesFileTbi);
-			 * imputedMMLogFemalesFile.add(chromoListImputedMMLogFemalesFile);
-			 * filteredFemalesFile.add(chromoListFilteredFemalesFile);
-			 * filteredLogFemalesFile.add(chromoListFilteredLogFemalesFile);
-			 * filteredRsIdFemalesFile.add(chromoListFilteredRsIdFemalesFile);
-			 */
+			imputedMMDoseVCFMalesFile.add(chromoListImputedMMDoseVCFMalesFile);
+			imputedMalesFileBgzip.add(chromoListImputedMalesFileBgzip);
+			imputedMalesFileTbi.add(chromoListImputedMalesFileTbi);
+			imputedMMInfoMalesFile.add(chromoListImputedMMInfoMalesFile);
+			imputedMMErateMalesFile.add(chromoListImputedMMErateMalesFile);
+			imputedMMRecMalesFile.add(chromoListImputedMMRecMalesFile);
+			imputedMMM3VCFMalesFile.add(chromoListImputedMMM3VCFMalesFile);
+			imputedMMM3VCFMalesFileBgzip.add(chromoListImputedMMM3VCFMalesFileBgzip);
+			imputedMMM3VCFMalesFileTbi.add(chromoListImputedMMM3VCFMalesFileTbi);
+			imputedMMLogMalesFile.add(chromoListImputedMMLogMalesFile);
+			filteredMalesFile.add(chromoListFilteredMalesFile);
+			filteredLogMalesFile.add(chromoListFilteredLogMalesFile);
+			filteredRsIdMalesFile.add(chromoListFilteredRsIdMalesFile);
+
+			imputedMMDoseVCFFemalesFile.add(chromoListImputedMMDoseVCFFemalesFile);
+			imputedFemalesFileBgzip.add(chromoListImputedFemalesFileBgzip);
+			imputedFemalesFileTbi.add(chromoListImputedFemalesFileTbi);
+			imputedMMInfoFemalesFile.add(chromoListImputedMMInfoFemalesFile);
+			imputedMMErateFemalesFile.add(chromoListImputedMMErateFemalesFile);
+			imputedMMRecFemalesFile.add(chromoListImputedMMRecFemalesFile);
+			imputedMMM3VCFFemalesFile.add(chromoListImputedMMM3VCFFemalesFile);
+			imputedMMM3VCFFemalesFileBgzip.add(chromoListImputedMMM3VCFFemalesFileBgzip);
+			imputedMMM3VCFFemalesFileTbi.add(chromoListImputedMMM3VCFFemalesFileTbi);
+			imputedMMLogFemalesFile.add(chromoListImputedMMLogFemalesFile);
+			filteredFemalesFile.add(chromoListFilteredFemalesFile);
+			filteredLogFemalesFile.add(chromoListFilteredLogFemalesFile);
+			filteredRsIdFemalesFile.add(chromoListFilteredRsIdFemalesFile);
 
 		}
 	}
@@ -1229,7 +1218,7 @@ public class ImputationFiles {
 	 */
 	public void setImputedMalesFileFinalStatus(int rPanelIndex, int lim1, int lim2, int chunkSize, String finalStatus) {
 		int indexChunk = lim1 / chunkSize;
-		this.imputedMalesFile.get(rPanelIndex).get(0).get(indexChunk).setFinalStatus(finalStatus);
+		//this.imputedMalesFile.get(rPanelIndex).get(0).get(indexChunk).setFinalStatus(finalStatus);
 	}
 
 	/**
@@ -1245,7 +1234,7 @@ public class ImputationFiles {
 	public void setImputedFemalesFileFinalStatus(int rPanelIndex, int lim1, int lim2, int chunkSize,
 			String finalStatus) {
 		int indexChunk = lim1 / chunkSize;
-		this.imputedFemalesFile.get(rPanelIndex).get(0).get(indexChunk).setFinalStatus(finalStatus);
+		//this.imputedFemalesFile.get(rPanelIndex).get(0).get(indexChunk).setFinalStatus(finalStatus);
 	}
 
 	/**

@@ -42,7 +42,6 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.FileReader;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.InputStreamReader;
 import java.io.IOException;
 
@@ -55,8 +54,6 @@ import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.zip.GZIPInputStream;
-
-import es.bsc.compss.api.COMPSs;
 
 public class GuidanceImpl {
 
@@ -936,8 +933,9 @@ public class GuidanceImpl {
 			int exitValue = -1;
 			try {
 				String outputBase = filteredFile.substring(0, filteredFile.length() - 3);
-				//exitValue = ProcessUtils.execute(cmd, outputBase + STDOUT_EXTENSION, outputBase + STDERR_EXTENSION,
-				//		"LD_LIBRARY_PATH");
+				// exitValue = ProcessUtils.execute(cmd, outputBase + STDOUT_EXTENSION,
+				// outputBase + STDERR_EXTENSION,
+				// "LD_LIBRARY_PATH");
 				exitValue = ProcessUtils.execute(cmd, outputBase + STDOUT_EXTENSION, outputBase + STDERR_EXTENSION);
 			} catch (IOException ioe) {
 				throw new GuidanceTaskException(ioe);
@@ -1092,19 +1090,6 @@ public class GuidanceImpl {
 		}
 	}
 
-	static private void recursiveSearch(String filePath) {
-		System.out.println("Looking into the folder of " + filePath);
-		File file = new File(filePath);
-		file = new File(file.getParent());
-		System.out.println("The folder is " + file.getParent());
-		File[] filesList = file.listFiles();
-		for (File f : filesList) {
-			if (f.isFile()) {
-				System.out.println("File name is  -------------->" + f.getName());
-			}
-		}
-	}
-
 	/**
 	 * Method to execute phasing task where input files are in BED format
 	 * 
@@ -1122,8 +1107,8 @@ public class GuidanceImpl {
 	 * @throws Exception
 	 */
 	public static void phasingBed(String chromo, String bedFile, String bimFile, String famFile, String gmapFile,
-			String phasingHapsFile, String phasingSampleFile, String phasingLogFile, String myPrefix, String sex,
-			String phasingTool, String cmdToStore) throws GuidanceTaskException, IOException {
+			String phasingHapsFile, String phasingSampleFile, String phasingLogFile, String sex, String phasingTool,
+			String cmdToStore) throws GuidanceTaskException, IOException {
 
 		String phasingBinary = "";
 
@@ -1156,29 +1141,20 @@ public class GuidanceImpl {
 
 		boolean execute = true;
 
+		String myPrefix = phasingSampleFile.substring(0, phasingSampleFile.length() - 7);
+		System.out.println("myPrefix on phasingBed is: " + myPrefix);
+
 		if (phasingTool.equals("shapeit")) {
 			if (chromo.equals("23")) {
 				cmd = phasingBinary + " --input-bed " + bedFile + " " + bimFile + " " + famFile + " --input-map "
 						+ gmapFile + " --chrX --output-max " + phasingHapsFile + " " + phasingSampleFile
 						+ " --thread 47 --effective-size 20000 --output-log " + phasingLogFile;
-				if (sex.equals(SEX1)) {
-					cmd = phasingBinary + " --input-bed " + bedFile + " " + bimFile + " " + famFile + " --input-map "
-							+ gmapFile + " --chrX --output-max " + phasingHapsFile + " " + phasingSampleFile
-							+ " --thread 47 --effective-size 20000 --output-log " + phasingLogFile;
-				} else if (sex.equals(SEX2)) {
-					cmd = phasingBinary + " --input-bed " + bedFile + " " + bimFile + " " + famFile + " --input-map "
-							+ gmapFile + " --chrX --output-max " + phasingHapsFile + " " + phasingSampleFile
-							+ " --thread 47 --effective-size 20000 --output-log " + phasingLogFile;
-				}
 			} else {
 				cmd = phasingBinary + " --input-bed " + bedFile + " " + bimFile + " " + famFile + " --input-map "
 						+ gmapFile + " --output-max " + phasingHapsFile + " " + phasingSampleFile
 						+ " --thread 47 --effective-size 20000 --output-log " + phasingLogFile;
 			}
 		} else if (phasingTool.equals("eagle")) {
-
-			myPrefix = phasingSampleFile.substring(0, phasingSampleFile.length() - 7);
-			System.out.println("myPrefix on phasingBed is: " + myPrefix);
 
 			if (chromo.equals("23")) {
 
@@ -1187,10 +1163,7 @@ public class GuidanceImpl {
 					String plinkBinary = loadFromEnvironment(PLINKBINARY, HEADER_PHASING);
 					String baseDirOrigin = bedFile.substring(0, bedFile.length() - 4);
 					String baseDirDest = phasingSampleFile.substring(0, phasingSampleFile.length() - 7);
-					System.out.println("baseDirOrigin: " + baseDirOrigin);
-					System.out.println("baseDirDest: " + baseDirDest);
 					cmd = plinkBinary + " --bfile " + baseDirOrigin + " --recode vcf --out " + baseDirDest;
-					System.out.println("plink call for males: " + cmd);
 
 					int exitValue = -1;
 					try {
@@ -1347,8 +1320,6 @@ public class GuidanceImpl {
 			}
 		}
 
-		recursiveSearch(bedFile);
-
 		long stopTime = System.currentTimeMillis();
 		long elapsedTime = (stopTime - startTime) / 1_000;
 		if (DEBUG) {
@@ -1448,8 +1419,7 @@ public class GuidanceImpl {
 	}
 
 	public static void newSample(String sampleFile, String phasingSampleFile, String phasingNewSampleFile,
-			String responseVar, String covariables, String cmdToStore)
-			throws IOException, InterruptedException, Exception {
+			String responseVar, String covariables, String cmdToStore) throws IOException {
 
 		if (DEBUG) {
 			System.out.println("\n[DEBUG] Running newSample with parameters:");
@@ -1822,7 +1792,6 @@ public class GuidanceImpl {
 			String phasingHapsFile, String phasingSampleFile, String lim1S, String lim2S, String pairsFile,
 			String imputeFile, String imputeFileInfo, String imputeFileSummary, String imputeFileWarnings,
 			String theChromo, String sex, String cmdToStore) throws GuidanceTaskException {
-
 		imputeWithImpute(gmapFile, knownHapFile, legendFile, phasingHapsFile, phasingSampleFile, lim1S, lim2S,
 				pairsFile, imputeFile, imputeFileInfo, imputeFileSummary, imputeFileWarnings, theChromo, sex,
 				cmdToStore);
@@ -1898,19 +1867,23 @@ public class GuidanceImpl {
 		String cmd = null;
 		if (theChromo.equals(CHR_23)) {
 
-			if (sex.equals(SEX1)) {
-				cmd = impute2Binary + " -use_prephased_g -m " + gmapFile + " -h " + knownHapFile + " -l " + legendFile
-						+ " -known_haps_g " + phasingHapsFileGz + " -sample_g " + phasingSampleFile + " -int " + lim1S
-						+ " " + lim2S + "  -chrX -exclude_snps_g " + pairsFile + " -impute_excluded -Ne 20000 -o "
-						+ imputeFile + " -i " + imputeFileInfo + " -r " + imputeFileSummary + " -w "
-						+ imputeFileWarnings + " -no_sample_qc_info -o_gz";
-			} else if (sex.equals(SEX2)) {
-				cmd = impute2Binary + " -use_prephased_g -m " + gmapFile + " -h " + knownHapFile + " -l " + legendFile
-						+ " -known_haps_g " + phasingHapsFileGz + " -sample_g " + phasingSampleFile + " -int " + lim1S
-						+ " " + lim2S + "  -chrX -exclude_snps_g " + pairsFile + " -impute_excluded -Ne 20000 -o "
-						+ imputeFile + " -i " + imputeFileInfo + " -r " + imputeFileSummary + " -w "
-						+ imputeFileWarnings + " -no_sample_qc_info -o_gz";
-			}
+			// if (sex.equals(SEX1)) {
+			cmd = impute2Binary + " -use_prephased_g -m " + gmapFile + " -h " + knownHapFile + " -l " + legendFile
+					+ " -known_haps_g " + phasingHapsFileGz + " -sample_g " + phasingSampleFile + " -int " + lim1S + " "
+					+ lim2S + "  -chrX -exclude_snps_g " + pairsFile + " -impute_excluded -Ne 20000 -o " + imputeFile
+					+ " -i " + imputeFileInfo + " -r " + imputeFileSummary + " -w " + imputeFileWarnings
+					+ " -no_sample_qc_info -o_gz";
+			// } else if (sex.equals(SEX2)) {
+			// } else {
+			// cmd = impute2Binary + " -use_prephased_g -m " + gmapFile + " -h " +
+			// knownHapFile + " -l " + legendFile
+			// + " -known_haps_g " + phasingHapsFileGz + " -sample_g " + phasingSampleFile +
+			// " -int " + lim1S
+			// + " " + lim2S + " -chrX -exclude_snps_g " + pairsFile + " -impute_excluded
+			// -Ne 20000 -o "
+			// + imputeFile + " -i " + imputeFileInfo + " -r " + imputeFileSummary + " -w "
+			// + imputeFileWarnings + " -no_sample_qc_info -o_gz";
+			// }
 
 			theChromo = "X";
 
@@ -2103,15 +2076,16 @@ public class GuidanceImpl {
 		String cmd = null;
 		// Submitting the impute task per chunk
 		if (chrS.equals("23")) {
-			if (sex.equals(SEX1)) {
+			//if (sex.equals(SEX1)) {
 				cmd = minimacBinary + " --refHaps " + vcfFile + " --haps " + filteredHapsVcfFileBgzip + " --start "
 						+ lim1S + " --end " + lim2S + " --chr X --window 500000 --prefix " + realPrefix
 						+ " --log --allTypedSites --noPhoneHome --format GT,DS,GP --nobgzip";
-			} else if (sex.equals(SEX2)) {
-				cmd = minimacBinary + " --refHaps " + vcfFile + " --haps " + filteredHapsVcfFileBgzip + " --start "
-						+ lim1S + " --end " + lim2S + " --chr X --window 500000 --prefix " + realPrefix
-						+ " --log --allTypedSites --noPhoneHome --format GT,DS,GP --nobgzip";
-			}
+			//} else if (sex.equals(SEX2)) {
+			//} else {
+			//	cmd = minimacBinary + " --refHaps " + vcfFile + " --haps " + filteredHapsVcfFileBgzip + " --start "
+			//			+ lim1S + " --end " + lim2S + " --chr X --window 500000 --prefix " + realPrefix
+			//			+ " --log --allTypedSites --noPhoneHome --format GT,DS,GP --nobgzip";
+			//}
 		} else {
 			cmd = minimacBinary + " --refHaps " + vcfFile + " --haps " + filteredHapsVcfFileBgzip + " --start " + lim1S
 					+ " --end " + lim2S + " --chr " + chrS + " --window 500000 --prefix " + realPrefix
@@ -2243,7 +2217,7 @@ public class GuidanceImpl {
 			throw new GuidanceTaskException(ioe);
 		}
 
-		//FileUtils.getFile(topHitsAllPheno);
+		// FileUtils.getFile(topHitsAllPheno);
 
 		if (DEBUG) {
 			long stopTime = System.currentTimeMillis();
@@ -2312,7 +2286,7 @@ public class GuidanceImpl {
 			startTime = System.currentTimeMillis();
 			System.out.println("\n[DEBUG] [pheno] Launched command:                 : " + command);
 		}
-		
+
 		try {
 			ProcessUtils.executeWithoutOutputs(command);
 		} catch (IOException ioe) {
@@ -2494,119 +2468,6 @@ public class GuidanceImpl {
 	}
 
 	/**
-	 * Method to filter by info
-	 * 
-	 * @param imputeFileInfo
-	 * @param filteredFile
-	 * @param threshold
-	 * @param cmdToStore
-	 * @throws IOException
-	 * @throws InterruptedException
-	 * @throws Exception
-	 */
-	public static void filterByInfoMinimac(String imputeFile, String imputeFileInfo, String imputeFilteredFile,
-			String threshold, String cmdToStore) throws GuidanceTaskException {
-
-		if (DEBUG) {
-			System.out.println("\n[DEBUG] Running filterByInfo with parameters:");
-			System.out.println("[DEBUG] \t- Input imputeFile          : " + imputeFile);
-			System.out.println("[DEBUG] \t- Input imputeFileInfo      : " + imputeFileInfo);
-			System.out.println("[DEBUG] \t- Output imputeFilteredFile : " + imputeFilteredFile);
-			System.out.println("[DEBUG] \t- Input threshold           : " + threshold);
-			System.out.println(NEW_LINE);
-			System.out.println("[DEBUG] \t- Command: " + cmdToStore);
-			System.out.println("--------------------------------------");
-		}
-		long startTime = System.currentTimeMillis();
-
-		// The position of info and rsId values in the imputeFileInfo
-		int infoIndex = 6;
-		int mafIndex = 4;
-		int typeIndex = 7;
-
-		// Convert threshold string into thresholdDouble
-		double thresholdDouble = Double.parseDouble(threshold); // store info value in Double format
-
-		String imputeFilteredFileUncompressed = imputeFilteredFile.substring(0, imputeFilteredFile.length() - 3);
-		try {
-			if (!FileUtils.createEmptyFile(imputeFilteredFileUncompressed, "filterByInfoMinimac")) {
-				throw new GuidanceTaskException("\n[DEBUG] \t- Output file " + imputeFilteredFileUncompressed
-						+ " was not successfully created");
-			}
-		} catch (IOException ioe) {
-			throw new GuidanceTaskException(ioe);
-		}
-
-		File outFilteredUncompressed = new File(imputeFilteredFileUncompressed);
-
-		try (GZIPInputStream imputeGz = new GZIPInputStream(new FileInputStream(imputeFile));
-				InputStreamReader fr1 = new InputStreamReader(imputeGz);
-				BufferedReader imputeReader = new BufferedReader(fr1);
-				FileReader fr2 = new FileReader(imputeFileInfo);
-				BufferedReader infoReader = new BufferedReader(fr2);
-				BufferedWriter writerFiltered = new BufferedWriter(new FileWriter(outFilteredUncompressed))) {
-
-			// We read each line of the imputeFileInfo and put them into string.
-			// I read the header
-			String infoLine = infoReader.readLine();
-			infoLine = infoReader.readLine();
-
-			String imputeLine = imputeReader.readLine();
-			writerFiltered.write(imputeLine);
-			while (imputeLine != null && imputeLine.startsWith("#")) {
-				imputeLine = imputeReader.readLine();
-				writerFiltered.write(imputeLine);
-			}
-
-			while (infoLine != null && imputeLine != null) {
-				String[] splittedInfoLine = infoLine.split(SPACE);
-
-				String type = splittedInfoLine[typeIndex];
-
-				if (type.equals("Typed_Only")
-						|| (type.equals("Genotyped") && (Double.parseDouble(splittedInfoLine[mafIndex]) > 0.001))) {
-
-					writerFiltered.write(imputeLine);
-					writerFiltered.newLine();
-
-				} else {
-					double info = Double.parseDouble(splittedInfoLine[infoIndex]); // store info value in Double
-																					// format
-
-					// int retval = Double.compare(info, thresholdDouble);
-
-					if ((info >= thresholdDouble) && (Double.parseDouble(splittedInfoLine[mafIndex]) > 0.001)) {
-						// The info value is greater or equal to the threshold, then store the rsID into
-						// the output file.
-						writerFiltered.write(imputeLine);
-						writerFiltered.newLine();
-					}
-				}
-
-				infoLine = infoReader.readLine();
-				imputeLine = imputeReader.readLine();
-			}
-
-			writerFiltered.flush();
-
-		} catch (IOException ioe) {
-			throw new GuidanceTaskException(ioe);
-		}
-
-		FileUtils.gzipFile(imputeFilteredFileUncompressed, imputeFilteredFile);
-
-		long stopTime = System.currentTimeMillis();
-		long elapsedTime = (stopTime - startTime) / 1_000;
-		if (DEBUG) {
-			System.out.println("\n[DEBUG] filterByInfo startTime: " + startTime);
-			System.out.println("\n[DEBUG] filterByInfo endTime: " + stopTime);
-			System.out.println("\n[DEBUG] filterByInfo elapsedTime: " + elapsedTime + " seconds");
-			System.out.println("\n[DEBUG] Finished execution of filterByInfo");
-		}
-
-	}
-
-	/**
 	 * Method to filter by all
 	 * 
 	 * @param inputFile
@@ -2623,7 +2484,7 @@ public class GuidanceImpl {
 	 * @throws Exception
 	 */
 	public static void filterByAll(String imputationTool, String inputFile, String outputFile,
-			String outputCondensedFile, String mafThresholdS, String infoThresholdS, String hweCohortThresholdS,
+			/* String outputCondensedFile, */ String mafThresholdS, String infoThresholdS, String hweCohortThresholdS,
 			String hweCasesThresholdS, String hweControlsThresholdS, String sex, String rpanelName, String cmdToStore)
 			throws GuidanceTaskException {
 
@@ -2632,7 +2493,6 @@ public class GuidanceImpl {
 			System.out.println("[DEBUG] \t- Input imputationTool          : " + imputationTool);
 			System.out.println("[DEBUG] \t- Input summaryFile             : " + inputFile);
 			System.out.println("[DEBUG] \t- Output outputFile             : " + outputFile);
-			System.out.println("[DEBUG] \t- Output outputCondensedFile    : " + outputCondensedFile);
 			System.out.println("[DEBUG] \t- Input maf threshold           : " + mafThresholdS);
 			System.out.println("[DEBUG] \t- Input info threshold          : " + infoThresholdS);
 			System.out.println("[DEBUG] \t- Input hwe cohort threshold    : " + hweCohortThresholdS);
@@ -2648,7 +2508,6 @@ public class GuidanceImpl {
 
 		// The output will be first generated in plain format, then compressed
 		String plainOutputFile = outputFile.substring(0, outputFile.length() - 3);
-		String plainOutputCondensedFile = outputCondensedFile.substring(0, outputCondensedFile.length() - 3);
 
 		// Convert threshold string into thresholdDouble
 		Double mafThreshold = Double.parseDouble(mafThresholdS);
@@ -2662,8 +2521,7 @@ public class GuidanceImpl {
 		try (GZIPInputStream inputGz = new GZIPInputStream(new FileInputStream(inputFile));
 				InputStreamReader decoder = new InputStreamReader(inputGz);
 				BufferedReader br = new BufferedReader(decoder);
-				BufferedWriter writerFiltered = new BufferedWriter(new FileWriter(plainOutputFile));
-				BufferedWriter writerCondensed = new BufferedWriter(new FileWriter(plainOutputCondensedFile))) {
+				BufferedWriter writerFiltered = new BufferedWriter(new FileWriter(plainOutputFile));) {
 
 			// I read the header
 			String line = br.readLine();
@@ -2672,10 +2530,6 @@ public class GuidanceImpl {
 			writerFiltered.newLine();
 
 			inputFileHashTableIndex = Headers.createHashWithHeader(line, TAB);
-
-			String headerCondensed = "chr\tposition\talleleA\talleleB\tfrequentist_add_pvalue\tinfo_all";
-			writerCondensed.write(headerCondensed);
-			writerCondensed.newLine();
 
 			while ((line = br.readLine()) != null) {
 				String[] splittedLine = line.split(TAB);// delimiter I assume single space.
@@ -2688,8 +2542,8 @@ public class GuidanceImpl {
 					infoS = splittedLine[inputFileHashTableIndex.get("info_all")];
 				}
 
-				String alleleA = splittedLine[inputFileHashTableIndex.get("alleleA")];
-				String alleleB = splittedLine[inputFileHashTableIndex.get("alleleB")];
+				// String alleleA = splittedLine[inputFileHashTableIndex.get("alleleA")];
+				// String alleleB = splittedLine[inputFileHashTableIndex.get("alleleB")];
 
 				// We start with these values for hwe values just to allows the X chromosome to
 				// pass the if statement of
@@ -2725,7 +2579,7 @@ public class GuidanceImpl {
 					cases_mafS = splittedLine[inputFileHashTableIndex.get("all_maf")];
 					controls_mafS = splittedLine[inputFileHashTableIndex.get("all_maf")];
 				}
-				String position = splittedLine[inputFileHashTableIndex.get("position")];
+				// String position = splittedLine[inputFileHashTableIndex.get("position")];
 				String pva = splittedLine[inputFileHashTableIndex.get("frequentist_add_pvalue")];
 
 				if (!cases_mafS.equals("NA") && !controls_mafS.equals("NA") && !infoS.equals("NA")
@@ -2764,25 +2618,12 @@ public class GuidanceImpl {
 
 							writerFiltered.write(line + TAB + rpanelName);
 							writerFiltered.newLine();
-
-							String chrbpb = null;
-							if (chromo.equals(CHR_23)) {
-								chrbpb = chromo + "_" + sex + TAB + position + TAB + alleleA + TAB + alleleB + TAB + pva
-										+ TAB + infoS;
-							} else {
-								chrbpb = chromo + TAB + position + TAB + alleleA + TAB + alleleB + TAB + pva + TAB
-										+ infoS;
-							}
-
-							writerCondensed.write(chrbpb);
-							writerCondensed.newLine();
 						}
 					}
 				}
 			}
 
 			writerFiltered.flush();
-			writerCondensed.flush();
 		} catch (IOException ioe) {
 			throw new GuidanceTaskException(ioe);
 		}
@@ -2791,7 +2632,6 @@ public class GuidanceImpl {
 		// file if empty
 		try {
 			FileUtils.createEmptyFile(plainOutputFile, "[filterByAll]");
-			FileUtils.createEmptyFile(plainOutputCondensedFile, "[filterByAll]");
 		} catch (IOException ioe) {
 			throw new GuidanceTaskException(ioe);
 		}
@@ -2799,8 +2639,6 @@ public class GuidanceImpl {
 		// Then, we compress the output files and clean them
 		FileUtils.gzipFile(plainOutputFile, outputFile);
 		FileUtils.delete(plainOutputFile);
-		FileUtils.gzipFile(plainOutputCondensedFile, outputCondensedFile);
-		FileUtils.delete(plainOutputCondensedFile);
 
 		long stopTime = System.currentTimeMillis();
 		long elapsedTime = (stopTime - startTime) / 1_000;
@@ -4443,7 +4281,7 @@ public class GuidanceImpl {
 			System.out.println("\n[DEBUG] Finished execution of mergeTwoChunks.");
 		}
 	}
-	
+
 	public static void getFile(String runtimeFilename, String realFilename) {
 		try {
 			FileUtils.copy(runtimeFilename, realFilename);

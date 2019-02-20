@@ -138,7 +138,6 @@ public interface GuidanceItf {
 			@Parameter(type = Type.FILE, direction = Direction.OUT) String phasingHapsFile,
 			@Parameter(type = Type.FILE, direction = Direction.OUT) String phasingSampleFile,
 			@Parameter(type = Type.FILE, direction = Direction.OUT) String phasingLogFile,
-			@Parameter(type = Type.STRING, direction = Direction.IN) String myPrefix,
 			@Parameter(type = Type.STRING, direction = Direction.IN) String sex,
 			@Parameter(type = Type.STRING, direction = Direction.IN) String phasingTool,
 			@Parameter(type = Type.STRING, direction = Direction.IN) String cmdToStore);
@@ -295,7 +294,7 @@ public interface GuidanceItf {
 	void filterByAll(@Parameter(type = Type.STRING, direction = Direction.IN) String imputationTool,
 			@Parameter(type = Type.FILE, direction = Direction.IN) String inputFile,
 			@Parameter(type = Type.FILE, direction = Direction.OUT) String outputFile,
-			@Parameter(type = Type.FILE, direction = Direction.OUT) String outputCondensedFile,
+			//@Parameter(type = Type.FILE, direction = Direction.OUT) String outputCondensedFile,
 			@Parameter(type = Type.STRING, direction = Direction.IN) String mafThresholdS,
 			@Parameter(type = Type.STRING, direction = Direction.IN) String infoThresholdS,
 			@Parameter(type = Type.STRING, direction = Direction.IN) String hweCohortThresholdS,

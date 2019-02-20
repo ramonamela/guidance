@@ -59,7 +59,7 @@ public class ParseCmdLine {
 	// Chromosome sizes
 	private static final int MINIMUMCHUNKSIZE = 1_000;
 	private static final int MAX_NUMBER_OF_CHROMOSOMES = 23;
-	private static final String[] validManhattans = {"add", "dom", "rec", "gen", "het"};
+	private static final String[] validManhattans = { "add", "dom", "rec", "gen", "het" };
 
 	private String gwasConfigFile = null;
 	private ArrayList<String> argumentsArray = new ArrayList<>();
@@ -71,8 +71,6 @@ public class ParseCmdLine {
 	private String mixedBedFileName = null;
 
 	private String mixedChrDir = null;
-	private ArrayList<String> mixedGenFileName = new ArrayList<>();
-	private ArrayList<String> mixedGenFile = new ArrayList<>();
 
 	private String mixedSampleDir = null;
 	private String mixedSampleFileName = null;
@@ -148,6 +146,7 @@ public class ParseCmdLine {
 	 * @param args
 	 */
 	public ParseCmdLine(String[] args) {
+		System.out.println("Parsing config file");
 		final Integer EMPTY_MASK = 0x0000000;
 		wfPossibleDeeps.put("until_convertFromBedToBed", EMPTY_MASK);
 		wfPossibleDeeps.put("until_phasing", EMPTY_MASK);
@@ -347,7 +346,7 @@ public class ParseCmdLine {
 			LOGGER.fatal(CLASS_HEADER + ERROR_SYNTAX + gwasConfigFile + ERROR_SYNTAX_SUFFIX + myArgument[0]);
 			System.exit(1);
 		}
-		
+
 		tmpArg = argumentsArray.get(i++);
 		myArgument = tmpArg.split("=");
 		if ((myArgument.length > 0) && (myArgument.length < 3)) {
@@ -471,7 +470,7 @@ public class ParseCmdLine {
 			LOGGER.fatal(CLASS_HEADER + ERROR_SYNTAX + gwasConfigFile + ERROR_SYNTAX_SUFFIX + myArgument[0]);
 			System.exit(1);
 		}
-		
+
 		tmpArg = argumentsArray.get(i++);
 		myArgument = tmpArg.split("=");
 		if ((myArgument.length > 0) && (myArgument.length < 3)) {
@@ -617,41 +616,7 @@ public class ParseCmdLine {
 			System.exit(1);
 		}
 
-		if (inputFormat.equals("GEN")) {
-			tmpArg = argumentsArray.get(i++);
-			myArgument = tmpArg.split("=");
-			if ((myArgument.length > 0) && (myArgument.length < 3)) {
-				if (myArgument[0].equals("mixed_gen_file_dir")) {
-					mixedChrDir = myArgument[1];
-					checkExistence(mixedChrDir);
-				} else {
-					LOGGER.fatal(CLASS_HEADER + ERROR_PARAM_ORDER + myArgument[0]);
-					System.exit(1);
-				}
-			} else {
-				LOGGER.fatal(CLASS_HEADER + ERROR_SYNTAX + gwasConfigFile + ERROR_SYNTAX_SUFFIX + myArgument[0]);
-				System.exit(1);
-			}
-
-			for (int kk = start; kk <= end; kk++) {
-				tmpArg = argumentsArray.get(i++);
-				myArgument = tmpArg.split("=");
-				if ((myArgument.length > 0) && (myArgument.length < 3)) {
-					String chromo = Integer.toString(kk);
-					String tmpfile = "mixed_gen_file_chr_" + chromo;
-					if (myArgument[0].equals(tmpfile)) {
-						mixedGenFileName.add(myArgument[1]);
-						checkExistence(mixedChrDir + File.separator + myArgument[1]);
-					} else {
-						LOGGER.fatal(CLASS_HEADER + ERROR_PARAM_ORDER + myArgument[0]);
-						System.exit(1);
-					}
-				} else {
-					LOGGER.fatal(CLASS_HEADER + ERROR_SYNTAX + gwasConfigFile + ERROR_SYNTAX_SUFFIX + myArgument[0]);
-					System.exit(1);
-				}
-			}
-		} else if (inputFormat.equals("BED")) {
+		if (inputFormat.equals("BED")) {
 			tmpArg = argumentsArray.get(i++);
 			myArgument = tmpArg.split("=");
 			if ((myArgument.length > 0) && (myArgument.length < 3)) {
@@ -773,7 +738,7 @@ public class ParseCmdLine {
 						gmapFileName.add(myArgument[1]);
 						checkExistence(gmapDir + "/" + myArgument[1]);
 					} else {
-						LOGGER.fatal(CLASS_HEADER + ERROR_PARAM_ORDER + myArgument[0]);
+						LOGGER.fatal(CLASS_HEADER + ERROR_PARAM_ORDER + myArgument[0] + " with expected value " + tmpfile);
 						System.exit(1);
 					}
 				} else {
@@ -943,9 +908,9 @@ public class ParseCmdLine {
 						LOGGER.fatal("[ParseCmdLine] We are going to use 'minimac' tool for imputation stage... ");
 						ArrayList<String> chromoListRpanelVCFFileName = new ArrayList<String>();
 						int endVCF = end;
-						if (endVCF == 23) {
-							endVCF = 22;
-						}
+						//if (endVCF == 23) {
+						//	endVCF = 22;
+						//}
 						for (int j = start; j <= endVCF; j++) {
 							tmpArg = argumentsArray.get(i++);
 							myArgument = tmpArg.split("=");
@@ -956,8 +921,7 @@ public class ParseCmdLine {
 									chromoListRpanelVCFFileName.add(myArgument[1]);
 									checkExistence(tmpRpanelDir + "/" + myArgument[1]);
 								} else {
-									LOGGER.fatal("[ParseCmdLine.java] Error in the order of parameters in parameter: "
-											+ myArgument[0]);
+									LOGGER.fatal(ERROR_PARAM_ORDER + myArgument[0]);
 									System.exit(1);
 								}
 							} else {
@@ -967,7 +931,7 @@ public class ParseCmdLine {
 							}
 						}
 						rpanelVCFFileName.add(chromoListRpanelVCFFileName);
-						if (end == 23) {
+						/*if (end == 23) {
 							tmpArg = argumentsArray.get(i++);
 							myArgument = tmpArg.split("=");
 							ArrayList<String> chromoListRpanelHapFileName = new ArrayList<String>();
@@ -978,8 +942,7 @@ public class ParseCmdLine {
 									chromoListRpanelHapFileName.add(myArgument[1]);
 									checkExistence(myArgument[1]);
 								} else {
-									LOGGER.fatal("[ParseCmdLine.java] Error in the order of parameters in parameter: "
-											+ myArgument[0]);
+									LOGGER.fatal(ERROR_PARAM_ORDER + myArgument[0]);
 									System.exit(1);
 								}
 							} else {
@@ -997,8 +960,7 @@ public class ParseCmdLine {
 									chromoListRpanelLegFileName.add(myArgument[1]);
 									checkExistence(myArgument[1]);
 								} else {
-									LOGGER.fatal("[ParseCmdLine.java] Error in the order of parameters in parameter: "
-											+ myArgument[0]);
+									LOGGER.fatal(ERROR_PARAM_ORDER + myArgument[0]);
 									System.exit(1);
 								}
 							} else {
@@ -1008,7 +970,7 @@ public class ParseCmdLine {
 							}
 							rpanelHap23FileName.add(chromoListRpanelHapFileName);
 							rpanelLeg23FileName.add(chromoListRpanelLegFileName);
-						}
+						}*/
 						LOGGER.info(CLASS_HEADER + " We are going to use 'minimac' tool for imputation stage... ");
 					} else {
 						LOGGER.fatal(CLASS_HEADER
@@ -1126,7 +1088,7 @@ public class ParseCmdLine {
 	public Double getMinimacThreshold() {
 		return this.minimacThreshold;
 	}
-	
+
 	/**
 	 * Method to get infoThreshold flag
 	 * 
@@ -1384,41 +1346,6 @@ public class ParseCmdLine {
 	}
 
 	/**
-	 * Method to get the xxxxxGenFileName
-	 * 
-	 * @param chromo
-	 * @return
-	 */
-	public String getGenFileName(int chromo) {
-		int index = chromo - getStart();
-		if (index < 0) {
-			LOGGER.fatal(CLASS_HEADER + " Error, the chromosome number should be > " + getStart());
-			System.exit(1);
-			return "none";
-		}
-
-		return this.mixedGenFileName.get(index);
-	}
-
-	/**
-	 * Method to get the xxxxxGenFile
-	 * 
-	 * @param chromo
-	 * @return
-	 */
-	public String getGenFile(int chromo) {
-		int index = chromo - getStart();
-
-		if (index < 0) {
-			LOGGER.fatal(CLASS_HEADER + " Error, the chromosome number should be > " + getStart());
-			System.exit(1);
-			return "none";
-		}
-
-		return this.mixedGenFile.get(index);
-	}
-
-	/**
 	 * Method to get sampleDir information
 	 * 
 	 * @return
@@ -1651,7 +1578,7 @@ public class ParseCmdLine {
 
 		return rpanelLeg23FileName.get(indexRpanel).get(0);
 	}
-	
+
 	/**
 	 * Method to get the manhattan plots to launch
 	 * 
@@ -1701,16 +1628,7 @@ public class ParseCmdLine {
 
 		LOGGER.info("mixed_cohort                 = " + mixedCohort);
 
-		if (inputFormat.equals("GEN")) {
-			LOGGER.info("mixed_gen_file_dir           = " + mixedBedDir);
-			for (int kk = getStart(); kk <= getEnd(); kk++) {
-				int index = kk - getStart();
-				LOGGER.info("\tmixed_gen_file_chr_" + kk + " = " + mixedGenFileName.get(index));
-			}
-
-			LOGGER.info("mixed_sample_file_dir = " + mixedSampleDir);
-			LOGGER.info("\tmixed_sample_file = " + mixedSampleFileName);
-		} else if (inputFormat.equals("BED")) {
+		if (inputFormat.equals("BED")) {
 			LOGGER.info("mixed_bed_file_dir           = " + mixedBedDir);
 		} else {
 			LOGGER.fatal(CLASS_HEADER + " Error, input format " + inputFormat + " is not supported");
@@ -1831,8 +1749,8 @@ public class ParseCmdLine {
 		String[] steps = { "convertFromBedToBed", "createRsIdList", "phasingBed", "phasing", "createListOfExcludedSnps",
 				"filterHaplotypes", "imputeWithImpute", "imputeWithMinimac", "filterByInfo", "qctoolS", "snptest",
 				"collectSummary", "mergeTwoChunks", "filterByAll", "jointCondensedFiles", "jointFilteredByAllFiles",
-				"generateTopHits", "generateQQManhattanPlots", "combinePanelsComplex", "combGenerateManhattanTop", "phenoAnalysis", "tasku",
-				"taskv", "taskw", "taskx", "tasky", "taskz" };
+				"generateTopHits", "generateQQManhattanPlots", "combinePanelsComplex", "combGenerateManhattanTop",
+				"phenoAnalysis", "tasku", "taskv", "taskw", "taskx", "tasky", "taskz" };
 
 		final Integer MASK1 = 0x00001;
 
@@ -1841,12 +1759,14 @@ public class ParseCmdLine {
 			int tmpVar = (wfPossibleDeeps.get(wfDeepRequired) >> stageNumber) & MASK1;
 			wfAllStages.put(steps[steps.length - stageNumber - 1], tmpVar);
 		}
-		
-		if (this.wfAllStages.get("generateQQManhattanPlots") == 1 || this.wfAllStages.get("combGenerateManhattanTop") == 1) {
-			for(String elem: manhattans) {
-				if(!Arrays.asList(validManhattans).contains(elem)) {
-					String errorMessage = CLASS_HEADER + " " + elem + " is not between the supported manhattan plot types: " + validManhattans[0];
-					for(int i = 1; i < validManhattans.length; ++i) {
+
+		if (this.wfAllStages.get("generateQQManhattanPlots") == 1
+				|| this.wfAllStages.get("combGenerateManhattanTop") == 1) {
+			for (String elem : manhattans) {
+				if (!Arrays.asList(validManhattans).contains(elem)) {
+					String errorMessage = CLASS_HEADER + " " + elem
+							+ " is not between the supported manhattan plot types: " + validManhattans[0];
+					for (int i = 1; i < validManhattans.length; ++i) {
 						errorMessage += (" " + validManhattans[i]);
 					}
 					LOGGER.fatal(errorMessage);
