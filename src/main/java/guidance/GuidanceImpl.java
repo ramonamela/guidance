@@ -1637,9 +1637,6 @@ public class GuidanceImpl {
 		// Finally replace the original file.
 		FileUtils.move(filteredHapsVcfFile + ".tmp", filteredHapsVcfFile);
 
-		FileUtils.move(filteredLogFile + ".log", filteredLogFile);
-		FileUtils.move(filteredHapsVcfFile + ".vcf", filteredHapsVcfFile);
-
 		long stopTime = System.currentTimeMillis();
 		long elapsedTime = (stopTime - startTime) / 1_000;
 		if (DEBUG) {
@@ -1657,35 +1654,41 @@ public class GuidanceImpl {
 
 		long startTime = System.currentTimeMillis();
 
-		String cmd = samToolsBinary + "/bgzip -f " + input + " " + output;
+		String cmd = samToolsBinary + "/bgzip -f " + input;
 
 		if (DEBUG) {
 			System.out.println("\n[DEBUG] Command: " + cmd);
 			System.out.println(" ");
 		}
 
+		File inputFileBeg = new File(input);
+		if (inputFileBeg.exists()) {
+			System.out.println("[samtoolsBgzip] Input " + input + " exist!");
+		} else {
+			System.out.println("[samtoolsBgzip] Input " + input + " does not exist!");
+		}
+		
 		int exitValue = -1;
 		try {
 			exitValue = ProcessUtils.execute(cmd, input + STDOUT_EXTENSION, input + STDERR_EXTENSION);
 		} catch (IOException ioe) {
 			throw new GuidanceTaskException(ioe);
 		}
+		
+		FileUtils.move(input + ".gz", output);
 
 		if (exitValue != 0) {
 			System.err.println("[phasing] Warning executing samtoolsBgzip job, exit value is: " + exitValue);
 			System.err.println("[phasing]                         (This warning is not fatal).");
 		}
 
-		File tmpOutput = new File(input + ".gz");
-		if (tmpOutput.exists()) {
-			boolean success = FileUtils.move(input + ".gz", output);
-			if (!success) {
-				throw new GuidanceTaskException(
-						"[samtoolsBgzip] Error, the file " + input + ".gz was not succesfully renamed to " + output);
-				// File was not successfully renamed
+		File tmpOutput = new File(output);
+		if (!tmpOutput.exists()) {
+			System.out.println("[samtoolsBgzip] No! Output " + output + " does not exist!");
+			File inputFile = new File(input);
+			if (!inputFile.exists()) {
+				System.out.println("[samtoolsBgzip] No! Input " + input + " does not exist!");
 			}
-		} else {
-			System.out.println("[samtoolsBgzip] No! " + tmpOutput + " does not exist!");
 		}
 
 		long stopTime = System.currentTimeMillis();
@@ -1700,15 +1703,6 @@ public class GuidanceImpl {
 
 	public static void samtoolsTabix(String inputGz, String outputTbi, String cmdToStore)
 			throws IOException, InterruptedException, Exception {
-
-		// Public static void samtoolsTabix(String filteredHaplotypesVcfFileBgzip,
-		// String filteredHaplotypesVcfFileBgzipIndexed,
-		// String cmdToStore) throws IOException, InterruptedException, Exception {
-
-		// System.out.println("[samtoolsTabix] filteredHaplotypesVcfFileBgzip is: " +
-		// filteredHaplotypesVcfFileBgzip);
-		// System.out.println("[samtoolsTabix] filteredHaplotypesVcfFileBgzipIndexed is:
-		// " + filteredHaplotypesVcfFileBgzipIndexed);
 
 		String samtoolsBinary = loadFromEnvironment(SAMTOOLSBINARY, HEADER_SAMTOOLS);
 

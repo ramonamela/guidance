@@ -286,20 +286,20 @@ public class MergeFiles {
 
 							listReducedFilteredFemalesFile.add(myReducedFilteredFemalesFile);
 							listReducedCondensedFemalesFile.add(myReducedCondensedFemalesFile);
-						} else {
-							String tmpReducedFilteredFileName = "chr_" + chromo + "_" + testTypeName + "_" + rPanel
-									+ REDUCE_FILTERED_FILENAME + counter + EXT_TXT_GZ;
-							String tmpReducedCondensedFileName = "chr_" + chromo + "_" + testTypeName + "_" + rPanel
-									+ REDUCE_CONDENSED_FILENAME + counter + EXT_TXT_GZ;
+						} // else {
+						String tmpReducedFilteredFileName = "chr_" + chromo + "_" + testTypeName + "_" + rPanel
+								+ REDUCE_FILTERED_FILENAME + counter + EXT_TXT_GZ;
+						String tmpReducedCondensedFileName = "chr_" + chromo + "_" + testTypeName + "_" + rPanel
+								+ REDUCE_CONDENSED_FILENAME + counter + EXT_TXT_GZ;
 
-							GenericFile myReducedFilteredFile = new GenericFile(tmpChrDir, tmpReducedFilteredFileName,
-									UNCOMPRESSED_FILE, "none");
-							GenericFile myReducedCondensedFile = new GenericFile(tmpChrDir, tmpReducedCondensedFileName,
-									UNCOMPRESSED_FILE, "none");
+						GenericFile myReducedFilteredFile = new GenericFile(tmpChrDir, tmpReducedFilteredFileName,
+								UNCOMPRESSED_FILE, "none");
+						GenericFile myReducedCondensedFile = new GenericFile(tmpChrDir, tmpReducedCondensedFileName,
+								UNCOMPRESSED_FILE, "none");
 
-							listReducedFilteredFile.add(myReducedFilteredFile);
-							listReducedCondensedFile.add(myReducedCondensedFile);
-						}
+						listReducedFilteredFile.add(myReducedFilteredFile);
+						listReducedCondensedFile.add(myReducedCondensedFile);
+						// }
 
 						// listReducedFile.add(myReducedFile);
 
@@ -330,20 +330,20 @@ public class MergeFiles {
 								GenericFile myCombinedReducedCondensedFemalesFile = new GenericFile(testTypeOutDir2,
 										tmpCombinedReducedCondensedFemalesFileName, UNCOMPRESSED_FILE, "none");
 								listCombinedReducedCondensedFemalesFile.add(myCombinedReducedCondensedFemalesFile);
-							} else {
-								String tmpCombinedReducedFilteredFileName = "chr_" + chromo + "_" + testTypeName
-										+ REDUCE_FILTERED_FILENAME + counter + EXT_TXT_GZ;
-								GenericFile myCombinedReducedFilteredFile = new GenericFile(testTypeOutDir2,
-										tmpCombinedReducedFilteredFileName, UNCOMPRESSED_FILE, "none");
+							} // else {
+							String tmpCombinedReducedFilteredFileName = "chr_" + chromo + "_" + testTypeName
+									+ REDUCE_FILTERED_FILENAME + counter + EXT_TXT_GZ;
+							GenericFile myCombinedReducedFilteredFile = new GenericFile(testTypeOutDir2,
+									tmpCombinedReducedFilteredFileName, UNCOMPRESSED_FILE, "none");
 
-								listCombinedReducedFilteredFile.add(myCombinedReducedFilteredFile);
+							listCombinedReducedFilteredFile.add(myCombinedReducedFilteredFile);
 
-								String tmpCombinedReducedCondensedFileName = "chr_" + chromo + "_" + testTypeName
-										+ REDUCE_CONDENSED_FILENAME + counter + EXT_TXT_GZ;
-								GenericFile myCombinedReducedCondensedFile = new GenericFile(testTypeOutDir2,
-										tmpCombinedReducedCondensedFileName, UNCOMPRESSED_FILE, "none");
-								listCombinedReducedCondensedFile.add(myCombinedReducedCondensedFile);
-							}
+							String tmpCombinedReducedCondensedFileName = "chr_" + chromo + "_" + testTypeName
+									+ REDUCE_CONDENSED_FILENAME + counter + EXT_TXT_GZ;
+							GenericFile myCombinedReducedCondensedFile = new GenericFile(testTypeOutDir2,
+									tmpCombinedReducedCondensedFileName, UNCOMPRESSED_FILE, "none");
+							listCombinedReducedCondensedFile.add(myCombinedReducedCondensedFile);
+							// }
 						}
 						counter++;
 					}
@@ -374,20 +374,20 @@ public class MergeFiles {
 							listCombinedReducedFilteredFemalesFile.add(myCombinedReducedFilteredFemalesFile);
 							listCombinedReducedCondensedFemalesFile.add(myCombinedReducedCondensedFemalesFile);
 
-						} else {
-							String tmpCombinedReducedFilteredFileName = "chr_" + chromo + "_" + testTypeName
-									+ REDUCE_FILTERED_FILENAME + counter + EXT_TXT_GZ;
-							String tmpCombinedReducedCondensedFileName = "chr_" + chromo + "_" + testTypeName
-									+ REDUCE_CONDENSED_FILENAME + counter + EXT_TXT_GZ;
-							GenericFile myCombinedReducedFilteredFile = new GenericFile(testTypeOutDir2,
-									tmpCombinedReducedFilteredFileName, UNCOMPRESSED_FILE, "none");
-							GenericFile myCombinedReducedCondensedFile = new GenericFile(testTypeOutDir2,
-									tmpCombinedReducedCondensedFileName, UNCOMPRESSED_FILE, "none");
+						} // else {
+						String tmpCombinedReducedFilteredFileName = "chr_" + chromo + "_" + testTypeName
+								+ REDUCE_FILTERED_FILENAME + counter + EXT_TXT_GZ;
+						String tmpCombinedReducedCondensedFileName = "chr_" + chromo + "_" + testTypeName
+								+ REDUCE_CONDENSED_FILENAME + counter + EXT_TXT_GZ;
+						GenericFile myCombinedReducedFilteredFile = new GenericFile(testTypeOutDir2,
+								tmpCombinedReducedFilteredFileName, UNCOMPRESSED_FILE, "none");
+						GenericFile myCombinedReducedCondensedFile = new GenericFile(testTypeOutDir2,
+								tmpCombinedReducedCondensedFileName, UNCOMPRESSED_FILE, "none");
 
-							listCombinedReducedFilteredFile.add(myCombinedReducedFilteredFile);
-							listCombinedReducedCondensedFile.add(myCombinedReducedCondensedFile);
+						listCombinedReducedFilteredFile.add(myCombinedReducedFilteredFile);
+						listCombinedReducedCondensedFile.add(myCombinedReducedCondensedFile);
 
-						}
+						// }
 
 						addExtraCount = false;
 					}
@@ -456,42 +456,42 @@ public class MergeFiles {
 						GenericFile myCondensedFemalesFile = new GenericFile(tmpChrDir, tmpCondensedFemalesFileName,
 								UNCOMPRESSED_FILE, "none");
 						chromoCondensedFemalesFile.add(myCondensedFemalesFile);
-						
+
 						chromoCondensedFile.add(myCondensedMalesFile);
 						chromoCondensedFile.add(myCondensedFemalesFile);
 
-					} else {
-						String tmpFilteredByAllFileName = "chr_" + chromo + "_" + testTypeName + "_" + rPanel
-								+ "_filtered_by_maf_info_hwe.txt.gz";
-						GenericFile myFilteredByAllFile = new GenericFile(tmpChrDir, tmpFilteredByAllFileName,
-								UNCOMPRESSED_FILE, "none");
-						chromoFilteredByAllFile.add(myFilteredByAllFile);
+					} // else {
+					String tmpFilteredByAllFileName = "chr_" + chromo + "_" + testTypeName + "_" + rPanel
+							+ "_filtered_by_maf_info_hwe.txt.gz";
+					GenericFile myFilteredByAllFile = new GenericFile(tmpChrDir, tmpFilteredByAllFileName,
+							UNCOMPRESSED_FILE, "none");
+					chromoFilteredByAllFile.add(myFilteredByAllFile);
 
-						String tmpCombinedCondensedFileName = "chr_" + chromo + "_" + testTypeName + "_" + rPanel
-								+ "_combined_condensed.txt.gz";
-						GenericFile myCombinedCondensedFile = new GenericFile(testTypeOutDir2,
-								tmpCombinedCondensedFileName, UNCOMPRESSED_FILE, "none");
-						chromoCombinedCondensedFile.add(myCombinedCondensedFile);
+					String tmpCombinedCondensedFileName = "chr_" + chromo + "_" + testTypeName + "_" + rPanel
+							+ "_combined_condensed.txt.gz";
+					GenericFile myCombinedCondensedFile = new GenericFile(testTypeOutDir2, tmpCombinedCondensedFileName,
+							UNCOMPRESSED_FILE, "none");
+					chromoCombinedCondensedFile.add(myCombinedCondensedFile);
 
-						chromoListReducedFilteredFile.add(listReducedFilteredFile);
-						chromoListReducedCondensedFile.add(listReducedCondensedFile);
-						chromoListCombinedReducedFilteredFile.add(listCombinedReducedFilteredFile);
-						chromoListCombinedReducedCondensedFile.add(listCombinedReducedCondensedFile);
+					chromoListReducedFilteredFile.add(listReducedFilteredFile);
+					chromoListReducedCondensedFile.add(listReducedCondensedFile);
+					chromoListCombinedReducedFilteredFile.add(listCombinedReducedFilteredFile);
+					chromoListCombinedReducedCondensedFile.add(listCombinedReducedCondensedFile);
 
-						String tmpCombinedFilteredByAllFileName = "chr_" + chromo + "_" + testTypeName + "_" + rPanel
-								+ "_combined_filtered_by_maf_info_hwe.txt.gz";
+					String tmpCombinedFilteredByAllFileName = "chr_" + chromo + "_" + testTypeName + "_" + rPanel
+							+ "_combined_filtered_by_maf_info_hwe.txt.gz";
 
-						GenericFile myCombinedFilteredByAllFile = new GenericFile(testTypeOutDir2,
-								tmpCombinedFilteredByAllFileName, UNCOMPRESSED_FILE, "none");
+					GenericFile myCombinedFilteredByAllFile = new GenericFile(testTypeOutDir2,
+							tmpCombinedFilteredByAllFileName, UNCOMPRESSED_FILE, "none");
 
-						chromoCombinedFilteredByAllFile.add(myCombinedFilteredByAllFile);
+					chromoCombinedFilteredByAllFile.add(myCombinedFilteredByAllFile);
 
-						String tmpCondensedFileName = "chr_" + chromo + "_" + testTypeName + "_" + rPanel
-								+ "_condensed.txt.gz";
-						GenericFile myCondensedFile = new GenericFile(tmpChrDir, tmpCondensedFileName,
-								UNCOMPRESSED_FILE, "none");
-						chromoCondensedFile.add(myCondensedFile);
-					}
+					String tmpCondensedFileName = "chr_" + chromo + "_" + testTypeName + "_" + rPanel
+							+ "_condensed.txt.gz";
+					GenericFile myCondensedFile = new GenericFile(tmpChrDir, tmpCondensedFileName, UNCOMPRESSED_FILE,
+							"none");
+					chromoCondensedFile.add(myCondensedFile);
+					// }
 
 				} // End for Chromo
 				rpanelListOutDir.add(chromoListOutDir);
@@ -538,12 +538,12 @@ public class MergeFiles {
 				// The number of additional files is the number of chromosomes minus 1.
 				int addCondensed = 0;
 				int limit = 0;
-				if(this.endChr == 23) {
+				if (this.endChr == 23) {
 					limit = this.endChr + 1;
 				} else {
 					limit = this.endChr;
 				}
-				
+
 				for (int deep = this.startChr; deep < limit; deep++) {
 					String tmpAdditionalCondensedFileName = null;
 					if (deep == (limit - 1)) {

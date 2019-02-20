@@ -663,13 +663,14 @@ public class Guidance {
 							makeMergeOfChunksSex(parsingArgs, test, SEX2, panel, minSize, maxSize, chunkSize,
 									assocFilesInfo, mergeFilesInfo, FILTERED);
 						}
-					} else {
-						// Now we perform the merge of chunks for each chromosome
-						if (parsingArgs.getStageStatus("jointFilteredByAllFiles") == 1) {
-							makeMergeOfChunks(parsingArgs, test, panel, chr, minSize, maxSize, chunkSize,
-									assocFilesInfo, mergeFilesInfo, FILTERED);
-						}
 					}
+					// } else {
+					// Now we perform the merge of chunks for each chromosome
+					if (parsingArgs.getStageStatus("jointFilteredByAllFiles") == 1) {
+						makeMergeOfChunks(parsingArgs, test, panel, chr, minSize, maxSize, chunkSize, assocFilesInfo,
+								mergeFilesInfo, FILTERED);
+					}
+					// }
 				} // End for Chromo
 
 				// Now we have to joint the filteredByAllFiles of each chromosome. Here there is
@@ -1225,7 +1226,8 @@ public class Guidance {
 					snptestOutFemalesFile, snptestLogFemalesFile, responseVar, covariables);
 
 			// This true should be erased when the problem with minimac is solved
-			if (imputationTool.equals("impute") || true) {
+			// if (imputationTool.equals("impute") || true) {
+			if (imputationTool.equals("impute")) {
 				String mixedImputeMalesFileInfo = imputationFilesInfo.getImputedInfoMalesFile(panelIndex, chrNumber,
 						lim1, lim2, chunkSize);
 
@@ -1261,49 +1263,43 @@ public class Guidance {
 				doFilterByAll(parsingArgs, summaryFemalesFile, assocFemalesFilteredByAll, assocFemalesCondensed, SEX2,
 						rpanelName);
 
-			} /*
-				 * else if (imputationTool.equals("minimac")) {
-				 * 
-				 * String mixedImputedMMInfoMalesFile =
-				 * imputationFilesInfo.getImputedMMInfoMalesFile(panelIndex, chrNumber, lim1,
-				 * lim2, chunkSize); String mixedImputedMMInfoFemalesFile =
-				 * imputationFilesInfo.getImputedMMInfoFemalesFile(panelIndex, chrNumber, lim1,
-				 * lim2, chunkSize); String summaryMalesFile =
-				 * assocFilesInfo.getSummaryMalesFile(testTypeIndex, panelIndex, lim1, lim2,
-				 * chunkSize); String summaryFemalesFile =
-				 * assocFilesInfo.getSummaryFemalesFile(testTypeIndex, panelIndex, lim1, lim2,
-				 * chunkSize);
-				 * 
-				 * doCollectSummary(parsingArgs, chrS, mixedImputedMMInfoMalesFile,
-				 * snptestOutMalesFile, summaryMalesFile, mafThresholdS, hweCohortThresholdS,
-				 * hweCasesThresholdS, hweControlsThresholdS, SEX1);
-				 * 
-				 * doCollectSummary(parsingArgs, chrS, mixedImputedMMInfoFemalesFile,
-				 * snptestOutFemalesFile, summaryFemalesFile, mafThresholdS,
-				 * hweCohortThresholdS, hweCasesThresholdS, hweControlsThresholdS, SEX2);
-				 * 
-				 * String assocMalesFilteredByAll =
-				 * assocFilesInfo.getSummaryFilteredMalesFile(testTypeIndex, panelIndex, lim1,
-				 * lim2, chunkSize); String assocMalesCondensed =
-				 * assocFilesInfo.getSummaryCondensedMalesFile(testTypeIndex, panelIndex, lim1,
-				 * lim2, chunkSize);
-				 * 
-				 * doFilterByAll(parsingArgs, summaryMalesFile, assocMalesFilteredByAll,
-				 * assocMalesCondensed, SEX1, rpanelName);
-				 * 
-				 * String assocFemalesFilteredByAll =
-				 * assocFilesInfo.getSummaryFilteredFemalesFile(testTypeIndex, panelIndex, lim1,
-				 * lim2, chunkSize); String assocFemalesCondensed =
-				 * assocFilesInfo.getSummaryCondensedFemalesFile(testTypeIndex, panelIndex,
-				 * lim1, lim2, chunkSize);
-				 * 
-				 * doFilterByAll(parsingArgs, summaryFemalesFile, assocFemalesFilteredByAll,
-				 * assocFemalesCondensed, SEX2, rpanelName);
-				 * 
-				 * }
-				 */
+			} else if (imputationTool.equals("minimac")) {
 
-		} else {
+				String mixedImputedMMInfoMalesFile = imputationFilesInfo.getImputedMMInfoMalesFile(panelIndex,
+						chrNumber, lim1, lim2, chunkSize);
+				String mixedImputedMMInfoFemalesFile = imputationFilesInfo.getImputedMMInfoFemalesFile(panelIndex,
+						chrNumber, lim1, lim2, chunkSize);
+				String summaryMalesFile = assocFilesInfo.getSummaryMalesFile(testTypeIndex, panelIndex, lim1, lim2,
+						chunkSize);
+				String summaryFemalesFile = assocFilesInfo.getSummaryFemalesFile(testTypeIndex, panelIndex, lim1, lim2,
+						chunkSize);
+
+				doCollectSummary(parsingArgs, chrS, mixedImputedMMInfoMalesFile, snptestOutMalesFile, summaryMalesFile,
+						mafThresholdS, hweCohortThresholdS, hweCasesThresholdS, hweControlsThresholdS, SEX1);
+
+				doCollectSummary(parsingArgs, chrS, mixedImputedMMInfoFemalesFile, snptestOutFemalesFile,
+						summaryFemalesFile, mafThresholdS, hweCohortThresholdS, hweCasesThresholdS,
+						hweControlsThresholdS, SEX2);
+
+				String assocMalesFilteredByAll = assocFilesInfo.getSummaryFilteredMalesFile(testTypeIndex, panelIndex,
+						lim1, lim2, chunkSize);
+				String assocMalesCondensed = assocFilesInfo.getSummaryCondensedMalesFile(testTypeIndex, panelIndex,
+						lim1, lim2, chunkSize);
+
+				doFilterByAll(parsingArgs, summaryMalesFile, assocMalesFilteredByAll, assocMalesCondensed, SEX1,
+						rpanelName);
+
+				String assocFemalesFilteredByAll = assocFilesInfo.getSummaryFilteredFemalesFile(testTypeIndex,
+						panelIndex, lim1, lim2, chunkSize);
+				String assocFemalesCondensed = assocFilesInfo.getSummaryCondensedFemalesFile(testTypeIndex, panelIndex,
+						lim1, lim2, chunkSize);
+
+				doFilterByAll(parsingArgs, summaryFemalesFile, assocFemalesFilteredByAll, assocFemalesCondensed, SEX2,
+						rpanelName);
+
+			}
+
+		} //else {
 			String snptestOutFile = assocFilesInfo.getSnptestOutFile(testTypeIndex, panelIndex, chrNumber, lim1, lim2,
 					chunkSize);
 			String snptestLogFile = assocFilesInfo.getSnptestLogFile(testTypeIndex, panelIndex, chrNumber, lim1, lim2,
@@ -1357,7 +1353,7 @@ public class Guidance {
 				doFilterByAll(parsingArgs, summaryFile, assocFilteredByAll, assocCondensed, NO_SEX, rpanelName);
 			}
 
-		}
+		//}
 
 	}
 
@@ -2688,13 +2684,12 @@ public class Guidance {
 				System.err.println("[Guidance] Exception trying the execution of filterHaplotypes task");
 				System.err.println(e.getMessage());
 			}
-			listOfCommands.add(new String(cmd));
 
-			cmd = SAMTOOLSBINARY + "/bgzip " + filteredHaplotypesVcfFile + " " + filteredHaplotypesVcfFile + ".gz";
+			cmd = SAMTOOLSBINARY + "/bgzip " + filteredHaplotypesVcfFile + " " + filteredHaplotypesVcfFileBgzip;
 
 			listOfCommands.add(new String(cmd));
 			try {
-				GuidanceImpl.samtoolsBgzip(filteredHaplotypesVcfFile, filteredHaplotypesVcfFile + ".gz", cmd);
+				GuidanceImpl.samtoolsBgzip(filteredHaplotypesVcfFile, filteredHaplotypesVcfFileBgzip, cmd);
 			} catch (Exception e) {
 				System.err.println("[Guidance] Exception trying the execution of samtoolsBgzip task");
 				System.err.println(e.getMessage());
