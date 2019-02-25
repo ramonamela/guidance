@@ -63,6 +63,7 @@ import guidance.files.PhenomeAnalysisFiles;
 import guidance.files.ResultsFiles;
 import guidance.utils.ChromoInfo;
 import guidance.utils.ParseCmdLine;
+import guidance.utils.GeneralUtils;
 
 import es.bsc.compss.api.COMPSs;
 
@@ -153,15 +154,15 @@ public class Guidance {
 		verifyEnvVar();
 
 		// Print information of Guidance version
-		printGuidancePackageVersion();
+		GeneralUtils.printGuidancePackageVersion(LOGGER, GUIDANCE_VERSION, GUIDANCE_BUILDNUMBER);
 		if (DEBUG) {
-			printEnVariables();
+			GeneralUtils.printEnVariables(LOGGER);
 		}
 		// Get the input arguments
 		ParseCmdLine parsingArgs = new ParseCmdLine(args);
 
 		// Verify and print the status of each stage
-		printStagesStatus(parsingArgs);
+		GeneralUtils.printStagesStatus(LOGGER, parsingArgs);
 		LOGGER.info("\n[Guidance] Verifyed stages status.");
 
 		// Get the file name where the list of commands is going to be saved
@@ -169,20 +170,7 @@ public class Guidance {
 		String listOfStagesFileName = parsingArgs.getListOfStagesFile();
 
 		// Verify whether the file exists or not.
-		listOfStages = new File(listOfStagesFileName);
-		if (!listOfStages.exists()) {
-			LOGGER.info("\n[Guidance] File to store the tasks list: " + listOfStagesFileName);
-		} else {
-			PrintWriter writer = new PrintWriter(listOfStages);
-			writer.print("");
-			writer.close();
-			listOfStages.delete();
-			LOGGER.info("\n[Guidance] File to store the tasks list (overwritten): " + listOfStagesFileName);
-
-		}
-		if (!listOfStages.createNewFile()) {
-			LOGGER.error("[Guidance] Error on main cannot create list of stages file: " + listOfStages);
-		}
+		listOfStages = GeneralUtils.createListOfStages(LOGGER, listOfStagesFileName);
 
 		DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 		Date date = new Date();
@@ -211,61 +199,8 @@ public class Guidance {
 		doMixed(parsingArgs, outDir, rpanelTypes);
 
 		// Finally, we print the commands in the output file defined for this.
-		flushCommands(true);
+		GeneralUtils.flushCommands(listOfStages, listOfCommands, true);
 		LOGGER.info("[Guidance] Everything is working with Guidance, just wait...");
-	}
-
-	private static void flushCommands(boolean option) throws IOException {
-		if (option) {
-			try (BufferedWriter writer = new BufferedWriter(new FileWriter(listOfStages, true))) {
-				while (!listOfCommands.isEmpty()) {
-					String str = listOfCommands.get(0);
-					listOfCommands.remove(0);
-					writer.write(str);
-					writer.newLine();
-					writer.newLine();
-				}
-
-				// Close the file with the list of commands...
-				writer.flush();
-				writer.close();
-			}
-		}
-	}
-
-	/**
-	 * Method to print a all the environment variables of the system. It is only
-	 * used for debug
-	 */
-	private static void printEnVariables() {
-		long freeMemory = Runtime.getRuntime().freeMemory() / 1_048_576;
-		long totalMemory = Runtime.getRuntime().totalMemory() / 1_048_576;
-		long maxMemory = Runtime.getRuntime().maxMemory() / 1_048_576;
-
-		LOGGER.debug("JVM freeMemory: " + freeMemory);
-		LOGGER.debug("JVM totalMemory also equals to initial heap size of JVM : " + totalMemory);
-		LOGGER.debug("JVM maxMemory also equals to maximum heap size of JVM   : " + maxMemory);
-
-		Map<String, String> env = System.getenv();
-		LOGGER.debug("--------------------------------------");
-		LOGGER.debug("Environmental Variables in Master:");
-		for (Entry<String, String> envVar : env.entrySet()) {
-			LOGGER.debug(envVar.getKey() + " = " + envVar.getValue());
-		}
-		LOGGER.debug("--------------------------------------");
-		ArrayList<String> objects = new ArrayList<>();
-		for (int ii = 0; ii < 10000000; ii++) {
-			objects.add((Integer.toString(10 * 2_710)));
-		}
-
-		freeMemory = Runtime.getRuntime().freeMemory() / 1_048_576;
-		totalMemory = Runtime.getRuntime().totalMemory() / 1_048_576;
-		maxMemory = Runtime.getRuntime().maxMemory() / 1_048_576;
-
-		LOGGER.debug("Used Memory in JVM: " + (maxMemory - freeMemory));
-		LOGGER.debug("freeMemory in JVM: " + freeMemory);
-		LOGGER.debug("totalMemory in JVM shows current size of java heap : " + totalMemory);
-		LOGGER.debug("maxMemory in JVM: " + maxMemory);
 	}
 
 	/**
@@ -440,7 +375,7 @@ public class Guidance {
 					GuidanceImpl.newSample(mixedSampleFile, mixedPhasingSampleFile, mixedPhasingNewSampleFile,
 							responseVar, covariables, cmd);
 
-					flushCommands(FLUSH);
+					GeneralUtils.flushCommands(listOfStages, listOfCommands, FLUSH);
 				}
 
 				if (theChromo.equals("23")) {
@@ -511,17 +446,17 @@ public class Guidance {
 						GuidanceImpl.newSample(mixedSampleFile, mixedPhasingSampleFemalesFile,
 								mixedPhasingNewSampleFemalesFile, responseVar, covariables, cmd);
 
-						flushCommands(FLUSH);
+						GeneralUtils.flushCommands(listOfStages, listOfCommands, FLUSH);
 					}
 
 				}
 
 			}
 
-			flushCommands(FLUSH);
+			GeneralUtils.flushCommands(listOfStages, listOfCommands, FLUSH);
 		}
 
-		flushCommands(FLUSH);
+		GeneralUtils.flushCommands(listOfStages, listOfCommands, FLUSH);
 
 		if (BARRIERS) {
 			COMPSs.barrier();
@@ -550,7 +485,7 @@ public class Guidance {
 							imputationFilesInfo, commonFilesInfo);
 					lim1 = lim1 + chunkSize;
 					lim2 = lim2 + chunkSize;
-					flushCommands(FLUSH);
+					GeneralUtils.flushCommands(listOfStages, listOfCommands, FLUSH);
 				}
 			} // End for panel types
 
@@ -605,25 +540,25 @@ public class Guidance {
 						System.err.println("[Guidance] Exception trying the execution of snptest task");
 						System.err.println(e.getMessage());
 					}
-				} else {
-					String mixedPhasingNewSampleFile = commonFilesInfo.getPhasingNewSampleFile(chr);
+				} // else {
+				String mixedPhasingNewSampleFile = commonFilesInfo.getPhasingNewSampleFile(chr);
 
-					String mixedSampleFile = commonFilesInfo.getSampleFile(chr);
+				String mixedSampleFile = commonFilesInfo.getSampleFile(chr);
 
-					String mixedPhasingSampleFile = commonFilesInfo.getPhasingSampleFile(chr);
+				String mixedPhasingSampleFile = commonFilesInfo.getPhasingSampleFile(chr);
 
-					String cmd = JAVA_HOME + " newSample.jar " + mixedSampleFile + " " + mixedPhasingSampleFile + " "
-							+ mixedPhasingNewSampleFile + " " + covariables + " " + responseVar;
+				String cmd = JAVA_HOME + " newSample.jar " + mixedSampleFile + " " + mixedPhasingSampleFile + " "
+						+ mixedPhasingNewSampleFile + " " + covariables + " " + responseVar;
 
-					listOfCommands.add(new String(cmd));
-					try {
-						GuidanceImpl.newSample(mixedSampleFile, mixedPhasingSampleFile, mixedPhasingNewSampleFile,
-								responseVar, covariables, cmd);
-					} catch (Exception e) {
-						System.err.println("[Guidance] Exception trying the execution of snptest task");
-						System.err.println(e.getMessage());
-					}
+				listOfCommands.add(new String(cmd));
+				try {
+					GuidanceImpl.newSample(mixedSampleFile, mixedPhasingSampleFile, mixedPhasingNewSampleFile,
+							responseVar, covariables, cmd);
+				} catch (Exception e) {
+					System.err.println("[Guidance] Exception trying the execution of snptest task");
+					System.err.println(e.getMessage());
 				}
+				// }
 			}
 		}
 
@@ -652,7 +587,7 @@ public class Guidance {
 						lim2 = lim2 + chunkSize;
 					}
 
-					flushCommands(FLUSH);
+					GeneralUtils.flushCommands(listOfStages, listOfCommands, FLUSH);
 
 					if (chr == 23) {
 						// Now we perform the merge of chunks for each chromosome
@@ -716,7 +651,7 @@ public class Guidance {
 							qqPlotTiffFile, manhattanPlotTiffFile);
 				}
 
-				flushCommands(FLUSH);
+				GeneralUtils.flushCommands(listOfStages, listOfCommands, FLUSH);
 
 				if (BARRIERS) {
 					COMPSs.barrier();
@@ -731,11 +666,11 @@ public class Guidance {
 
 		} // End for test types
 
-		flushCommands(true);
+		// GeneralUtils.flushCommands(listOfStages, listOfCommands, true);
 
 		if (1 < numberOfTestTypes) {
 			makePhenotypeAnalysis(parsingArgs, combinedPanelsFilesInfo, resultsFilesInfo, phenomeAnalysisFilesInfo);
-			flushCommands(FLUSH);
+			GeneralUtils.flushCommands(listOfStages, listOfCommands, FLUSH);
 		} else {
 			LOGGER.info("\n[Guidance] No cross-phenotype analysis. Only one phenotype available");
 		}
@@ -919,7 +854,6 @@ public class Guidance {
 				doFilterByInfo(parsingArgs, mixedImputeFileInfo, mixedFilteredRsIdFile, chrS);
 				doQctoolS(parsingArgs, mixedImputeFile, mixedFilteredRsIdFile, mixedFilteredFile, mixedFilteredLogFile,
 						chrS);
-
 				// } else if (chrS.equals("23")) {
 				if (chrS.equals("23")) {
 					String mixedPhasingHapsMalesFile = commonFilesInfo.getPhasingHapsMalesFile();
@@ -1299,61 +1233,60 @@ public class Guidance {
 
 			}
 
-		} //else {
-			String snptestOutFile = assocFilesInfo.getSnptestOutFile(testTypeIndex, panelIndex, chrNumber, lim1, lim2,
+		} // else {
+		String snptestOutFile = assocFilesInfo.getSnptestOutFile(testTypeIndex, panelIndex, chrNumber, lim1, lim2,
+				chunkSize);
+		String snptestLogFile = assocFilesInfo.getSnptestLogFile(testTypeIndex, panelIndex, chrNumber, lim1, lim2,
+				chunkSize);
+		String mixedFilteredFile = imputationFilesInfo.getFilteredFile(panelIndex, chrNumber, lim1, lim2, chunkSize);
+		String mixedPhasingNewSampleFile = commonFilesInfo.getPhasingNewSampleFile(chrNumber);
+
+		// String mixedSampleFile = commonFilesInfo.getSampleFile(chrNumber);
+
+		// String mixedPhasingSampleFile =
+		// commonFilesInfo.getPhasingSampleFile(chrNumber);
+
+		// String cmd = JAVA_HOME + " newSample.jar " + mixedSampleFile + " " +
+		// mixedPhasingSampleFile + " "
+		// + mixedPhasingNewSampleFile + " " + covariables + " " + responseVar;
+
+		doSnptest(parsingArgs, chrS, mixedFilteredFile, mixedPhasingNewSampleFile, snptestOutFile, snptestLogFile,
+				responseVar, covariables);
+
+		if (imputationTool.equals("impute")) {
+			String mixedImputeFileInfo = imputationFilesInfo.getImputedInfoFile(panelIndex, chrNumber, lim1, lim2,
 					chunkSize);
-			String snptestLogFile = assocFilesInfo.getSnptestLogFile(testTypeIndex, panelIndex, chrNumber, lim1, lim2,
+			String summaryFile = assocFilesInfo.getSummaryFile(testTypeIndex, panelIndex, chrNumber, lim1, lim2,
 					chunkSize);
-			String mixedFilteredFile = imputationFilesInfo.getFilteredFile(panelIndex, chrNumber, lim1, lim2,
+
+			doCollectSummary(parsingArgs, chrS, mixedImputeFileInfo, snptestOutFile, summaryFile, mafThresholdS,
+					hweCohortThresholdS, hweCasesThresholdS, hweControlsThresholdS, NO_SEX);
+
+			String assocFilteredByAll = assocFilesInfo.getSummaryFilteredFile(testTypeIndex, panelIndex, chrNumber,
+					lim1, lim2, chunkSize);
+			String assocCondensed = assocFilesInfo.getSummaryCondensedFile(testTypeIndex, panelIndex, chrNumber, lim1,
+					lim2, chunkSize);
+
+			doFilterByAll(parsingArgs, summaryFile, assocFilteredByAll, assocCondensed, NO_SEX, rpanelName);
+
+		} else if (imputationTool.equals("minimac")) {
+			String mixedImputedMMInfoFile = imputationFilesInfo.getImputedMMInfoFile(panelIndex, chrNumber, lim1, lim2,
 					chunkSize);
-			String mixedPhasingNewSampleFile = commonFilesInfo.getPhasingNewSampleFile(chrNumber);
+			String summaryFile = assocFilesInfo.getSummaryFile(testTypeIndex, panelIndex, chrNumber, lim1, lim2,
+					chunkSize);
 
-			// String mixedSampleFile = commonFilesInfo.getSampleFile(chrNumber);
+			doCollectSummary(parsingArgs, chrS, mixedImputedMMInfoFile, snptestOutFile, summaryFile, mafThresholdS,
+					hweCohortThresholdS, hweCasesThresholdS, hweControlsThresholdS, NO_SEX);
 
-			// String mixedPhasingSampleFile =
-			// commonFilesInfo.getPhasingSampleFile(chrNumber);
+			String assocFilteredByAll = assocFilesInfo.getSummaryFilteredFile(testTypeIndex, panelIndex, chrNumber,
+					lim1, lim2, chunkSize);
+			String assocCondensed = assocFilesInfo.getSummaryCondensedFile(testTypeIndex, panelIndex, chrNumber, lim1,
+					lim2, chunkSize);
 
-			// String cmd = JAVA_HOME + " newSample.jar " + mixedSampleFile + " " +
-			// mixedPhasingSampleFile + " "
-			// + mixedPhasingNewSampleFile + " " + covariables + " " + responseVar;
+			doFilterByAll(parsingArgs, summaryFile, assocFilteredByAll, assocCondensed, NO_SEX, rpanelName);
+		}
 
-			doSnptest(parsingArgs, chrS, mixedFilteredFile, mixedPhasingNewSampleFile, snptestOutFile, snptestLogFile,
-					responseVar, covariables);
-
-			if (imputationTool.equals("impute")) {
-				String mixedImputeFileInfo = imputationFilesInfo.getImputedInfoFile(panelIndex, chrNumber, lim1, lim2,
-						chunkSize);
-				String summaryFile = assocFilesInfo.getSummaryFile(testTypeIndex, panelIndex, chrNumber, lim1, lim2,
-						chunkSize);
-
-				doCollectSummary(parsingArgs, chrS, mixedImputeFileInfo, snptestOutFile, summaryFile, mafThresholdS,
-						hweCohortThresholdS, hweCasesThresholdS, hweControlsThresholdS, NO_SEX);
-
-				String assocFilteredByAll = assocFilesInfo.getSummaryFilteredFile(testTypeIndex, panelIndex, chrNumber,
-						lim1, lim2, chunkSize);
-				String assocCondensed = assocFilesInfo.getSummaryCondensedFile(testTypeIndex, panelIndex, chrNumber,
-						lim1, lim2, chunkSize);
-
-				doFilterByAll(parsingArgs, summaryFile, assocFilteredByAll, assocCondensed, NO_SEX, rpanelName);
-
-			} else if (imputationTool.equals("minimac")) {
-				String mixedImputedMMInfoFile = imputationFilesInfo.getImputedMMInfoFile(panelIndex, chrNumber, lim1,
-						lim2, chunkSize);
-				String summaryFile = assocFilesInfo.getSummaryFile(testTypeIndex, panelIndex, chrNumber, lim1, lim2,
-						chunkSize);
-
-				doCollectSummary(parsingArgs, chrS, mixedImputedMMInfoFile, snptestOutFile, summaryFile, mafThresholdS,
-						hweCohortThresholdS, hweCasesThresholdS, hweControlsThresholdS, NO_SEX);
-
-				String assocFilteredByAll = assocFilesInfo.getSummaryFilteredFile(testTypeIndex, panelIndex, chrNumber,
-						lim1, lim2, chunkSize);
-				String assocCondensed = assocFilesInfo.getSummaryCondensedFile(testTypeIndex, panelIndex, chrNumber,
-						lim1, lim2, chunkSize);
-
-				doFilterByAll(parsingArgs, summaryFile, assocFilteredByAll, assocCondensed, NO_SEX, rpanelName);
-			}
-
-		//}
+		// }
 
 	}
 
@@ -2106,17 +2039,17 @@ public class Guidance {
 										.println("[Guidance] Adding filtered file to combine " + filteredPanelFemales);
 							}
 							filteredPanelsToCombineFemales.add(filteredPanelFemales);
-						} else {
-							String filteredPanel = assocFilesInfo.getSummaryFilteredFile(ttIndex, k, chr, lim1, lim2,
-									chunkSize);
-							if (DEBUG) {
-								LOGGER.debug("[Guidance] Adding filtered file to combine " + filteredPanel);
-							}
-							filteredPanelsToCombine.add(filteredPanel);
+						} // else {
+						String filteredPanel = assocFilesInfo.getSummaryFilteredFile(ttIndex, k, chr, lim1, lim2,
+								chunkSize);
+						if (DEBUG) {
+							LOGGER.debug("[Guidance] Adding filtered file to combine " + filteredPanel);
 						}
+						filteredPanelsToCombine.add(filteredPanel);
+						// }
 					}
 
-					flushCommands(FLUSH);
+					GeneralUtils.flushCommands(listOfStages, listOfCommands, FLUSH);
 
 					// Combine all the filtered panels 2 by 2 until there are no remaining panels
 					if (chr == 23) {
@@ -2185,42 +2118,40 @@ public class Guidance {
 							}
 							filteredPanelsToCombineFemales.add(filteredPanelC);
 						}
-					} else {
-						String destFilteredPanel = assocFilesInfo.getCombinedFilteredFile(ttIndex, 0, chr, lim1, lim2,
-								chunkSize);
-						String baseFilteredPanel = destFilteredPanel.substring(0, destFilteredPanel.length() - 7);
-						int counter = 0;
-						while (filteredPanelsToCombine.size() > 1) {
-							++counter;
-							String filteredPanelC;
-							if (filteredPanelsToCombine.size() == 2) {
-								filteredPanelC = destFilteredPanel;
-							} else {
-								filteredPanelC = baseFilteredPanel + "_reduce_" + Integer.toString(counter)
-										+ ".txt.tgz";
-							}
-
-							String filteredPanelA = filteredPanelsToCombine.poll();
-							String filteredPanelB = filteredPanelsToCombine.poll();
-
-							// Filtered part: combines A and B into A
-							if (DEBUG) {
-								LOGGER.debug("[Guidance] Combining " + filteredPanelA + " and " + filteredPanelB
-										+ " to " + filteredPanelC);
-							}
-							doCombinePanelsComplex(parsingArgs, filteredPanelA, filteredPanelB, filteredPanelC, lim1,
-									lim2);
-							if (ERASE_FILES) {
-								File f = new File(filteredPanelA);
-								f.delete();
-								f = new File(filteredPanelB);
-								f.delete();
-							}
-							filteredPanelsToCombine.add(filteredPanelC);
+					} // else {
+					String destFilteredPanel = assocFilesInfo.getCombinedFilteredFile(ttIndex, 0, chr, lim1, lim2,
+							chunkSize);
+					String baseFilteredPanel = destFilteredPanel.substring(0, destFilteredPanel.length() - 7);
+					int counter = 0;
+					while (filteredPanelsToCombine.size() > 1) {
+						++counter;
+						String filteredPanelC;
+						if (filteredPanelsToCombine.size() == 2) {
+							filteredPanelC = destFilteredPanel;
+						} else {
+							filteredPanelC = baseFilteredPanel + "_reduce_" + Integer.toString(counter) + ".txt.tgz";
 						}
-					}
 
-					flushCommands(FLUSH);
+						String filteredPanelA = filteredPanelsToCombine.poll();
+						String filteredPanelB = filteredPanelsToCombine.poll();
+
+						// Filtered part: combines A and B into A
+						if (DEBUG) {
+							LOGGER.debug("[Guidance] Combining " + filteredPanelA + " and " + filteredPanelB + " to "
+									+ filteredPanelC);
+						}
+						doCombinePanelsComplex(parsingArgs, filteredPanelA, filteredPanelB, filteredPanelC, lim1, lim2);
+						if (ERASE_FILES) {
+							File f = new File(filteredPanelA);
+							f.delete();
+							f = new File(filteredPanelB);
+							f.delete();
+						}
+						filteredPanelsToCombine.add(filteredPanelC);
+					}
+					// }
+
+					GeneralUtils.flushCommands(listOfStages, listOfCommands, FLUSH);
 
 					// Clean partial results
 					// new File(chunkResultsCondensed).delete();
@@ -2233,21 +2164,19 @@ public class Guidance {
 				if (chr == 23) {
 					makeMergeOfChunksCombinedSex(parsingArgs, ttIndex, 0, minSize, maxSize, chunkSize, assocFilesInfo,
 							mergeFilesInfo, FILTERED);
-				} else {
-					makeMergeOfChunksCombined(parsingArgs, ttIndex, 0, chr, minSize, maxSize, chunkSize, assocFilesInfo,
-							mergeFilesInfo, FILTERED);
-				}
-
-				if (chr != 23) {
-					String filteredByAllCurrentFile = mergeFilesInfo.getCombinedFilteredByAllFile(ttIndex, 0, chr);
-					filteredCombined.add(filteredByAllCurrentFile);
-				} else {
+				} // else {
+				makeMergeOfChunksCombined(parsingArgs, ttIndex, 0, chr, minSize, maxSize, chunkSize, assocFilesInfo,
+						mergeFilesInfo, FILTERED);
+				// }
+				if (chr == 23) {
 					String filteredByAllCurrentMalesFile = mergeFilesInfo.getCombinedFilteredByAllMalesFile(ttIndex, 0);
 					doCopyFile(parsingArgs, filteredByAllCurrentMalesFile, filteredCombineAllXMales);
 					String filteredByAllCurrentFemalesFile = mergeFilesInfo.getCombinedFilteredByAllFemalesFile(ttIndex,
 							0);
 					doCopyFile(parsingArgs, filteredByAllCurrentFemalesFile, filteredCombineAllXFemales);
 				}
+				String filteredByAllCurrentFile = mergeFilesInfo.getCombinedFilteredByAllFile(ttIndex, 0, chr);
+				filteredCombined.add(filteredByAllCurrentFile);
 
 			} // End for chromosomes
 
@@ -2677,23 +2606,26 @@ public class Guidance {
 					+ " --output-vcf " + filteredHaplotypesVcfFile;
 
 			listOfCommands.add(new String(cmd));
+
+			cmd = SAMTOOLSBINARY + "/bgzip " + filteredHaplotypesVcfFile;
+
+			listOfCommands.add(new String(cmd));
 			try {
 				GuidanceImpl.filterHaplotypes(phasingHapsFile, phasingSampleFile, excludedSnpsFile,
-						filteredHaplotypesLogFile, filteredHaplotypesVcfFile, cmd);
+						filteredHaplotypesLogFile, filteredHaplotypesVcfFileBgzip, cmd);
 			} catch (Exception e) {
 				System.err.println("[Guidance] Exception trying the execution of filterHaplotypes task");
 				System.err.println(e.getMessage());
 			}
 
-			cmd = SAMTOOLSBINARY + "/bgzip " + filteredHaplotypesVcfFile + " " + filteredHaplotypesVcfFileBgzip;
-
-			listOfCommands.add(new String(cmd));
-			try {
-				GuidanceImpl.samtoolsBgzip(filteredHaplotypesVcfFile, filteredHaplotypesVcfFileBgzip, cmd);
-			} catch (Exception e) {
-				System.err.println("[Guidance] Exception trying the execution of samtoolsBgzip task");
-				System.err.println(e.getMessage());
-			}
+			// try {
+			// GuidanceImpl.samtoolsBgzip(filteredHaplotypesVcfFile,
+			// filteredHaplotypesVcfFileBgzip, cmd);
+			// } catch (Exception e) {
+			// System.err.println("[Guidance] Exception trying the execution of
+			// samtoolsBgzip task");
+			// System.err.println(e.getMessage());
+			// }
 		}
 
 	}
@@ -2725,25 +2657,30 @@ public class Guidance {
 		String cmdToStore = null;
 
 		// TODO: remove when minimac es fixed
-		if ((parsingArgs.getStageStatus("imputeWithImpute") == 1)
-				|| ((parsingArgs.getStageStatus("imputeWithMinimac") == 1) && chrS.equals("23"))) {
+		if (parsingArgs.getStageStatus("imputeWithImpute") == 1) {
+			// || ((parsingArgs.getStageStatus("imputeWithMinimac") == 1) &&
+			// chrS.equals("23"))) {
 			// Submitting the impute task per chunk
 
 			if (chrS.equals("23")) {
 
-				if (sex.equals(SEX1)) {
-					cmdToStore = IMPUTE2_BINARY + " -use_prephased_g -m " + gmapFile + " -h " + knownHapFile + " -l "
-							+ legendFile + " -known_haps_g " + phasingHapsFile + " -sample_g " + phasingSampleFile
-							+ " -int " + lim1S + " " + lim2S + " -chrX -exclude_snps_g " + pairsFile
-							+ " -impute_excluded -Ne 20000 -o " + imputeFile + " -i " + imputeFileInfo + " -r "
-							+ imputeFileSummary + " -w " + imputeFileWarnings + " -no_sample_qc_info -o_gz ";
-				} else if (sex.equals(SEX2)) {
-					cmdToStore = IMPUTE2_BINARY + " -use_prephased_g -m " + gmapFile + " -h " + knownHapFile + " -l "
-							+ legendFile + " -known_haps_g " + phasingHapsFile + " -sample_g " + phasingSampleFile
-							+ " -int " + lim1S + " " + lim2S + " -chrX -exclude_snps_g " + pairsFile
-							+ " -impute_excluded -Ne 20000 -o " + imputeFile + " -i " + imputeFileInfo + " -r "
-							+ imputeFileSummary + " -w " + imputeFileWarnings + " -no_sample_qc_info -o_gz ";
-				}
+				// if (sex.equals(SEX1)) {
+				// cmdToStore = IMPUTE2_BINARY + " -use_prephased_g -m " + gmapFile + " -h " +
+				// knownHapFile + " -l "
+				// + legendFile + " -known_haps_g " + phasingHapsFile + " -sample_g " +
+				// phasingSampleFile
+				// + " -int " + lim1S + " " + lim2S + " -chrX -exclude_snps_g " + pairsFile
+				// + " -impute_excluded -Ne 20000 -o " + imputeFile + " -i " + imputeFileInfo +
+				// " -r "
+				// + imputeFileSummary + " -w " + imputeFileWarnings + " -no_sample_qc_info
+				// -o_gz ";
+				// } else if (sex.equals(SEX2)) {
+				cmdToStore = IMPUTE2_BINARY + " -use_prephased_g -m " + gmapFile + " -h " + knownHapFile + " -l "
+						+ legendFile + " -known_haps_g " + phasingHapsFile + " -sample_g " + phasingSampleFile
+						+ " -int " + lim1S + " " + lim2S + " -chrX -exclude_snps_g " + pairsFile
+						+ " -impute_excluded -Ne 20000 -o " + imputeFile + " -i " + imputeFileInfo + " -r "
+						+ imputeFileSummary + " -w " + imputeFileWarnings + " -no_sample_qc_info -o_gz ";
+				// }
 
 			} else {
 				cmdToStore = IMPUTE2_BINARY + " -use_prephased_g -m " + gmapFile + " -h " + knownHapFile + " -l "
@@ -2831,7 +2768,7 @@ public class Guidance {
 
 			listOfCommands.add(cmdToStore);
 			try {
-				flushCommands(FLUSH);
+				GeneralUtils.flushCommands(listOfStages, listOfCommands, FLUSH);
 			} catch (IOException e) {
 				LOGGER.error("[Guidance] Exception writing to list of commands file " + e);
 			}
@@ -2875,7 +2812,7 @@ public class Guidance {
 
 			listOfCommands.add(cmdToStore);
 			try {
-				flushCommands(FLUSH);
+				GeneralUtils.flushCommands(listOfStages, listOfCommands, FLUSH);
 			} catch (IOException e) {
 				LOGGER.error("[Guidance] Exception writing to list of commands file " + e);
 			}
@@ -2922,18 +2859,12 @@ public class Guidance {
 					+ filteredRsIdFile + " " + infoThresholdS;
 			listOfCommands.add(cmdToStore);
 			try {
-				flushCommands(FLUSH);
-			} catch (IOException e) {
-				LOGGER.error("[Guidance] Exception writing to list of commands file " + e);
-			}
-			try {
 				GuidanceImpl.filterByInfo(imputationTool, imputeFileInfo, filteredRsIdFile, infoThresholdS,
 						mafThresholdS, cmdToStore);
 			} catch (Exception e) {
 				System.err.println("[Guidance] Exception trying the execution of filterByInfo task");
 				System.err.println(e.getMessage());
 			}
-
 		}
 	}
 
@@ -2957,8 +2888,8 @@ public class Guidance {
 
 		if (parsingArgs.getStageStatus("qctoolS") == 1) {
 			String cmdToStore = null;
-
-			if (imputationTool.equals("impute") || chromo.equals("23")) {
+			// if (imputationTool.equals("impute") || chromo.equals("23")) {
+			if (imputationTool.equals("impute")) {
 
 				imputationTool = "impute";
 				cmdToStore = QCTOOL_BINARY + " -g " + imputeFile + " -og " + filteredFile + " -incl-rsids "
@@ -2974,17 +2905,11 @@ public class Guidance {
 
 			listOfCommands.add(cmdToStore);
 			try {
-				flushCommands(FLUSH);
-			} catch (IOException e) {
-				LOGGER.error("[Guidance] Exception writing to list of commands file " + e);
-			}
-			try {
 				GuidanceImpl.qctoolS(imputationTool, imputeFile, filteredRsIdFile, mafThresholdS, filteredFile,
 						filteredLogFile, cmdToStore);
 			} catch (Exception gte) {
 				LOGGER.error("[Guidance] Exception trying the execution of qctoolS tasks for controls", gte);
 			}
-
 		}
 	}
 
@@ -3026,7 +2951,7 @@ public class Guidance {
 
 			listOfCommands.add(cmdToStore);
 			try {
-				flushCommands(FLUSH);
+				GeneralUtils.flushCommands(listOfStages, listOfCommands, FLUSH);
 			} catch (IOException e) {
 				LOGGER.error("[Guidance] Exception writing to list of commands file " + e);
 			}
@@ -3070,7 +2995,7 @@ public class Guidance {
 			listOfCommands.add(cmdToStore);
 
 			try {
-				flushCommands(FLUSH);
+				GeneralUtils.flushCommands(listOfStages, listOfCommands, FLUSH);
 			} catch (IOException e) {
 				LOGGER.error("[Guidance] Exception writing to list of commands file " + e);
 			}
@@ -3130,7 +3055,7 @@ public class Guidance {
 					+ " " + filteredByAllC + " " + rpanelName + " " + rpanelFlag;
 			listOfCommands.add(cmdToStore);
 			try {
-				flushCommands(FLUSH);
+				GeneralUtils.flushCommands(listOfStages, listOfCommands, FLUSH);
 			} catch (IOException e) {
 				LOGGER.error("[Guidance] Exception writing to list of commands file " + e);
 			}
@@ -3269,7 +3194,7 @@ public class Guidance {
 		String cmdToStore = JAVA_HOME + "/java mergeTwoChunksUnconditional " + reduceA + " " + reduceB + " " + reduceC;
 		listOfCommands.add(cmdToStore);
 		try {
-			flushCommands(FLUSH);
+			GeneralUtils.flushCommands(listOfStages, listOfCommands, FLUSH);
 		} catch (IOException e) {
 			LOGGER.error("[Guidance] Exception writing to list of commands file " + e);
 		}
@@ -3327,7 +3252,7 @@ public class Guidance {
 
 			listOfCommands.add(cmdToStore);
 			try {
-				flushCommands(FLUSH);
+				GeneralUtils.flushCommands(listOfStages, listOfCommands, FLUSH);
 			} catch (IOException e) {
 				LOGGER.error("[Guidance] Exception writing to list of commands file " + e);
 			}
@@ -3343,122 +3268,6 @@ public class Guidance {
 
 	}
 
-	/**
-	 * Method that wraps the initPhenoMatrix task and store the command in the
-	 * listOfCommands
-	 * 
-	 * @param parsingArgs
-	 * @param listOfCommands
-	 * @param topHitsFile
-	 * @param ttName
-	 * @param rpName
-	 * @param phenomeFile
-	 */
-	/*
-	 * private static void doInitPhenoMatrix(ParseCmdLine parsingArgs, String
-	 * topHitsFile, String ttName, String rpName, String phenomeFile) {
-	 * 
-	 * if (parsingArgs.getStageStatus("initPhenoMatrix") == 1) { String cmdToStore =
-	 * JAVA_HOME + "/java initPhenoMatrix " + topHitsFile + " " + ttName + " " +
-	 * rpName + " " + phenomeFile; listOfCommands.add(cmdToStore);
-	 * 
-	 * try { GuidanceImpl.initPhenoMatrix(topHitsFile, ttName, rpName, phenomeFile,
-	 * cmdToStore); } catch (GuidanceTaskException gte) { LOGGER.
-	 * error("[Guidance] Exception trying the execution of initPhenoMatrix task",
-	 * gte); } } }
-	 */
-
-	/**
-	 * Method that wraps the addToPhenoMatrix task and store the command in the
-	 * listOfCommands
-	 * 
-	 * @param parsingArgs
-	 * @param listOfCommands
-	 * @param phenomeFileA
-	 * @param topHitsFile
-	 * @param ttName
-	 * @param rpName
-	 * @param phenomeFileB
-	 */
-	/*
-	 * private static void doAddToPhenoMatrix(ParseCmdLine parsingArgs, String
-	 * phenomeFileA, String topHitsFile, String ttName, String rpName, String
-	 * phenomeFileB) {
-	 * 
-	 * if (parsingArgs.getStageStatus("addToPhenoMatrix") == 1) { String cmdToStore
-	 * = JAVA_HOME + "/java addToPhenoMatrix " + phenomeFileA + " " + topHitsFile +
-	 * " " + ttName + " " + rpName + " " + phenomeFileB;
-	 * listOfCommands.add(cmdToStore);
-	 * 
-	 * try { GuidanceImpl.addToPhenoMatrix(phenomeFileA, topHitsFile, ttName,
-	 * rpName, phenomeFileB, cmdToStore); } catch (GuidanceTaskException gte) {
-	 * LOGGER.
-	 * error("[Guidance] Exception trying the execution of addToPhenoMatrix task",
-	 * gte); } } }
-	 */
-
-	/**
-	 * Method that wraps the filloutPhenoMatrix task and store the command in the
-	 * listOfCommands
-	 * 
-	 * @param parsingArgs
-	 * @param listOfCommands
-	 * @param phenomeFileA
-	 * @param filteredByAllFile
-	 * @param filteredByAllXFile
-	 * @param endChrS
-	 * @param ttName
-	 * @param rpName
-	 * @param phenomeFileB
-	 */
-	/*
-	 * private static void doFilloutPhenoMatrix(ParseCmdLine parsingArgs, String
-	 * phenomeFileA, String filteredByAllFile, String filteredByAllXMalesFile,
-	 * String filteredByAllXFemalesFile, String endChrS, String ttName, String
-	 * rpName, String phenomeFileB) {
-	 * 
-	 * if (parsingArgs.getStageStatus("filloutPhenoMatrix") == 1) { String
-	 * cmdToStore = JAVA_HOME + "/java filloutPhenoMatrix " + phenomeFileA + " " +
-	 * filteredByAllFile + " " + filteredByAllXMalesFile + " " +
-	 * filteredByAllXFemalesFile + " " + endChrS + " " + ttName + " " + rpName + " "
-	 * + phenomeFileB; listOfCommands.add(cmdToStore);
-	 * 
-	 * try { GuidanceImpl.filloutPhenoMatrix(phenomeFileA, filteredByAllFile,
-	 * filteredByAllXMalesFile, filteredByAllXFemalesFile, endChrS, ttName, rpName,
-	 * phenomeFileB, cmdToStore); } catch (GuidanceTaskException gte) { LOGGER.
-	 * error("[Guidance] Exception trying the execution of filloutPhenoMatrix task",
-	 * gte); } } }
-	 */
-
-	/**
-	 * Method that wraps the finalizePhenoMatrix task and store the command in the
-	 * listOfCommands
-	 * 
-	 * @param parsingArgs
-	 * @param listOfCommands
-	 * @param phenomeFileA
-	 * @param phenomeFileB
-	 * @param ttName
-	 * @param rpName
-	 * @param phenomeFileC
-	 */
-	/*
-	 * private static void doFinalizePhenoMatrix(ParseCmdLine parsingArgs, String
-	 * phenomeFileA, String phenomeFileB, String ttName, String rpName, String
-	 * phenomeFileC) {
-	 * 
-	 * if (parsingArgs.getStageStatus("finalizePhenoMatrix") == 1) { String
-	 * cmdToStore = JAVA_HOME + "/java finalizePhenoMatrix " + phenomeFileA + " " +
-	 * phenomeFileB + " " + ttName + " " + rpName + " " + phenomeFileC;
-	 * listOfCommands.add(cmdToStore);
-	 * 
-	 * try { GuidanceImpl.finalizePhenoMatrix(phenomeFileA, phenomeFileB, ttName,
-	 * rpName, phenomeFileC, cmdToStore); } catch (GuidanceTaskException gte) {
-	 * LOGGER.
-	 * error("[Guidance] Exception trying the execution of finalizePhenoMatrix task"
-	 * , gte); } } }
-	 */
-
 	private static void doCopyFile(ParseCmdLine parsingArgs, String originPath, String destinationPath)
 			throws IOException, GuidanceTaskException {
 		String cmdToStore = JAVA_HOME + "/java copyFile " + originPath + " " + destinationPath;
@@ -3469,104 +3278,21 @@ public class Guidance {
 	}
 
 	/**
-	 * Method to print the current status of each stage (0: unactive, 1:active) of
-	 * Guidance workflow.
-	 * 
-	 * @param parsingArgs
-	 */
-	private static void printStagesStatus(ParseCmdLine parsingArgs) {
-		// Verify the status of each stage:
-		LOGGER.info("[Guidance] Current Status of each stage of the whole workflow:");
-		LOGGER.info("[Guidance] convertFromBedToBed      " + parsingArgs.getStageStatus("convertFromBedToBed"));
-		LOGGER.info("[Guidance] createRsIdList           " + parsingArgs.getStageStatus("createRsIdList"));
-		LOGGER.info("[Guidance] phasingBed               " + parsingArgs.getStageStatus("phasingBed"));
-		LOGGER.info("[Guidance] phasing                  " + parsingArgs.getStageStatus("phasing"));
-		LOGGER.info("[Guidance] createListOfExcludedSnps " + parsingArgs.getStageStatus("createListOfExcludedSnps"));
-		LOGGER.info("[Guidance] filterHaplotypes         " + parsingArgs.getStageStatus("filterHaplotypes"));
-		LOGGER.info("[Guidance] imputeWithImpute         " + parsingArgs.getStageStatus("imputeWithImpute"));
-		LOGGER.info("[Guidance] imputeWithMinimac        " + parsingArgs.getStageStatus("imputeWithMinimac"));
-		LOGGER.info("[Guidance] filterByInfo             " + parsingArgs.getStageStatus("filterByInfo"));
-		LOGGER.info("[Guidance] qctoolS                  " + parsingArgs.getStageStatus("qctoolS"));
-		LOGGER.info("[Guidance] snptest                  " + parsingArgs.getStageStatus("snptest"));
-		LOGGER.info("[Guidance] collectSummary           " + parsingArgs.getStageStatus("collectSummary"));
-		LOGGER.info("[Guidance] mergeTwoChunks           " + parsingArgs.getStageStatus("mergeTwoChunks"));
-		LOGGER.info("[Guidance] filterByAll              " + parsingArgs.getStageStatus("filterByAll"));
-		LOGGER.info("[Guidance] jointCondensedFiles      " + parsingArgs.getStageStatus("jointCondensedFiles"));
-		LOGGER.info("[Guidance] jointFilteredByAllFiles  " + parsingArgs.getStageStatus("jointFilteredByAllFiles"));
-		LOGGER.info("[Guidance] generateTopHits          " + parsingArgs.getStageStatus("generateTopHits"));
-		LOGGER.info("[Guidance] generateQQManhattanPlots " + parsingArgs.getStageStatus("generateQQManhattanPlots"));
-		LOGGER.info("[Guidance] combinePanelsComplex     " + parsingArgs.getStageStatus("combinePanelsComplex"));
-		LOGGER.info("[Guidance] combGenerateManhattanTop " + parsingArgs.getStageStatus("combGenerateManhattanTop"));
-		LOGGER.info("[Guidance] phenoAnalysis            " + parsingArgs.getStageStatus("phenoAnalysis"));
-		LOGGER.info("[Guidance] tasku                    " + parsingArgs.getStageStatus("tasku"));
-		LOGGER.info("[Guidance] taskv                    " + parsingArgs.getStageStatus("taskv"));
-		LOGGER.info("[Guidance] taskw                    " + parsingArgs.getStageStatus("taskw"));
-		LOGGER.info("[Guidance] taskx                    " + parsingArgs.getStageStatus("taskx"));
-		LOGGER.info("[Guidance] tasky                    " + parsingArgs.getStageStatus("tasky"));
-		LOGGER.info("[Guidance] taskz                    " + parsingArgs.getStageStatus("taskz"));
-	}
-
-	/**
-	 * Method to print the general information of Guidance
-	 * 
-	 */
-	private static void printGuidancePackageVersion() {
-		LOGGER.warn("[Guidance] *****************************************************************");
-		LOGGER.warn("[Guidance] ** This is the Guidance framework to performing imputation,    **");
-		LOGGER.warn("[Guidance] ** GWAS and Phenotype analysis of large scale GWAS datasets.   **");
-		LOGGER.warn("[Guidance] ** Version: Guidance " + GUIDANCE_VERSION + " build " + GUIDANCE_BUILDNUMBER
-				+ "           **");
-		LOGGER.warn("[Guidance] ** Date release: 20-Jul-2016                                   **");
-		LOGGER.warn("[Guidance] ** Contact: http://cg.bsc.es/guidance                          **");
-		LOGGER.warn("[Guidance] *****************************************************************\n");
-	}
-
-	/**
 	 * Method to verify that all the environment variables have been well defined
 	 * 
 	 */
 	private static void verifyEnvVar() throws GuidanceEnvironmentException {
-		verify(PLINK_BINARY);
+		GeneralUtils.verify(PLINK_BINARY);
 
-		verifyEnvVarDefined(R_SCRIPT_BIN_DIR);
-		verifyEnvVarDefined(R_SCRIPT_DIR);
+		GeneralUtils.verifyEnvVarDefined(R_SCRIPT_BIN_DIR);
+		GeneralUtils.verifyEnvVarDefined(R_SCRIPT_DIR);
 
-		verify(QCTOOL_BINARY);
-		verify(SHAPEIT_BINARY);
-		verify(IMPUTE2_BINARY);
-		verify(SNPTEST_BINARY);
+		GeneralUtils.verify(QCTOOL_BINARY);
+		GeneralUtils.verify(SHAPEIT_BINARY);
+		GeneralUtils.verify(IMPUTE2_BINARY);
+		GeneralUtils.verify(SNPTEST_BINARY);
 
-		verifyEnvVarDefined(JAVA_HOME);
-	}
-
-	/**
-	 * Verifies that the given environment variable is correctly defined
-	 * 
-	 * @param envVar
-	 * @throws GuidanceEnvironmentException
-	 */
-	private static void verifyEnvVarDefined(String envVar) throws GuidanceEnvironmentException {
-		if (envVar == null) {
-			throw new GuidanceEnvironmentException("[Guidance] Error, " + envVar
-					+ " environment variable in not present in .bashrc. You must define it properly");
-		}
-	}
-
-	/**
-	 * Verifies that the given environment variable is correctly defined and points
-	 * to a valid directory
-	 * 
-	 * @param envVar
-	 * @throws GuidanceEnvironmentException
-	 */
-	private static void verify(String envVar) throws GuidanceEnvironmentException {
-		verifyEnvVarDefined(envVar);
-
-		File f = new File(envVar);
-		if (!f.exists() || f.isDirectory()) {
-			throw new GuidanceEnvironmentException("[Guidance] Error, " + envVar
-					+ " does not exist or it is not a binary file. Please check your .bashrc");
-		}
+		GeneralUtils.verifyEnvVarDefined(JAVA_HOME);
 	}
 
 }

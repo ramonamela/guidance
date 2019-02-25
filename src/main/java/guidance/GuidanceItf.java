@@ -169,14 +169,14 @@ public interface GuidanceItf {
 			@Parameter(type = Type.FILE, direction = Direction.IN) String phasingSampleFile,
 			@Parameter(type = Type.FILE, direction = Direction.IN) String excludedSnpsFile,
 			@Parameter(type = Type.FILE, direction = Direction.OUT) String filteredLogFile,
-			@Parameter(type = Type.FILE, direction = Direction.OUT) String filteredHapsVcfFile,
+			@Parameter(type = Type.FILE, direction = Direction.OUT) String filteredHaplotypesVcfFileBgzip,
 			@Parameter(type = Type.STRING, direction = Direction.IN) String cmdToStore);
 
-	@Method(declaringClass = "guidance.GuidanceImpl")
-	@Constraints(computingUnits = "1", memorySize = "${samtoolsBgzipMem}")
-	void samtoolsBgzip(@Parameter(type = Type.FILE, direction = Direction.IN) String input,
-			@Parameter(type = Type.FILE, direction = Direction.OUT) String output,
-			@Parameter(type = Type.STRING, direction = Direction.IN) String cmdToStore);
+	//@Method(declaringClass = "guidance.GuidanceImpl")
+	//@Constraints(computingUnits = "1", memorySize = "${samtoolsBgzipMem}")
+	//void samtoolsBgzip(@Parameter(type = Type.FILE, direction = Direction.IN) String input,
+	//		@Parameter(type = Type.FILE, direction = Direction.OUT) String output,
+	//		@Parameter(type = Type.STRING, direction = Direction.IN) String cmdToStore);
 	
 	@Method(declaringClass = "guidance.GuidanceImpl")
 	@Constraints(computingUnits = "1", memorySize = "1.0f")
@@ -294,7 +294,6 @@ public interface GuidanceItf {
 	void filterByAll(@Parameter(type = Type.STRING, direction = Direction.IN) String imputationTool,
 			@Parameter(type = Type.FILE, direction = Direction.IN) String inputFile,
 			@Parameter(type = Type.FILE, direction = Direction.OUT) String outputFile,
-			//@Parameter(type = Type.FILE, direction = Direction.OUT) String outputCondensedFile,
 			@Parameter(type = Type.STRING, direction = Direction.IN) String mafThresholdS,
 			@Parameter(type = Type.STRING, direction = Direction.IN) String infoThresholdS,
 			@Parameter(type = Type.STRING, direction = Direction.IN) String hweCohortThresholdS,

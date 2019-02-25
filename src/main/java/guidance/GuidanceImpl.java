@@ -55,6 +55,10 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.zip.GZIPInputStream;
 
+/**
+ * @author ramela
+ *
+ */
 public class GuidanceImpl {
 
 	// Debug flag
@@ -1566,7 +1570,7 @@ public class GuidanceImpl {
 	 * @throws Exception
 	 */
 	public static void filterHaplotypes(String phasingHapsFile, String phasingSampleFile, String excludedSnpsFile,
-			String filteredLogFile, String filteredHapsVcfFile, String cmdToStore) throws GuidanceTaskException {
+			String filteredLogFile, String filteredHaplotypesVcfFileBgzip, String cmdToStore) throws GuidanceTaskException {
 
 		String shapeitBinary = loadFromEnvironment(SHAPEITBINARY, HEADER_FILTER_HAPLOTYPES);
 
@@ -1577,13 +1581,15 @@ public class GuidanceImpl {
 			System.out.println("[DEBUG] \t- Input phasingSampleFile   : " + phasingSampleFile);
 			System.out.println("[DEBUG] \t- Input excludedSnpsFile    : " + excludedSnpsFile);
 			System.out.println("[DEBUG] \t- Output filteredLogFile     : " + filteredLogFile);
-			System.out.println("[DEBUG] \t- Output filteredHapsVcfFile : " + filteredHapsVcfFile);
+			System.out.println("[DEBUG] \t- Output filteredHapsVcfFile : " + filteredHaplotypesVcfFileBgzip);
 
 			System.out.println(NEW_LINE);
 			System.out.println("[DEBUG] \t- Command: " + cmdToStore);
 			System.out.println("--------------------------------------");
 		}
 		long startTime = System.currentTimeMillis();
+		
+		String filteredHapsVcfFile = filteredHaplotypesVcfFileBgzip.substring(0, filteredHaplotypesVcfFileBgzip.length() - 3);
 
 		String cmd = null;
 		cmd = shapeitBinary + " -convert --input-haps " + phasingHapsFile + " " + phasingSampleFile + " --exclude-snp "
@@ -1637,6 +1643,23 @@ public class GuidanceImpl {
 		// Finally replace the original file.
 		FileUtils.move(filteredHapsVcfFile + ".tmp", filteredHapsVcfFile);
 
+		String samToolsBinary = loadFromEnvironment(SAMTOOLSBINARY, HEADER_SAMTOOLS);
+		cmd = samToolsBinary + "/bgzip -f " + filteredHapsVcfFile;
+
+		exitValue = -1;
+		try {
+			exitValue = ProcessUtils.execute(cmd, filteredHapsVcfFile + STDOUT_EXTENSION, filteredHapsVcfFile + STDERR_EXTENSION);
+		} catch (IOException ioe) {
+			throw new GuidanceTaskException(ioe);
+		}
+
+		FileUtils.move(filteredHapsVcfFile + ".gz", filteredHaplotypesVcfFileBgzip);
+
+		if (exitValue != 0) {
+			System.err.println("[phasing] Warning executing samtoolsBgzip job, exit value is: " + exitValue);
+			System.err.println("[phasing]                         (This warning is not fatal).");
+		}
+
 		long stopTime = System.currentTimeMillis();
 		long elapsedTime = (stopTime - startTime) / 1_000;
 		if (DEBUG) {
@@ -1647,59 +1670,65 @@ public class GuidanceImpl {
 		}
 	}
 
-	public static void samtoolsBgzip(String input, String output, String cmdToStore)
-			throws IOException, InterruptedException, Exception {
+	// public static void samtoolsBgzip(String input, String output, String
+	// cmdToStore)
+	// throws IOException, InterruptedException, Exception {
 
-		String samToolsBinary = loadFromEnvironment(SAMTOOLSBINARY, HEADER_SAMTOOLS);
+	// String samToolsBinary = loadFromEnvironment(SAMTOOLSBINARY, HEADER_SAMTOOLS);
 
-		long startTime = System.currentTimeMillis();
+	// long startTime = System.currentTimeMillis();
 
-		String cmd = samToolsBinary + "/bgzip -f " + input;
+	// String cmd = samToolsBinary + "/bgzip -f " + input;
 
-		if (DEBUG) {
-			System.out.println("\n[DEBUG] Command: " + cmd);
-			System.out.println(" ");
-		}
+	// if (DEBUG) {
+	// System.out.println("\n[DEBUG] Command: " + cmd);
+	// System.out.println(" ");
+	// }
 
-		File inputFileBeg = new File(input);
-		if (inputFileBeg.exists()) {
-			System.out.println("[samtoolsBgzip] Input " + input + " exist!");
-		} else {
-			System.out.println("[samtoolsBgzip] Input " + input + " does not exist!");
-		}
-		
-		int exitValue = -1;
-		try {
-			exitValue = ProcessUtils.execute(cmd, input + STDOUT_EXTENSION, input + STDERR_EXTENSION);
-		} catch (IOException ioe) {
-			throw new GuidanceTaskException(ioe);
-		}
-		
-		FileUtils.move(input + ".gz", output);
+	// File inputFileBeg = new File(input);
+	// if (inputFileBeg.exists()) {
+	// System.out.println("[samtoolsBgzip] Input " + input + " exist!");
+	// } else {
+	// System.out.println("[samtoolsBgzip] Input " + input + " does not exist!");
+	// }
 
-		if (exitValue != 0) {
-			System.err.println("[phasing] Warning executing samtoolsBgzip job, exit value is: " + exitValue);
-			System.err.println("[phasing]                         (This warning is not fatal).");
-		}
+	// int exitValue = -1;
+	// try {
+	// exitValue = ProcessUtils.execute(cmd, input + STDOUT_EXTENSION, input +
+	// STDERR_EXTENSION);
+	// } catch (IOException ioe) {
+	// throw new GuidanceTaskException(ioe);
+	// }
 
-		File tmpOutput = new File(output);
-		if (!tmpOutput.exists()) {
-			System.out.println("[samtoolsBgzip] No! Output " + output + " does not exist!");
-			File inputFile = new File(input);
-			if (!inputFile.exists()) {
-				System.out.println("[samtoolsBgzip] No! Input " + input + " does not exist!");
-			}
-		}
-
-		long stopTime = System.currentTimeMillis();
-		long elapsedTime = (stopTime - startTime) / 1000;
-		if (DEBUG) {
-			System.out.println("\n[DEBUG] samtoolsBgzip startTime: " + startTime);
-			System.out.println("\n[DEBUG] samtoolsBgzip endTime: " + stopTime);
-			System.out.println("\n[DEBUG] samtoolsBgzip elapsedTime: " + elapsedTime + " seconds");
-			System.out.println("\n[DEBUG] Finished execution of samtoolsBgzip.");
-		}
-	}
+	// FileUtils.move(input + ".gz", output);
+	//
+	// if (exitValue != 0) {
+	// System.err.println("[phasing] Warning executing samtoolsBgzip job, exit value
+	// is: " + exitValue);
+	// System.err.println("[phasing] (This warning is not fatal).");
+	// }
+	//
+	// File tmpOutput = new File(output);
+	// if (!tmpOutput.exists()) {
+	// System.out.println("[samtoolsBgzip] No! Output " + output + " does not
+	// exist!");
+	// File inputFile = new File(input);
+	// if (!inputFile.exists()) {
+	// System.out.println("[samtoolsBgzip] No! Input " + input + " does not
+	// exist!");
+	// }
+	// }
+	//
+	// long stopTime = System.currentTimeMillis();
+	// long elapsedTime = (stopTime - startTime) / 1000;
+	// if (DEBUG) {
+	// System.out.println("\n[DEBUG] samtoolsBgzip startTime: " + startTime);
+	// System.out.println("\n[DEBUG] samtoolsBgzip endTime: " + stopTime);
+	// System.out.println("\n[DEBUG] samtoolsBgzip elapsedTime: " + elapsedTime + "
+	// seconds");
+	// System.out.println("\n[DEBUG] Finished execution of samtoolsBgzip.");
+	// }
+	// }
 
 	public static void samtoolsTabix(String inputGz, String outputTbi, String cmdToStore)
 			throws IOException, InterruptedException, Exception {
@@ -2070,16 +2099,18 @@ public class GuidanceImpl {
 		String cmd = null;
 		// Submitting the impute task per chunk
 		if (chrS.equals("23")) {
-			//if (sex.equals(SEX1)) {
-				cmd = minimacBinary + " --refHaps " + vcfFile + " --haps " + filteredHapsVcfFileBgzip + " --start "
-						+ lim1S + " --end " + lim2S + " --chr X --window 500000 --prefix " + realPrefix
-						+ " --log --allTypedSites --noPhoneHome --format GT,DS,GP --nobgzip";
-			//} else if (sex.equals(SEX2)) {
-			//} else {
-			//	cmd = minimacBinary + " --refHaps " + vcfFile + " --haps " + filteredHapsVcfFileBgzip + " --start "
-			//			+ lim1S + " --end " + lim2S + " --chr X --window 500000 --prefix " + realPrefix
-			//			+ " --log --allTypedSites --noPhoneHome --format GT,DS,GP --nobgzip";
-			//}
+			// if (sex.equals(SEX1)) {
+			cmd = minimacBinary + " --refHaps " + vcfFile + " --haps " + filteredHapsVcfFileBgzip + " --start " + lim1S
+					+ " --end " + lim2S + " --chr X --window 500000 --prefix " + realPrefix
+					+ " --log --allTypedSites --noPhoneHome --format GT,DS,GP --nobgzip";
+			// } else if (sex.equals(SEX2)) {
+			// } else {
+			// cmd = minimacBinary + " --refHaps " + vcfFile + " --haps " +
+			// filteredHapsVcfFileBgzip + " --start "
+			// + lim1S + " --end " + lim2S + " --chr X --window 500000 --prefix " +
+			// realPrefix
+			// + " --log --allTypedSites --noPhoneHome --format GT,DS,GP --nobgzip";
+			// }
 		} else {
 			cmd = minimacBinary + " --refHaps " + vcfFile + " --haps " + filteredHapsVcfFileBgzip + " --start " + lim1S
 					+ " --end " + lim2S + " --chr " + chrS + " --window 500000 --prefix " + realPrefix
@@ -2478,7 +2509,7 @@ public class GuidanceImpl {
 	 * @throws Exception
 	 */
 	public static void filterByAll(String imputationTool, String inputFile, String outputFile,
-			/* String outputCondensedFile, */ String mafThresholdS, String infoThresholdS, String hweCohortThresholdS,
+			String mafThresholdS, String infoThresholdS, String hweCohortThresholdS,
 			String hweCasesThresholdS, String hweControlsThresholdS, String sex, String rpanelName, String cmdToStore)
 			throws GuidanceTaskException {
 
