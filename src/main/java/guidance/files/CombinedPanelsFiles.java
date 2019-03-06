@@ -53,6 +53,7 @@ public class CombinedPanelsFiles {
 	private ArrayList<GenericFile> testTypeCombinedFilteredByAllFile = new ArrayList<>();
 	private ArrayList<GenericFile> testTypeCombinedFilteredByAllXMalesFile = new ArrayList<>();
 	private ArrayList<GenericFile> testTypeCombinedFilteredByAllXFemalesFile = new ArrayList<>();
+	private ArrayList<GenericFile> testTypeCombinedFilteredByAllXFile = new ArrayList<>();
 	private ArrayList<GenericFile> testTypeCombinedCondensedFile = new ArrayList<>();
 
 	private ArrayList<GenericFile> testTypeTopHitsFile = new ArrayList<>();
@@ -199,6 +200,12 @@ public class CombinedPanelsFiles {
 				GenericFile myFilteredByAllXFemalesFile = new GenericFile(testTypeOutDir,
 						tmpCombinedFilteredByAllXFemalesFileName, "compressed", "none");
 				this.testTypeCombinedFilteredByAllXFemalesFile.add(myFilteredByAllXFemalesFile);
+				
+				String tmpCombinedFilteredByAllXFileName = prefixFilteredName + "_chr_" + endChrS
+						+ ".txt.gz";
+				GenericFile myFilteredByAllXFile = new GenericFile(testTypeOutDir,
+						tmpCombinedFilteredByAllXFileName, "compressed", "none");
+				this.testTypeCombinedFilteredByAllXFile.add(myFilteredByAllXFile);
 			}
 
 			String tmpCombinedCondensedFileName = null;
@@ -323,6 +330,17 @@ public class CombinedPanelsFiles {
 	 */
 	public String getCombinedFilteredByAllXFemalesFile(int testTypeIndex) {
 		return this.testTypeCombinedFilteredByAllXFemalesFile.get(testTypeIndex).getFullName();
+	}
+	
+	/**
+	 * Method to access testTypeCombinedFilteredByAllFile
+	 * 
+	 * @param testTypeIndex
+	 * @param index
+	 * @return
+	 */
+	public String getCombinedFilteredByAllXFile(int testTypeIndex) {
+		return this.testTypeCombinedFilteredByAllXFile.get(testTypeIndex).getFullName();
 	}
 
 	/**

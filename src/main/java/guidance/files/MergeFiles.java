@@ -80,6 +80,7 @@ public class MergeFiles {
 	private ArrayList<ArrayList<ArrayList<GenericFile>>> testTypeAdditionalFilteredByAllFile = new ArrayList<>();
 	private ArrayList<ArrayList<ArrayList<GenericFile>>> testTypeAdditionalFilteredByAllMalesFile = new ArrayList<>();
 	private ArrayList<ArrayList<ArrayList<GenericFile>>> testTypeAdditionalFilteredByAllFemalesFile = new ArrayList<>();
+	private ArrayList<ArrayList<ArrayList<GenericFile>>> testTypeAdditionalFilteredByAllXFile = new ArrayList<>();
 
 	private ArrayList<ArrayList<Integer>> testTypeAdditionalCondensedIndex = new ArrayList<>();
 	private ArrayList<ArrayList<Integer>> testTypeAdditionalFilteredByAllIndex = new ArrayList<>();
@@ -154,6 +155,7 @@ public class MergeFiles {
 			ArrayList<ArrayList<GenericFile>> rpanelAdditionalFilteredByAllFile = new ArrayList<>();
 			ArrayList<ArrayList<GenericFile>> rpanelAdditionalFilteredByAllMalesFile = new ArrayList<>();
 			ArrayList<ArrayList<GenericFile>> rpanelAdditionalFilteredByAllFemalesFile = new ArrayList<>();
+			ArrayList<ArrayList<GenericFile>> rpanelAdditionalFilteredByAllXFile = new ArrayList<>();
 
 			ArrayList<Integer> rpanelAdditionalCondensedIndex = new ArrayList<>();
 			ArrayList<Integer> rpanelAdditionalFilteredByAllIndex = new ArrayList<>();
@@ -162,9 +164,9 @@ public class MergeFiles {
 			ArrayList<ArrayList<ArrayList<GenericFile>>> rpanelCombinedReducedFilteredMalesFile = new ArrayList<>();
 			ArrayList<ArrayList<ArrayList<GenericFile>>> rpanelCombinedReducedFilteredFemalesFile = new ArrayList<>();
 
-			ArrayList<ArrayList<ArrayList<GenericFile>>> rpanelCombinedReducedCondensedFile = new ArrayList<>();
-			ArrayList<ArrayList<ArrayList<GenericFile>>> rpanelCombinedReducedCondensedMalesFile = new ArrayList<>();
-			ArrayList<ArrayList<ArrayList<GenericFile>>> rpanelCombinedReducedCondensedFemalesFile = new ArrayList<>();
+			//ArrayList<ArrayList<ArrayList<GenericFile>>> rpanelCombinedReducedCondensedFile = new ArrayList<>();
+			//ArrayList<ArrayList<ArrayList<GenericFile>>> rpanelCombinedReducedCondensedMalesFile = new ArrayList<>();
+			//ArrayList<ArrayList<ArrayList<GenericFile>>> rpanelCombinedReducedCondensedFemalesFile = new ArrayList<>();
 
 			ArrayList<ArrayList<GenericFile>> rpanelCombinedFilteredByAllFile = new ArrayList<>();
 			ArrayList<ArrayList<GenericFile>> rpanelCombinedFilteredByAllMalesFile = new ArrayList<>();
@@ -204,14 +206,15 @@ public class MergeFiles {
 				ArrayList<GenericFile> additionalFilteredByAllFile = new ArrayList<>();
 				ArrayList<GenericFile> additionalFilteredByAllMalesFile = new ArrayList<>();
 				ArrayList<GenericFile> additionalFilteredByAllFemalesFile = new ArrayList<>();
+				ArrayList<GenericFile> additionalFilteredByAllXFile = new ArrayList<>();
 
 				ArrayList<ArrayList<GenericFile>> chromoListCombinedReducedFilteredFile = new ArrayList<>();
 				ArrayList<ArrayList<GenericFile>> chromoListCombinedReducedFilteredMalesFile = new ArrayList<>();
 				ArrayList<ArrayList<GenericFile>> chromoListCombinedReducedFilteredFemalesFile = new ArrayList<>();
 
-				ArrayList<ArrayList<GenericFile>> chromoListCombinedReducedCondensedFile = new ArrayList<>();
-				ArrayList<ArrayList<GenericFile>> chromoListCombinedReducedCondensedMalesFile = new ArrayList<>();
-				ArrayList<ArrayList<GenericFile>> chromoListCombinedReducedCondensedFemalesFile = new ArrayList<>();
+				//ArrayList<ArrayList<GenericFile>> chromoListCombinedReducedCondensedFile = new ArrayList<>();
+				//ArrayList<ArrayList<GenericFile>> chromoListCombinedReducedCondensedMalesFile = new ArrayList<>();
+				//ArrayList<ArrayList<GenericFile>> chromoListCombinedReducedCondensedFemalesFile = new ArrayList<>();
 
 				ArrayList<GenericFile> chromoCombinedFilteredByAllFile = new ArrayList<>();
 				ArrayList<GenericFile> chromoCombinedFilteredByAllMalesFile = new ArrayList<>();
@@ -426,8 +429,8 @@ public class MergeFiles {
 						chromoListCombinedReducedFilteredMalesFile.add(listCombinedReducedFilteredMalesFile);
 						chromoListCombinedReducedFilteredFemalesFile.add(listCombinedReducedFilteredFemalesFile);
 
-						chromoListCombinedReducedCondensedMalesFile.add(listCombinedReducedCondensedMalesFile);
-						chromoListCombinedReducedCondensedFemalesFile.add(listCombinedReducedCondensedFemalesFile);
+						//chromoListCombinedReducedCondensedMalesFile.add(listCombinedReducedCondensedMalesFile);
+						//chromoListCombinedReducedCondensedFemalesFile.add(listCombinedReducedCondensedFemalesFile);
 
 						String tmpCombinedFilteredByAllMalesFileName = "chr_" + chromo + "_" + testTypeName + "_"
 								+ rPanel + "_males_combined_filtered_by_maf_info_hwe.txt.gz";
@@ -476,7 +479,7 @@ public class MergeFiles {
 					chromoListReducedFilteredFile.add(listReducedFilteredFile);
 					chromoListReducedCondensedFile.add(listReducedCondensedFile);
 					chromoListCombinedReducedFilteredFile.add(listCombinedReducedFilteredFile);
-					chromoListCombinedReducedCondensedFile.add(listCombinedReducedCondensedFile);
+					//chromoListCombinedReducedCondensedFile.add(listCombinedReducedCondensedFile);
 
 					String tmpCombinedFilteredByAllFileName = "chr_" + chromo + "_" + testTypeName + "_" + rPanel
 							+ "_combined_filtered_by_maf_info_hwe.txt.gz";
@@ -519,9 +522,9 @@ public class MergeFiles {
 					rpanelCombinedReducedFilteredMalesFile.add(chromoListCombinedReducedFilteredMalesFile);
 					rpanelCombinedReducedFilteredFemalesFile.add(chromoListCombinedReducedFilteredFemalesFile);
 
-					rpanelCombinedReducedCondensedFile.add(chromoListCombinedReducedCondensedFile);
-					rpanelCombinedReducedCondensedMalesFile.add(chromoListCombinedReducedCondensedMalesFile);
-					rpanelCombinedReducedCondensedFemalesFile.add(chromoListCombinedReducedCondensedFemalesFile);
+					//rpanelCombinedReducedCondensedFile.add(chromoListCombinedReducedCondensedFile);
+					//rpanelCombinedReducedCondensedMalesFile.add(chromoListCombinedReducedCondensedMalesFile);
+					//rpanelCombinedReducedCondensedFemalesFile.add(chromoListCombinedReducedCondensedFemalesFile);
 
 					rpanelCombinedFilteredByAllFile.add(chromoCombinedFilteredByAllFile);
 					rpanelCombinedFilteredByAllMalesFile.add(chromoCombinedFilteredByAllMalesFile);
@@ -642,6 +645,16 @@ public class MergeFiles {
 					// LOGGER.info("\t[MergeFiles.java] " + tmpAdditionalFilteredByAllXFile);
 
 					rpanelAdditionalFilteredByAllFemalesFile.add(additionalFilteredByAllFemalesFile);
+					
+					String tmpAdditionalFilteredByAllXFileName = testTypeName + "_" + rPanel
+							+ FILTER_BY_ALL_FILENAME + this.endChr + EXT_TXT_GZ;
+					GenericFile myAdditionalFilteredByAllXFile = new GenericFile(rpanelOutDirSummary,
+							tmpAdditionalFilteredByAllXFileName, UNCOMPRESSED_FILE, "none");
+
+					additionalFilteredByAllXFile.add(myAdditionalFilteredByAllXFile);
+					// LOGGER.info("\t[MergeFiles.java] " + tmpAdditionalFilteredByAllXFile);
+
+					rpanelAdditionalFilteredByAllXFile.add(additionalFilteredByAllXFile);
 				}
 			} // End of for refPanels
 
@@ -661,7 +674,7 @@ public class MergeFiles {
 			this.testTypeCombinedReducedFilteredFile.add(rpanelCombinedReducedFilteredFile);
 			this.testTypeCombinedReducedFilteredMalesFile.add(rpanelCombinedReducedFilteredMalesFile);
 			this.testTypeCombinedReducedFilteredFemalesFile.add(rpanelCombinedReducedFilteredFemalesFile);
-			this.testTypeCombinedReducedCondensedFile.add(rpanelCombinedReducedCondensedFile);
+			//this.testTypeCombinedReducedCondensedFile.add(rpanelCombinedReducedCondensedFile);
 
 			this.testTypeFilteredByAllFile.add(rpanelFilteredByAllFile);
 			this.testTypeFilteredByAllFemalesFile.add(rpanelFilteredByAllFemalesFile);
@@ -685,6 +698,7 @@ public class MergeFiles {
 			if (this.endChr == 23) {
 				this.testTypeAdditionalFilteredByAllMalesFile.add(rpanelAdditionalFilteredByAllMalesFile);
 				this.testTypeAdditionalFilteredByAllFemalesFile.add(rpanelAdditionalFilteredByAllFemalesFile);
+				this.testTypeAdditionalFilteredByAllXFile.add(rpanelAdditionalFilteredByAllXFile);
 			}
 
 			this.testTypeAdditionalCondensedIndex.add(rpanelAdditionalCondensedIndex);
@@ -1222,6 +1236,18 @@ public class MergeFiles {
 	public String getAdditionalFilteredByAllFemalesFile(int testTypeIndex, int rPanelIndex) {
 		return this.testTypeAdditionalFilteredByAllFemalesFile.get(testTypeIndex).get(rPanelIndex).get(0).getFullName();
 	}
+	
+	/**
+	 * Method to access additionalFilteredByAllFile
+	 * 
+	 * @param testTypeIndex
+	 * @param rPanelIndex
+	 * @param index
+	 * @return
+	 */
+	public String getAdditionalFilteredByAllXFile(int testTypeIndex, int rPanelIndex) {
+		return this.testTypeAdditionalFilteredByAllXFile.get(testTypeIndex).get(rPanelIndex).get(0).getFullName();
+	}
 
 	/**
 	 * Method to access additionalFilteredByAllXFile
@@ -1230,7 +1256,7 @@ public class MergeFiles {
 	 * @param rPanelIndex
 	 * @param index
 	 * @return
-	 */
+	 */           
 	public String getAdditionalFilteredByAllXMalesFile(int testTypeIndex, int rPanelIndex, int index) {
 		// Check the index
 		int maxIndex = this.testTypeAdditionalFilteredByAllMalesFile.get(testTypeIndex).get(rPanelIndex).size();

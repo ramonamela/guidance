@@ -72,7 +72,8 @@ public class GuidanceImpl {
 	private static final String EAGLEBINARY = "EAGLEBINARY";
 	private static final String SAMTOOLSBINARY = "SAMTOOLSBINARY";
 	private static final String IMPUTE2BINARY = "IMPUTE2BINARY";
-	private static final String MINIMACBINARY = "MINIMACBINARY";
+	private static final String MINIMAC3BINARY = "MINIMAC3BINARY";
+	private static final String MINIMAC4BINARY = "MINIMAC4BINARY";
 	private static final String RSCRIPTBINDIR = "RSCRIPTBINDIR";
 	private static final String RSCRIPTDIR = "RSCRIPTDIR";
 	private static final String SNPTESTBINARY = "SNPTESTBINARY";
@@ -1241,10 +1242,10 @@ public class GuidanceImpl {
 
 					execute = false;
 
-				} else if (sex.equals(SEX2)) {
-					cmd = phasingBinary + " --bed " + bedFile + " --bim " + bimFile + " --fam " + famFile + " --chrom "
-							+ chromo + " --geneticMapFile " + gmapFile + " --numThreads 47 --outPrefix " + myPrefix;
-				}
+				} // else if (sex.equals(SEX2)) {
+				cmd = phasingBinary + " --bed " + bedFile + " --bim " + bimFile + " --fam " + famFile + " --chrom "
+						+ chromo + " --geneticMapFile " + gmapFile + " --numThreads 47 --outPrefix " + myPrefix;
+				// }
 
 			} else {
 				cmd = phasingBinary + " --bed " + bedFile + " --bim " + bimFile + " --fam " + famFile + " --chrom "
@@ -1570,7 +1571,8 @@ public class GuidanceImpl {
 	 * @throws Exception
 	 */
 	public static void filterHaplotypes(String phasingHapsFile, String phasingSampleFile, String excludedSnpsFile,
-			String filteredLogFile, String filteredHaplotypesVcfFileBgzip, String cmdToStore) throws GuidanceTaskException {
+			String filteredLogFile, String filteredHaplotypesVcfFileBgzip, String cmdToStore)
+			throws GuidanceTaskException {
 
 		String shapeitBinary = loadFromEnvironment(SHAPEITBINARY, HEADER_FILTER_HAPLOTYPES);
 
@@ -1588,8 +1590,9 @@ public class GuidanceImpl {
 			System.out.println("--------------------------------------");
 		}
 		long startTime = System.currentTimeMillis();
-		
-		String filteredHapsVcfFile = filteredHaplotypesVcfFileBgzip.substring(0, filteredHaplotypesVcfFileBgzip.length() - 3);
+
+		String filteredHapsVcfFile = filteredHaplotypesVcfFileBgzip.substring(0,
+				filteredHaplotypesVcfFileBgzip.length() - 3);
 
 		String cmd = null;
 		cmd = shapeitBinary + " -convert --input-haps " + phasingHapsFile + " " + phasingSampleFile + " --exclude-snp "
@@ -1648,7 +1651,8 @@ public class GuidanceImpl {
 
 		exitValue = -1;
 		try {
-			exitValue = ProcessUtils.execute(cmd, filteredHapsVcfFile + STDOUT_EXTENSION, filteredHapsVcfFile + STDERR_EXTENSION);
+			exitValue = ProcessUtils.execute(cmd, filteredHapsVcfFile + STDOUT_EXTENSION,
+					filteredHapsVcfFile + STDERR_EXTENSION);
 		} catch (IOException ioe) {
 			throw new GuidanceTaskException(ioe);
 		}
@@ -2019,6 +2023,45 @@ public class GuidanceImpl {
 
 	}
 
+	/*
+	 * public static void transformVcfToM3Vcf(String vcfFile, String m3vcfFile,
+	 * String cmdToStore) throws GuidanceTaskException { if (DEBUG) {
+	 * System.out.println("\n[DEBUG] Running jointCondensedFiles with parameters:");
+	 * System.out.println("[DEBUG] \t- InputVcfFile                  : " + vcfFile);
+	 * System.out.println("[DEBUG] \t- OutputM3VcfFile               : " +
+	 * m3vcfFile); System.out.println(NEW_LINE);
+	 * System.out.println("[DEBUG] \t- Command: " + cmdToStore);
+	 * System.out.println("--------------------------------------"); }
+	 * 
+	 * long startTime = System.currentTimeMillis();
+	 * 
+	 * String minimac3Binary = loadFromEnvironment(MINIMAC3BINARY, HEADER_MINIMAC);
+	 * 
+	 * // https://genome.sph.umich.edu/wiki/Minimac3_Examples
+	 * 
+	 * String cmd = minimac3Binary + " --refHaps " + vcfFile +
+	 * " --processReference --prefix testRun";
+	 * 
+	 * if (DEBUG) { System.out.println("\n[DEBUG] Real command: " + cmd); }
+	 * 
+	 * // Execute the command retrieving its exitValue, output and error int
+	 * exitValue = -1; try { exitValue = ProcessUtils.executeWithoutOutputs(cmd); }
+	 * catch (IOException ioe) { throw new GuidanceTaskException(ioe); }
+	 * 
+	 * // Check process exit value if (exitValue != 0) { throw new
+	 * GuidanceTaskException("VCF to M3VCF of file " + vcfFile +
+	 * " did not succeed"); }
+	 * 
+	 * long stopTime = System.currentTimeMillis(); long elapsedTime = (stopTime -
+	 * startTime) / 1_000; if (DEBUG) {
+	 * System.out.println("\n[DEBUG] transformVcfToM3Vcf startTime: " + startTime);
+	 * System.out.println("\n[DEBUG] transformVcfToM3Vcf endTime: " + stopTime);
+	 * System.out.println("\n[DEBUG] transformVcfToM3Vcf elapsedTime: " +
+	 * elapsedTime + " seconds");
+	 * System.out.println("\n[DEBUG] Finished execution of transformVcfToM3Vcf"); }
+	 * }
+	 */
+
 	public static void imputeWithMinimacLow(String vcfFile, String filteredHapsVcfFileBgzip, String imputeFile,
 			String imputeFileInfo, String imputeFileErate, String imputeFileRec, String imputeFileM3vcf,
 			String imputeFileLog, String chrS, String lim1S, String lim2S, String myPrefix, String sex,
@@ -2072,12 +2115,12 @@ public class GuidanceImpl {
 			String imputeFileLog, String chrS, String lim1S, String lim2S, String myPrefix, String sex,
 			String cmdToStore) throws GuidanceTaskException {
 
-		String minimacBinary = loadFromEnvironment(MINIMACBINARY, HEADER_MINIMAC);
+		String minimac4Binary = loadFromEnvironment(MINIMAC4BINARY, HEADER_MINIMAC);
 		String realPrefix = imputeFileErate.substring(0, imputeFileErate.length() - 6);
 
 		if (DEBUG) {
 			System.out.println("\n[DEBUG] Running imputation with parameters:");
-			System.out.println("[DEBUG] \t- minimacBinary                     : " + minimacBinary);
+			System.out.println("[DEBUG] \t- minimac4Binary                     : " + minimac4Binary);
 			System.out.println("[DEBUG] \t- Input vcfFile                     : " + vcfFile);
 			System.out.println("[DEBUG] \t- Input filteredHapsVcfFile         : " + filteredHapsVcfFileBgzip);
 			System.out.println("[DEBUG] \t- Output imputeMMInfoFile           : " + imputeFileInfo);
@@ -2100,8 +2143,8 @@ public class GuidanceImpl {
 		// Submitting the impute task per chunk
 		if (chrS.equals("23")) {
 			// if (sex.equals(SEX1)) {
-			cmd = minimacBinary + " --refHaps " + vcfFile + " --haps " + filteredHapsVcfFileBgzip + " --start " + lim1S
-					+ " --end " + lim2S + " --chr X --window 500000 --prefix " + realPrefix
+			cmd = minimac4Binary + " --refHaps " + vcfFile + " --haps " + filteredHapsVcfFileBgzip + " --start " + lim1S
+					+ " --end " + lim2S + " --chr X --cpus 4 --window 500000 --prefix " + realPrefix
 					+ " --log --allTypedSites --noPhoneHome --format GT,DS,GP --nobgzip";
 			// } else if (sex.equals(SEX2)) {
 			// } else {
@@ -2112,8 +2155,8 @@ public class GuidanceImpl {
 			// + " --log --allTypedSites --noPhoneHome --format GT,DS,GP --nobgzip";
 			// }
 		} else {
-			cmd = minimacBinary + " --refHaps " + vcfFile + " --haps " + filteredHapsVcfFileBgzip + " --start " + lim1S
-					+ " --end " + lim2S + " --chr " + chrS + " --window 500000 --prefix " + realPrefix
+			cmd = minimac4Binary + " --refHaps " + vcfFile + " --haps " + filteredHapsVcfFileBgzip + " --start " + lim1S
+					+ " --end " + lim2S + " --chr " + chrS + " --cpus 4 --window 500000 --prefix " + realPrefix
 					+ " --log --allTypedSites --noPhoneHome --format GT,DS,GP --nobgzip";
 		}
 
@@ -2124,8 +2167,7 @@ public class GuidanceImpl {
 		// Execute the command retrieving its exitValue, output and error
 		int exitValue = -1;
 		try {
-			exitValue = ProcessUtils.execute(cmd, filteredHapsVcfFileBgzip + STDOUT_EXTENSION,
-					filteredHapsVcfFileBgzip + STDERR_EXTENSION);
+			exitValue = ProcessUtils.executeWithoutOutputs(cmd);
 		} catch (IOException ioe) {
 			throw new GuidanceTaskException(ioe);
 		}
@@ -2139,9 +2181,10 @@ public class GuidanceImpl {
 		// If there is not output in the impute process. Then we have to create some
 		// empty outputs.
 
+		File imputeFileM3vcfFile = new File(realPrefix + ".m3vcf");
 		File MMDoseVCFFile = new File(realPrefix + ".dose.vcf");
 		// If this file does not exists, we assume that all the others neither exist
-		if (!MMDoseVCFFile.exists()) {
+		if (!imputeFileM3vcfFile.exists()) {
 			// Here we create all the new files
 			try {
 				FileUtils.createEmptyFile(realPrefix + ".m3vcf", HEADER_MINIMAC);
@@ -2160,7 +2203,7 @@ public class GuidanceImpl {
 				throw new GuidanceTaskException(gte);
 			}
 
-		} else if (MMDoseVCFFile.exists()) {
+		} else if (imputeFileM3vcfFile.exists()) {
 			// We assume here that all the files have been created
 			try {
 				FileWriter fw = new FileWriter(MMDoseVCFFile.getAbsoluteFile(), true);
@@ -2171,9 +2214,9 @@ public class GuidanceImpl {
 			} catch (IOException gte) {
 				throw new GuidanceTaskException(gte);
 			}
-			FileUtils.move(realPrefix + ".m3vcf", realPrefix + ".m3vcf");
+			FileUtils.move(realPrefix + ".m3vcf", imputeFileM3vcf);
 
-			FileUtils.move(realPrefix + ".dose.vcf", realPrefix + ".dose.vcf");
+			FileUtils.move(realPrefix + ".dose.vcf", imputeFile);
 
 			FileUtils.move(realPrefix + ".rec", imputeFileRec);
 
@@ -2508,10 +2551,9 @@ public class GuidanceImpl {
 	 * @throws InterruptedException
 	 * @throws Exception
 	 */
-	public static void filterByAll(String imputationTool, String inputFile, String outputFile,
-			String mafThresholdS, String infoThresholdS, String hweCohortThresholdS,
-			String hweCasesThresholdS, String hweControlsThresholdS, String sex, String rpanelName, String cmdToStore)
-			throws GuidanceTaskException {
+	public static void filterByAll(String imputationTool, String inputFile, String outputFile, String mafThresholdS,
+			String infoThresholdS, String hweCohortThresholdS, String hweCasesThresholdS, String hweControlsThresholdS,
+			String sex, String rpanelName, String cmdToStore) throws GuidanceTaskException {
 
 		if (DEBUG) {
 			System.out.println("\n[DEBUG] Running filterByAll with parameters:");
@@ -2551,21 +2593,28 @@ public class GuidanceImpl {
 			// I read the header
 			String line = br.readLine();
 			// Put the header in the output file.
+			if(!line.toLowerCase().contains("frequentist_add_pvalue")) {
+				line = line.replaceAll("frequentist_add_lrt_pvalue", "frequentist_add_pvalue");
+			}
 			writerFiltered.write(line + "\trefpanel");
 			writerFiltered.newLine();
 
 			inputFileHashTableIndex = Headers.createHashWithHeader(line, TAB);
-
+			System.out.println(line);
 			while ((line = br.readLine()) != null) {
+				System.out.println(line);
 				String[] splittedLine = line.split(TAB);// delimiter I assume single space.
 
 				String chromo = splittedLine[inputFileHashTableIndex.get("chr")];
 				String infoS = null;
-				if (imputationTool.equals("impute") || sex.equals(SEX1) || sex.equals(SEX2)) {
-					infoS = splittedLine[inputFileHashTableIndex.get("info_all")];
-				} else if (imputationTool.equals("minimac")) {
-					infoS = splittedLine[inputFileHashTableIndex.get("info_all")];
-				}
+				infoS = splittedLine[inputFileHashTableIndex.get("info_all")];
+				// if (imputationTool.equals("impute") || sex.equals(SEX1) || sex.equals(SEX2))
+				// {
+				// if (imputationTool.equals("impute")) {
+				// infoS = splittedLine[inputFileHashTableIndex.get("info_all")];
+				// } else if (imputationTool.equals("minimac")) {
+				// infoS = splittedLine[inputFileHashTableIndex.get("info_all")];
+				// }
 
 				// String alleleA = splittedLine[inputFileHashTableIndex.get("alleleA")];
 				// String alleleB = splittedLine[inputFileHashTableIndex.get("alleleB")];
@@ -3760,8 +3809,7 @@ public class GuidanceImpl {
 			// Execute the command retrieving its exitValue, output and error
 			int exitValue = -1;
 			try {
-				exitValue = ProcessUtils.execute(cmd, snptestLogFile + STDOUT_EXTENSION,
-						snptestLogFile + STDERR_EXTENSION);
+				exitValue = ProcessUtils.execute(cmd, snptestOutFile + STDOUT_EXTENSION, snptestOutFile + STDERR_EXTENSION);
 			} catch (IOException ioe) {
 				throw new GuidanceTaskException(ioe);
 			}
@@ -3898,7 +3946,7 @@ public class GuidanceImpl {
 			System.out.println("--------------------------------------");
 		}
 
-		FileUtils.recursiveSearch(firstImputeFileInfo);
+		// FileUtils.recursiveSearch(firstImputeFileInfo);
 
 		long startTime = System.currentTimeMillis();
 		// Indexes for impute 2.3.2
@@ -3916,8 +3964,6 @@ public class GuidanceImpl {
 
 		int length_entry_assoc_list = 0;
 
-		// genOrBimFile is the mixedGenFile and is not necessary to process it.
-
 		// A place to store the results of the merge
 		TreeMap<String, ArrayList<String>> summaryTotal = new TreeMap<>();
 		HashMap<String, Integer> snptestHashTableIndex = new HashMap<>();
@@ -3932,11 +3978,12 @@ public class GuidanceImpl {
 			String line = "";
 			// Read the header and avoid the header
 			line = br.readLine();
-			// ---->
+
 			HashMap<String, Integer> imputeHashTableIndex = new HashMap<>();
 			if (line != null && !line.isEmpty()) {
 				// If we are here, the file is not empty.
-				if (imputeTool.equals("impute") || chr.equals("23")) {
+				// if (imputeTool.equals("impute") || chr.equals("23")) {
+				if (imputeTool.equals("impute")) {
 					imputeHashTableIndex = Headers.createHashWithHeader(line, " ");
 					indexPosition = imputeHashTableIndex.get("position");
 					indexRsId = imputeHashTableIndex.get("rs_id");
@@ -3944,7 +3991,7 @@ public class GuidanceImpl {
 					indexCertainty = imputeHashTableIndex.get("certainty");
 					indexAlleleA = imputeHashTableIndex.get("a0");
 					indexAlleleB = imputeHashTableIndex.get("a1");
-				} else {
+				} else if (imputeTool.equals("minimac")) {
 					imputeHashTableIndex = Headers.createHashWithHeader(line, TAB);
 					indexRsId = imputeHashTableIndex.get("SNP");
 					indexInfo = imputeHashTableIndex.get("Rsq");
@@ -3961,13 +4008,15 @@ public class GuidanceImpl {
 
 				// Store Position:Store rsIDCases:Store infoCases:Store certCases
 				String positionStr = null;
-				if (imputeTool.equals("impute") || chr.equals("23")) {
+				// if (imputeTool.equals("impute") || chr.equals("23")) {
+				if (imputeTool.equals("impute")) {
 					splitted = line.split(" ");
 					positionStr = splitted[indexPosition];
-				} else {
+				} else if (imputeTool.equals("minimac")) {
 					splitted = line.split(TAB);
 					positionStr = splitted[indexRsId].split(":")[1];
 				}
+
 				firstList.add(positionStr);
 				firstList.add(splitted[indexRsId]);
 				firstList.add(splitted[indexInfo]);
@@ -4090,7 +4139,7 @@ public class GuidanceImpl {
 					writer.write(valueReversed + TAB);
 				}
 			} else {
-				if (sex.equals(NO_SEX)) {
+				if (!chr.equals("23")) {
 					writer.write(Headers.constructHeader());
 				} else {
 					writer.write(Headers.constructHeaderX(sex));
@@ -4159,9 +4208,9 @@ public class GuidanceImpl {
 			String hweControlsThresholdS) throws IOException {
 
 		int real_length_assoc = 67;
-		if (!chr.equals(CHR_23)) {
+		if (chr.equals(CHR_23)) {
 			// real_length_assoc = 69;
-			real_length_assoc = 67;
+			real_length_assoc = 77;
 		}
 
 		ArrayList<String> summaryTmp = new ArrayList<>();
