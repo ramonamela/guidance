@@ -27,12 +27,12 @@ IMPUTE tool is used             | T d n  a d t m  n y t p  m h B F  F p P m  a l
                                 | d t d  g s s e  c o S t  y s l s  s s s x  p s k k  k k k k |
 ---------------------------------------- --------- --------------------------------------------
 until_convertFromBedToBed       | 1 1 0  0 0 0 0  0 0 0 0  0 0 0 0  0 0 0 0  0 0 0 0  0 0 0 0 | 0x6000000
-until_phasing			        | 1 1 1  1 0 0 0  0 0 0 0  0 0 0 0  0 0 0 0  0 0 0 0  0 0 0 0 | 0x7800000
-until_imputation		        | 1 1 1  1 0 0 1  0 0 0 0  0 0 0 0  0 0 0 0  0 0 0 0  0 0 0 0 | 0x7900000
-until_association		        | 1 1 1  1 0 0 1  0 1 1 1  0 0 0 0  0 0 0 0  0 0 0 0  0 0 0 0 | 0x7970000
+until_phasing                   | 1 1 1  1 0 0 0  0 0 0 0  0 0 0 0  0 0 0 0  0 0 0 0  0 0 0 0 | 0x7800000
+until_imputation                | 1 1 1  1 0 0 1  0 0 0 0  0 0 0 0  0 0 0 0  0 0 0 0  0 0 0 0 | 0x7900000
+until_association               | 1 1 1  1 0 0 1  0 1 1 1  0 0 0 0  0 0 0 0  0 0 0 0  0 0 0 0 | 0x7970000
 until_filterByAll               | 1 1 1  1 0 0 1  0 1 1 1  1 1 1 0  0 0 0 0  0 0 0 0  0 0 0 0 | 0x797E000 
-until_summary			        | 1 1 1  1 0 0 1  0 1 1 1  1 1 1 1  1 1 1 1  1 0 0 0  0 0 0 0 | 0x797FF80
-whole_workflow			        | 1 1 1  1 0 0 1  0 1 1 1  1 1 1 1  1 1 1 1  1 1 0 0  0 0 0 0 | 0x797FFC0 
+until_summary                   | 1 1 1  1 0 0 1  0 1 1 1  1 1 1 1  1 1 1 1  1 0 0 0  0 0 0 0 | 0x797FF80
+whole_workflow                  | 1 1 1  1 0 0 1  0 1 1 1  1 1 1 1  1 1 1 1  1 1 0 0  0 0 0 0 | 0x797FFC0 
 from_phasing			        | 0 0 0  0 0 0 1  0 1 1 1  1 1 1 1  1 1 1 1  1 1 0 0  0 0 0 0 | 0x017FFC0
 from_phasing_to_summary		    | 0 0 0  0 0 0 1  0 1 1 1  1 1 1 1  1 1 1 1  1 0 0 0  0 0 0 0 | 0x017FF80
 from_phasing_to_filterByAll     | 0 0 0  0 0 0 1  0 1 1 1  1 1 1 0  0 0 0 0  0 0 0 0  0 0 0 0 | 0x017E000
