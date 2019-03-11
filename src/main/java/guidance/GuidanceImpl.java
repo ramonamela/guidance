@@ -2593,7 +2593,7 @@ public class GuidanceImpl {
 			// I read the header
 			String line = br.readLine();
 			// Put the header in the output file.
-			if(!line.toLowerCase().contains("frequentist_add_pvalue")) {
+			if (!line.toLowerCase().contains("frequentist_add_pvalue")) {
 				line = line.replaceAll("frequentist_add_lrt_pvalue", "frequentist_add_pvalue");
 			}
 			writerFiltered.write(line + "\trefpanel");
@@ -3809,7 +3809,7 @@ public class GuidanceImpl {
 			// Execute the command retrieving its exitValue, output and error
 			int exitValue = -1;
 			try {
-				exitValue = ProcessUtils.execute(cmd, snptestOutFile + STDOUT_EXTENSION, snptestOutFile + STDERR_EXTENSION);
+				exitValue = ProcessUtils.executeWithoutOutputs(cmd);
 			} catch (IOException ioe) {
 				throw new GuidanceTaskException(ioe);
 			}
@@ -4112,7 +4112,7 @@ public class GuidanceImpl {
 			ArrayList<String> summaryTmp = new ArrayList<>();
 			try {
 				summaryTmp = mergeArrays(chr, firstTmp, assocTmp, length_entry_assoc_list, mafThresholdS,
-						hweCohortThresholdS, hweCasesThresholdS, hweControlsThresholdS);
+						hweCohortThresholdS, hweCasesThresholdS, hweControlsThresholdS, sex);
 			} catch (IOException ioe) {
 				throw new GuidanceTaskException(ioe);
 			}
@@ -4205,12 +4205,16 @@ public class GuidanceImpl {
 	 */
 	private static ArrayList<String> mergeArrays(String chr, ArrayList<String> caseArray, ArrayList<String> assocArray,
 			int length_entry_assoc_list, String mafThresholdS, String hweCohortThresholdS, String hweCasesThresholdS,
-			String hweControlsThresholdS) throws IOException {
+			String hweControlsThresholdS, String sex) throws IOException {
 
 		int real_length_assoc = 67;
 		if (chr.equals(CHR_23)) {
 			// real_length_assoc = 69;
-			real_length_assoc = 77;
+			if (sex.equals(NO_SEX)) {
+				real_length_assoc = 111;
+			} else {
+				real_length_assoc = 77;
+			}
 		}
 
 		ArrayList<String> summaryTmp = new ArrayList<>();
