@@ -38,6 +38,7 @@ from_phasing_to_summary		    | 0 0 0  0 0 0 1  0 1 1 1  1 1 1 1  1 1 1 1  1 0 0 
 from_phasing_to_filterByAll     | 0 0 0  0 0 0 1  0 1 1 1  1 1 1 0  0 0 0 0  0 0 0 0  0 0 0 0 | 0x017E000
 from_phasing_to_qctools         | 0 0 0  0 0 0 1  0 1 1 0  0 0 0 0  0 0 0 0  0 0 0 0  0 0 0 0 | 0x0160000
 from_phasing_to_association	    | 0 0 0  0 0 0 1  0 1 1 1  0 0 0 0  0 0 0 0  0 0 0 0  0 0 0 0 | 0x0170000
+from_phasing_to_qctools         | 0 0 0  0 0 0 1  0 1 1 0  0 0 0 0  0 0 0 0  0 0 0 0  0 0 0 0 | 0x0160000
 from_phasing_to_imputation	    | 0 0 0  0 0 0 1  0 0 0 0  0 0 0 0  0 0 0 0  0 0 0 0  0 0 0 0 | 0x0100000
 from_imputation			        | 0 0 0  0 0 0 0  0 1 1 1  1 1 1 1  1 1 1 1  1 1 0 0  0 0 0 0 | 0x007FFC0
 from_imputation_to_summary	    | 0 0 0  0 0 0 0  0 1 1 1  1 1 1 1  1 1 1 1  0 0 0 0  0 0 0 0 | 0x007FF00
@@ -101,6 +102,7 @@ from_phasing_to_summary         | 0 0 0  0 0 0 0  1 1 1 1  1 1 1 1  1 1 1 1  0 0
 from_phasing_to_filterByAll     | 0 0 0  0 0 0 0  1 1 1 1  1 1 1 0  0 0 0 0  0 0 0 0  0 0 0 0 | 0x00FE000
 from_phasing_to_qctools         | 0 0 0  0 0 0 0  1 1 1 0  0 0 0 0  0 0 0 0  0 0 0 0  0 0 0 0 | 0x00E0000
 from_phasing_to_association     | 0 0 0  0 0 0 0  1 1 1 1  0 0 0 0  0 0 0 0  0 0 0 0  0 0 0 0 | 0x00F0000
+from_phasing_to_qctools         | 0 0 0  0 0 0 0  1 1 1 0  0 0 0 0  0 0 0 0  0 0 0 0  0 0 0 0 | 0x00E0000
 from_phasing_to_imputation      | 0 0 0  0 0 0 0  1 0 0 0  0 0 0 0  0 0 0 0  0 0 0 0  0 0 0 0 | 0x0080000
 from_imputation                 | 0 0 0  0 0 0 0  0 1 1 1  1 1 1 1  1 1 1 1  1 1 0 0  0 0 0 0 | 0x007FFC0
 from_imputation_to_summary      | 0 0 0  0 0 0 0  0 1 1 1  1 1 1 1  1 1 1 1  1 0 0 0  0 0 0 0 | 0x007FF80

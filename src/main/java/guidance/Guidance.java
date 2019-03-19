@@ -105,6 +105,7 @@ public class Guidance {
 	private static final String PLINK_BINARY = System.getenv("PLINKBINARY");
 	private static final String R_SCRIPT_BIN_DIR = System.getenv("RSCRIPTBINDIR");
 	private static final String R_SCRIPT_DIR = System.getenv("RSCRIPTDIR");
+	private static final String BASHSCRIPTDIR = System.getenv("BASHSCRIPTDIR");
 	private static final String QCTOOL_BINARY = System.getenv("QCTOOLBINARY");
 	private static final String EAGLEBINARY = System.getenv("EAGLEBINARY");
 	private static final String PLINKBINARY = System.getenv("PLINKBINARY");
@@ -2991,21 +2992,24 @@ public class Guidance {
 		String newStr = covariables.replace(',', ' ');
 		if (parsingArgs.getStageStatus("snptest") == 1) {
 			String cmdToStore;
-			if (covariables.equals("none")) {
-				cmdToStore = SNPTEST_BINARY + " -data " + mergedGenFile + " " + mergedSampleFile + " -o "
-						+ snptestOutFile + " -pheno " + responseVar + " -hwe -log " + snptestLogFile;
-			} else {
-				cmdToStore = SNPTEST_BINARY + " -data " + mergedGenFile + " " + mergedSampleFile + " -o "
-						+ snptestOutFile + " -pheno " + responseVar + " -cov_names " + newStr + " -hwe -log "
-						+ snptestLogFile;
-			}
+			//if (covariables.equals("none")) {
+			//	cmdToStore = SNPTEST_BINARY + " -data " + mergedGenFile + " " + mergedSampleFile + " -o "
+			//			+ snptestOutFile + " -pheno " + responseVar + " -hwe -log " + snptestLogFile;
+			//} else {
+			//	cmdToStore = SNPTEST_BINARY + " -data " + mergedGenFile + " " + mergedSampleFile + " -o "
+			//			+ snptestOutFile + " -pheno " + responseVar + " -cov_names " + newStr + " -hwe -log "
+			//			+ snptestLogFile;
+			//}
 
 			// Different parameters for chromo 23 (X) and the rest.
-			if (chrS.equals("23")) {
-				cmdToStore = cmdToStore + " -method newml -assume_chromosome X -stratify_on sex -frequentist 1";
-			} else {
-				cmdToStore = cmdToStore + " -method em -frequentist 1 2 3 4 5";
-			}
+			//if (chrS.equals("23")) {
+			//	cmdToStore = cmdToStore + " -method newml -assume_chromosome X -stratify_on sex -frequentist 1";
+			//} else {
+			//	cmdToStore = cmdToStore + " -method em -frequentist 1 2 3 4 5";
+			//}
+			
+			cmdToStore = BASHSCRIPTDIR + "/snptest.sh " + SNPTEST_BINARY + " " + mergedGenFile + " " + mergedSampleFile
+					+ " " + snptestOutFile + " " + snptestLogFile + " " + responseVar + " " + chrS + " " + covariables;
 
 			listOfCommands.add(cmdToStore);
 			try {

@@ -93,6 +93,10 @@ RUN git clone https://github.com/Santy-8128/Minimac3.git && \
     cd Minimac3 && \
     make && \
     sudo ln -s /TOOLS/Minimac3/bin/Minimac3 /usr/bin/minimac3
+
+#Install minimac4
+RUN git clone https://github.com/Santy-8128/Minimac4.git && \
+    sh install.sh
 #    sudo ln -s /TOOLS/Minimac3/bin/Minimac3-omp /usr/bin/minimac3
 #    sudo ln -s /TOOLS/Minimac3/bin/Minimac3 /usr/bin/minimac3
 

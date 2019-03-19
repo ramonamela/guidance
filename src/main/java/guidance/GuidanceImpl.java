@@ -78,6 +78,7 @@ public class GuidanceImpl {
 	private static final String RSCRIPTDIR = "RSCRIPTDIR";
 	private static final String SNPTESTBINARY = "SNPTESTBINARY";
 	private static final String BCFTOOLSBINARY = "BCFTOOLSBINARY";
+	private static final String BASHSCRIPTDIR = "BASHSCRIPTDIR";
 
 	// Method headers
 	private static final String HEADER_CONVERT_FROM_BED_TO_BED = "[convertFromBedToBed]";
@@ -3569,8 +3570,6 @@ public class GuidanceImpl {
 			int indexPosition = resultsFileHashTableIndex.get("position");
 			int indexRsId = resultsFileHashTableIndex.get("rs_id_all");
 
-			System.out.println("ANTES 3");
-
 			int indexPvalue = resultsFileHashTableIndex.get("frequentist_add_pvalue");
 			int indexChromo = resultsFileHashTableIndex.get("chr");
 			int indexAllMaf = resultsFileHashTableIndex.get("all_maf");
@@ -3742,7 +3741,7 @@ public class GuidanceImpl {
 			System.out.println("[DEBUG] \t- Input mergedSampleFile           : " + mergedSampleFile);
 			System.out.println("[DEBUG] \t- Output snptestOutFile            : " + snptestOutFileGz);
 			System.out.println("[DEBUG] \t- Output snptestLogFile            : " + snptestLogFile);
-			System.out.println("[DEBUG] \t- Input responseVar               : " + responseVar);
+			System.out.println("[DEBUG] \t- Input responseVar                : " + responseVar);
 			System.out.println("[DEBUG] \t- Input covariables                : " + covariables);
 			System.out.println(NEW_LINE);
 			System.out.println("[DEBUG] \t- Command: " + cmdToStore);
@@ -3788,10 +3787,11 @@ public class GuidanceImpl {
 		if (nBytes != -1) {
 			String cmd = null;
 			if (covariables.equals("none")) {
-				cmd = snptestBinary + " -data " + mergedGenFileGz + " " + mergedSampleFile + " -o " + snptestOutFile
+				cmd = "env -i " + snptestBinary + " -data " + mergedGenFileGz + " " + mergedSampleFile + " -o " + snptestOutFile
 						+ " -pheno " + responseVar + " -hwe -log " + snptestLogFile;
+				covariables = "";
 			} else {
-				cmd = snptestBinary + " -data " + mergedGenFileGz + " " + mergedSampleFile + " -o " + snptestOutFile
+				cmd = "env -i " + snptestBinary + " -data " + mergedGenFileGz + " " + mergedSampleFile + " -o " + snptestOutFile
 						+ " -pheno " + responseVar + " -cov_names " + newStr + " -hwe -log " + snptestLogFile;
 			}
 
@@ -3802,6 +3802,11 @@ public class GuidanceImpl {
 				cmd = cmd + " -method em -frequentist 1 2 3 4 5 ";
 			}
 
+			//String bashScriptBinDir = loadFromEnvironment(BASHSCRIPTDIR, HEADER_SNPTEST);
+
+			//cmd = bashScriptBinDir + "/snptest.sh " + snptestBinary + " " + mergedGenFileGz + " " + mergedSampleFile
+			//		+ " " + snptestOutFile + " " + snptestLogFile + " " + responseVar + " " + theChromo + " " + covariables;
+			
 			if (DEBUG) {
 				System.out.println(HEADER_SNPTEST + MSG_CMD + cmd);
 			}
@@ -3810,6 +3815,7 @@ public class GuidanceImpl {
 			int exitValue = -1;
 			try {
 				exitValue = ProcessUtils.executeWithoutOutputs(cmd);
+				//exitValue = ProcessUtils.execute(cmd, snptestLogFile + STDOUT_EXTENSION, snptestLogFile + STDERR_EXTENSION);
 			} catch (IOException ioe) {
 				throw new GuidanceTaskException(ioe);
 			}
@@ -3820,12 +3826,19 @@ public class GuidanceImpl {
 				System.err.println(HEADER_SNPTEST + "                         (This error is not fatal).");
 			}
 		}
+		
+		//try {
+		//	Thread.sleep(400000);
+		//} catch (InterruptedException e) {
+		//	// TODO Auto-generated catch block
+		//	e.printStackTrace();
+		//}
 
 		// The SNP Test binary does not create an empty file if there are not outputs.
 		// Check it
 		try {
 			FileUtils.createEmptyFile(snptestOutFile, HEADER_SNPTEST);
-			FileUtils.createEmptyFile(snptestLogFile, HEADER_SNPTEST);
+			//FileUtils.createEmptyFile(snptestLogFile, HEADER_SNPTEST);
 		} catch (IOException ioe) {
 			throw new GuidanceTaskException(ioe);
 		}
