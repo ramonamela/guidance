@@ -78,7 +78,6 @@ public class GuidanceImpl {
 	private static final String RSCRIPTDIR = "RSCRIPTDIR";
 	private static final String SNPTESTBINARY = "SNPTESTBINARY";
 	private static final String BCFTOOLSBINARY = "BCFTOOLSBINARY";
-	private static final String BASHSCRIPTDIR = "BASHSCRIPTDIR";
 
 	// Method headers
 	private static final String HEADER_CONVERT_FROM_BED_TO_BED = "[convertFromBedToBed]";
@@ -3802,11 +3801,6 @@ public class GuidanceImpl {
 				cmd = cmd + " -method em -frequentist 1 2 3 4 5 ";
 			}
 
-			//String bashScriptBinDir = loadFromEnvironment(BASHSCRIPTDIR, HEADER_SNPTEST);
-
-			//cmd = bashScriptBinDir + "/snptest.sh " + snptestBinary + " " + mergedGenFileGz + " " + mergedSampleFile
-			//		+ " " + snptestOutFile + " " + snptestLogFile + " " + responseVar + " " + theChromo + " " + covariables;
-			
 			if (DEBUG) {
 				System.out.println(HEADER_SNPTEST + MSG_CMD + cmd);
 			}
@@ -3815,7 +3809,6 @@ public class GuidanceImpl {
 			int exitValue = -1;
 			try {
 				exitValue = ProcessUtils.executeWithoutOutputs(cmd);
-				//exitValue = ProcessUtils.execute(cmd, snptestLogFile + STDOUT_EXTENSION, snptestLogFile + STDERR_EXTENSION);
 			} catch (IOException ioe) {
 				throw new GuidanceTaskException(ioe);
 			}
@@ -3826,13 +3819,6 @@ public class GuidanceImpl {
 				System.err.println(HEADER_SNPTEST + "                         (This error is not fatal).");
 			}
 		}
-		
-		//try {
-		//	Thread.sleep(400000);
-		//} catch (InterruptedException e) {
-		//	// TODO Auto-generated catch block
-		//	e.printStackTrace();
-		//}
 
 		// The SNP Test binary does not create an empty file if there are not outputs.
 		// Check it
@@ -4220,13 +4206,13 @@ public class GuidanceImpl {
 			int length_entry_assoc_list, String mafThresholdS, String hweCohortThresholdS, String hweCasesThresholdS,
 			String hweControlsThresholdS, String sex) throws IOException {
 
-		int real_length_assoc = 67;
+		int real_length_assoc = 111;
 		if (chr.equals(CHR_23)) {
 			// real_length_assoc = 69;
 			if (sex.equals(NO_SEX)) {
 				real_length_assoc = 111;
 			} else {
-				real_length_assoc = 77;
+				real_length_assoc = 111;
 			}
 		}
 
