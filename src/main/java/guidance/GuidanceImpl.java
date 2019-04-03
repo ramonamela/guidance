@@ -1147,7 +1147,6 @@ public class GuidanceImpl {
 		boolean execute = true;
 
 		String myPrefix = phasingSampleFile.substring(0, phasingSampleFile.length() - 7);
-		System.out.println("myPrefix on phasingBed is: " + myPrefix);
 
 		if (phasingTool.equals("shapeit")) {
 			if (chromo.equals("23")) {
@@ -1162,7 +1161,7 @@ public class GuidanceImpl {
 		} else if (phasingTool.equals("eagle")) {
 
 			if (chromo.equals("23")) {
-
+				/*
 				if (sex.equals(SEX1)) {
 
 					String plinkBinary = loadFromEnvironment(PLINKBINARY, HEADER_PHASING);
@@ -1243,6 +1242,7 @@ public class GuidanceImpl {
 					execute = false;
 
 				} // else if (sex.equals(SEX2)) {
+				*/
 				cmd = phasingBinary + " --bed " + bedFile + " --bim " + bimFile + " --fam " + famFile + " --chrom "
 						+ chromo + " --geneticMapFile " + gmapFile + " --numThreads 47 --outPrefix " + myPrefix;
 				// }

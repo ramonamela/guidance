@@ -1,3 +1,5 @@
+.libPaths("/gpfs/projects/bsc05/ramon/R_libs")
+
 library(data.table)
 library(plyr)
 library(dplyr)
@@ -15,9 +17,9 @@ pval <- as.numeric(args[5])
 tophits <- unlist(strsplit(args[1],","))
 
 import.list <- llply(tophits, read.delim, sep="", colClasses=c("character","numeric",
-                                                             "character","numeric",
+                                                             "character",
                                                              "character","character",
-                                                             "numeric","numeric",
+                                                             "numeric","numeric","numeric",
                                                              "numeric","numeric"))
 
 cross_pheno_all <- Reduce(function(dtf1, dtf2) merge(dtf1, dtf2, 

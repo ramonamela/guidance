@@ -34,6 +34,8 @@ cat("#####                	Removing Duplicated Variant         	     #####\n")
 tophits_all <- distinct(tophits_all, rs_id_all, .keep_all = TRUE)
 table(duplicated(tophits_all$rs_id_all))
 
+colnames(tophits_all)
+head(tophits_all)
 tophits_all_final <- tophits_all[,c("chr","position","rs_id_all","alleleA","alleleB")]
 
 write.table(tophits_all_final,tophits_final,col.names=T,row.names=F,quote=F,sep="\t")

@@ -608,6 +608,15 @@ public class Guidance {
 					}
 					// }
 				} // End for Chromo
+			} // End for refPanels
+		} // End for tests
+			
+		if (BARRIERS) {
+			COMPSs.barrier();
+		}
+			
+		for (int test = 0; test < numberOfTestTypes; test++) {
+			for (int panel = 0; panel < rpanelTypes.size(); panel++) {
 
 				// Now we have to joint the filteredByAllFiles of each chromosome. Here there is
 				// an additional
@@ -654,10 +663,6 @@ public class Guidance {
 
 				GeneralUtils.flushCommands(listOfStages, listOfCommands, FLUSH);
 
-				if (BARRIERS) {
-					COMPSs.barrier();
-				}
-
 			} // End for refPanels
 
 			// Now we continue with the combining of the results of the different reference
@@ -666,6 +671,10 @@ public class Guidance {
 			makeCombinePanels(parsingArgs, assocFilesInfo, mergeFilesInfo, combinedPanelsFilesInfo, rpanelTypes, test);
 
 		} // End for test types
+		
+		if (BARRIERS) {
+			COMPSs.barrier();
+		}
 
 		// GeneralUtils.flushCommands(listOfStages, listOfCommands, true);
 
