@@ -1338,6 +1338,7 @@ public class GuidanceImpl {
 	/**
 	 * Method to execute phasing where input files are in GEN format
 	 */
+	/*
 	public static void phasing(String chromo, String inputGenFile, String inputSampleFile, String gmapFile,
 			String phasingHapsFile, String phasingSampleFile, String phasingLogFile, String phasingTool,
 			String cmdToStore) throws IOException, InterruptedException, GuidanceTaskException {
@@ -1407,11 +1408,11 @@ public class GuidanceImpl {
 			tmpPhasingLogFile.renameTo(new File(phasingLogFile));
 		}
 
-		/*
-		 * // Now we rename phasingHapsFileGz to phasingHapsFile File source = new
-		 * File(phasingHapsFile); File dest = new File(phasingHapsFile);
-		 * copyFile(source, dest);
-		 */
+		
+		// Now we rename phasingHapsFileGz to phasingHapsFile File source = new
+		//File(phasingHapsFile); File dest = new File(phasingHapsFile);
+		//copyFile(source, dest);
+		
 
 		long stopTime = System.currentTimeMillis();
 		long elapsedTime = (stopTime - startTime) / 1000;
@@ -1422,7 +1423,7 @@ public class GuidanceImpl {
 			System.out.println("\n[DEBUG] Finished execution of phasing.");
 		}
 	}
-
+	*/
 	public static void newSample(String sampleFile, String phasingSampleFile, String phasingNewSampleFile,
 			String responseVar, String covariables, String cmdToStore) throws IOException {
 
@@ -1457,14 +1458,14 @@ public class GuidanceImpl {
 
 			for (int j = 0; j < namesHeaderCovar.length; j++) {
 				if (splitHeaderSF[i].equals(namesHeaderCovar[j])) {
-					System.out.println("Adding column " + i + " corresponding to " + splitHeaderSF[i] + " to covars");
+					//System.out.println("Adding column " + i + " corresponding to " + splitHeaderSF[i] + " to covars");
 					columnsHeaderCovar.add(i);
 				}
 			}
 
 			for (int j = 0; j < namesHeaderResponse.length; j++) {
 				if (splitHeaderSF[i].equals(namesHeaderResponse[j])) {
-					System.out.println("Adding column " + i + " corresponding to " + splitHeaderSF[i] + " to reponse");
+					//System.out.println("Adding column " + i + " corresponding to " + splitHeaderSF[i] + " to reponse");
 					columnsHeaderResponse.add(i);
 				}
 			}
@@ -1823,7 +1824,21 @@ public class GuidanceImpl {
 				pairsFile, imputeFile, imputeFileInfo, imputeFileSummary, imputeFileWarnings, theChromo, sex,
 				cmdToStore);
 	}
-
+	
+	public static void imputeWithImputeAndFilterByInfo(String gmapFile, String knownHapFile, String legendFile,
+			String phasingHapsFile, String phasingSampleFile, String lim1S, String lim2S, String pairsFile, String filteredRsIdFile,
+			String infoThresholdS, String mafThresholdS, String theChromo, String sex,
+			
+			String imputeFile) {
+		
+		imputeWithImpute(gmapFile, knownHapFile, legendFile, phasingHapsFile, phasingSampleFile, lim1S, lim2S,
+				pairsFile, imputeFile, imputeFileInfo, imputeFileSummary, imputeFileWarnings, theChromo, sex,
+				"");
+		
+		filterByInfo("impute", imputeFileInfo, filteredRsIdFile, infoThresholdS,
+				mafThresholdS, "");
+	}
+	
 	/**
 	 * Method to impute with impute
 	 * 
@@ -1995,8 +2010,8 @@ public class GuidanceImpl {
 			throw new GuidanceTaskException(ioe);
 		}
 
-		System.out.println(imputeFileColumnTransformation);
-		System.out.println(imputeInfoFileColumnTransformation);
+		//System.out.println(imputeFileColumnTransformation);
+		//System.out.println(imputeInfoFileColumnTransformation);
 
 		long stopTime = System.currentTimeMillis();
 		long elapsedTime = (stopTime - startTime) / 1_000;
@@ -2600,9 +2615,7 @@ public class GuidanceImpl {
 			writerFiltered.newLine();
 
 			inputFileHashTableIndex = Headers.createHashWithHeader(line, TAB);
-			System.out.println(line);
 			while ((line = br.readLine()) != null) {
-				System.out.println(line);
 				String[] splittedLine = line.split(TAB);// delimiter I assume single space.
 
 				String chromo = splittedLine[inputFileHashTableIndex.get("chr")];
@@ -2853,6 +2866,7 @@ public class GuidanceImpl {
 	 * @throws InterruptedException
 	 * @throws Exception
 	 */
+	/*
 	public static void jointCondensedFiles(String inputAFile, String inputBFile, String outputFile, String cmdToStore)
 			throws GuidanceTaskException {
 
@@ -2934,7 +2948,7 @@ public class GuidanceImpl {
 			System.out.println("\n[DEBUG] Finished execution of jointCondensedFiles");
 		}
 	}
-
+	*/
 	/**
 	 * Method to combine panels complex
 	 * 
@@ -3309,6 +3323,7 @@ public class GuidanceImpl {
 	 * @throws InterruptedException
 	 * @throws Exception
 	 */
+	/*
 	public static void combineCondensedFiles(String filteredA, String filteredX, String combinedCondensedFile,
 			String mafThresholdS, String infoThresholdS, String hweCohortThresholdS, String hweCasesThresholdS,
 			String hweControlsThresholdS, String cmdToStore) throws GuidanceTaskException {
@@ -3523,6 +3538,7 @@ public class GuidanceImpl {
 			System.out.println("\n[DEBUG] Finished execution of combinedCondensedFiles");
 		}
 	}
+	*/
 
 	/**
 	 * Method to generate top hits
