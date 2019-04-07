@@ -27,7 +27,7 @@
 	<!-- PROPERTIES -->
 	<properties>
 		<!-- COMPSs version -->
-		<compss.version>2.3</compss.version>
+		<compss.version>2.4.rc1811</compss.version>
 
 		<!-- JUNIT Test -->
 		<junit.version>4.12</junit.version>
@@ -117,6 +117,13 @@
 				<version>${compss.version}</version>
 			</dependency>
 
+            <dependency>
+                <groupId>es.bsc.compss</groupId>
+                <artifactId>compss-commons</artifactId>
+                <version>${compss.version}</version>
+            </dependency>
+           
+
 			<!-- JUNIT -->
 			<dependency>
 				<groupId>junit</groupId>
@@ -149,6 +156,11 @@
 			<groupId>es.bsc.compss</groupId>
 			<artifactId>compss-api</artifactId>
 		</dependency>
+            <dependency>
+                <groupId>es.bsc.compss</groupId>
+                <artifactId>compss-commons</artifactId>
+                <version>${compss.version}</version>
+            </dependency>
 
                 <!-- Log4j -->
                 <dependency>
