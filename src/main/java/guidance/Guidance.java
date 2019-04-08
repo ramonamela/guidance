@@ -737,10 +737,11 @@ public class Guidance {
 	 * @param imputationFilesInfo
 	 * @param commonFilesInfo
 	 * @param listOfCommands
+	 * @throws GuidanceTaskException 
 	 */
 	private static void makeImputationPerChunk(ParseCmdLine parsingArgs, int chrNumber, int lim1, int lim2,
 			int panelIndex, String gmapFile, String mixedGmapFile, ImputationFiles imputationFilesInfo,
-			CommonFiles commonFilesInfo) {
+			CommonFiles commonFilesInfo) throws GuidanceTaskException {
 
 		int chunkSize = parsingArgs.getChunkSize();
 
@@ -887,22 +888,23 @@ public class Guidance {
 
 			} else if (phasingTool.equals("shapeit")) {
 				// if (!chrS.equals("23")) {
-				/*
+				
 				if (parsingArgs.getStageStatus("imputeWithImpute") == 1
 						&& parsingArgs.getStageStatus("filterByInfo") == 1
 						&& parsingArgs.getStageStatus("qctoolS") == 1
 						&& COMPACT_VERSION) {
 						doImputationWithImputeAndFilterByInfo(parsingArgs, chrS, gmapFile, knownHapFile, legendFile, mixedPhasingHapsFile,
-								mixedPhasingNewSampleFile, lim1S, lim2S, mixedPairsFile);
+								mixedPhasingNewSampleFile, lim1S, lim2S, mixedPairsFile, chrS, NO_SEX, mixedImputeFile, mixedImputeFileInfo, 
+								mixedFilteredRsIdFile, mixedFilteredFile);
 				} else {
-				*/
+				
 					doImputationWithImpute(parsingArgs, chrS, gmapFile, knownHapFile, legendFile, mixedPhasingHapsFile,
 							mixedPhasingNewSampleFile, lim1S, lim2S, mixedPairsFile, mixedImputeFile, mixedImputeFileInfo,
 							mixedImputeFileSummary, mixedImputeFileWarnings, NO_SEX, panelIndex);
 					doFilterByInfo(parsingArgs, mixedImputeFileInfo, mixedFilteredRsIdFile, chrS);
 					doQctoolS(parsingArgs, mixedImputeFile, mixedFilteredRsIdFile, mixedFilteredFile, mixedFilteredLogFile,
 							chrS);
-				//}
+				}
 				// } else if (chrS.equals("23")) {
 				if (chrS.equals("23")) {
 					String mixedPhasingHapsMalesFile = commonFilesInfo.getPhasingHapsMalesFile();
@@ -2709,34 +2711,30 @@ public class Guidance {
 		}
 
 	}
-	/*
+	
 	private static void doImputationWithImputeAndFilterByInfo(ParseCmdLine parsingArgs, String chrS, String gmapFile,
 			String knownHapFile, String legendFile, String phasingHapsFile, String phasingSampleFile, String lim1S,
-			String lim2S, String pairsFile) {
-		String cmdToStore = null;
-		if (chrS.equals("23")) {
-
-			cmdToStore = IMPUTE2_BINARY + " -use_prephased_g -m " + gmapFile + " -h " + knownHapFile + " -l "
-					+ legendFile + " -known_haps_g " + phasingHapsFile + " -sample_g " + phasingSampleFile
-					+ " -int " + lim1S + " " + lim2S + " -chrX -exclude_snps_g " + pairsFile
-					+ " -impute_excluded -Ne 20000 -o " + imputeFile + " -i " + imputeFileInfo + " -r "
-					+ imputeFileSummary + " -w " + imputeFileWarnings + " -no_sample_qc_info -o_gz ";
-
-		} else {
-			cmdToStore = IMPUTE2_BINARY + " -use_prephased_g -m " + gmapFile + " -h " + knownHapFile + " -l "
-					+ legendFile + " -known_haps_g " + phasingHapsFile + " -int " + lim1S + " " + lim2S
-					+ " -exclude_snps_g " + pairsFile + " -impute_excluded -Ne 20000 -o " + imputeFile + " -i "
-					+ imputeFileInfo + " -r " + imputeFileSummary + " -w " + imputeFileWarnings
-					+ " -no_sample_qc_info -o_gz";
-		}
-		listOfCommands.add(cmdToStore);
+			String lim2S, String pairsFile, String theChromo, String sex,
+			String imputeFile, String imputeFileInfo, String filteredRsIdFile, String filteredFile) throws GuidanceTaskException {
 		
-		imputeWithImputeAndFilterByInfo(String gmapFile,
-				String knownHapFile, String legendFile, String phasingHapsFile, String phasingSampleFile, String lim1S,
-				String lim2S, String pairsFile);
+		String infoThresholdS = null;
+		String mafThresholdS = Double.toString(parsingArgs.getMafThreshold());
+
+		String imputationTool = parsingArgs.getImputationTool();
+
+		if (imputationTool.equals("impute")) {
+			infoThresholdS = Double.toString(parsingArgs.getImputeThreshold());
+		} else if (imputationTool.equals("minimac")) {
+			infoThresholdS = Double.toString(parsingArgs.getMinimacThreshold());
+		}
+		
+		GuidanceImpl.imputeWithImputeAndFilterByInfoLow(gmapFile, knownHapFile, legendFile,
+			    phasingHapsFile, phasingSampleFile, lim1S, lim2S, pairsFile,
+				infoThresholdS, mafThresholdS, theChromo, sex,
+				imputeFile, imputeFileInfo, filteredRsIdFile, filteredFile);
 		
 	}
-	*/
+	
 	/**
 	 * Method that wraps the execution of impute task and store the command in the
 	 * listOfCommands

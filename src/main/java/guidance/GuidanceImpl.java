@@ -1825,11 +1825,14 @@ public class GuidanceImpl {
 				cmdToStore);
 	}
 	
-	public static void imputeWithImputeAndFilterByInfo(String gmapFile, String knownHapFile, String legendFile,
-			String phasingHapsFile, String phasingSampleFile, String lim1S, String lim2S, String pairsFile, String filteredRsIdFile,
+	public static void imputeWithImputeAndFilterByInfoLow(String gmapFile, String knownHapFile, String legendFile,
+			String phasingHapsFile, String phasingSampleFile, String lim1S, String lim2S, String pairsFile,
 			String infoThresholdS, String mafThresholdS, String theChromo, String sex,
-			
-			String imputeFile) {
+			String imputeFile, String imputeFileInfo, String filteredRsIdFile, String filteredFile) throws GuidanceTaskException {
+		// output -> /gpfs/scratch/bsc19/compss/GUIDANCE/executions/sha_imp_300_no_var/outputs_1_23_ramon_50_4/GERA_300/uk10k/mixed/Chr_1/chr_1_mixed_uk10k_1_1000000.impute.gz
+		String imputeFileSummary = "COMPUTE HERE"; // /gpfs/scratch/bsc19/compss/GUIDANCE/executions/sha_imp_300_no_var/outputs_1_23_ramon_50_4/GERA_300/uk10k/mixed/Chr_1/chr_1_mixed_uk10k_1_1000000.impute_summary
+		String imputeFileWarnings = "COMPUTE HERE"; // /gpfs/scratch/bsc19/compss/GUIDANCE/executions/sha_imp_300_no_var/outputs_1_23_ramon_50_4/GERA_300/uk10k/mixed/Chr_1/chr_1_mixed_uk10k_1_1000000.impute_warnings
+		String filteredLogFile = "COMPUTE HERE";  // /gpfs/scratch/bsc19/compss/GUIDANCE/executions/sha_imp_300_no_var/outputs_1_23_ramon_50_4/GERA_300/uk10k/mixed/Chr_1/chr_1_mixed_uk10k_1_1000000_filtered.impute.log
 		
 		imputeWithImpute(gmapFile, knownHapFile, legendFile, phasingHapsFile, phasingSampleFile, lim1S, lim2S,
 				pairsFile, imputeFile, imputeFileInfo, imputeFileSummary, imputeFileWarnings, theChromo, sex,
@@ -1837,6 +1840,11 @@ public class GuidanceImpl {
 		
 		filterByInfo("impute", imputeFileInfo, filteredRsIdFile, infoThresholdS,
 				mafThresholdS, "");
+		
+		qctoolS("impute", imputeFile, filteredRsIdFile, mafThresholdS, filteredFile,
+				filteredLogFile, "");
+		
+		
 	}
 	
 	/**
