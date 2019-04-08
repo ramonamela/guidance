@@ -55,6 +55,10 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.zip.GZIPInputStream;
 
+import es.bsc.compss.types.annotations.Parameter;
+import es.bsc.compss.types.annotations.parameter.Direction;
+import es.bsc.compss.types.annotations.parameter.Type;
+
 /**
  * @author ramela
  *
@@ -1830,9 +1834,14 @@ public class GuidanceImpl {
 			String infoThresholdS, String mafThresholdS, String theChromo, String sex,
 			String imputeFile, String imputeFileInfo, String filteredRsIdFile, String filteredFile) throws GuidanceTaskException {
 		// output -> /gpfs/scratch/bsc19/compss/GUIDANCE/executions/sha_imp_300_no_var/outputs_1_23_ramon_50_4/GERA_300/uk10k/mixed/Chr_1/chr_1_mixed_uk10k_1_1000000.impute.gz
-		String imputeFileSummary = "COMPUTE HERE"; // /gpfs/scratch/bsc19/compss/GUIDANCE/executions/sha_imp_300_no_var/outputs_1_23_ramon_50_4/GERA_300/uk10k/mixed/Chr_1/chr_1_mixed_uk10k_1_1000000.impute_summary
-		String imputeFileWarnings = "COMPUTE HERE"; // /gpfs/scratch/bsc19/compss/GUIDANCE/executions/sha_imp_300_no_var/outputs_1_23_ramon_50_4/GERA_300/uk10k/mixed/Chr_1/chr_1_mixed_uk10k_1_1000000.impute_warnings
-		String filteredLogFile = "COMPUTE HERE";  // /gpfs/scratch/bsc19/compss/GUIDANCE/executions/sha_imp_300_no_var/outputs_1_23_ramon_50_4/GERA_300/uk10k/mixed/Chr_1/chr_1_mixed_uk10k_1_1000000_filtered.impute.log
+		String basePath = imputeFile.substring(0, imputeFile.length() - 10);
+		String imputeFileSummary = basePath + ".impute_summary"; // /gpfs/scratch/bsc19/compss/GUIDANCE/executions/sha_imp_300_no_var/outputs_1_23_ramon_50_4/GERA_300/uk10k/mixed/Chr_1/chr_1_mixed_uk10k_1_1000000.impute_summary
+		String imputeFileWarnings = basePath + ".impute_warnings"; // /gpfs/scratch/bsc19/compss/GUIDANCE/executions/sha_imp_300_no_var/outputs_1_23_ramon_50_4/GERA_300/uk10k/mixed/Chr_1/chr_1_mixed_uk10k_1_1000000.impute_warnings
+		String filteredLogFile = basePath + ".impute_filtered.impute.log";  // /gpfs/scratch/bsc19/compss/GUIDANCE/executions/sha_imp_300_no_var/outputs_1_23_ramon_50_4/GERA_300/uk10k/mixed/Chr_1/chr_1_mixed_uk10k_1_1000000_filtered.impute.log
+		System.out.println(basePath);
+		System.out.println(imputeFileSummary);
+		System.out.println(imputeFileWarnings);
+		System.out.println(filteredLogFile);
 		
 		imputeWithImpute(gmapFile, knownHapFile, legendFile, phasingHapsFile, phasingSampleFile, lim1S, lim2S,
 				pairsFile, imputeFile, imputeFileInfo, imputeFileSummary, imputeFileWarnings, theChromo, sex,
