@@ -1,19 +1,25 @@
-FROM ubuntu:18.10
+FROM ubuntu:18.04
 
-ENV DEBIAN_FRONTEND noninteractive
+ARG DEBIAN_FRONTEND=noninteractive
 
-RUN apt-get update && \
-    update-alternatives --remove "java" "/usr/lib/jvm/java-11-openjdk-amd64/bin/java" && \
-    update-alternatives --remove "java" "/usr/lib/jvm/java-11-openjdk-amd64/bin/javac" && \
-    update-alternatives --remove "java" "/usr/lib/jvm/java-11-openjdk-amd64/bin/javaws" && \
-    rm -rf /usr/lib/jvm/java-1.11.0-openjdk-amd64 && \
-    apt-get remove openjdk* && \
-    apt-get remove --auto-remove openjdk* && \
-    apt-get purge openjdk* && \
-    apt-get purge --auto-remove openjdk* && \
-    apt-get autoremove openjdk-11-jre
+ENV TERM linux
+
+RUN echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selections
 
 RUN apt-get update && \
+#    update-alternatives --remove "java" "/usr/lib/jvm/java-11-openjdk-amd64/bin/java" && \
+#    update-alternatives --remove "java" "/usr/lib/jvm/java-11-openjdk-amd64/bin/javac" && \
+#    update-alternatives --remove "java" "/usr/lib/jvm/java-11-openjdk-amd64/bin/javaws" && \
+#    rm -rf /usr/lib/jvm/java-1.11.0-openjdk-amd64 && \
+#    apt-get purge openjdk-8-jre openjdk-8-jre-headless openjdk-7-jre gcj-4.7-base gcj-4.7-jre openjdk-6-jre-headless && \
+#    apt-get remove openjdk* && \
+#    apt-get remove --auto-remove openjdk* && \
+#    apt-get purge openjdk* && \
+#    apt-get purge --auto-remove openjdk* && \
+    apt-get autoremove openjdk-11-jre openjdk-11-jdk
+
+RUN apt-get update && \
+    apt-get purge openjdk-\* icedtea-\* icedtea6-\* && \
     apt-get install -y --no-install-recommends openjdk-8-jdk && \
     update-alternatives --set java /usr/lib/jvm/java-8-openjdk-amd64/jre/bin/java && \
     rm -rf /var/lib/apt/lists/*
@@ -25,8 +31,8 @@ RUN apt-get update && \
     git  \
     vim \
     wget \
-    openssh-server \
-    sudo && \
+    sudo \
+    openssh-server && \
     yes yes | ssh-keygen -f /root/.ssh/id_rsa -t rsa -N '' > /dev/null && \
     cat /root/.ssh/id_rsa.pub > /root/.ssh/authorized_keys && \
     git config --global core.compression 9 && \
@@ -74,11 +80,15 @@ RUN apt-get update && \
     rm -rf /var/lib/apt/lists/*
 
 RUN rm -rf ./framework && \
+    export JAVA_HOME="/usr/lib/jvm/java-8-openjdk-amd64/" && \
+    export MPI_HOME="/usr/lib/openmpi" && \
+    export LD_LIBRARY_PATH="/usr/lib/openmpi/lib" && \
     git clone --branch "2.4.rc1904" https://github.com/bsc-wdc/compss.git framework && \
     cd ./framework && \
     ./submodules_get.sh && \
     ./submodules_patch.sh && \
-    sudo -E -P /framework/builders/buildlocal /opt/COMPSs && \
+    echo "${JAVA_HOME}" && \
+    sudo /framework/builders/buildlocal -P -M /opt/COMPSs && \
     rm -rf /root/.cache && \
     cd .. && \
     rm -r ./framework
@@ -94,8 +104,14 @@ RUN chmod 775 /TOOLS/R_scripts/*
 WORKDIR /TOOLS
 
 RUN export DEBIAN_FRONTEND=noninteractive && \
-    sudo apt-get update && sudo apt-get install -y apt-utils && \
-    apt-get install -y --no-install-recommends r-base libcurl4-openssl-dev \
+#    sudo add-apt-repository 'deb https://cloud.r-project.org/bin/linux/ubuntu bionic-cran35/' && \
+#    sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys E084DAB9 && \
+    sudo apt-get update && sudo apt-get install -y --no-install-recommends gnupg2 software-properties-common && \
+    sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys E298A3A825C0D65DFD57CBB651716619E084DAB9 && \
+    sudo add-apt-repository 'deb https://cloud.r-project.org/bin/linux/ubuntu bionic-cran35/' && \
+    sudo apt-get update && DEBIAN_FRONTEND=noninteractive sudo apt-get install -y --no-install-recommends apt-utils && \
+    sudo sed -i 's/^mesg n$/tty -s \&\& mesg n/g' /root/.profile && \
+    DEBIAN_FRONTEND=noninteractive sudo apt-get install -y --no-install-recommends r-base r-base-dev r-base-core libcurl4-openssl-dev \
     jags libpq-dev libmariadb-client-lgpl-dev && \
     rm -rf /var/lib/apt/lists/*
 
@@ -104,14 +120,14 @@ RUN /usr/bin/Rscript /TOOLS/deps.R
 ######### IN CASE WE WANT TO UPGRADE QCTOOL #########
 
 #Install mercurial (for QCTool)
-#RUN sudo apt-get install -y mercurial
+#RUN apt-get install -y mercurial
 
 #Install qctoolNew
 #RUN hg clone -r ba5eaa4 https://gavinband@bitbucket.org/gavinband/qctool qctool_2.0 && \
 #    cd qctool_2.0 && \
 #    ./waf-1.5.18 configure && \
 #    ./waf-1.5.18 && \
-#    sudo ln -s /TOOLS/build/release/qctool_v2.0.1 /usr/bin/qctool2.0
+#    ln -s /TOOLS/build/release/qctool_v2.0.1 /usr/bin/qctool2.0
 
 ######### END OF QCTOOL INSTALACTION ################
 
@@ -133,8 +149,8 @@ RUN wget https://github.com/samtools/bcftools/releases/download/1.8/bcftools-1.8
     rm bcftools.tar.bz2 && \
     cd bcftools-1.8 && \
     make && \
-    sudo make prefix=/usr/local/bin install && \
-    sudo ln -s /usr/local/bin/bin/bcftools /usr/bin/bcftools
+    make prefix=/usr/local/bin install && \
+    ln -s /usr/local/bin/bin/bcftools /usr/bin/bcftools
 
 #Install samtools
 RUN wget https://github.com/samtools/samtools/releases/download/1.5/samtools-1.5.tar.bz2 -O samtools.tar.bz2 && \
@@ -142,8 +158,8 @@ RUN wget https://github.com/samtools/samtools/releases/download/1.5/samtools-1.5
     rm samtools.tar.bz2 && \
     cd samtools-1.5 && \
     make && \
-    sudo make prefix=/usr/local/bin install && \
-    sudo ln -s /usr/local/bin/bin/samtools /usr/bin/samtools
+    make prefix=/usr/local/bin install && \
+    ln -s /usr/local/bin/bin/samtools /usr/bin/samtools
 
 #Plink dependencies
 RUN sudo apt-get update && \
@@ -156,21 +172,21 @@ RUN git clone https://github.com/chrchang/plink-ng.git && \
     rm -r 2.0 && \
     cd 1.9 && \
     ./plink_first_compile && \
-    sudo ln -s /TOOLS/plink-ng/1.9/plink /usr/bin/plink
+    ln -s /TOOLS/plink-ng/1.9/plink /usr/bin/plink
 
 #Install Eagle
 RUN wget https://data.broadinstitute.org/alkesgroup/Eagle/downloads/old/Eagle_v2.3.tar.gz && \
     tar -zxvf Eagle_v2.3.tar.gz && \
     rm Eagle_v2.3.tar.gz && \
     rm -r Eagle_v2.3/example/ && \
-    sudo ln -s /TOOLS/Eagle_v2.3/eagle /usr/bin/eagle
+    ln -s /TOOLS/Eagle_v2.3/eagle /usr/bin/eagle
 
 #Install Impute ### This step will stop working once they upgrade the program since only the last version is available
 RUN wget https://mathgen.stats.ox.ac.uk/impute/impute_v2.3.2_x86_64_static.tgz && \
     tar -zxvf impute_v2.3.2_x86_64_static.tgz && \
     rm impute_v2.3.2_x86_64_static.tgz && \
     rm -r impute_v2.3.2_x86_64_static/Example/ && \
-    sudo ln -s /TOOLS/impute_v2.3.2_x86_64_static/impute2 /usr/bin/impute2
+    ln -s /TOOLS/impute_v2.3.2_x86_64_static/impute2 /usr/bin/impute2
 
 #Install snptest
 RUN wget http://www.well.ox.ac.uk/~gav/resources/archive/snptest_v2.5_linux_x86_64_static.tgz && \
@@ -178,7 +194,7 @@ RUN wget http://www.well.ox.ac.uk/~gav/resources/archive/snptest_v2.5_linux_x86_
     rm snptest_v2.5_linux_x86_64_static.tgz && \
     rm -r snptest_v2.5_linux_x86_64_static/example/ && \
     chmod -R 755 /TOOLS/snptest_v2.5_linux_x86_64_static/ && \
-    sudo ln -s /TOOLS/snptest_v2.5_linux_x86_64_static/snptest_v2.5 /usr/bin/snptest_v2.5
+    ln -s /TOOLS/snptest_v2.5_linux_x86_64_static/snptest_v2.5 /usr/bin/snptest_v2.5
 
 #Install minimac3
 #RUN git clone https://github.com/Santy-8128/Minimac3.git && \
@@ -189,7 +205,7 @@ RUN wget ftp://share.sph.umich.edu/minimac3/Minimac3Executable.tar.gz && \
     tar -zxvf Minimac3Executable.tar.gz && \
     rm Minimac3Executable.tar.gz && \
     chmod -R 755 /TOOLS/Minimac3Executable/bin && \
-    sudo ln -s /TOOLS/Minimac3Executable/bin/Minimac3-omp
+    ln -s /TOOLS/Minimac3Executable/bin/Minimac3-omp
 
 #Minimac4 dependencies
 RUN sudo apt-get update && \
@@ -200,9 +216,23 @@ RUN sudo apt-get update && \
 RUN git clone https://github.com/Santy-8128/Minimac4.git && \
     cd Minimac4 && \
     bash install.sh && \
-    sudo ln -s /TOOLS/Minimac4/release-build/minimac4 /usr/bin/minimac4
+    ln -s /TOOLS/Minimac4/release-build/minimac4 /usr/bin/minimac4
 #    sudo ln -s /TOOLS/Minimac3/bin/Minimac3-omp /usr/bin/minimac3
 #    sudo ln -s /TOOLS/Minimac3/bin/Minimac3 /usr/bin/minimac3
+
+RUN apt-get update && \
+#    update-alternatives --remove "java" "/usr/lib/jvm/java-11-openjdk-amd64/bin/java" && \
+#    update-alternatives --remove "java" "/usr/lib/jvm/java-11-openjdk-amd64/bin/javac" && \
+#    update-alternatives --remove "java" "/usr/lib/jvm/java-11-openjdk-amd64/bin/javaws" && \
+#    rm -rf /usr/lib/jvm/java-1.11.0-openjdk-amd64 && \
+#    apt-get purge openjdk-8-jre openjdk-8-jre-headless openjdk-7-jre gcj-4.7-base gcj-4.7-jre openjdk-6-jre-headless && \
+#    apt-get remove openjdk* && \
+#    apt-get remove --auto-remove openjdk* && \
+#    apt-get purge openjdk* && \
+#    apt-get purge --auto-remove openjdk* && \
+    apt-get autoremove openjdk-11-jre openjdk-11-jdk
+
+RUN ln -s /usr/lib/jvm/java-8-openjdk-amd64 /usr/lib/jvm/default-java
 
 ENV LC_ALL "C"
 #ENV PLINKBINARY "/TOOLS/plink_1.9/plink"
