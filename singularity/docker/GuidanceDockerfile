@@ -6,7 +6,7 @@ ENV TERM linux
 
 RUN echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selections
 
-RUN apt-get update && \
+#RUN apt-get update && \
 #    update-alternatives --remove "java" "/usr/lib/jvm/java-11-openjdk-amd64/bin/java" && \
 #    update-alternatives --remove "java" "/usr/lib/jvm/java-11-openjdk-amd64/bin/javac" && \
 #    update-alternatives --remove "java" "/usr/lib/jvm/java-11-openjdk-amd64/bin/javaws" && \
@@ -16,12 +16,14 @@ RUN apt-get update && \
 #    apt-get remove --auto-remove openjdk* && \
 #    apt-get purge openjdk* && \
 #    apt-get purge --auto-remove openjdk* && \
-    apt-get autoremove openjdk-11-jre openjdk-11-jdk
+#    apt-get autoremove openjdk-11-jre openjdk-11-jdk
 
 RUN apt-get update && \
     apt-get purge openjdk-\* icedtea-\* icedtea6-\* && \
+    apt-get remove openjdk-11-jre openjdk-11-jdk openjdk-11-jre-headless openjdk-11-jdk-headless && \
+    apt-get purge openjdk-* && \
     apt-get install -y --no-install-recommends openjdk-8-jdk && \
-    update-alternatives --set java /usr/lib/jvm/java-8-openjdk-amd64/jre/bin/java && \
+    update-alternatives --install /usr/bin/java java /usr/lib/jvm/java-8-openjdk-amd64/jre/bin/java 9999 && \
     rm -rf /var/lib/apt/lists/*
 
 # Install Packages
@@ -83,7 +85,7 @@ RUN rm -rf ./framework && \
     export JAVA_HOME="/usr/lib/jvm/java-8-openjdk-amd64/" && \
     export MPI_HOME="/usr/lib/openmpi" && \
     export LD_LIBRARY_PATH="/usr/lib/openmpi/lib" && \
-    git clone --branch "2.4.rc1904" https://github.com/bsc-wdc/compss.git framework && \
+    git clone --branch "exaQUte" https://github.com/bsc-wdc/compss.git framework && \
     cd ./framework && \
     ./submodules_get.sh && \
     ./submodules_patch.sh && \
