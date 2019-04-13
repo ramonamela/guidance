@@ -1,4 +1,4 @@
-.libPaths("/gpfs/projects/bsc05/ramon/R_libs")
+#.libPaths("/gpfs/projects/bsc05/ramon/R_libs")
 
 library(data.table)
 library(plyr)
