@@ -203,6 +203,44 @@ public interface GuidanceItf {
 			@Parameter(type = Type.FILE, direction = Direction.OUT) String imputeFileInfo,
 			@Parameter(type = Type.FILE, direction = Direction.OUT) String filteredRsIdFile,
 			@Parameter(type = Type.FILE, direction = Direction.OUT) String filteredFile);
+	
+	@Method(declaringClass = "guidance.GuidanceImpl")
+	@Constraints(computingUnits = "1", memorySize = "${imputeWithImputeMediumMem}")
+	void imputeWithImputeAndFilterByInfoMedium(@Parameter(type = Type.FILE, direction = Direction.IN) String gmapFile, 
+			@Parameter(type = Type.FILE, direction = Direction.IN) String knownHapFile,
+			@Parameter(type = Type.FILE, direction = Direction.IN) String legendFile,
+			@Parameter(type = Type.FILE, direction = Direction.IN) String phasingHapsFile,
+			@Parameter(type = Type.FILE, direction = Direction.IN) String phasingSampleFile,
+			@Parameter(type = Type.STRING, direction = Direction.IN) String lim1S,
+			@Parameter(type = Type.STRING, direction = Direction.IN) String lim2S,
+			@Parameter(type = Type.FILE, direction = Direction.IN) String pairsFile,
+			@Parameter(type = Type.STRING, direction = Direction.IN) String infoThresholdS, 
+			@Parameter(type = Type.STRING, direction = Direction.IN) String mafThresholdS, 
+			@Parameter(type = Type.STRING, direction = Direction.IN) String theChromo, 
+			@Parameter(type = Type.STRING, direction = Direction.IN) String sex,
+			@Parameter(type = Type.FILE, direction = Direction.OUT) String imputeFile,
+			@Parameter(type = Type.FILE, direction = Direction.OUT) String imputeFileInfo,
+			@Parameter(type = Type.FILE, direction = Direction.OUT) String filteredRsIdFile,
+			@Parameter(type = Type.FILE, direction = Direction.OUT) String filteredFile);
+	
+	@Method(declaringClass = "guidance.GuidanceImpl")
+	@Constraints(computingUnits = "1", memorySize = "${imputeWithImputeHighMem}")
+	void imputeWithImputeAndFilterByInfoHigh(@Parameter(type = Type.FILE, direction = Direction.IN) String gmapFile, 
+			@Parameter(type = Type.FILE, direction = Direction.IN) String knownHapFile,
+			@Parameter(type = Type.FILE, direction = Direction.IN) String legendFile,
+			@Parameter(type = Type.FILE, direction = Direction.IN) String phasingHapsFile,
+			@Parameter(type = Type.FILE, direction = Direction.IN) String phasingSampleFile,
+			@Parameter(type = Type.STRING, direction = Direction.IN) String lim1S,
+			@Parameter(type = Type.STRING, direction = Direction.IN) String lim2S,
+			@Parameter(type = Type.FILE, direction = Direction.IN) String pairsFile,
+			@Parameter(type = Type.STRING, direction = Direction.IN) String infoThresholdS, 
+			@Parameter(type = Type.STRING, direction = Direction.IN) String mafThresholdS, 
+			@Parameter(type = Type.STRING, direction = Direction.IN) String theChromo, 
+			@Parameter(type = Type.STRING, direction = Direction.IN) String sex,
+			@Parameter(type = Type.FILE, direction = Direction.OUT) String imputeFile,
+			@Parameter(type = Type.FILE, direction = Direction.OUT) String imputeFileInfo,
+			@Parameter(type = Type.FILE, direction = Direction.OUT) String filteredRsIdFile,
+			@Parameter(type = Type.FILE, direction = Direction.OUT) String filteredFile);
 	 
 	@Method(declaringClass = "guidance.GuidanceImpl")
 	@Constraints(computingUnits = "1", memorySize = "${imputeWithImputeLowMem}")
@@ -335,10 +373,12 @@ public interface GuidanceItf {
 	void generateCondensedAndTopHitsFile(@Parameter(type = Type.FILE, direction = Direction.IN) String filteredFile, 
 			@Parameter(type = Type.FILE, direction = Direction.IN) String filteredMalesFile,
 			@Parameter(type = Type.FILE, direction = Direction.IN) String filteredFemalesFile, 
+			@Parameter(type = Type.FILE, direction = Direction.IN) String filteredAllXFile,
 			@Parameter(type = Type.FILE, direction = Direction.OUT) String condensedFile, 
 			@Parameter(type = Type.FILE, direction = Direction.OUT) String topHitsFile,
 			@Parameter(type = Type.FILE, direction = Direction.OUT) String crossRangesFile,
 			@Parameter(type = Type.STRING, direction = Direction.IN) String pvaThresholdStr,
+			@Parameter(type = Type.STRING, direction = Direction.IN) String models,
 			@Parameter(type = Type.STRING, direction = Direction.IN) String cmdToStore);
 	
 	@Method(declaringClass = "guidance.GuidanceImpl")
@@ -398,6 +438,27 @@ public interface GuidanceItf {
 			@Parameter(type = Type.STRING, direction = Direction.IN) String mafThresholdS,
 			@Parameter(type = Type.STRING, direction = Direction.IN) String cmdToStore);
 	*/
+	
+	@Method(declaringClass = "guidance.GuidanceImpl")
+	@Constraints(computingUnits = "1", memorySize = "${snptestMem}")
+	void snptestAndFilterByAll(@Parameter(type = Type.FILE, direction = Direction.IN) String mergedGenFile,
+			@Parameter(type = Type.FILE, direction = Direction.IN) String mergedSampleFile,
+			@Parameter(type = Type.STRING, direction = Direction.IN) String responseVar,
+			@Parameter(type = Type.STRING, direction = Direction.IN) String covariables,
+			@Parameter(type = Type.STRING, direction = Direction.IN) String theChromo,
+			@Parameter(type = Type.STRING, direction = Direction.IN) String imputeTool,
+			@Parameter(type = Type.FILE, direction = Direction.IN) String firstImputeFileInfo,
+			@Parameter(type = Type.STRING, direction = Direction.IN) String mafThresholdS,
+			@Parameter(type = Type.STRING, direction = Direction.IN) String hweCohortThresholdS,
+			@Parameter(type = Type.STRING, direction = Direction.IN) String hweCasesThresholdS,
+			@Parameter(type = Type.STRING, direction = Direction.IN) String hweControlsThresholdS,
+			@Parameter(type = Type.STRING, direction = Direction.IN) String infoThresholdS,
+			@Parameter(type = Type.STRING, direction = Direction.IN) String sex,
+			@Parameter(type = Type.STRING, direction = Direction.IN) String rpanelName,
+			@Parameter(type = Type.FILE, direction = Direction.OUT) String snptestOutFile,
+			@Parameter(type = Type.FILE, direction = Direction.OUT) String summaryFile,
+			@Parameter(type = Type.FILE, direction = Direction.OUT) String assocFilterByAll);
+	
 	@Method(declaringClass = "guidance.GuidanceImpl")
 	@Constraints(computingUnits = "1", memorySize = "${snptestMem}")
 	void snptest(@Parameter(type = Type.FILE, direction = Direction.IN) String mergedGenFile,
@@ -406,6 +467,7 @@ public interface GuidanceItf {
 			@Parameter(type = Type.FILE, direction = Direction.OUT) String snptestLogFile,
 			@Parameter(type = Type.STRING, direction = Direction.IN) String responseVar,
 			@Parameter(type = Type.STRING, direction = Direction.IN) String covariables,
+			@Parameter(type = Type.STRING, direction = Direction.IN) String models,
 			@Parameter(type = Type.STRING, direction = Direction.IN) String theChromo,
 			@Parameter(type = Type.STRING, direction = Direction.IN) String cmdToStore);
 

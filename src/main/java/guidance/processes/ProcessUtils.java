@@ -71,6 +71,39 @@ public class ProcessUtils {
         // Return the exit value
         return exitValue;
     }
+    
+    /**
+     * Executes the given cmd. At the end of the command execution returns the exitValue
+     * 
+     * @param cmd
+     * @return
+     * @throws IOException
+     */
+    public static int executeWithoutOutputsSNP(String cmd) throws IOException {
+
+        //String[] commandArray = { "bash", "-c", cmd };
+
+        // Create the process
+        //ProcessBuilder pb = new ProcessBuilder(commandArray);
+        ProcessBuilder pb = new ProcessBuilder(cmd.split(" "));
+
+        // Remove unnecessary environment
+        pb.environment().remove("LD_PRELOAD");
+
+        // Start the process
+        Process p = pb.start();
+
+        // Retrieve the exit value
+        int exitValue = -1;
+        try {
+            exitValue = p.waitFor();
+        } catch (InterruptedException ie) {
+            Thread.currentThread().interrupt();
+        }
+
+        // Return the exit value
+        return exitValue;
+    }
 
     /**
      * Executes the given cmd. At the end of the command execution returns the exitValue
@@ -85,6 +118,7 @@ public class ProcessUtils {
 
         // Create the process
         ProcessBuilder pb = new ProcessBuilder(commandArray);
+        //ProcessBuilder pb = new ProcessBuilder(cmd.split(" "));
 
         // Remove unnecessary environment
         pb.environment().remove("LD_PRELOAD");

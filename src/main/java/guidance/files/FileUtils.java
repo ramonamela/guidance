@@ -42,6 +42,10 @@ public class FileUtils {
 
 	// TODO: this constants are associated to a function that should not be here
 	private static final String SAMTOOLSBINARY = "SAMTOOLSBINARY";
+	private static final String TABIXBINARY = "TABIXBINARY";
+	private static final String BGZIPBINARY = "BGZIPBINARY";
+	private static final String HEADER_TABIX = "[tabix]";
+	private static final String HEADER_BGZIP = "[bgzip]";
 
 	private static final String STDOUT_EXTENSION = ".stdout";
 	private static final String STDERR_EXTENSION = ".stderr";
@@ -266,7 +270,6 @@ public class FileUtils {
 		String path = fInput.getParent();
 		Path dir = Paths.get(path);
 
-		System.out.println("Files in " + path + " :");
 		try (DirectoryStream<Path> stream = Files.newDirectoryStream(dir, "*")) {
 			for (Path file : stream) {
 				System.out.println(file.toAbsolutePath().toString());
@@ -275,7 +278,6 @@ public class FileUtils {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		System.out.println("End files in sandbox");
 
 		try (FileOutputStream fileOutputStream = new FileOutputStream(destZipFilePath);
 				GZIPOutputStream gzipOuputStream = new GZIPOutputStream(fileOutputStream);
@@ -312,10 +314,11 @@ public class FileUtils {
 	public static void bgzipFile(String input, String output) throws GuidanceTaskException {
 
 		String samToolsBinary = FileUtils.loadFromEnvironment(SAMTOOLSBINARY, "[samtoolsBgzipFile]");
+		String bgzipBinary = FileUtils.loadFromEnvironment(BGZIPBINARY, HEADER_BGZIP);
 
 		long startTime = System.currentTimeMillis();
 
-		String cmd = samToolsBinary + "/bgzip -f " + input + " " + output;
+		String cmd = bgzipBinary + " -f " + input + " " + output;
 
 		LOGGER.debug("\n[DEBUG] Command: " + cmd);
 		LOGGER.debug(" ");

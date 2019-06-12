@@ -1,5 +1,3 @@
-#.libPaths("/gpfs/projects/bsc05/ramon/R_libs")
-
 library(data.table)
 library(plyr)
 library(dplyr)
@@ -8,7 +6,7 @@ library(IRanges)
 
 args <- commandArgs(TRUE)
 
-tophits <- args[1]
+tophits <- unlist(strsplit(args[1],","))
 output_crosspheno <- args[2]
 output_ranges <- args[3]
 output_summary <- args[4]
@@ -17,16 +15,27 @@ pval <- as.numeric(args[5])
 tophits <- unlist(strsplit(args[1],","))
 
 import.list <- llply(tophits, read.delim, sep="", colClasses=c("character","numeric",
-                                                             "character",
-                                                             "character","character",
+                                                             "character","character","character",
                                                              "numeric","numeric","numeric",
-                                                             "numeric","numeric"))
+                                                             "numeric","numeric","numeric",
+                                                             "numeric","numeric","numeric",
+                                                             "numeric","numeric","numeric",
+                                                             "numeric","numeric","numeric",
+                                                             "numeric","numeric","character"))
 
-cross_pheno_all <- Reduce(function(dtf1, dtf2) merge(dtf1, dtf2, 
-													 by = c("chr","position",
-															"rs_id_all","alleleA","alleleB",
-															"info_all","all_maf"), 
-													 all = TRUE),import.list)
+#import.list2 <- lapply(import.list, "[", c(1:10))
+
+#cross_pheno_all <- Reduce(function(dtf1, dtf2) merge(dtf1, dtf2, 
+#													 by = c("chr","position",
+#															"rs_id_all","alleleA","alleleB",
+#															"info_all","all_maf"), 
+#													 all = TRUE),import.list2)
+
+cross_pheno_all <- Reduce(function(dtf1, dtf2) merge(dtf1, dtf2,
+                                                     by = c("chr","position",
+                                                            "rs_id_all","alleleA","alleleB",
+                                                            "info_all","all_maf"),
+                                                     all = TRUE),import.list)
 
 write.table(cross_pheno_all,output_crosspheno,col.names=T,row.names=F,quote=F,sep="\t")
 
@@ -59,7 +68,10 @@ cat("###########################################################################
 cat("#####                     CROSS-PHENOTYPE SUMMARY                       #####\n")
 cat("#############################################################################\n")
 
-diseases <- names(cross_pheno_all)[which(grepl("frequentist_add_pvalue_",names(cross_pheno_all)))]
+models <- c("add","dom","rec","het","gen")
+for (m in models){
+	diseases <- names(cross_pheno_all)[which(grepl(paste("frequentist_",m,"_pvalue_",sep=""),names(cross_pheno_all)))]
+}
 
 if (nrow(cross_pheno_all)!=0){
     for (i in 1:nrow(cross_pheno_all)){

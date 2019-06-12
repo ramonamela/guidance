@@ -408,6 +408,15 @@ public class ImputationFiles {
 				ArrayList<GenericFile> chunkListFilteredLogFile = new ArrayList<GenericFile>();
 				ArrayList<GenericFile> chunkListFilteredRsIdFile = new ArrayList<GenericFile>();
 
+				chromoListImputedFile.add(chunkListImputedFile);
+				chromoListImputedInfoFile.add(chunkListImputedInfoFile);
+				chromoListImputedSummaryFile.add(chunkListImputedSummaryFile);
+				chromoListImputedWarningsFile.add(chunkListImputedWarningsFile);
+				chromoListImputedLogFile.add(chunkListImputedLogFile);
+				chromoListFilteredFile.add(chunkListFilteredFile);
+				chromoListFilteredLogFile.add(chunkListFilteredLogFile);
+				chromoListFilteredRsIdFile.add(chunkListFilteredRsIdFile);
+
 				ArrayList<GenericFile> chunkListImputedMalesFile = new ArrayList<GenericFile>();
 				ArrayList<GenericFile> chunkListImputedInfoMalesFile = new ArrayList<GenericFile>();
 				ArrayList<GenericFile> chunkListImputedSummaryMalesFile = new ArrayList<GenericFile>();
@@ -425,6 +434,28 @@ public class ImputationFiles {
 				ArrayList<GenericFile> chunkListFilteredFemalesFile = new ArrayList<GenericFile>();
 				ArrayList<GenericFile> chunkListFilteredLogFemalesFile = new ArrayList<GenericFile>();
 				ArrayList<GenericFile> chunkListFilteredRsIdFemalesFile = new ArrayList<GenericFile>();
+
+				if (chromo == 23) {
+
+					chromoListImputedMalesFile.add(chunkListImputedMalesFile);
+					chromoListImputedInfoMalesFile.add(chunkListImputedInfoMalesFile);
+					chromoListImputedSummaryMalesFile.add(chunkListImputedSummaryMalesFile);
+					chromoListImputedWarningsMalesFile.add(chunkListImputedWarningsMalesFile);
+					chromoListImputedLogMalesFile.add(chunkListImputedLogMalesFile);
+					chromoListFilteredMalesFile.add(chunkListFilteredMalesFile);
+					chromoListFilteredLogMalesFile.add(chunkListFilteredLogMalesFile);
+					chromoListFilteredRsIdMalesFile.add(chunkListFilteredRsIdMalesFile);
+
+					chromoListImputedFemalesFile.add(chunkListImputedFemalesFile);
+					chromoListImputedInfoFemalesFile.add(chunkListImputedInfoFemalesFile);
+					chromoListImputedSummaryFemalesFile.add(chunkListImputedSummaryFemalesFile);
+					chromoListImputedWarningsFemalesFile.add(chunkListImputedWarningsFemalesFile);
+					chromoListImputedLogFemalesFile.add(chunkListImputedLogFemalesFile);
+					chromoListFilteredFemalesFile.add(chunkListFilteredFemalesFile);
+					chromoListFilteredLogFemalesFile.add(chunkListFilteredLogFemalesFile);
+					chromoListFilteredRsIdFemalesFile.add(chunkListFilteredRsIdFemalesFile);
+					
+				}
 
 				int numberOfChunks = ChromoInfo.getMaxSize(chromo) / chunkSize;
 				int module = ChromoInfo.getMaxSize(chromo) % chunkSize;
@@ -562,35 +593,7 @@ public class ImputationFiles {
 				}
 
 				// if (chromo < 23) {
-				chromoListImputedFile.add(chunkListImputedFile);
-				chromoListImputedInfoFile.add(chunkListImputedInfoFile);
-				chromoListImputedSummaryFile.add(chunkListImputedSummaryFile);
-				chromoListImputedWarningsFile.add(chunkListImputedWarningsFile);
-				chromoListImputedLogFile.add(chunkListImputedLogFile);
-				chromoListFilteredFile.add(chunkListFilteredFile);
-				chromoListFilteredLogFile.add(chunkListFilteredLogFile);
-				chromoListFilteredRsIdFile.add(chunkListFilteredRsIdFile);
 				// } else if (chromo == 23) {
-				if (chromo == 23) {
-					chromoListImputedMalesFile.add(chunkListImputedMalesFile);
-					chromoListImputedInfoMalesFile.add(chunkListImputedInfoMalesFile);
-					chromoListImputedSummaryMalesFile.add(chunkListImputedSummaryMalesFile);
-					chromoListImputedWarningsMalesFile.add(chunkListImputedWarningsMalesFile);
-					chromoListImputedLogMalesFile.add(chunkListImputedLogMalesFile);
-					chromoListFilteredMalesFile.add(chunkListFilteredMalesFile);
-					chromoListFilteredLogMalesFile.add(chunkListFilteredLogMalesFile);
-					chromoListFilteredRsIdMalesFile.add(chunkListFilteredRsIdMalesFile);
-
-					chromoListImputedFemalesFile.add(chunkListImputedFemalesFile);
-					chromoListImputedInfoFemalesFile.add(chunkListImputedInfoFemalesFile);
-					chromoListImputedSummaryFemalesFile.add(chunkListImputedSummaryFemalesFile);
-					chromoListImputedWarningsFemalesFile.add(chunkListImputedWarningsFemalesFile);
-					chromoListImputedLogFemalesFile.add(chunkListImputedLogFemalesFile);
-					chromoListFilteredFemalesFile.add(chunkListFilteredFemalesFile);
-					chromoListFilteredLogFemalesFile.add(chunkListFilteredLogFemalesFile);
-					chromoListFilteredRsIdFemalesFile.add(chunkListFilteredRsIdFemalesFile);
-				}
-
 			}
 
 			this.imputedOutDir.add(chromoListImputedOutDir);
@@ -696,6 +699,28 @@ public class ImputationFiles {
 			ArrayList<ArrayList<GenericFile>> chromoListFilteredLogFemalesFile = new ArrayList<ArrayList<GenericFile>>();
 			ArrayList<ArrayList<GenericFile>> chromoListFilteredRsIdFemalesFile = new ArrayList<ArrayList<GenericFile>>();
 
+			/*
+			 * THIS IS THE CODE THAT HAS TO BE COMMENTED WHEN MINIMAC WORKS WELL WITH CHR23
+			 */
+			ArrayList<String> chromoListImputedOutDir = new ArrayList<String>();
+			ArrayList<ArrayList<GenericFile>> chromoListImputedFile = new ArrayList<ArrayList<GenericFile>>();
+			ArrayList<ArrayList<GenericFile>> chromoListImputedInfoFile = new ArrayList<ArrayList<GenericFile>>();
+			ArrayList<ArrayList<GenericFile>> chromoListImputedSummaryFile = new ArrayList<ArrayList<GenericFile>>();
+			ArrayList<ArrayList<GenericFile>> chromoListImputedWarningsFile = new ArrayList<ArrayList<GenericFile>>();
+			ArrayList<ArrayList<GenericFile>> chromoListImputedLogFile = new ArrayList<ArrayList<GenericFile>>();
+
+			ArrayList<ArrayList<GenericFile>> chromoListImputedMalesFile = new ArrayList<ArrayList<GenericFile>>();
+			ArrayList<ArrayList<GenericFile>> chromoListImputedInfoMalesFile = new ArrayList<ArrayList<GenericFile>>();
+			ArrayList<ArrayList<GenericFile>> chromoListImputedSummaryMalesFile = new ArrayList<ArrayList<GenericFile>>();
+			ArrayList<ArrayList<GenericFile>> chromoListImputedWarningsMalesFile = new ArrayList<ArrayList<GenericFile>>();
+			ArrayList<ArrayList<GenericFile>> chromoListImputedLogMalesFile = new ArrayList<ArrayList<GenericFile>>();
+
+			ArrayList<ArrayList<GenericFile>> chromoListImputedFemalesFile = new ArrayList<ArrayList<GenericFile>>();
+			ArrayList<ArrayList<GenericFile>> chromoListImputedInfoFemalesFile = new ArrayList<ArrayList<GenericFile>>();
+			ArrayList<ArrayList<GenericFile>> chromoListImputedSummaryFemalesFile = new ArrayList<ArrayList<GenericFile>>();
+			ArrayList<ArrayList<GenericFile>> chromoListImputedWarningsFemalesFile = new ArrayList<ArrayList<GenericFile>>();
+			ArrayList<ArrayList<GenericFile>> chromoListImputedLogFemalesFile = new ArrayList<ArrayList<GenericFile>>();
+
 			for (int i = this.startChr; i <= this.endChr; i++) {
 				int chromo = i;
 				int lim1 = 1;
@@ -744,6 +769,96 @@ public class ImputationFiles {
 				ArrayList<GenericFile> chunkListFilteredFemalesFile = new ArrayList<GenericFile>();
 				ArrayList<GenericFile> chunkListFilteredLogFemalesFile = new ArrayList<GenericFile>();
 				ArrayList<GenericFile> chunkListFilteredRsIdFemalesFile = new ArrayList<GenericFile>();
+
+				chromoListImputedMMDoseVCFFile.add(chunkListImputedMMDoseVCFFile);
+				chromoListImputedFileBgzip.add(chunkListImputedFileBgzip);
+				chromoListImputedFileTbi.add(chunkListImputedFileTbi);
+				chromoListImputedMMInfoFile.add(chunkListImputedMMInfoFile);
+				chromoListImputedMMErateFile.add(chunkListImputedMMErateFile);
+				chromoListImputedMMRecFile.add(chunkListImputedMMRecFile);
+				chromoListImputedMMM3VCFFile.add(chunkListImputedMMM3VCFFile);
+				chromoListImputedMMM3VCFFileBgzip.add(chunkListImputedMMM3VCFFileBgzip);
+				chromoListImputedMMM3VCFFileTbi.add(chunkListImputedMMM3VCFFileTbi);
+				chromoListImputedMMLogFile.add(chunkListImputedMMLogFile);
+				chromoListFilteredFile.add(chunkListFilteredFile);
+				chromoListFilteredLogFile.add(chunkListFilteredLogFile);
+				chromoListFilteredRsIdFile.add(chunkListFilteredRsIdFile);
+
+				if (chromo == 23) {
+
+					chromoListImputedMMDoseVCFMalesFile.add(chunkListImputedMMDoseVCFMalesFile);
+					chromoListImputedMalesFileBgzip.add(chunkListImputedMalesFileBgzip);
+					chromoListImputedMalesFileTbi.add(chunkListImputedMalesFileTbi);
+					chromoListImputedMMInfoMalesFile.add(chunkListImputedMMInfoMalesFile);
+					chromoListImputedMMErateMalesFile.add(chunkListImputedMMErateMalesFile);
+					chromoListImputedMMRecMalesFile.add(chunkListImputedMMRecMalesFile);
+					chromoListImputedMMM3VCFMalesFile.add(chunkListImputedMMM3VCFMalesFile);
+					chromoListImputedMMM3VCFMalesFileBgzip.add(chunkListImputedMMM3VCFMalesFileBgzip);
+					chromoListImputedMMM3VCFMalesFileTbi.add(chunkListImputedMMM3VCFMalesFileTbi);
+					chromoListImputedMMLogMalesFile.add(chunkListImputedMMLogMalesFile);
+					chromoListFilteredMalesFile.add(chunkListFilteredMalesFile);
+					chromoListFilteredLogMalesFile.add(chunkListFilteredLogMalesFile);
+					chromoListFilteredRsIdMalesFile.add(chunkListFilteredRsIdMalesFile);
+
+					chromoListImputedMMDoseVCFFemalesFile.add(chunkListImputedMMDoseVCFFemalesFile);
+					chromoListImputedFemalesFileBgzip.add(chunkListImputedFemalesFileBgzip);
+					chromoListImputedFemalesFileTbi.add(chunkListImputedFemalesFileTbi);
+					chromoListImputedMMInfoFemalesFile.add(chunkListImputedMMInfoFemalesFile);
+					chromoListImputedMMErateFemalesFile.add(chunkListImputedMMErateFemalesFile);
+					chromoListImputedMMRecFemalesFile.add(chunkListImputedMMRecFemalesFile);
+					chromoListImputedMMM3VCFFemalesFile.add(chunkListImputedMMM3VCFFemalesFile);
+					chromoListImputedMMM3VCFFemalesFileBgzip.add(chunkListImputedMMM3VCFFemalesFileBgzip);
+					chromoListImputedMMM3VCFFemalesFileTbi.add(chunkListImputedMMM3VCFFemalesFileTbi);
+					chromoListImputedMMLogFemalesFile.add(chunkListImputedMMLogFemalesFile);
+					chromoListFilteredFemalesFile.add(chunkListFilteredFemalesFile);
+					chromoListFilteredLogFemalesFile.add(chunkListFilteredLogFemalesFile);
+					chromoListFilteredRsIdFemalesFile.add(chunkListFilteredRsIdFemalesFile);
+
+				}
+
+				/*
+				 * THIS IS THE CODE THAT HAS TO BE COMMENTED WHEN MINIMAC WORKS WELL WITH CHR23
+				 */
+
+				ArrayList<GenericFile> chunkListImputedFile = new ArrayList<GenericFile>();
+				ArrayList<GenericFile> chunkListImputedInfoFile = new ArrayList<GenericFile>();
+				ArrayList<GenericFile> chunkListImputedSummaryFile = new ArrayList<GenericFile>();
+				ArrayList<GenericFile> chunkListImputedWarningsFile = new ArrayList<GenericFile>();
+				ArrayList<GenericFile> chunkListImputedLogFile = new ArrayList<GenericFile>();
+
+				ArrayList<GenericFile> chunkListImputedMalesFile = new ArrayList<GenericFile>();
+				ArrayList<GenericFile> chunkListImputedInfoMalesFile = new ArrayList<GenericFile>();
+				ArrayList<GenericFile> chunkListImputedSummaryMalesFile = new ArrayList<GenericFile>();
+				ArrayList<GenericFile> chunkListImputedWarningsMalesFile = new ArrayList<GenericFile>();
+				ArrayList<GenericFile> chunkListImputedLogMalesFile = new ArrayList<GenericFile>();
+
+				ArrayList<GenericFile> chunkListImputedFemalesFile = new ArrayList<GenericFile>();
+				ArrayList<GenericFile> chunkListImputedInfoFemalesFile = new ArrayList<GenericFile>();
+				ArrayList<GenericFile> chunkListImputedSummaryFemalesFile = new ArrayList<GenericFile>();
+				ArrayList<GenericFile> chunkListImputedWarningsFemalesFile = new ArrayList<GenericFile>();
+				ArrayList<GenericFile> chunkListImputedLogFemalesFile = new ArrayList<GenericFile>();
+
+				if (chromo == 23) {
+
+					chromoListImputedFile.add(chunkListImputedFile);
+					chromoListImputedInfoFile.add(chunkListImputedInfoFile);
+					chromoListImputedSummaryFile.add(chunkListImputedSummaryFile);
+					chromoListImputedWarningsFile.add(chunkListImputedWarningsFile);
+					chromoListImputedLogFile.add(chunkListImputedLogFile);
+
+					chromoListImputedMalesFile.add(chunkListImputedMalesFile);
+					chromoListImputedInfoMalesFile.add(chunkListImputedInfoMalesFile);
+					chromoListImputedSummaryMalesFile.add(chunkListImputedSummaryMalesFile);
+					chromoListImputedWarningsMalesFile.add(chunkListImputedWarningsMalesFile);
+					chromoListImputedLogMalesFile.add(chunkListImputedLogMalesFile);
+
+					chromoListImputedFemalesFile.add(chunkListImputedFemalesFile);
+					chromoListImputedInfoFemalesFile.add(chunkListImputedInfoFemalesFile);
+					chromoListImputedSummaryFemalesFile.add(chunkListImputedSummaryFemalesFile);
+					chromoListImputedWarningsFemalesFile.add(chunkListImputedWarningsFemalesFile);
+					chromoListImputedLogFemalesFile.add(chunkListImputedLogFemalesFile);
+
+				}
 
 				int numberOfChunks = ChromoInfo.getMaxSize(chromo) / chunkSize;
 				int module = ChromoInfo.getMaxSize(chromo) % chunkSize;
@@ -939,56 +1054,80 @@ public class ImputationFiles {
 								filteredRsIdFemalesFileName, "compressed", "none");
 						chunkListFilteredRsIdFemalesFile.add(myChunkListFilteredRsIdFemalesFile);
 
+						/*
+						 * THIS IS THE CODE THAT HAS TO BE COMMENTED WHEN MINIMAC WORKS WELL WITH CHR23
+						 */
+
+						String imputedFileName = "chr_" + chromo + "_mixed_" + rPanel + "_" + lim1 + "_" + lim2
+								+ ".impute";
+						GenericFile myChunkListImputedFile = new GenericFile(tmpChrDir, imputedFileName + ".gz",
+								"compressed", "none");
+						chunkListImputedFile.add(myChunkListImputedFile);
+
+						GenericFile myChunkListImputedInfoFile = new GenericFile(tmpChrDir, imputedFileName + "_info",
+								"compressed", "none");
+						chunkListImputedInfoFile.add(myChunkListImputedInfoFile);
+
+						GenericFile myChunkListImputedSummaryFile = new GenericFile(tmpChrDir,
+								imputedFileName + "_summary", "decompressed", "none");
+						chunkListImputedSummaryFile.add(myChunkListImputedSummaryFile);
+
+						GenericFile myChunkListImputedWarningsFile = new GenericFile(tmpChrDir,
+								imputedFileName + "_warnings", "decompressed", "none");
+						chunkListImputedWarningsFile.add(myChunkListImputedWarningsFile);
+
+						GenericFile myChunkListImputedLogFile = new GenericFile(tmpChrDir, imputedFileName + ".log",
+								"decompressed", "none");
+						chunkListImputedLogFile.add(myChunkListImputedLogFile);
+
+						String imputedFileMalesName = "chr_" + chromo + "_mixed_" + rPanel + "_" + lim1 + "_" + lim2
+								+ "_males.impute";
+						GenericFile myChunkListImputedMalesFile = new GenericFile(tmpChrDir,
+								imputedFileMalesName + ".gz", "compressed", "none");
+						chunkListImputedMalesFile.add(myChunkListImputedMalesFile);
+
+						GenericFile myChunkListImputedInfoMalesFile = new GenericFile(tmpChrDir,
+								imputedFileMalesName + "_info", "compressed", "none");
+						chunkListImputedInfoMalesFile.add(myChunkListImputedInfoMalesFile);
+
+						GenericFile myChunkListImputedSummaryMalesFile = new GenericFile(tmpChrDir,
+								imputedFileMalesName + "_summary", "decompressed", "none");
+						chunkListImputedSummaryMalesFile.add(myChunkListImputedSummaryMalesFile);
+
+						GenericFile myChunkListImputedWarningsMalesFile = new GenericFile(tmpChrDir,
+								imputedFileMalesName + "_warnings", "decompressed", "none");
+						chunkListImputedWarningsMalesFile.add(myChunkListImputedWarningsMalesFile);
+
+						GenericFile myChunkListImputedLogMalesFile = new GenericFile(tmpChrDir,
+								imputedFileMalesName + ".log", "decompressed", "none");
+						chunkListImputedLogMalesFile.add(myChunkListImputedLogMalesFile);
+
+						String imputedFileFemalesName = "chr_" + chromo + "_mixed_" + rPanel + "_" + lim1 + "_" + lim2
+								+ "_females.impute";
+						GenericFile myChunkListImputedFemalesFile = new GenericFile(tmpChrDir,
+								imputedFileFemalesName + ".gz", "compressed", "none");
+						chunkListImputedFemalesFile.add(myChunkListImputedFemalesFile);
+
+						GenericFile myChunkListImputedInfoFemalesFile = new GenericFile(tmpChrDir,
+								imputedFileFemalesName + "_info", "compressed", "none");
+						chunkListImputedInfoFemalesFile.add(myChunkListImputedInfoFemalesFile);
+
+						GenericFile myChunkListImputedSummaryFemalesFile = new GenericFile(tmpChrDir,
+								imputedFileFemalesName + "_summary", "decompressed", "none");
+						chunkListImputedSummaryFemalesFile.add(myChunkListImputedSummaryFemalesFile);
+
+						GenericFile myChunkListImputedWarningsFemalesFile = new GenericFile(tmpChrDir,
+								imputedFileFemalesName + "_warnings", "decompressed", "none");
+						chunkListImputedWarningsFemalesFile.add(myChunkListImputedWarningsFemalesFile);
+
+						GenericFile myChunkListImputedLogFemalesFile = new GenericFile(tmpChrDir,
+								imputedFileFemalesName + ".log", "decompressed", "none");
+						chunkListImputedLogFemalesFile.add(myChunkListImputedLogFemalesFile);
+
 					}
 
 					lim1 = lim1 + chunkSize;
 					lim2 = lim2 + chunkSize;
-				}
-				// if (chromo < 23) {
-				chromoListImputedMMDoseVCFFile.add(chunkListImputedMMDoseVCFFile);
-				chromoListImputedFileBgzip.add(chunkListImputedFileBgzip);
-				chromoListImputedFileTbi.add(chunkListImputedFileTbi);
-				chromoListImputedMMInfoFile.add(chunkListImputedMMInfoFile);
-				chromoListImputedMMErateFile.add(chunkListImputedMMErateFile);
-				chromoListImputedMMRecFile.add(chunkListImputedMMRecFile);
-				chromoListImputedMMM3VCFFile.add(chunkListImputedMMM3VCFFile);
-				chromoListImputedMMM3VCFFileBgzip.add(chunkListImputedMMM3VCFFileBgzip);
-				chromoListImputedMMM3VCFFileTbi.add(chunkListImputedMMM3VCFFileTbi);
-				chromoListImputedMMLogFile.add(chunkListImputedMMLogFile);
-				chromoListFilteredFile.add(chunkListFilteredFile);
-				chromoListFilteredLogFile.add(chunkListFilteredLogFile);
-				chromoListFilteredRsIdFile.add(chunkListFilteredRsIdFile);
-				// } else if (chromo == 23) {
-				if (chromo == 23) {
-
-					chromoListImputedMMDoseVCFMalesFile.add(chunkListImputedMMDoseVCFMalesFile);
-					chromoListImputedMalesFileBgzip.add(chunkListImputedMalesFileBgzip);
-					chromoListImputedMalesFileTbi.add(chunkListImputedMalesFileTbi);
-					chromoListImputedMMInfoMalesFile.add(chunkListImputedMMInfoMalesFile);
-					chromoListImputedMMErateMalesFile.add(chunkListImputedMMErateMalesFile);
-					chromoListImputedMMRecMalesFile.add(chunkListImputedMMRecMalesFile);
-					chromoListImputedMMM3VCFMalesFile.add(chunkListImputedMMM3VCFMalesFile);
-					chromoListImputedMMM3VCFMalesFileBgzip.add(chunkListImputedMMM3VCFMalesFileBgzip);
-					chromoListImputedMMM3VCFMalesFileTbi.add(chunkListImputedMMM3VCFMalesFileTbi);
-					chromoListImputedMMLogMalesFile.add(chunkListImputedMMLogMalesFile);
-					chromoListFilteredMalesFile.add(chunkListFilteredMalesFile);
-					chromoListFilteredLogMalesFile.add(chunkListFilteredLogMalesFile);
-					chromoListFilteredRsIdMalesFile.add(chunkListFilteredRsIdMalesFile);
-
-					chromoListImputedMMDoseVCFFemalesFile.add(chunkListImputedMMDoseVCFFemalesFile);
-					chromoListImputedFemalesFileBgzip.add(chunkListImputedFemalesFileBgzip);
-					chromoListImputedFemalesFileTbi.add(chunkListImputedFemalesFileTbi);
-					chromoListImputedMMInfoFemalesFile.add(chunkListImputedMMInfoFemalesFile);
-					chromoListImputedMMErateFemalesFile.add(chunkListImputedMMErateFemalesFile);
-					chromoListImputedMMRecFemalesFile.add(chunkListImputedMMRecFemalesFile);
-					chromoListImputedMMM3VCFFemalesFile.add(chunkListImputedMMM3VCFFemalesFile);
-					chromoListImputedMMM3VCFFemalesFileBgzip.add(chunkListImputedMMM3VCFFemalesFileBgzip);
-					chromoListImputedMMM3VCFFemalesFileTbi.add(chunkListImputedMMM3VCFFemalesFileTbi);
-					chromoListImputedMMLogFemalesFile.add(chunkListImputedMMLogFemalesFile);
-					chromoListFilteredFemalesFile.add(chunkListFilteredFemalesFile);
-					chromoListFilteredLogFemalesFile.add(chunkListFilteredLogFemalesFile);
-					chromoListFilteredRsIdFemalesFile.add(chunkListFilteredRsIdFemalesFile);
-
 				}
 
 			}
@@ -1009,34 +1148,63 @@ public class ImputationFiles {
 			filteredFileLogFile.add(chromoListFilteredLogFile);
 			filteredFileRsIdFile.add(chromoListFilteredRsIdFile);
 
-			imputedMMDoseVCFMalesFile.add(chromoListImputedMMDoseVCFMalesFile);
-			imputedMalesFileBgzip.add(chromoListImputedMalesFileBgzip);
-			imputedMalesFileTbi.add(chromoListImputedMalesFileTbi);
-			imputedMMInfoMalesFile.add(chromoListImputedMMInfoMalesFile);
-			imputedMMErateMalesFile.add(chromoListImputedMMErateMalesFile);
-			imputedMMRecMalesFile.add(chromoListImputedMMRecMalesFile);
-			imputedMMM3VCFMalesFile.add(chromoListImputedMMM3VCFMalesFile);
-			imputedMMM3VCFMalesFileBgzip.add(chromoListImputedMMM3VCFMalesFileBgzip);
-			imputedMMM3VCFMalesFileTbi.add(chromoListImputedMMM3VCFMalesFileTbi);
-			imputedMMLogMalesFile.add(chromoListImputedMMLogMalesFile);
-			filteredMalesFile.add(chromoListFilteredMalesFile);
-			filteredLogMalesFile.add(chromoListFilteredLogMalesFile);
-			filteredRsIdMalesFile.add(chromoListFilteredRsIdMalesFile);
+			if (this.endChr == 23) {
+				imputedMMDoseVCFMalesFile.add(chromoListImputedMMDoseVCFMalesFile);
+				imputedMalesFileBgzip.add(chromoListImputedMalesFileBgzip);
+				imputedMalesFileTbi.add(chromoListImputedMalesFileTbi);
+				imputedMMInfoMalesFile.add(chromoListImputedMMInfoMalesFile);
+				imputedMMErateMalesFile.add(chromoListImputedMMErateMalesFile);
+				imputedMMRecMalesFile.add(chromoListImputedMMRecMalesFile);
+				imputedMMM3VCFMalesFile.add(chromoListImputedMMM3VCFMalesFile);
+				imputedMMM3VCFMalesFileBgzip.add(chromoListImputedMMM3VCFMalesFileBgzip);
+				imputedMMM3VCFMalesFileTbi.add(chromoListImputedMMM3VCFMalesFileTbi);
+				imputedMMLogMalesFile.add(chromoListImputedMMLogMalesFile);
+				filteredMalesFile.add(chromoListFilteredMalesFile);
+				filteredLogMalesFile.add(chromoListFilteredLogMalesFile);
+				filteredRsIdMalesFile.add(chromoListFilteredRsIdMalesFile);
 
-			imputedMMDoseVCFFemalesFile.add(chromoListImputedMMDoseVCFFemalesFile);
-			imputedFemalesFileBgzip.add(chromoListImputedFemalesFileBgzip);
-			imputedFemalesFileTbi.add(chromoListImputedFemalesFileTbi);
-			imputedMMInfoFemalesFile.add(chromoListImputedMMInfoFemalesFile);
-			imputedMMErateFemalesFile.add(chromoListImputedMMErateFemalesFile);
-			imputedMMRecFemalesFile.add(chromoListImputedMMRecFemalesFile);
-			imputedMMM3VCFFemalesFile.add(chromoListImputedMMM3VCFFemalesFile);
-			imputedMMM3VCFFemalesFileBgzip.add(chromoListImputedMMM3VCFFemalesFileBgzip);
-			imputedMMM3VCFFemalesFileTbi.add(chromoListImputedMMM3VCFFemalesFileTbi);
-			imputedMMLogFemalesFile.add(chromoListImputedMMLogFemalesFile);
-			filteredFemalesFile.add(chromoListFilteredFemalesFile);
-			filteredLogFemalesFile.add(chromoListFilteredLogFemalesFile);
-			filteredRsIdFemalesFile.add(chromoListFilteredRsIdFemalesFile);
+				imputedMMDoseVCFFemalesFile.add(chromoListImputedMMDoseVCFFemalesFile);
+				imputedFemalesFileBgzip.add(chromoListImputedFemalesFileBgzip);
+				imputedFemalesFileTbi.add(chromoListImputedFemalesFileTbi);
+				imputedMMInfoFemalesFile.add(chromoListImputedMMInfoFemalesFile);
+				imputedMMErateFemalesFile.add(chromoListImputedMMErateFemalesFile);
+				imputedMMRecFemalesFile.add(chromoListImputedMMRecFemalesFile);
+				imputedMMM3VCFFemalesFile.add(chromoListImputedMMM3VCFFemalesFile);
+				imputedMMM3VCFFemalesFileBgzip.add(chromoListImputedMMM3VCFFemalesFileBgzip);
+				imputedMMM3VCFFemalesFileTbi.add(chromoListImputedMMM3VCFFemalesFileTbi);
+				imputedMMLogFemalesFile.add(chromoListImputedMMLogFemalesFile);
+				filteredFemalesFile.add(chromoListFilteredFemalesFile);
+				filteredLogFemalesFile.add(chromoListFilteredLogFemalesFile);
+				filteredRsIdFemalesFile.add(chromoListFilteredRsIdFemalesFile);
+			}
 
+			/*
+			 * THIS IS THE CODE THAT HAS TO BE COMMENTED WHEN MINIMAC WORKS WELL WITH CHR23
+			 */
+			if (this.endChr == 23) {
+				this.imputedOutDir.add(chromoListImputedOutDir);
+
+				imputedFile.add(chromoListImputedFile);
+
+				imputedInfoFile.add(chromoListImputedInfoFile);
+				imputedSummaryFile.add(chromoListImputedSummaryFile);
+				imputedWarningsFile.add(chromoListImputedWarningsFile);
+				imputedLogFile.add(chromoListImputedLogFile);
+
+				imputedMalesFile.add(chromoListImputedMalesFile);
+
+				imputedInfoMalesFile.add(chromoListImputedInfoMalesFile);
+				imputedSummaryMalesFile.add(chromoListImputedSummaryMalesFile);
+				imputedWarningsMalesFile.add(chromoListImputedWarningsMalesFile);
+				imputedLogMalesFile.add(chromoListImputedLogMalesFile);
+
+				imputedFemalesFile.add(chromoListImputedFemalesFile);
+
+				imputedInfoFemalesFile.add(chromoListImputedInfoFemalesFile);
+				imputedSummaryFemalesFile.add(chromoListImputedSummaryFemalesFile);
+				imputedWarningsFemalesFile.add(chromoListImputedWarningsFemalesFile);
+				imputedLogFemalesFile.add(chromoListImputedLogFemalesFile);
+			}
 		}
 	}
 
@@ -1065,7 +1233,8 @@ public class ImputationFiles {
 	 * @param chunkSize
 	 * @return
 	 */
-	public String getImputedFile(int rPanelIndex, int chromo, int lim1, int lim2, int chunkSize) {
+	public String getImputedFile(int rPanelIndex, String imputationTool, int chromo, int lim1, int lim2,
+			int chunkSize) {
 		// Check that chromo index is within the bounds
 		checkChromoIndex(chromo);
 
@@ -1073,6 +1242,9 @@ public class ImputationFiles {
 		checkLimits(chromo, lim1, lim2);
 
 		int indexChr = chromo - this.startChr;
+		if (imputationTool.equals("minimac")) {
+			indexChr = 0;
+		}
 		int indexChunk = lim1 / chunkSize;
 		return this.imputedFile.get(rPanelIndex).get(indexChr).get(indexChunk).getFullName();
 	}
@@ -1095,7 +1267,12 @@ public class ImputationFiles {
 		checkLimits(chromo, lim1, lim2);
 
 		int indexChunk = lim1 / chunkSize;
+		ArrayList<ArrayList<ArrayList<GenericFile>>> imputedMalesFiles = this.imputedMalesFile;
+		ArrayList<ArrayList<GenericFile>> imputedMalesFilesPanel = this.imputedMalesFile.get(rPanelIndex);
+		ArrayList<GenericFile> imputedMalesFilesChromo = this.imputedMalesFile.get(rPanelIndex).get(0);
+		GenericFile imputedMalesFile = this.imputedMalesFile.get(rPanelIndex).get(0).get(indexChunk);
 		return this.imputedMalesFile.get(rPanelIndex).get(0).get(indexChunk).getFullName();
+
 	}
 
 	/**
@@ -1129,7 +1306,8 @@ public class ImputationFiles {
 	 * @param chunkSize
 	 * @return
 	 */
-	public String getImputedInfoFile(int rPanelIndex, int chromo, int lim1, int lim2, int chunkSize) {
+	public String getImputedInfoFile(int rPanelIndex, String imputationTool, int chromo, int lim1, int lim2,
+			int chunkSize) {
 		// Check that chromo index is within the bounds
 		checkChromoIndex(chromo);
 
@@ -1137,6 +1315,9 @@ public class ImputationFiles {
 		checkLimits(chromo, lim1, lim2);
 
 		int indexChr = chromo - this.startChr;
+		if (imputationTool.equals("minimac")) {
+			indexChr = 0;
+		}
 		int indexChunk = lim1 / chunkSize;
 		return this.imputedInfoFile.get(rPanelIndex).get(indexChr).get(indexChunk).getFullName();
 	}
@@ -1193,7 +1374,8 @@ public class ImputationFiles {
 	 * @param chunkSize
 	 * @return
 	 */
-	public String getImputedSummaryFile(int rPanelIndex, int chromo, int lim1, int lim2, int chunkSize) {
+	public String getImputedSummaryFile(int rPanelIndex, String imputationTool, int chromo, int lim1, int lim2,
+			int chunkSize) {
 		// Check that chromo index is within the bounds
 		checkChromoIndex(chromo);
 
@@ -1201,6 +1383,9 @@ public class ImputationFiles {
 		checkLimits(chromo, lim1, lim2);
 
 		int indexChr = chromo - this.startChr;
+		if (imputationTool.equals("minimac")) {
+			indexChr = 0;
+		}
 		int indexChunk = lim1 / chunkSize;
 		return this.imputedSummaryFile.get(rPanelIndex).get(indexChr).get(indexChunk).getFullName();
 	}
@@ -1257,7 +1442,8 @@ public class ImputationFiles {
 	 * @param chunkSize
 	 * @return
 	 */
-	public String getImputedWarningsFile(int rPanelIndex, int chromo, int lim1, int lim2, int chunkSize) {
+	public String getImputedWarningsFile(int rPanelIndex, String imputationTool, int chromo, int lim1, int lim2,
+			int chunkSize) {
 		// Check that chromo index is within the bounds
 		checkChromoIndex(chromo);
 
@@ -1265,6 +1451,9 @@ public class ImputationFiles {
 		checkLimits(chromo, lim1, lim2);
 
 		int indexChr = chromo - this.startChr;
+		if (imputationTool.equals("minimac")) {
+			indexChr = 0;
+		}
 		int indexChunk = lim1 / chunkSize;
 		return this.imputedWarningsFile.get(rPanelIndex).get(indexChr).get(indexChunk).getFullName();
 	}
@@ -1321,7 +1510,8 @@ public class ImputationFiles {
 	 * @param chunkSize
 	 * @return
 	 */
-	public String getImputedLogFile(int rPanelIndex, int chromo, int lim1, int lim2, int chunkSize) {
+	public String getImputedLogFile(int rPanelIndex, String imputationTool, int chromo, int lim1, int lim2,
+			int chunkSize) {
 		// Check that chromo index is within the bounds
 		checkChromoIndex(chromo);
 
@@ -1329,6 +1519,9 @@ public class ImputationFiles {
 		checkLimits(chromo, lim1, lim2);
 
 		int indexChr = chromo - this.startChr;
+		if (imputationTool.equals("minimac")) {
+			indexChr = 0;
+		}
 		int indexChunk = lim1 / chunkSize;
 		return this.imputedLogFile.get(rPanelIndex).get(indexChr).get(indexChunk).getFullName();
 	}

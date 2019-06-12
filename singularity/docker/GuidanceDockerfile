@@ -1,4 +1,4 @@
-FROM ubuntu:18.04
+FROM ubuntu:18.10
 
 ARG DEBIAN_FRONTEND=noninteractive
 
@@ -117,7 +117,7 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
     jags libpq-dev libmariadb-client-lgpl-dev && \
     rm -rf /var/lib/apt/lists/*
 
-RUN /usr/bin/Rscript /TOOLS/deps.R
+#RUN /usr/bin/Rscript /TOOLS/deps.R
 
 ######### IN CASE WE WANT TO UPGRADE QCTOOL #########
 
@@ -151,8 +151,8 @@ RUN wget https://github.com/samtools/bcftools/releases/download/1.8/bcftools-1.8
     rm bcftools.tar.bz2 && \
     cd bcftools-1.8 && \
     make && \
-    make prefix=/usr/local/bin install && \
-    ln -s /usr/local/bin/bin/bcftools /usr/bin/bcftools
+    make prefix=/usr/local/ install && \
+    ln -s /usr/local/bin/bcftools /usr/bin/bcftools
 
 #Install samtools
 RUN wget https://github.com/samtools/samtools/releases/download/1.5/samtools-1.5.tar.bz2 -O samtools.tar.bz2 && \
@@ -160,11 +160,22 @@ RUN wget https://github.com/samtools/samtools/releases/download/1.5/samtools-1.5
     rm samtools.tar.bz2 && \
     cd samtools-1.5 && \
     make && \
-    make prefix=/usr/local/bin install && \
-    ln -s /usr/local/bin/bin/samtools /usr/bin/samtools
+    make prefix=/usr/local/ install && \
+    ln -s /usr/local/bin/samtools /usr/bin/samtools
+
+#Install htslib
+RUN wget https://github.com/samtools/htslib/releases/download/1.9/htslib-1.9.tar.bz2 -O htslib-1.9.tar.bz2 && \
+    tar -xjvf htslib-1.9.tar.bz2 && \
+    rm htslib-1.9.tar.bz2 && \
+    cd htslib-1.9 && \
+    make && \
+    make prefix=//usr/local/ install && \
+    ln -s /usr/local/bin/bgzip /usr/bin/bgzip && \
+    ln -s /usr/local/bin/tabix /usr/bin/tabix
 
 #Plink dependencies
-RUN sudo apt-get update && \
+RUN sudo add-apt-repository universe && \
+    sudo apt-get update && \
     sudo apt-get install -y --no-install-recommends libatlas-base-dev libblas-dev liblapack-dev libatlas-base-dev && \
     rm -rf /var/lib/apt/lists/*
 
@@ -197,6 +208,13 @@ RUN wget http://www.well.ox.ac.uk/~gav/resources/archive/snptest_v2.5_linux_x86_
     rm -r snptest_v2.5_linux_x86_64_static/example/ && \
     chmod -R 755 /TOOLS/snptest_v2.5_linux_x86_64_static/ && \
     ln -s /TOOLS/snptest_v2.5_linux_x86_64_static/snptest_v2.5 /usr/bin/snptest_v2.5
+
+#RUN wget http://www.well.ox.ac.uk/~gav/resources/snptest_v2.5.2_linux_x86_64_static.tgz && \
+#    tar -zxvf snptest_v2.5.2_linux_x86_64_static.tgz && \
+#    rm snptest_v2.5.2_linux_x86_64_static.tgz && \
+#    rm -r snptest_v2.5.2_linux_x86_64_static/example/ && \
+#    chmod -R 755 /TOOLS/snptest_v2.5.2_linux_x86_64_static/ && \
+#    ln -s /TOOLS/snptest_v2.5.2_linux_x86_64_static/snptest_v2.5.2 /usr/bin/snptest_v2.5.2
 
 #Install minimac3
 #RUN git clone https://github.com/Santy-8128/Minimac3.git && \
@@ -234,6 +252,8 @@ RUN apt-get update && \
 #    apt-get purge --auto-remove openjdk* && \
     apt-get autoremove openjdk-11-jre openjdk-11-jdk
 
+RUN /usr/bin/Rscript /TOOLS/deps.R
+
 RUN ln -s /usr/lib/jvm/java-8-openjdk-amd64 /usr/lib/jvm/default-java
 
 ENV LC_ALL "C"
@@ -253,8 +273,11 @@ ENV EAGLEBINARY "/usr/bin/eagle"
 ENV IMPUTE2BINARY "/usr/bin/impute2"
 ENV QCTOOLBINARY "/usr/bin/qctool1.4"
 ENV SNPTESTBINARY "/usr/bin/snptest_v2.5"
+#ENV SNPTESTBINARY "/usr/bin/snptest_v2.5.2"
 ENV MINIMAC3BINARY "/usr/bin/minimac3"
 ENV MINIMAC4BINARY "/usr/bin/minimac4"
+ENV TABIXBINARY "/usr/bin/tabix"
+ENV BGZIPBINARY "/usr/bin/bgzip"
 
 ENV RSCRIPTBINDIR "/usr/bin/"
 

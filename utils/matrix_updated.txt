@@ -29,6 +29,7 @@ IMPUTE tool is used             | T d n  a d t m  n y t p  m h B F  F p P m  a l
 until_convertFromBedToBed       | 1 1 0  0 0 0 0  0 0 0 0  0 0 0 0  0 0 0 0  0 0 0 0  0 0 0 0 | 0x6000000
 until_phasing                   | 1 1 1  1 0 0 0  0 0 0 0  0 0 0 0  0 0 0 0  0 0 0 0  0 0 0 0 | 0x7800000
 until_imputation                | 1 1 1  1 0 0 1  0 0 0 0  0 0 0 0  0 0 0 0  0 0 0 0  0 0 0 0 | 0x7900000
+until_qctools                   | 1 1 1  1 0 0 1  0 1 1 0  0 0 0 0  0 0 0 0  0 0 0 0  0 0 0 0 | 0x7960000
 until_association               | 1 1 1  1 0 0 1  0 1 1 1  0 0 0 0  0 0 0 0  0 0 0 0  0 0 0 0 | 0x7970000
 until_filterByAll               | 1 1 1  1 0 0 1  0 1 1 1  1 1 1 0  0 0 0 0  0 0 0 0  0 0 0 0 | 0x797E000 
 until_summary                   | 1 1 1  1 0 0 1  0 1 1 1  1 1 1 1  1 1 1 1  1 0 0 0  0 0 0 0 | 0x797FF80
@@ -93,6 +94,7 @@ Minimac3 tool is used           | T d n  a d t m  n y t p  m h B F  F p P m  a l
 until_convertFromBedToBed       | 1 1 0  0 0 0 0  0 0 0 0  0 0 0 0  0 0 0 0  0 0 0 0  0 0 0 0 | 0x6000000
 until_phasing                   | 1 1 1  1 1 1 0  0 0 0 0  0 0 0 0  0 0 0 0  0 0 0 0  0 0 0 0 | 0x7E00000
 until_imputation                | 1 1 1  1 1 1 0  1 0 0 0  0 0 0 0  0 0 0 0  0 0 0 0  0 0 0 0 | 0x7E80000
+until_qctools                   | 1 1 1  1 1 1 0  1 1 1 0  0 0 0 0  0 0 0 0  0 0 0 0  0 0 0 0 | 0x7EE0000
 until_association               | 1 1 1  1 1 1 0  1 1 1 1  0 0 0 0  0 0 0 0  0 0 0 0  0 0 0 0 | 0x7EF0000
 until_filterByAll               | 1 1 1  1 1 1 0  1 1 1 1  1 1 1 0  0 0 0 0  0 0 0 0  0 0 0 0 | 0x7EFE000
 until_summary                   | 1 1 1  1 1 1 0  1 1 1 1  1 1 1 1  1 1 1 1  1 0 0 0  0 0 0 0 | 0x7EFFF80

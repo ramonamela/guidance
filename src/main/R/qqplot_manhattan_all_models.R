@@ -60,8 +60,8 @@ qq.plot <- function(tab,lambda=T,stat,BA=F,plot=T,mod,
     #Scaling Size dots
     scale.fact <- 0.25
     my.cex <- scale.fact * pvals * 0.9;
-    my.cex[pvals > -log10((5e-3)-pval_threshold)] <- 0.2 * pvals[pvals > -log10((5e-3)-pval_threshold)] * 0.9;
-    my.cex[pvals > -log10((5e-5)-pval_threshold)] <- 0.15 * pvals[pvals > -log10((5e-5)-pval_threshold)] * 0.9;
+    my.cex[pvals > -log10((pval_threshold/0.00001)-pval_threshold)] <- 0.2 * pvals[pvals > -log10((pval_threshold/0.00001)-pval_threshold)]* 0.9;
+    my.cex[pvals > -log10((pval_threshold/0.001)-pval_threshold)] <- 0.15 * pvals[pvals > -log10((pval_threshold/0.001)-pval_threshold)] * 0.9;
     my.cex[pvals > -log10(pval_threshold)] <- 0.1 * pvals[pvals > -log10(pval_threshold)] * 0.9;
     my.cex[pvals > -log10(pval_threshold-(5e-20))] <- 0.05 * pvals[pvals > -log10(pval_threshold-(5e-20))] * 0.9;
     ylab <- expression(-log[10]~italic(p)[Obs])
@@ -95,7 +95,7 @@ qq.plot <- function(tab,lambda=T,stat,BA=F,plot=T,mod,
 
 manhattan <- function(dataframe, colors=c("lightsteelblue4","lightyellow2"), 
                       ymin=0, ymax="max", limitchromosomes=1:25, 
-                      suggestiveline=-log10(1e-5), 
+                      suggestiveline=-log10(pval_threshold/0.005), 
                       genomewideline=-log10(pval_threshold), 
                       annotate=NULL, ...) {
    d=dataframe
@@ -108,7 +108,7 @@ manhattan <- function(dataframe, colors=c("lightsteelblue4","lightyellow2"),
    d$pos=NA
    ticks=NULL
    lastbase=0
-   colors <- c(rep(colors,24)[1:24],"lightsteelblue4")
+   colors <- c(rep(colors,25)[1:25],"lightsteelblue4")
 
    if (ymax=="max") {ymax<-ceiling(max(d$logp))}
    	ymax<-as.numeric(ymax)
@@ -128,7 +128,7 @@ manhattan <- function(dataframe, colors=c("lightsteelblue4","lightyellow2"),
                         if (i==as.vector(unique(d$chr))[1]) {
                                 d[d$chr==i, ]$pos=d[d$chr==i, ]$position
                         } else {
-                                lastbase=lastbase+tail(subset(d,chr==i-1)$position, 1)
+                                lastbase=lastbase+tail(subset(d,chr==as.vector(unique(d$chr))[which(as.vector(unique(d$chr))==i)-1])$position, 1)
                                 d[d$chr==i, ]$pos=d[d$chr==i, ]$position+lastbase
                         }
                         ticks=c(ticks, d[d$chr==i, ]$pos[floor(length(d[d$chr==i, ]$pos)/2)+1])
@@ -138,11 +138,12 @@ manhattan <- function(dataframe, colors=c("lightsteelblue4","lightyellow2"),
 		chr <- unique(d$chr)
 		if (23 %in% chr){ 	
 			ticks[(length(ticks))]
-			ticks[(length(ticks)-1)]
-			ticks2 <- c(ticks[(length(ticks))],ticks[(length(ticks)-1)])
+			ticks[(length(ticks)-2)]
+			ticks2 <- c(ticks[(length(ticks))],ticks[(length(ticks)-2)])
 
 		    d$chr[d$chr=="23"] <- as.character("F")		
 		    d$chr[d$chr=="24"] <- as.character("M")
+            d$chr[d$chr=="25"] <- as.character("A")
 		}
 
         if (numchroms==1) {
@@ -150,12 +151,16 @@ manhattan <- function(dataframe, colors=c("lightsteelblue4","lightyellow2"),
                         xlab=paste("Chromosome",unique(d$chr),"position"))
         }else {
                 plot(d$pos,d$logp, ylim=c(ymin,ymax), ylab=expression(-log[10](italic(p))),
-                        xlab="Chromosome", xaxt="n", type="n")
+                        xlab="", xaxt="n", type="n")
+				mtext(text = "Chromosome",
+      				side = 1,
+      				line = 4)
                 axis(1, at=ticks, lab=unique(d$chr))
 
 				if (23 %in% chr){ 
                 	axis(1, at=ticks2, line=2.5,tick=T,lab=rep("",2),lwd.ticks=0)
 					axis(1, at=(as.numeric(ticks2[1])+as.numeric(ticks2[2]))/2, lab=c("X"),line=2,tick=F)
+
 				}
 
                 icol=1
@@ -181,9 +186,6 @@ manhattan <- function(dataframe, colors=c("lightsteelblue4","lightyellow2"),
 }
 
 ################################################################################################################
-
-#.libPaths("/gpfs/projects/bsc05/ramon/R_libs")
-
 library(gap)
 library(sfsmisc)
 
@@ -223,8 +225,10 @@ library(sfsmisc)
     #make Manhattan on pdf
 
     tab_file_data$chr <- as.character(tab_file_data$chr)
+    tab_file_data$chr[tab_file_data$chr=="23"] <- as.character("25")
     tab_file_data$chr[tab_file_data$chr=="23_females"] <- as.character("23")
     tab_file_data$chr[tab_file_data$chr=="23_males"] <- as.character("24")
+
     tab_file_data$chr <- as.numeric(tab_file_data$chr)
 
     tab_file_data$SNP <- paste(paste("chr",tab_file_data$chr,sep=""),tab_file_data$position,sep=":")

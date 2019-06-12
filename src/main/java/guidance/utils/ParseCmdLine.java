@@ -151,6 +151,7 @@ public class ParseCmdLine {
 		wfPossibleDeeps.put("until_convertFromBedToBed", EMPTY_MASK);
 		wfPossibleDeeps.put("until_phasing", EMPTY_MASK);
 		wfPossibleDeeps.put("until_imputation", EMPTY_MASK);
+		wfPossibleDeeps.put("until_qctools", EMPTY_MASK);
 		wfPossibleDeeps.put("until_association", EMPTY_MASK);
 		wfPossibleDeeps.put("until_filterByAll", EMPTY_MASK);
 		wfPossibleDeeps.put("until_summary", EMPTY_MASK);
@@ -908,9 +909,9 @@ public class ParseCmdLine {
 						LOGGER.fatal("[ParseCmdLine] We are going to use 'minimac' tool for imputation stage... ");
 						ArrayList<String> chromoListRpanelVCFFileName = new ArrayList<String>();
 						int endVCF = end;
-						//if (endVCF == 23) {
-						//	endVCF = 22;
-						//}
+						if (endVCF == 23) {
+							endVCF = 22;
+						}
 						for (int j = start; j <= endVCF; j++) {
 							tmpArg = argumentsArray.get(i++);
 							myArgument = tmpArg.split("=");
@@ -931,7 +932,7 @@ public class ParseCmdLine {
 							}
 						}
 						rpanelVCFFileName.add(chromoListRpanelVCFFileName);
-						/*if (end == 23) {
+						if (end == 23) {
 							tmpArg = argumentsArray.get(i++);
 							myArgument = tmpArg.split("=");
 							ArrayList<String> chromoListRpanelHapFileName = new ArrayList<String>();
@@ -970,7 +971,9 @@ public class ParseCmdLine {
 							}
 							rpanelHap23FileName.add(chromoListRpanelHapFileName);
 							rpanelLeg23FileName.add(chromoListRpanelLegFileName);
-						}*/
+							rpanelHapFileName.add(chromoListRpanelHapFileName);
+							rpanelLegFileName.add(chromoListRpanelLegFileName);
+						}
 						LOGGER.info(CLASS_HEADER + " We are going to use 'minimac' tool for imputation stage... ");
 					} else {
 						LOGGER.fatal(CLASS_HEADER
@@ -1678,6 +1681,7 @@ public class ParseCmdLine {
 			wfPossibleDeeps.put("until_convertFromBedToBed", 0x6000000);
 			wfPossibleDeeps.put("until_phasing", 0x7800000);
 			wfPossibleDeeps.put("until_imputation", 0x7900000);
+			wfPossibleDeeps.put("until_qctools", 0x7960000);
 			wfPossibleDeeps.put("until_association", 0x7970000);
 			wfPossibleDeeps.put("until_filterByAll", 0x797E000);
 			wfPossibleDeeps.put("until_summary", 0x797FF80);
@@ -1711,6 +1715,7 @@ public class ParseCmdLine {
 			wfPossibleDeeps.put("until_convertFromBedToBed", 0x6000000);
 			wfPossibleDeeps.put("until_phasing", 0x7E00000);
 			wfPossibleDeeps.put("until_imputation", 0x7E80000);
+			wfPossibleDeeps.put("until_qctools", 0x7EE0000);
 			wfPossibleDeeps.put("until_association", 0x7EF0000);
 			wfPossibleDeeps.put("until_filterByAll", 0x7EFE000);
 			wfPossibleDeeps.put("until_summary", 0x7EFFF80);

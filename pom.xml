@@ -28,7 +28,9 @@
 	<properties>
 		<!-- COMPSs version -->
 		<compss.version>2.4.rc1811</compss.version>
-
+        <!--
+        <compss.version>2.4.rc1905</compss.version>
+        -->
 		<!-- JUNIT Test -->
 		<junit.version>4.12</junit.version>
 
