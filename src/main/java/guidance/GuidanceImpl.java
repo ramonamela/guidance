@@ -2376,8 +2376,7 @@ public class GuidanceImpl {
 	// crossPhenoRanges -> FILE_OUT
 	// crossPhenoTopVariants -> FILE_OUT
 	// pvaThreshold -> STRING_IN
-	public static void computeCrossPheno(List<String> phenoMergedTopHits, String crossPhenoAll, String crossPhenoRanges,
-			String crossPhenoTopVariants, String pvaThreshold) throws GuidanceTaskException {
+	public static void computeCrossPheno(List<String> phenoMergedTopHits, String crossPhenoAll, String pvaThreshold, String models) throws GuidanceTaskException {
 
 		String rScriptBinDir = loadFromEnvironment(RSCRIPTBINDIR, HEADER_PHENO);
 		String rScriptDir = loadFromEnvironment(RSCRIPTDIR, HEADER_PHENO);
@@ -2387,8 +2386,13 @@ public class GuidanceImpl {
 			mergedTopHitsString += ("," + phenoMergedTopHits.get(i));
 		}
 
-		String command = rScriptBinDir + "Rscript --verbose " + rScriptDir + "/crossphenotype.R " + mergedTopHitsString
-				+ " " + crossPhenoAll + " " + crossPhenoRanges + " " + crossPhenoTopVariants + " " + pvaThreshold;
+		String rScriptPath = rScriptDir + "/crossphenotype.R ";
+		rScriptPath = "/gpfs/projects/bsc05/martagm/GWImp_COMPSs/R_SCRIPTS/crossphenotype_crossmodel_new_2.R ";
+		//String command = rScriptBinDir + "Rscript --verbose " + rScriptPath + mergedTopHitsString
+		//		+ " " + crossPhenoAll + " " + crossPhenoRanges + " " + crossPhenoTopVariants + " " + pvaThreshold;
+		
+		String command = rScriptBinDir + "Rscript --verbose " + rScriptPath + mergedTopHitsString
+				+ " " + crossPhenoAll + " " + pvaThreshold + " " + models;
 
 		long startTime = 0;
 		if (DEBUG) {

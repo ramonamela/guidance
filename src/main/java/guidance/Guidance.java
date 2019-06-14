@@ -2491,7 +2491,9 @@ public class Guidance {
 		String models = String.join(",", parsingArgs.getManhattanOptions());
 
 		String rScriptPath = R_SCRIPT_DIR + "/condensed_tophits_crossmodel_new_2.R ";
-		//rScriptPath = "/gpfs/projects/bsc05/martagm/GWImp_COMPSs/R_SCRIPTS/condensed_tophits_crossmodel_new_2.R ";
+		// rScriptPath =
+		// "/gpfs/projects/bsc05/martagm/GWImp_COMPSs/R_SCRIPTS/condensed_tophits_crossmodel_new_2.R
+		// ";
 
 		String cmdToStore = R_SCRIPT_BIN_DIR + "/Rscript " + rScriptPath + filteredFile + " " + filteredMalesFile + " "
 				+ filteredFemalesFile + " " + filteredAllXFile + " " + condensedFile + " " + topHitsFile + " "
@@ -2602,21 +2604,25 @@ public class Guidance {
 		}
 
 		String pvaThreshold = Double.toString(parsingArgs.getPvaThreshold());
+		String models = String.join(",", parsingArgs.getManhattanOptions());
 
 		String crossPhenoAll = phenomeAnalysisFilesInfo.getCrossPhenoAll();
 		String crossPhenoRanges = phenomeAnalysisFilesInfo.getCrossPhenoRanges();
 		String crossPhenoTopVariants = phenomeAnalysisFilesInfo.getCrossPhenoAssocTop();
+		
+		String rScriptPath = R_SCRIPT_BIN_DIR + "/crossphenotype.R ";
+		rScriptPath = "/gpfs/projects/bsc05/martagm/GWImp_COMPSs/R_SCRIPTS/crossphenotype_crossmodel_new_2.R ";
 
-		cmdToStore = R_SCRIPT_BIN_DIR + "/Rscript " + R_SCRIPT_DIR + "/crossphenotype.R " + mergedTopHitsString + " "
-				+ crossPhenoAll + " " + crossPhenoRanges + " " + crossPhenoTopVariants + " " + pvaThreshold;
+		cmdToStore = rScriptPath + R_SCRIPT_DIR + "/crossphenotype.R " + mergedTopHitsString + " "
+				+ crossPhenoAll + " " + pvaThreshold + " " + models;
 		listOfCommands.add(cmdToStore);
 		if (!GET_FILE) {
 			COMPSs.barrier();
 		}
 		// This is a sequential invocation that implies bringing back all the
 		// phenoMerged files
-		GuidanceImpl.computeCrossPheno(phenoMergedTopHits, crossPhenoAll, crossPhenoRanges, crossPhenoTopVariants,
-				pvaThreshold);
+
+		GuidanceImpl.computeCrossPheno(phenoMergedTopHits, crossPhenoAll, pvaThreshold, models);
 
 		// FileUtils.getFile(crossPhenoAll);
 		// FileUtils.getFile(crossPhenoRanges);
@@ -3430,7 +3436,9 @@ public class Guidance {
 			columnName = "frequentist_" + option + "_pvalue";
 
 			String rScriptPath = R_SCRIPT_DIR + "/qqplot_manhattan_all_models.R ";
-			//rScriptPath = "/gpfs/projects/bsc05/martagm/GWImp_COMPSs/R_SCRIPTS/qqplot_manhattan_all_models.R ";
+			// rScriptPath =
+			// "/gpfs/projects/bsc05/martagm/GWImp_COMPSs/R_SCRIPTS/qqplot_manhattan_all_models.R
+			// ";
 			String cmdToStore = R_SCRIPT_BIN_DIR + "/Rscript " + rScriptPath + condensedFile + " " + qqpdf + " "
 					+ manpdf + " " + qqtiff + " " + mantiff + " " + columnName + " " + thresh;
 			listOfCommands.add(cmdToStore);
