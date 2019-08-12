@@ -132,6 +132,7 @@ public class ProcessUtils {
             exitValue = p.waitFor();
         } catch (InterruptedException ie) {
             Thread.currentThread().interrupt();
+            throw new IOException();
         }
 
         // Return the exit value
@@ -157,14 +158,14 @@ public class ProcessUtils {
 
         Process p = r.exec(commands);
 
+        readOutputAndError(p.getInputStream(), outputFile, p.getErrorStream(), errorFile);
+        
         int exitValue = -1;
         try {
             exitValue = p.waitFor();
         } catch (InterruptedException ie) {
             Thread.currentThread().interrupt();
         }
-
-        readOutputAndError(p.getInputStream(), outputFile, p.getErrorStream(), errorFile);
 
         return exitValue;
 
@@ -185,7 +186,7 @@ public class ProcessUtils {
         // one argument to bash, so we do not need to quote it to make it one thing.
         // Also, exec may object if it does not have an executable file as the first thing,
         // so having bash here makes it happy provided bash is installed and in path.
-        String[] commands = { "bash", "-c", command };
+        String[] commands = { "env", "-i", "bash", "-c", command };
 
         System.out.println("[DEBUG] Executed command: " + command);
 
@@ -226,10 +227,12 @@ public class ProcessUtils {
             while ((readOut = bisInp.read(bOut)) >= 0 || (readErr = bisErr.read(bErr)) >= 0) {
                 if(readOut >= 0) {
                 	bosInp.write(bOut, 0, readOut);
+                	bosInp.flush();
                 	readOut = -1;
                 }
                 if(readErr >= 0) {
                 	bosErr.write(bErr, 0, readErr);
+                	bosErr.flush();
                 	readErr = -1;
                 }
             }

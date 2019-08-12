@@ -43,13 +43,16 @@ import java.io.FileWriter;
 import java.io.FileReader;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
+import java.net.InetAddress;
 import java.io.IOException;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.TreeMap;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -1426,49 +1429,55 @@ public class GuidanceImpl {
 		String line = br.readLine(); // reading the header
 
 		String[] splitHeaderSF = line.split(SPACE);
-		String[] namesHeaderCovar = covariables.split(","); // Get the pheno columns
-		String[] namesHeaderResponse = responseVar.split(","); // Get the pheno columns
+		//String[] namesHeaderCovar = covariables.split(","); // Get the pheno columns
+		//String[] namesHeaderResponse = responseVar.split(","); // Get the pheno columns
 
-		for (int i = 0; i < splitHeaderSF.length; i++) {
+		//for (int i = 0; i < splitHeaderSF.length; i++) {
 
-			for (int j = 0; j < namesHeaderCovar.length; j++) {
-				if (splitHeaderSF[i].equals(namesHeaderCovar[j])) {
+			//for (int j = 0; j < namesHeaderCovar.length; j++) {
+				//if (splitHeaderSF[i].equals(namesHeaderCovar[j])) {
 					// System.out.println("Adding column " + i + " corresponding to " +
 					// splitHeaderSF[i] + " to covars");
-					columnsHeaderCovar.add(i);
-				}
-			}
+					//columnsHeaderCovar.add(i);
+				//}
+			//}
 
-			for (int j = 0; j < namesHeaderResponse.length; j++) {
-				if (splitHeaderSF[i].equals(namesHeaderResponse[j])) {
+			//for (int j = 0; j < namesHeaderResponse.length; j++) {
+				//if (splitHeaderSF[i].equals(namesHeaderResponse[j])) {
 					// System.out.println("Adding column " + i + " corresponding to " +
 					// splitHeaderSF[i] + " to reponse");
-					columnsHeaderResponse.add(i);
-				}
-			}
+					//columnsHeaderResponse.add(i);
+				//}
+			//}
 
-		}
+		//}
 
 		while ((line = br.readLine()) != null) {
 
 			String[] lineSplited = line.split(SPACE);
 			String key = lineSplited[1];
 
-			String valueCovar = lineSplited[columnsHeaderCovar.get(0)];
+			//String valueCovar = lineSplited[columnsHeaderCovar.get(0)];
 
-			for (int i = 1; i < columnsHeaderCovar.size(); i++) {
-				valueCovar += SPACE_WRITE + lineSplited[columnsHeaderCovar.get(i)];
-			}
+			//for (int i = 1; i < columnsHeaderCovar.size(); i++) {
+				//valueCovar += SPACE_WRITE + lineSplited[columnsHeaderCovar.get(i)];
+			//}
 
-			String valueResponse = lineSplited[columnsHeaderResponse.get(0)];
+			//String valueResponse = lineSplited[columnsHeaderResponse.get(0)];
 
-			for (int i = 1; i < columnsHeaderResponse.size(); i++) {
-				valueResponse += SPACE_WRITE + lineSplited[columnsHeaderResponse.get(i)];
+			//for (int i = 1; i < columnsHeaderResponse.size(); i++) {
+				//valueResponse += SPACE_WRITE + lineSplited[columnsHeaderResponse.get(i)];
+			//}
+			
+			String valueCovar = lineSplited[3];
+			
+			for (int i = 4; i < lineSplited.length; ++i) {
+				valueCovar += SPACE_WRITE + lineSplited[i];
 			}
 
 			valuesJoined = new ArrayList<String>();
 			valuesJoined.add(valueCovar); // Pos 1
-			valuesJoined.add(valueResponse); // Pos 2
+			//valuesJoined.add(valueResponse); // Pos 2
 
 			loadSampleFile.put(key, valuesJoined);
 		}
@@ -1480,15 +1489,17 @@ public class GuidanceImpl {
 			outputFile += splitHeaderSF[i] + SPACE_WRITE;
 		}
 
-		outputFile += splitHeaderSF[columnsHeaderCovar.get(0)];
-		for (int i = 1; i < columnsHeaderCovar.size(); i++) {
-			outputFile += SPACE_WRITE + splitHeaderSF[columnsHeaderCovar.get(i)];
+		//outputFile += splitHeaderSF[columnsHeaderCovar.get(0)];
+		outputFile += splitHeaderSF[3];
+		for (int i = 4; i < splitHeaderSF.length; i++) {
+			outputFile += SPACE_WRITE + splitHeaderSF[i];
 		}
-
+		/*
 		outputFile += SPACE_WRITE + splitHeaderSF[columnsHeaderResponse.get(0)];
 		for (int i = 1; i < columnsHeaderResponse.size(); i++) {
 			outputFile += SPACE_WRITE + splitHeaderSF[columnsHeaderResponse.get(i)];
 		}
+		*/
 
 		outputFile += "\n";
 
@@ -1805,13 +1816,7 @@ public class GuidanceImpl {
 	public static void imputeWithImputeAndFilterByInfoHigh(String gmapFile, String knownHapFile, String legendFile,
 			String phasingHapsFile, String phasingSampleFile, String lim1S, String lim2S, String pairsFile,
 			String infoThresholdS, String mafThresholdS, String theChromo, String sex, String imputeFile,
-			String imputeFileInfo, String filteredRsIdFile, String filteredFile) throws GuidanceTaskException {
-		// output ->
-		// /gpfs/scratch/bsc19/compss/GUIDANCE/executions/sha_imp_300_no_var/outputs_1_23_ramon_50_4/GERA_300/uk10k/mixed/Chr_1/chr_1_mixed_uk10k_1_1000000.impute.gz
-		String basePath = imputeFile.substring(0, imputeFile.length() - 10);
-		String imputeFileSummary = basePath + ".impute_summary"; // /gpfs/scratch/bsc19/compss/GUIDANCE/executions/sha_imp_300_no_var/outputs_1_23_ramon_50_4/GERA_300/uk10k/mixed/Chr_1/chr_1_mixed_uk10k_1_1000000.impute_summary
-		String imputeFileWarnings = basePath + ".impute_warnings"; // /gpfs/scratch/bsc19/compss/GUIDANCE/executions/sha_imp_300_no_var/outputs_1_23_ramon_50_4/GERA_300/uk10k/mixed/Chr_1/chr_1_mixed_uk10k_1_1000000.impute_warnings
-		String filteredLogFile = basePath + ".impute_filtered.impute.log"; // /gpfs/scratch/bsc19/compss/GUIDANCE/executions/sha_imp_300_no_var/outputs_1_23_ramon_50_4/GERA_300/uk10k/mixed/Chr_1/chr_1_mixed_uk10k_1_1000000_filtered.impute.log
+			String imputeFileInfo, String imputeFileSummary, String imputeFileWarnings, String filteredRsIdFile, String filteredFile, String filteredLogFile) throws GuidanceTaskException {
 
 		imputeWithImpute(gmapFile, knownHapFile, legendFile, phasingHapsFile, phasingSampleFile, lim1S, lim2S,
 				pairsFile, imputeFile, imputeFileInfo, imputeFileSummary, imputeFileWarnings, theChromo, sex, "");
@@ -1825,13 +1830,7 @@ public class GuidanceImpl {
 	public static void imputeWithImputeAndFilterByInfoMedium(String gmapFile, String knownHapFile, String legendFile,
 			String phasingHapsFile, String phasingSampleFile, String lim1S, String lim2S, String pairsFile,
 			String infoThresholdS, String mafThresholdS, String theChromo, String sex, String imputeFile,
-			String imputeFileInfo, String filteredRsIdFile, String filteredFile) throws GuidanceTaskException {
-		// output ->
-		// /gpfs/scratch/bsc19/compss/GUIDANCE/executions/sha_imp_300_no_var/outputs_1_23_ramon_50_4/GERA_300/uk10k/mixed/Chr_1/chr_1_mixed_uk10k_1_1000000.impute.gz
-		String basePath = imputeFile.substring(0, imputeFile.length() - 10);
-		String imputeFileSummary = basePath + ".impute_summary"; // /gpfs/scratch/bsc19/compss/GUIDANCE/executions/sha_imp_300_no_var/outputs_1_23_ramon_50_4/GERA_300/uk10k/mixed/Chr_1/chr_1_mixed_uk10k_1_1000000.impute_summary
-		String imputeFileWarnings = basePath + ".impute_warnings"; // /gpfs/scratch/bsc19/compss/GUIDANCE/executions/sha_imp_300_no_var/outputs_1_23_ramon_50_4/GERA_300/uk10k/mixed/Chr_1/chr_1_mixed_uk10k_1_1000000.impute_warnings
-		String filteredLogFile = basePath + ".impute_filtered.impute.log"; // /gpfs/scratch/bsc19/compss/GUIDANCE/executions/sha_imp_300_no_var/outputs_1_23_ramon_50_4/GERA_300/uk10k/mixed/Chr_1/chr_1_mixed_uk10k_1_1000000_filtered.impute.log
+			String imputeFileInfo, String imputeFileSummary, String imputeFileWarnings, String filteredRsIdFile, String filteredFile, String filteredLogFile) throws GuidanceTaskException {
 
 		imputeWithImpute(gmapFile, knownHapFile, legendFile, phasingHapsFile, phasingSampleFile, lim1S, lim2S,
 				pairsFile, imputeFile, imputeFileInfo, imputeFileSummary, imputeFileWarnings, theChromo, sex, "");
@@ -1845,13 +1844,7 @@ public class GuidanceImpl {
 	public static void imputeWithImputeAndFilterByInfoLow(String gmapFile, String knownHapFile, String legendFile,
 			String phasingHapsFile, String phasingSampleFile, String lim1S, String lim2S, String pairsFile,
 			String infoThresholdS, String mafThresholdS, String theChromo, String sex, String imputeFile,
-			String imputeFileInfo, String filteredRsIdFile, String filteredFile) throws GuidanceTaskException {
-		// output ->
-		// /gpfs/scratch/bsc19/compss/GUIDANCE/executions/sha_imp_300_no_var/outputs_1_23_ramon_50_4/GERA_300/uk10k/mixed/Chr_1/chr_1_mixed_uk10k_1_1000000.impute.gz
-		String basePath = imputeFile.substring(0, imputeFile.length() - 10);
-		String imputeFileSummary = basePath + ".impute_summary"; // /gpfs/scratch/bsc19/compss/GUIDANCE/executions/sha_imp_300_no_var/outputs_1_23_ramon_50_4/GERA_300/uk10k/mixed/Chr_1/chr_1_mixed_uk10k_1_1000000.impute_summary
-		String imputeFileWarnings = basePath + ".impute_warnings"; // /gpfs/scratch/bsc19/compss/GUIDANCE/executions/sha_imp_300_no_var/outputs_1_23_ramon_50_4/GERA_300/uk10k/mixed/Chr_1/chr_1_mixed_uk10k_1_1000000.impute_warnings
-		String filteredLogFile = basePath + ".impute_filtered.impute.log"; // /gpfs/scratch/bsc19/compss/GUIDANCE/executions/sha_imp_300_no_var/outputs_1_23_ramon_50_4/GERA_300/uk10k/mixed/Chr_1/chr_1_mixed_uk10k_1_1000000_filtered.impute.log
+			String imputeFileInfo, String imputeFileSummary, String imputeFileWarnings, String filteredRsIdFile, String filteredFile, String filteredLogFile) throws GuidanceTaskException {
 
 		imputeWithImpute(gmapFile, knownHapFile, legendFile, phasingHapsFile, phasingSampleFile, lim1S, lim2S,
 				pairsFile, imputeFile, imputeFileInfo, imputeFileSummary, imputeFileWarnings, theChromo, sex, "");
@@ -1981,7 +1974,8 @@ public class GuidanceImpl {
 		// If there is not output in the impute process. Then we have to create some
 		// empty outputs
 		String imputeGZFile = imputeFile + ".gz";
-		if (!new File(imputeGZFile).exists()) {
+		if (!(new File(imputeGZFile).exists())) {
+			System.err.println(HEADER_IMPUTE + " Creating imputeGZFile");
 			try {
 				if (!FileUtils.createEmptyFile(imputeFile, HEADER_IMPUTE)) {
 					throw new GuidanceTaskException(HEADER_IMPUTE + ERROR_FILE_CREATION + imputeFile + FILE_SUFFIX);
@@ -1989,7 +1983,18 @@ public class GuidanceImpl {
 			} catch (IOException ioe) {
 				throw new GuidanceTaskException(ioe);
 			}
-			FileUtils.gzipFile(imputeFile, imputeFile + ".gz");
+			FileUtils.gzipFile(imputeFile, imputeGZFile);
+		} else {
+			String imputeFileColumnTransformation = "zcat " + imputeGZFile + " | awk -v chr=" + theChromo
+					+ " '{out=$1 \" \" chr \":\" $3 \"_\" $4 \"_\" $5 ; for(i=3;i<=NF;i++){out=out\" \"$i}; print out}' | gzip > "
+					+ imputeGZFile + "_tmp; mv " + imputeGZFile + "_tmp " + imputeGZFile;
+			//imputeFileColumnTransformation = "/gpfs/projects/pr1ejj00/binaries/convertSecondColumn.sh " + imputeGZFile + " " + theChromo;
+			try {
+				ProcessUtils.executeWithoutOutputs(imputeFileColumnTransformation);
+			} catch (IOException ioe) {
+				throw new GuidanceTaskException(ioe);
+			}
+			System.out.println(imputeFileColumnTransformation);
 		}
 
 		// The result has the gz extension
@@ -2012,29 +2017,17 @@ public class GuidanceImpl {
 			throw new GuidanceTaskException(ioe);
 		}
 
-		String imputeFileColumnTransformation = "zcat " + imputeFile + " | awk -v chr=" + theChromo
-				+ " '{out=$1 \" \" chr \":\" $3 \"_\" $4 \"_\" $5 ; for(i=3;i<=NF;i++){out=out\" \"$i}; print out}' | gzip > "
-				+ imputeFile + "_tmp; mv " + imputeFile + "_tmp " + imputeFile;
-
-		try {
-			ProcessUtils.executeWithoutOutputs(imputeFileColumnTransformation);
-		} catch (IOException ioe) {
-			throw new GuidanceTaskException(ioe);
-		}
-
 		String imputeInfoFileColumnTransformation = "head -n1 " + imputeFileInfo + " > " + imputeFileInfo
 				+ "_tmp;tail -n +2 " + imputeFileInfo + " | awk -v chr=" + theChromo
 				+ " '{out=$1 \" \" chr \":\" $3 \"_\" $4 \"_\" $5 ; for(i=3;i<=NF;i++){out=out\" \"$i}; print out}' >> "
 				+ imputeFileInfo + "_tmp; mv " + imputeFileInfo + "_tmp " + imputeFileInfo;
-
+		
 		try {
 			ProcessUtils.executeWithoutOutputs(imputeInfoFileColumnTransformation);
 		} catch (IOException ioe) {
 			throw new GuidanceTaskException(ioe);
 		}
-
-		// System.out.println(imputeFileColumnTransformation);
-		// System.out.println(imputeInfoFileColumnTransformation);
+		System.out.println(imputeInfoFileColumnTransformation);
 
 		long stopTime = System.currentTimeMillis();
 		long elapsedTime = (stopTime - startTime) / 1_000;
@@ -2298,14 +2291,31 @@ public class GuidanceImpl {
 	// This is not a task!! Calling it will imply a sincronization!!!
 	// If someday this can be a task, combinedTopHits -> FILE_IN_ARRAY
 	// topHitsAllPheno -> FILE_OUT
-	public static void generateTopHitsAllPhenos(List<String> combinedTopHits, String topHitsAllPheno)
-			throws GuidanceTaskException {
+	public static void generateTopHitsAllPhenos(LinkedList<String> controlInteger, String combinedTopHitsString, String topHitsAllPheno, String hostname, String ip)
+			throws GuidanceTaskException, IOException {
+		
+		LinkedList<String> combinedTopHits = new LinkedList<String>(Arrays.asList(combinedTopHitsString.split(",")));
+		
 		String rScriptBinDir = loadFromEnvironment(RSCRIPTBINDIR, HEADER_PHENO);
 		String rScriptDir = loadFromEnvironment(RSCRIPTDIR, HEADER_PHENO);
+		
+		String sandboxPath = "/" + String.join("/",Arrays.copyOf(topHitsAllPheno.split("/"), topHitsAllPheno.split("/").length - 1)) + "/";
 
-		String combinedTopHitsString = combinedTopHits.get(0);
+		String fileInSandboxPath = sandboxPath + combinedTopHits.get(0).split("/")[combinedTopHits.get(0).split("/").length - 1];
+		System.out.println(fileInSandboxPath);
+		
+		GuidanceImpl.copyFileLocalToRuntime(combinedTopHits.get(0), fileInSandboxPath, hostname, ip);
+		
+		//FileUtils.copy(combinedTopHits.get(0), fileInSandboxPath);
+		//String combinedTopHitsString = combinedTopHits.get(0);
+		//String combinedTopHitsString = fileInSandboxPath;
 		for (int i = 1; i < combinedTopHits.size(); ++i) {
-			combinedTopHitsString += ("," + combinedTopHits.get(i));
+			fileInSandboxPath = sandboxPath + combinedTopHits.get(i).split("/")[combinedTopHits.get(i).split("/").length - 1];
+			System.out.println(fileInSandboxPath);
+			GuidanceImpl.copyFileLocalToRuntime(combinedTopHits.get(i), fileInSandboxPath, hostname, ip);
+			//FileUtils.copy(combinedTopHits.get(i), fileInSandboxPath);
+			//combinedTopHitsString += ("," + fileInSandboxPath);
+			//combinedTopHitsString += ("," + combinedTopHits.get(i));
 		}
 
 		String command = rScriptBinDir + "Rscript --verbose " + rScriptDir + "/tophits_all_phenotypes.R "
@@ -2376,22 +2386,43 @@ public class GuidanceImpl {
 	// crossPhenoRanges -> FILE_OUT
 	// crossPhenoTopVariants -> FILE_OUT
 	// pvaThreshold -> STRING_IN
-	public static void computeCrossPheno(List<String> phenoMergedTopHits, String crossPhenoAll, String pvaThreshold, String models) throws GuidanceTaskException {
+	public static void computeCrossPheno(LinkedList<String> controlString, String phenoMergedTopHitsString, String crossPhenoAll, String pvaThreshold, String models, String hostname, String ip) throws GuidanceTaskException, IOException {
 
 		String rScriptBinDir = loadFromEnvironment(RSCRIPTBINDIR, HEADER_PHENO);
 		String rScriptDir = loadFromEnvironment(RSCRIPTDIR, HEADER_PHENO);
+		
+		LinkedList<String> phenoMergedTopHits = new LinkedList<String>(Arrays.asList(phenoMergedTopHitsString.split(",")));
+		
+		String sandboxPath = String.join("/",Arrays.copyOf(crossPhenoAll.split("/"), crossPhenoAll.split("/").length - 1)) + "/";
 
+		String fileInSandboxPath = sandboxPath + phenoMergedTopHits.get(0).split("/")[phenoMergedTopHits.get(0).split("/").length - 1];
+		
+		//GuidanceImpl.copyFileLocalToRuntime(phenoMergedTopHits.get(0), fileInSandboxPath, hostname, ip);
+		
+		//System.out.println(sandboxPath);
+		//System.out.println(phenoMergedTopHits.get(0) + " " + fileInSandboxPath);
+		String localPhenoMergedTopHitsString = fileInSandboxPath;
+		/*
+		for (int i = 1; i < phenoMergedTopHits.size(); ++i) {
+			fileInSandboxPath = sandboxPath + phenoMergedTopHits.get(i).split("/")[phenoMergedTopHits.get(i).split("/").length - 1];
+			GuidanceImpl.copyFileLocalToRuntime(phenoMergedTopHits.get(i), fileInSandboxPath, hostname, ip);
+			System.out.println(phenoMergedTopHits.get(i) + " " + fileInSandboxPath);
+			localPhenoMergedTopHitsString += ("," + fileInSandboxPath);
+			//FileUtils.copy(combinedTopHits.get(i), fileInSandboxPath);
+			//combinedTopHitsString += ("," + fileInSandboxPath);
+			//combinedTopHitsString += ("," + combinedTopHits.get(i));
+		}*/
+		
 		String mergedTopHitsString = phenoMergedTopHits.get(0);
 		for (int i = 1; i < phenoMergedTopHits.size(); ++i) {
 			mergedTopHitsString += ("," + phenoMergedTopHits.get(i));
 		}
 
-		String rScriptPath = rScriptDir + "/crossphenotype.R ";
-		rScriptPath = "/gpfs/projects/bsc05/martagm/GWImp_COMPSs/R_SCRIPTS/crossphenotype_crossmodel_new_2.R ";
-		//String command = rScriptBinDir + "Rscript --verbose " + rScriptPath + mergedTopHitsString
-		//		+ " " + crossPhenoAll + " " + crossPhenoRanges + " " + crossPhenoTopVariants + " " + pvaThreshold;
+		String rScriptPath = rScriptDir + "/crossphenotype_crossmodel_new_2.R ";
 		
-		String command = rScriptBinDir + "Rscript --verbose " + rScriptPath + mergedTopHitsString
+		localPhenoMergedTopHitsString = phenoMergedTopHitsString;
+		
+		String command = rScriptBinDir + "Rscript --verbose " + rScriptPath + localPhenoMergedTopHitsString
 				+ " " + crossPhenoAll + " " + pvaThreshold + " " + models;
 
 		long startTime = 0;
@@ -2419,7 +2450,7 @@ public class GuidanceImpl {
 	public static void generateCondensedAndTopHitsFile(String filteredFile, String filteredMalesFile,
 			String filteredFemalesFile, String filteredAllXFile, String condensedFile, String topHitsFile,
 			String crossRangesFile, String pvaThresholdStr, String models, String cmdToStore)
-			throws GuidanceTaskException {
+			throws GuidanceTaskException, InterruptedException {
 
 		String command = null;
 		long startTime = System.currentTimeMillis();
@@ -2431,18 +2462,23 @@ public class GuidanceImpl {
 		String rScriptDir = loadFromEnvironment(RSCRIPTDIR, HEADER_GENERATE_QQ_MANHATTAN_PLOTS);
 
 		String rScriptPath = rScriptDir + "/condensed_tophits_crossmodel_new_2.R ";
-		//rScriptPath = "/gpfs/projects/bsc05/martagm/GWImp_COMPSs/R_SCRIPTS/condensed_tophits_crossmodel_new_2.R ";
+		//rScriptPath = "/gpfs/scratch/pr1ejj00/pr1ejj08/GUIDANCE/GERA/condensed_tophits_crossmodel_new_2.R ";
 
 		command = rScriptBinDir + "Rscript --verbose " + rScriptPath + filteredFile + " " + filteredMalesFile + " "
 				+ filteredFemalesFile + " " + filteredAllXFile + " " + condensedPlain + " " + topHitsPlain + " "
 				+ crossRangesPlain + " " + pvaThresholdStr + " " + models;
+		
+		String[] splittedFilename = condensedFile.split("/");
+		String fileName = splittedFilename[splittedFilename.length - 1];
+		String outFile = "/gpfs/scratch/pr1ejj00/pr1ejj08/GUIDANCE/GERA_ALL/log_files/" + fileName + ".out";
+		String errFile = "/gpfs/scratch/pr1ejj00/pr1ejj08/GUIDANCE/GERA_ALL/log_files/" + fileName + ".err";
 
 		if (DEBUG) {
 			System.out.println("\n[DEBUG] Launched command:                 : " + command);
 		}
 
 		try {
-			ProcessUtils.executeWithoutOutputs(command);
+			ProcessUtils.executeBashCommand(command, outFile, errFile);
 		} catch (IOException ioe) {
 			throw new GuidanceTaskException(ioe);
 		}
@@ -2587,11 +2623,8 @@ public class GuidanceImpl {
 	public static void snptestAndFilterByAll(String mergedGenFile, String mergedSampleFile, String responseVar,
 			String covariables, String models, String theChromo, String imputationTool, String imputeFileInfo,
 			String mafThresholdS, String hweCohortThresholdS, String hweCasesThresholdS, String hweControlsThresholdS,
-			String infoThresholdS, String sex, String rpanelName, String snptestOutFile, String summaryFile,
+			String infoThresholdS, String sex, String rpanelName, String snptestOutFile, String snptestLogFile, String summaryFile,
 			String assocFilterByAll) throws GuidanceTaskException {
-
-		// /gpfs/scratch/bsc19/compss//GUIDANCE/executions/sha_imp_300_no_var/outputs_22_23_ramon/associations/ALLERGIC_RHINITIS/GERA_300_for_uk10k/Chr_22/chr_22_ALLERGIC_RHINITIS_uk10k_1_1000000_snptest.out.gz
-		String snptestLogFile = snptestOutFile.substring(0, snptestOutFile.length() - 7) + ".log"; // /gpfs/scratch/bsc19/compss//GUIDANCE/executions/sha_imp_300_no_var/outputs_22_23_ramon/associations/ALLERGIC_RHINITIS/GERA_300_for_uk10k/Chr_22/chr_22_ALLERGIC_RHINITIS_uk10k_1_1000000_snptest.log
 
 		snptest(mergedGenFile, mergedSampleFile, snptestOutFile, snptestLogFile, responseVar, covariables, models,
 				theChromo, "");
@@ -3695,7 +3728,7 @@ public class GuidanceImpl {
 
 		String cmd = null;
 		String rScriptPath = rScriptDir + "/qqplot_manhattan_all_models.R ";
-		//rScriptPath = "/gpfs/projects/bsc05/martagm/GWImp_COMPSs/R_SCRIPTS/qqplot_manhattan_all_models.R ";
+		//rScriptPath = "/gpfs/projects/pr1ejj00/launch_scripts/qqplot_manhattan_all_models.R ";
 		cmd = rScriptBinDir + "/Rscript " + rScriptPath + lastCondensedFile + " " + qqPlotFile + " " + manhattanPlotFile
 				+ " " + qqPlotTiffFile + " " + manhattanPlotTiffFile + " " + manhattanOption + " " + thresh;
 
@@ -4391,6 +4424,32 @@ public class GuidanceImpl {
 		} catch (IOException e) {
 			System.err.println("[DEBUG] Error when bringing back " + realFilename);
 		}
+	}
+	
+	public static LinkedList<String> copyFileRuntimeToLocalSSH(String runtimeFilename, String realFilename, String hostname, String ip) throws IOException {
+		String scpCommand = "scp " + runtimeFilename + " " + hostname + "@" + ip + ":" + realFilename;
+		System.out.println(scpCommand);
+		LinkedList<String> listToReturn = new LinkedList<String>();
+		listToReturn.add(Integer.toString(ProcessUtils.executeWithoutOutputs(scpCommand)));
+		return listToReturn;
+	}
+	
+	public static String copyFileLocalToRuntime(String localFilename, String runtimeFilename, String hostname, String ip) throws IOException {
+		String scpCommand = "scp " + hostname + "@" + ip + ":" + localFilename + " " + runtimeFilename;
+		System.out.println(scpCommand);
+		return Integer.toString(ProcessUtils.executeWithoutOutputs(scpCommand));
+	}
+	
+	public static LinkedList<String> reduceTwo(LinkedList<String> a, LinkedList<String> b) {
+		LinkedList<String> listToReturn = new LinkedList<String>();
+		listToReturn.add(a.get(0) + b.get(0));
+		return listToReturn;
+	}
+	
+	public static LinkedList<String> reduceFour(LinkedList<String> a, LinkedList<String> b, LinkedList<String> c, LinkedList<String> d) {
+		LinkedList<String> listToReturn = new LinkedList<String>();
+		listToReturn.add(a.get(0) + b.get(0) + c.get(0) + d.get(0));
+		return listToReturn;
 	}
 
 }

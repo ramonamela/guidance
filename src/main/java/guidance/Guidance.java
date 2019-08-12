@@ -36,6 +36,8 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -62,6 +64,7 @@ import guidance.files.ImputationFiles;
 import guidance.files.MergeFiles;
 import guidance.files.PhenomeAnalysisFiles;
 import guidance.files.ResultsFiles;
+import guidance.processes.ProcessUtils;
 import guidance.utils.ChromoInfo;
 import guidance.utils.ParseCmdLine;
 import guidance.utils.GeneralUtils;
@@ -92,7 +95,7 @@ public class Guidance {
 
 	private static final boolean NEW_VERSION = false;
 
-	private static final boolean COMPACT_VERSION = false;
+	private static final boolean COMPACT_VERSION = true;
 
 	// Erase intermediate files
 	private static boolean ERASE_FILES;
@@ -143,6 +146,10 @@ public class Guidance {
 
 	private static File listOfStages;
 	private static ArrayList<String> listOfCommands = new ArrayList<>();
+	
+    private static InetAddress ipInfo;
+    private static String ip;
+    private static String hostname;
 
 	static {
 		// Load Guidance version and build number
@@ -159,6 +166,15 @@ public class Guidance {
 			GUIDANCE_VERSION = guidanceVersion;
 			GUIDANCE_BUILDNUMBER = guidanceBuildnumber;
 		}
+		
+	    try {
+			ipInfo = InetAddress.getLocalHost();
+		} catch (UnknownHostException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	    ip = ipInfo.getHostAddress();
+	    hostname = System.getProperty("user.name");
 	}
 
 	/**
@@ -239,9 +255,10 @@ public class Guidance {
 	 * @param listOfCommands
 	 * @throws IOException
 	 * @throws GuidanceTaskException
+	 * @throws InterruptedException 
 	 */
 	private static void doMixed(ParseCmdLine parsingArgs, String outDir, List<String> rpanelTypes)
-			throws IOException, GuidanceTaskException {
+			throws IOException, GuidanceTaskException, InterruptedException {
 
 		System.out.println("\n[Guidance] Starting computation");
 		long startTime = System.currentTimeMillis();
@@ -659,7 +676,8 @@ public class Guidance {
 				if (endChr == 23) {
 					filteredByAllXMalesFile = mergeFilesInfo.getAdditionalFilteredByAllXMalesFile(test, panel, 0);
 					filteredByAllXFemalesFile = mergeFilesInfo.getAdditionalFilteredByAllXFemalesFile(test, panel, 0);
-					filteredByAllXFile = mergeFilesInfo.getFilteredByAllFile(test, panel, 23);
+					//filteredByAllXFile = mergeFilesInfo.getFilteredByAllFile(test, panel, 23);
+					filteredByAllXFile = mergeFilesInfo.getAdditionalFilteredByAllXFile(test,  panel);
 					if (startChr == 23) {
 						lastFilteredByAllFile = filteredByAllXMalesFile;
 					}
@@ -710,9 +728,9 @@ public class Guidance {
 			LOGGER.info("\n[Guidance] No cross-phenotype analysis. Only one phenotype available");
 		}
 
-		// COMPSs.barrier();
-
 		LOGGER.info("\n[Guidance] All tasks are in execution, please wait...");
+		
+		COMPSs.barrier(true);
 
 		long endTime = System.currentTimeMillis();
 
@@ -916,7 +934,7 @@ public class Guidance {
 						&& COMPACT_VERSION) {
 					doImputationWithImputeAndFilterByInfo(parsingArgs, gmapFile, knownHapFile, legendFile,
 							mixedPhasingHapsFile, mixedPhasingNewSampleFile, lim1S, lim2S, mixedPairsFile, chrS, NO_SEX,
-							mixedImputeFile, mixedImputeFileInfo, mixedFilteredRsIdFile, mixedFilteredFile, panelIndex);
+							mixedImputeFile, mixedImputeFileInfo, mixedImputeFileSummary, mixedImputeFileWarnings, mixedFilteredRsIdFile, mixedFilteredFile, mixedFilteredLogFile, panelIndex);
 				} else {
 
 					doImputationWithImpute(parsingArgs, chrS, gmapFile, knownHapFile, legendFile, mixedPhasingHapsFile,
@@ -986,8 +1004,8 @@ public class Guidance {
 							&& parsingArgs.getStageStatus("qctoolS") == 1 && COMPACT_VERSION) {
 						doImputationWithImputeAndFilterByInfo(parsingArgs, gmapFile, knownHapFile, legendFile,
 								mixedPhasingHapsMalesFile, mixedPhasingSampleMalesFile, lim1S, lim2S, mixedPairsFile,
-								chrS, SEX1, mixedImputeMalesFile, mixedImputeMalesFileInfo, mixedFilteredRsIdMalesFile,
-								mixedFilteredMalesFile, panelIndex);
+								chrS, SEX1, mixedImputeMalesFile, mixedImputeMalesFileInfo, mixedImputeMalesFileSummary, mixedImputeMalesFileWarnings, mixedFilteredRsIdMalesFile,
+								mixedFilteredMalesFile, mixedFilteredLogMalesFile, panelIndex);
 					} else {
 
 						doImputationWithImpute(parsingArgs, chrS, gmapFile, knownHapFile, legendFile,
@@ -1007,8 +1025,8 @@ public class Guidance {
 							&& parsingArgs.getStageStatus("qctoolS") == 1 && COMPACT_VERSION) {
 						doImputationWithImputeAndFilterByInfo(parsingArgs, gmapFile, knownHapFile, legendFile,
 								mixedPhasingHapsFemalesFile, mixedPhasingSampleFemalesFile, lim1S, lim2S,
-								mixedPairsFile, chrS, SEX2, mixedImputeFemalesFile, mixedImputeFemalesFileInfo,
-								mixedFilteredRsIdFemalesFile, mixedFilteredFemalesFile, panelIndex);
+								mixedPairsFile, chrS, SEX2, mixedImputeFemalesFile, mixedImputeFemalesFileInfo, mixedImputeFemalesFileSummary, mixedImputeFemalesFileWarnings, 
+								mixedFilteredRsIdFemalesFile, mixedFilteredFemalesFile, mixedFilteredLogFemalesFile, panelIndex);
 					} else {
 						doImputationWithImpute(parsingArgs, chrS, gmapFile, knownHapFile, legendFile,
 								mixedPhasingHapsFemalesFile, mixedPhasingSampleFemalesFile, lim1S, lim2S,
@@ -1262,7 +1280,7 @@ public class Guidance {
 					doSnptestAndFilterByAll(mixedFilteredMalesFile, mixedPhasingNewSampleMalesFile, responseVar,
 							covariables, modelString, chrS, "impute", mixedImputeMalesFileInfo, mafThresholdS,
 							hweCohortThresholdS, hweCasesThresholdS, hweControlsThresholdS, infoThresholdS, SEX1,
-							rpanelName, snptestOutMalesFile, summaryMalesFile, assocMalesFilteredByAll);
+							rpanelName, snptestOutMalesFile, snptestLogMalesFile, summaryMalesFile, assocMalesFilteredByAll);
 
 				} else {
 
@@ -1284,7 +1302,7 @@ public class Guidance {
 					doSnptestAndFilterByAll(mixedFilteredFemalesFile, mixedPhasingNewSampleFemalesFile, responseVar,
 							covariables, modelString, chrS, "impute", mixedImputeFemalesFileInfo, mafThresholdS,
 							hweCohortThresholdS, hweCasesThresholdS, hweControlsThresholdS, infoThresholdS, SEX2,
-							rpanelName, snptestOutFemalesFile, summaryFemalesFile, assocFemalesFilteredByAll);
+							rpanelName, snptestOutFemalesFile, snptestLogFemalesFile, summaryFemalesFile, assocFemalesFilteredByAll);
 
 				} else {
 					doSnptest(parsingArgs, chrS, mixedFilteredFemalesFile, mixedPhasingNewSampleFemalesFile,
@@ -1345,7 +1363,7 @@ public class Guidance {
 					doSnptestAndFilterByAll(mixedFilteredMalesFile, mixedPhasingNewSampleMalesFile, responseVar,
 							covariables, modelString, chrS, "minimac", mixedImputedMMInfoMalesFile, mafThresholdS,
 							hweCohortThresholdS, hweCasesThresholdS, hweControlsThresholdS, infoThresholdS, SEX1,
-							rpanelName, snptestOutMalesFile, summaryMalesFile, assocMalesFilteredByAll);
+							rpanelName, snptestOutMalesFile, snptestLogMalesFile, summaryMalesFile, assocMalesFilteredByAll);
 
 				} else {
 
@@ -1367,7 +1385,7 @@ public class Guidance {
 					doSnptestAndFilterByAll(mixedFilteredFemalesFile, mixedPhasingNewSampleFemalesFile, responseVar,
 							covariables, modelString, chrS, "minimac", mixedImputedMMInfoFemalesFile, mafThresholdS,
 							hweCohortThresholdS, hweCasesThresholdS, hweControlsThresholdS, infoThresholdS, SEX2,
-							rpanelName, snptestOutFemalesFile, summaryFemalesFile, assocFemalesFilteredByAll);
+							rpanelName, snptestOutFemalesFile, snptestLogFemalesFile, summaryFemalesFile, assocFemalesFilteredByAll);
 
 				} else {
 					doSnptest(parsingArgs, chrS, mixedFilteredFemalesFile, mixedPhasingNewSampleFemalesFile,
@@ -1418,7 +1436,7 @@ public class Guidance {
 
 				doSnptestAndFilterByAll(mixedFilteredFile, mixedPhasingNewSampleFile, responseVar, covariables,
 						modelString, chrS, "impute", mixedImputeFileInfo, mafThresholdS, hweCohortThresholdS,
-						hweCasesThresholdS, hweControlsThresholdS, infoThresholdS, NO_SEX, rpanelName, snptestOutFile,
+						hweCasesThresholdS, hweControlsThresholdS, infoThresholdS, NO_SEX, rpanelName, snptestOutFile, snptestLogFile,
 						summaryFile, assocFilteredByAll);
 
 			} else {
@@ -1457,7 +1475,7 @@ public class Guidance {
 
 				doSnptestAndFilterByAll(mixedFilteredFile, mixedPhasingNewSampleFile, responseVar, covariables,
 						modelString, chrS, "minimac", mixedImputedMMInfoFile, mafThresholdS, hweCohortThresholdS,
-						hweCasesThresholdS, hweControlsThresholdS, infoThresholdS, NO_SEX, rpanelName, snptestOutFile,
+						hweCasesThresholdS, hweControlsThresholdS, infoThresholdS, NO_SEX, rpanelName, snptestOutFile, snptestLogFile,
 						summaryFile, assocFilteredByAll);
 
 			} else {
@@ -2158,11 +2176,12 @@ public class Guidance {
 	 * @param generalChromoInfo
 	 * @throws IOException
 	 * @throws GuidanceTaskException
+	 * @throws InterruptedException 
 	 */
 
 	public static void makeCombinePanels(ParseCmdLine parsingArgs, AssocFiles assocFilesInfo, MergeFiles mergeFilesInfo,
 			CombinedPanelsFiles combinedPanelsFilesInfo, List<String> rpanelTypes, int ttIndex)
-			throws IOException, GuidanceTaskException {
+			throws IOException, GuidanceTaskException, InterruptedException {
 
 		// PLACES TO STORE ALL COMBINED INFORMATION
 		String filteredCombineAll = combinedPanelsFilesInfo.getCombinedFilteredByAllFile(ttIndex);
@@ -2452,6 +2471,8 @@ public class Guidance {
 				}
 				reduceCounter += 1;
 			}
+			
+			GeneralUtils.flushCommands(listOfStages, listOfCommands, FLUSH);
 		}
 
 		if (refPanelCombine && parsingArgs.getStageStatus("combGenerateManhattanTop") == 1) {
@@ -2472,6 +2493,8 @@ public class Guidance {
 					combinedManhattanPlotPdfFile, combinedQqPlotTiffFile, combinedManhattanPlotTiffFile);
 
 		}
+		
+		GeneralUtils.flushCommands(listOfStages, listOfCommands, FLUSH);
 	}
 
 	/**
@@ -2482,18 +2505,17 @@ public class Guidance {
 	 * @param filteredMalesFile
 	 * @param filteredFemalesFile
 	 * @param condensedFile
+	 * @throws InterruptedException 
 	 */
 	private static void doGenerateCondensedAndTopHitsFile(ParseCmdLine parsingArgs, String filteredFile,
 			String filteredMalesFile, String filteredFemalesFile, String filteredAllXFile, String condensedFile,
-			String topHitsFile, String crossRanges) {
+			String topHitsFile, String crossRanges) throws InterruptedException {
 
 		String pvaThreshold = Double.toString(parsingArgs.getPvaThreshold());
 		String models = String.join(",", parsingArgs.getManhattanOptions());
-
+		
 		String rScriptPath = R_SCRIPT_DIR + "/condensed_tophits_crossmodel_new_2.R ";
-		// rScriptPath =
-		// "/gpfs/projects/bsc05/martagm/GWImp_COMPSs/R_SCRIPTS/condensed_tophits_crossmodel_new_2.R
-		// ";
+		rScriptPath = "/gpfs/scratch/pr1ejj00/pr1ejj08/GUIDANCE/GERA/condensed_tophits_crossmodel_new_2.R ";
 
 		String cmdToStore = R_SCRIPT_BIN_DIR + "/Rscript " + rScriptPath + filteredFile + " " + filteredMalesFile + " "
 				+ filteredFemalesFile + " " + filteredAllXFile + " " + condensedFile + " " + topHitsFile + " "
@@ -2509,6 +2531,56 @@ public class Guidance {
 		}
 
 	}
+	
+	@SuppressWarnings("unchecked")
+	public static LinkedList<String> retrieveAndWait(List<String> fileList) throws IOException {
+		LinkedList<String>[] controlStrings = new LinkedList[fileList.size()];
+		LinkedList<Integer> pendingIndexes = new LinkedList<>();
+		int i = 0;
+		for (String file : fileList) {
+			controlStrings[i] = GuidanceImpl.copyFileRuntimeToLocalSSH(file, file, hostname, ip);
+			pendingIndexes.add(i);
+			i = i + 1;
+		}
+		
+		while (pendingIndexes.size() > 1) {
+			if (pendingIndexes.size() > 3) {
+				Integer i1 = pendingIndexes.poll();
+				Integer i2 = pendingIndexes.poll();
+				Integer i3 = pendingIndexes.poll();
+				Integer i4 = pendingIndexes.poll();
+				controlStrings[i1] = GuidanceImpl.reduceFour(controlStrings[i1], controlStrings[i2], controlStrings[i3], controlStrings[i4]);
+				pendingIndexes.add(i1);
+			} else {
+				Integer i1 = pendingIndexes.poll();
+				Integer i2 = pendingIndexes.poll();
+				controlStrings[i1] = GuidanceImpl.reduceTwo(controlStrings[i1], controlStrings[i2]);
+				pendingIndexes.add(i1);
+			}
+		}
+		return controlStrings[pendingIndexes.get(0)];
+		
+		/*
+		LinkedList<LinkedList<String>> controlStrings = new LinkedList<LinkedList<String>>();
+		for (String file : fileList) {
+			controlStrings.add(GuidanceImpl.copyFileRuntimeToLocalSSH(file, file, hostname, ip));
+		}
+		while(controlStrings.size() > 1) {
+			if (controlStrings.size() > 3) {
+				LinkedList<String> i1 = controlStrings.poll();
+				LinkedList<String> i2 = controlStrings.poll();
+				LinkedList<String> i3 = controlStrings.poll();
+				LinkedList<String> i4 = controlStrings.poll();
+				controlStrings.add(GuidanceImpl.reduceFour(i1, i2, i3, i4));
+			} else {
+				LinkedList<String> i1 = controlStrings.poll();
+				LinkedList<String> i2 = controlStrings.poll();
+				controlStrings.add(GuidanceImpl.reduceTwo(i1, i2));
+			}
+		}
+		return controlStrings.get(0);
+		*/
+	}
 
 	/**
 	 * Method that performs the last part of the work flow corresponding to the
@@ -2521,9 +2593,10 @@ public class Guidance {
 	 * @param rpanelTypes
 	 * @param listOfCommands
 	 * @throws GuidanceTaskException
+	 * @throws IOException 
 	 */
 	private static void makePhenotypeAnalysis(ParseCmdLine parsingArgs, CombinedPanelsFiles combinedPanelsFilesInfo,
-			ResultsFiles resultsFilesInfo, PhenomeAnalysisFiles phenomeAnalysisFilesInfo) throws GuidanceTaskException {
+			ResultsFiles resultsFilesInfo, PhenomeAnalysisFiles phenomeAnalysisFilesInfo) throws GuidanceTaskException, IOException {
 
 		if (parsingArgs.getStageStatus("phenoAnalysis") != 1) {
 			return;
@@ -2539,31 +2612,39 @@ public class Guidance {
 
 		String topHitsAllPheno = phenomeAnalysisFilesInfo.getTopHitsAllPhenos();
 
+		
 		String combinedTopHitsString = combinedTopHits.get(0);
-		if (GET_FILE) {
+		//if (GET_FILE) {
 			// COMPSs.getFile(combinedTopHits.get(0));
-		} else {
-			GuidanceImpl.getFile(combinedTopHits.get(0), combinedTopHits.get(0));
-		}
+		//} else {
+			//GuidanceImpl.getFile(combinedTopHits.get(0), combinedTopHits.get(0));
+		//}
 		for (int i = 1; i < combinedTopHits.size(); ++i) {
 			combinedTopHitsString += ("," + combinedTopHits.get(i));
-			GuidanceImpl.getFile(combinedTopHits.get(i), combinedTopHits.get(i));
-			if (GET_FILE) {
+			//GuidanceImpl.getFile(combinedTopHits.get(i), combinedTopHits.get(i));
+			//if (GET_FILE) {
 				// COMPSs.getFile(combinedTopHits.get(i));
-			} else {
-				GuidanceImpl.getFile(combinedTopHits.get(i), combinedTopHits.get(i));
-			}
+			//} else {
+				//GuidanceImpl.getFile(combinedTopHits.get(i), combinedTopHits.get(i));
+			//}
 		}
-		if (!GET_FILE) {
-			COMPSs.barrier();
-		}
+		//if (!GET_FILE) {
+		//	COMPSs.barrier();
+		//}
+		
+		
+		LinkedList<String> controlString = retrieveAndWait(combinedTopHits);
+		
+		
 		String cmdToStore = R_SCRIPT_BIN_DIR + "/Rscript " + R_SCRIPT_DIR + "/tophits_all_phenotypes.R "
 				+ combinedTopHitsString + " " + topHitsAllPheno;
 		listOfCommands.add(cmdToStore);
+		
+		GeneralUtils.flushCommands(listOfStages, listOfCommands, FLUSH);
 
 		// This is a sequential invocation that implies bringing back all the combined
 		// condensed files to the master
-		GuidanceImpl.generateTopHitsAllPhenos(combinedTopHits, topHitsAllPheno);
+		GuidanceImpl.generateTopHitsAllPhenos(controlString, combinedTopHitsString, topHitsAllPheno, hostname, ip);
 
 		String condensedFile = null;
 		String mergedPhenoFile = null;
@@ -2580,28 +2661,32 @@ public class Guidance {
 			// This is a task
 			GuidanceImpl.generateMergedPhenoTopHits(topHitsAllPheno, condensedFile, mergedPhenoFile, pheno);
 		}
+		
+		GeneralUtils.flushCommands(listOfStages, listOfCommands, FLUSH);
 
 		List<String> phenoMergedTopHits = new ArrayList<>();
 		phenoMergedTopHits.add(phenomeAnalysisFilesInfo.getCrossPhenoMergedTop(0));
 
-		if (GET_FILE) {
+		//if (GET_FILE) {
 			// COMPSs.getFile(phenomeAnalysisFilesInfo.getCrossPhenoMergedTop(0));
-		} else {
-			GuidanceImpl.getFile(phenomeAnalysisFilesInfo.getCrossPhenoMergedTop(0),
-					phenomeAnalysisFilesInfo.getCrossPhenoMergedTop(0));
-		}
+		//} else {
+			//GuidanceImpl.getFile(phenomeAnalysisFilesInfo.getCrossPhenoMergedTop(0),
+			//		phenomeAnalysisFilesInfo.getCrossPhenoMergedTop(0));
+		//}
 
 		String mergedTopHitsString = phenomeAnalysisFilesInfo.getCrossPhenoMergedTop(0);
 		for (int test = 1; test < numberOfTestTypes; ++test) {
 			phenoMergedTopHits.add(phenomeAnalysisFilesInfo.getCrossPhenoMergedTop(test));
-			if (GET_FILE) {
+			//if (GET_FILE) {
 				// COMPSs.getFile(phenomeAnalysisFilesInfo.getCrossPhenoMergedTop(test));
-			} else {
-				GuidanceImpl.getFile(phenomeAnalysisFilesInfo.getCrossPhenoMergedTop(test),
-						phenomeAnalysisFilesInfo.getCrossPhenoMergedTop(test));
-			}
+			//} else {
+				//GuidanceImpl.getFile(phenomeAnalysisFilesInfo.getCrossPhenoMergedTop(test),
+				//		phenomeAnalysisFilesInfo.getCrossPhenoMergedTop(test));
+			//}
 			mergedTopHitsString += ("," + phenomeAnalysisFilesInfo.getCrossPhenoMergedTop(test));
 		}
+		
+		controlString = retrieveAndWait(phenoMergedTopHits);
 
 		String pvaThreshold = Double.toString(parsingArgs.getPvaThreshold());
 		String models = String.join(",", parsingArgs.getManhattanOptions());
@@ -2610,23 +2695,23 @@ public class Guidance {
 		String crossPhenoRanges = phenomeAnalysisFilesInfo.getCrossPhenoRanges();
 		String crossPhenoTopVariants = phenomeAnalysisFilesInfo.getCrossPhenoAssocTop();
 		
-		String rScriptPath = R_SCRIPT_BIN_DIR + "/crossphenotype.R ";
-		rScriptPath = "/gpfs/projects/bsc05/martagm/GWImp_COMPSs/R_SCRIPTS/crossphenotype_crossmodel_new_2.R ";
+		String rScriptPath = R_SCRIPT_DIR + "/crossphenotype_crossmodel_new_2.R ";
+		//rScriptPath = "/gpfs/projects/bsc05/martagm/GWImp_COMPSs/R_SCRIPTS/crossphenotype_crossmodel_new_2.R ";
 
-		cmdToStore = rScriptPath + R_SCRIPT_DIR + "/crossphenotype.R " + mergedTopHitsString + " "
+		cmdToStore = R_SCRIPT_BIN_DIR + "Rscript " + rScriptPath + mergedTopHitsString + " "
 				+ crossPhenoAll + " " + pvaThreshold + " " + models;
 		listOfCommands.add(cmdToStore);
-		if (!GET_FILE) {
-			COMPSs.barrier();
-		}
+		//if (!GET_FILE) {
+		//	COMPSs.barrier();
+		//}
 		// This is a sequential invocation that implies bringing back all the
 		// phenoMerged files
+		
+		GeneralUtils.flushCommands(listOfStages, listOfCommands, FLUSH);
+		
+		COMPSs.barrier(true);
 
-		GuidanceImpl.computeCrossPheno(phenoMergedTopHits, crossPhenoAll, pvaThreshold, models);
-
-		// FileUtils.getFile(crossPhenoAll);
-		// FileUtils.getFile(crossPhenoRanges);
-		// FileUtils.getFile(crossPhenoTopVariants);
+		GuidanceImpl.computeCrossPheno(controlString, mergedTopHitsString, crossPhenoAll, pvaThreshold, models, hostname, ip);
 
 	}
 
@@ -2906,8 +2991,8 @@ public class Guidance {
 
 	private static void doImputationWithImputeAndFilterByInfo(ParseCmdLine parsingArgs, String gmapFile,
 			String knownHapFile, String legendFile, String phasingHapsFile, String phasingSampleFile, String lim1S,
-			String lim2S, String pairsFile, String theChromo, String sex, String imputeFile, String imputeFileInfo,
-			String filteredRsIdFile, String filteredFile, int refpanel) throws GuidanceTaskException {
+			String lim2S, String pairsFile, String theChromo, String sex, String imputeFile, String imputeFileInfo, String imputeFileSummary, String imputeFileWarnings, 
+			String filteredRsIdFile, String filteredFile, String filteredLogFile, int refpanel) throws GuidanceTaskException {
 
 		String infoThresholdS = null;
 		String mafThresholdS = Double.toString(parsingArgs.getMafThreshold());
@@ -2924,15 +3009,15 @@ public class Guidance {
 		if (panelMemory.equals("HIGH")) {
 			GuidanceImpl.imputeWithImputeAndFilterByInfoHigh(gmapFile, knownHapFile, legendFile, phasingHapsFile,
 					phasingSampleFile, lim1S, lim2S, pairsFile, infoThresholdS, mafThresholdS, theChromo, sex,
-					imputeFile, imputeFileInfo, filteredRsIdFile, filteredFile);
+					imputeFile, imputeFileInfo, imputeFileSummary, imputeFileWarnings, filteredRsIdFile, filteredFile, filteredLogFile);
 		} else if (panelMemory.equals("MEDIUM")) {
 			GuidanceImpl.imputeWithImputeAndFilterByInfoMedium(gmapFile, knownHapFile, legendFile, phasingHapsFile,
 					phasingSampleFile, lim1S, lim2S, pairsFile, infoThresholdS, mafThresholdS, theChromo, sex,
-					imputeFile, imputeFileInfo, filteredRsIdFile, filteredFile);
+					imputeFile, imputeFileInfo, imputeFileSummary, imputeFileWarnings, filteredRsIdFile, filteredFile, filteredLogFile);
 		} else if (panelMemory.equals("LOW")) {
 			GuidanceImpl.imputeWithImputeAndFilterByInfoLow(gmapFile, knownHapFile, legendFile, phasingHapsFile,
 					phasingSampleFile, lim1S, lim2S, pairsFile, infoThresholdS, mafThresholdS, theChromo, sex,
-					imputeFile, imputeFileInfo, filteredRsIdFile, filteredFile);
+					imputeFile, imputeFileInfo, imputeFileSummary, imputeFileWarnings, filteredRsIdFile, filteredFile, filteredLogFile);
 		} else {
 			throw new GuidanceTaskException("Incorrect panel memory " + panelMemory);
 		}
@@ -2975,17 +3060,38 @@ public class Guidance {
 				cmdToStore = IMPUTE2_BINARY + " -use_prephased_g -m " + gmapFile + " -h " + knownHapFile + " -l "
 						+ legendFile + " -known_haps_g " + phasingHapsFile + " -sample_g " + phasingSampleFile
 						+ " -int " + lim1S + " " + lim2S + " -chrX -exclude_snps_g " + pairsFile
-						+ " -impute_excluded -Ne 20000 -o " + imputeFile + " -i " + imputeFileInfo + " -r "
+						+ " -impute_excluded -Ne 20000 -o " + imputeFile.substring(0, imputeFile.length() - 3) + " -i " + imputeFileInfo + " -r "
 						+ imputeFileSummary + " -w " + imputeFileWarnings + " -no_sample_qc_info -o_gz ";
 
 			} else {
 				cmdToStore = IMPUTE2_BINARY + " -use_prephased_g -m " + gmapFile + " -h " + knownHapFile + " -l "
 						+ legendFile + " -known_haps_g " + phasingHapsFile + " -int " + lim1S + " " + lim2S
-						+ " -exclude_snps_g " + pairsFile + " -impute_excluded -Ne 20000 -o " + imputeFile + " -i "
+						+ " -exclude_snps_g " + pairsFile + " -impute_excluded -Ne 20000 -o " + imputeFile.substring(0, imputeFile.length() - 3) + " -i "
 						+ imputeFileInfo + " -r " + imputeFileSummary + " -w " + imputeFileWarnings
 						+ " -no_sample_qc_info -o_gz";
 			}
 			listOfCommands.add(cmdToStore);
+			
+			String theChromo = null;
+			if (chrS.equals("23")) {
+				theChromo = "X";
+			} else {
+				theChromo = chrS;
+			}
+			
+			String secondCmdToStore;
+			
+			secondCmdToStore = "zcat " + imputeFile + " | awk -v chr=" + theChromo
+					+ " '{out=$1 \" \" chr \":\" $3 \"_\" $4 \"_\" $5 ; for(i=3;i<=NF;i++){out=out\" \"$i}; print out}' | gzip > "
+					+ imputeFile + "_tmp; mv " + imputeFile + "_tmp " + imputeFile;
+			listOfCommands.add(secondCmdToStore);
+
+			secondCmdToStore = "head -n1 " + imputeFileInfo + " > " + imputeFileInfo
+					+ "_tmp;tail -n +2 " + imputeFileInfo + " | awk -v chr=" + theChromo
+					+ " '{out=$1 \" \" chr \":\" $3 \"_\" $4 \"_\" $5 ; for(i=3;i<=NF;i++){out=out\" \"$i}; print out}' >> "
+					+ imputeFileInfo + "_tmp; mv " + imputeFileInfo + "_tmp " + imputeFileInfo;
+			listOfCommands.add(secondCmdToStore);
+			
 			try {
 				String panelMemory = parsingArgs.getRpanelMemory(refpanel);
 				if (panelMemory.equals("HIGH")) {
@@ -3213,13 +3319,13 @@ public class Guidance {
 	private static void doSnptestAndFilterByAll(String mergedGenFile, String mergedSampleFile, String responseVar,
 			String covariables, String modelString, String theChromo, String imputationTool, String imputeFileInfo,
 			String mafThresholdS, String hweCohortThresholdS, String hweCasesThresholdS, String hweControlsThresholdS,
-			String infoThresholdS, String sex, String rpanelName, String snptestOutFile, String summaryFile,
+			String infoThresholdS, String sex, String rpanelName, String snptestOutFile, String snptestOutLogFile, String summaryFile,
 			String assocFilteredByAll) {
 		// Submitting the snptest task per this chunk
 		try {
 			GuidanceImpl.snptestAndFilterByAll(mergedGenFile, mergedSampleFile, responseVar, covariables, modelString,
 					theChromo, imputationTool, imputeFileInfo, mafThresholdS, hweCohortThresholdS, hweCasesThresholdS,
-					hweControlsThresholdS, infoThresholdS, sex, rpanelName, snptestOutFile, summaryFile,
+					hweControlsThresholdS, infoThresholdS, sex, rpanelName, snptestOutFile, snptestOutLogFile, summaryFile,
 					assocFilteredByAll);
 		} catch (GuidanceTaskException gte) {
 			LOGGER.error("[Guidance] Exception trying the execution of snptest task", gte);

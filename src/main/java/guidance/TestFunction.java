@@ -67,7 +67,7 @@ public class TestFunction {
 		}
 	}
 
-	private static void printPaths(String[] args) throws IOException, GuidanceTaskException {
+	private static void printPaths(String[] args) throws IOException, GuidanceTaskException, InterruptedException {
 
 		ArrayList<String> listOfCommands = new ArrayList<>();
 

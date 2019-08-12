@@ -83,11 +83,13 @@ pval <- as.numeric(pval_threshold)
 #		} 
 
 		if (filtered==filtered_males & filtered_males!=filtered_females & filtered_females!=filtered_x) {
-	        filtered_males <- read.table(filtered_males,header=T,stringsAsFactors=F,na.strings=c("-","NA"))
-			filtered_females <- read.table(filtered_females,header=T,stringsAsFactors=F,na.strings=c("-","NA"))
-			filtered_x <- read.table(filtered_x,header=T,stringsAsFactors=F,na.strings=c("-","NA"))
+	        filtered_x_males <- read.table(filtered_males,header=T,stringsAsFactors=F,na.strings=c("-","NA"))
+			head(filtered_x_males)
+			filtered_x_females <- read.table(filtered_females,header=T,stringsAsFactors=F,na.strings=c("-","NA"))
+			head(filtered_x_females)
+			filtered_x_all <- read.table(filtered_x,header=T,stringsAsFactors=F,na.strings=c("-","NA"))
 		
-	        condensed_males <- filtered_males[,c("chr",
+	        condensed_males <- filtered_x_males[,c("chr",
         	                                "position",
                 	                        "rs_id_all",
                         	                "info_all",
@@ -99,13 +101,13 @@ pval <- as.numeric(pval_threshold)
                                 	        "frequentist_add_pvalue",
 											"refpanel")]
 
-			if (nrow(filtered_males)!=0){
+			if (nrow(filtered_x_males)!=0){
 		        	condensed_males$chr <- as.character("23_males")
 			}
 
 	        names(condensed_males)[c(8,9)] <- c("frequentist_add_se_sex.1","frequentist_add_beta_sex.1")
-
-	        condensed_females <- filtered_females[,c("chr",
+			head(filtered_x_females)
+	        condensed_females <- filtered_x_females[,c("chr",
 	                                                "position",
         	                                        "rs_id_all",
                 	                                "info_all",
@@ -117,13 +119,13 @@ pval <- as.numeric(pval_threshold)
                                                 	"frequentist_add_pvalue",
 													"refpanel")]
 
-			if (nrow(filtered_females)!=0){
+			if (nrow(filtered_x_females)!=0){
 		        condensed_females$chr <- as.character("23_females")
 			}
 
             names(condensed_females)[c(8,9)] <- c("frequentist_add_se_sex.2","frequentist_add_beta_sex.2")
 
-            condensed_x <- filtered_x[,c("chr",
+            condensed_x <- filtered_x_all[,c("chr",
                                              "position",
                                              "rs_id_all",
                                              "info_all",
@@ -137,7 +139,7 @@ pval <- as.numeric(pval_threshold)
                                              "frequentist_add_pvalue",
                                              "refpanel")]
 
-            if (nrow(filtered_x)!=0){
+            if (nrow(filtered_x_all)!=0){
                     condensed_x$chr <- as.character("23")
             }
 
@@ -151,9 +153,11 @@ pval <- as.numeric(pval_threshold)
 	if (filtered!=filtered_males & filtered_males!=filtered_females & filtered_females!=filtered_x){
 
 		filtered_auto <- read.table(filtered,header=T,stringsAsFactors=F,na.strings=c("-","NA"))
-		filtered_males <- read.table(filtered_males,header=T,stringsAsFactors=F,na.strings=c("-","NA"))
-		filtered_females <- read.table(filtered_females,header=T,stringsAsFactors=F,na.strings=c("-","NA"))
-		filtered_x <- read.table(filtered_x,header=T,stringsAsFactors=F,na.strings=c("-","NA"))
+		filtered_x_males <- read.table(filtered_males,header=T,stringsAsFactors=F,na.strings=c("-","NA"))
+		head(filtered_x_males)
+		filtered_x_females <- read.table(filtered_females,header=T,stringsAsFactors=F,na.strings=c("-","NA"))
+		filtered_x_all <- read.table(filtered_x,header=T,stringsAsFactors=F,na.strings=c("-","NA"))
+		head(filtered_x_females)
 
 	    condensed <- filtered_auto[,c("chr",
     	 				           "position",
@@ -180,7 +184,7 @@ pval <- as.numeric(pval_threshold)
             }
 		condensed$info_all <- as.numeric(condensed$info_all)
 
-		condensed_males <- filtered_males[,c("chr",
+		condensed_males <- filtered_x_males[,c("chr",
 											"position",
 											"rs_id_all",
 			                         		"info_all",
@@ -192,12 +196,12 @@ pval <- as.numeric(pval_threshold)
            					   				"frequentist_add_pvalue",
 											"refpanel")]
 
-		if (nrow(filtered_males)!=0){
+		if (nrow(filtered_x_males)!=0){
 			condensed_males$chr <- as.character("23_males")
 		}
 		names(condensed_males)[c(8,9)] <- c("frequentist_add_se_sex.1","frequentist_add_beta_sex.1")
 
-		condensed_females <- filtered_females[,c("chr",
+		condensed_females <- filtered_x_females[,c("chr",
 			        	                		"position",
 				   				    	        "rs_id_all",
            			    				        "info_all",
@@ -209,13 +213,13 @@ pval <- as.numeric(pval_threshold)
                									"frequentist_add_pvalue",
 												"refpanel")]
 
-		if (nrow(filtered_females)!=0){
+		if (nrow(filtered_x_females)!=0){
 			condensed_females$chr <- as.character("23_females")
 		}
 		names(condensed_females)[c(8,9)] <- c("frequentist_add_se_sex.2","frequentist_add_beta_sex.2")
 
 
-        condensed_x <- filtered_x[,c("chr",
+        condensed_x <- filtered_x_all[,c("chr",
                                      "position",
                                      "rs_id_all",
                                      "info_all",
@@ -229,7 +233,7 @@ pval <- as.numeric(pval_threshold)
                                      "frequentist_add_pvalue",
                                      "refpanel")]
 
-        if (nrow(filtered_x)!=0){
+        if (nrow(filtered_x_all)!=0){
                 condensed_x$chr <- as.character("23")
         }
 
@@ -250,6 +254,7 @@ names(condensed)
 
 write.table(condensed,output_condensed,col.names=T,row.names=F,quote=F,sep="\t")
 
+condensed$best_model <- NA
 tophits <- NULL
 tophits_models <- NULL
 tophits_models_gen <- NULL
@@ -259,6 +264,7 @@ for (m in inheritance_models){
 			tophits <- rbind.fill(tophits,tophits_models)
 }
 
+head(tophits)
 if (nrow(tophits)!=0){
 	for (n in 1:nrow(tophits)){
 		tophits$best_model[n] <- strsplit(strsplit(names(tophits)[grep("_pvalue",names(tophits))[which.min(tophits[n,grep("_pvalue",names(tophits))])]],"_pvalue")[[1]][1],"_")[[1]][2]
@@ -303,7 +309,7 @@ ranges <- NULL
     }
 
 if (nrow(tophits)!=0){
-    ranges$Range <- paste("chr",ranges$chr,":",ranges$start,"-",ranges$end,sep="")
+    ranges$range <- paste("chr",ranges$chr,":",ranges$start,"-",ranges$end,sep="")
 } else {
     ranges <- data.frame(matrix(ncol = 4, nrow = 0))
     x <- c("chr","start","end","width")
@@ -321,7 +327,7 @@ tophits_topvariants_auto <- NULL
 topvariant_final <- NULL
 
 if (nrow(tophits_ranges)!=0){
-	for (i in 1:length(tophits_ranges$Range)){
+	for (i in 1:length(tophits_ranges$range)){
 		if (tophits_ranges$chr[i]!="23" & tophits_ranges$chr[i]!="23_males" & tophits_ranges$chr[i]!="23_females"){
     		tophits_set <- tophits_all[(tophits_all$chr==tophits_ranges$chr[i] & 
 						   tophits_all$position>=tophits_ranges$start[i] & 
@@ -384,7 +390,7 @@ tophits_topvariants_x <- NULL
 topvariant_final <- NULL
 
 if (nrow(tophits_ranges)!=0){
-    for (i in 1:length(tophits_ranges$Range)){
+    for (i in 1:length(tophits_ranges$range)){
         if (tophits_ranges$chr[i]=="23" | tophits_ranges$chr[i]=="23_males" | tophits_ranges$chr[i]=="23_females"){
             tophits_set <- tophits_all[(as.character(tophits_all$chr)==tophits_ranges$chr[i] &
                            tophits_all$position>=tophits_ranges$start[i] &
@@ -401,10 +407,10 @@ if (nrow(tophits_ranges)!=0){
                                                             "info_all","refpanel")])
                 names(topvariant)[6] <- "pvalue"
                 names(topvariant)[7] <- "se_males"
-				names(topvariant)[8] <- "beta_males"
+		names(topvariant)[8] <- "beta_males"
                 names(topvariant)[9] <- "se_females"
                 names(topvariant)[10] <- "beta_females"
-				topvariant$range <- i
+		topvariant$range <- i
                 topvariant$model <- m
                	topvariant$add_pvalue <- tophits_set[topvariant$rs_id_all==tophits_set$rs_id_all,c("frequentist_add_pvalue")]
                 }
@@ -419,20 +425,56 @@ if (nrow(tophits_ranges)!=0){
 		}	   
 	}
 }
+
+if (is.null(tophits_topvariants_auto)){
+	tophits_topvariants_auto  <- data.frame(matrix(ncol = 14, nrow = 0))
+	names(tophits_topvariants_auto) <- c("position","rs_id_all","alleleA","alleleB","all_maf",
+                                    "pvalue","se_1","se_2","beta_1","beta_2","model","add_pvalue","info_all","refpanel")
+}
+
+if (is.null(tophits_topvariants_x)){
+	tophits_topvariants_x  <- data.frame(matrix(ncol = 14, nrow = 0))
+	names(tophits_topvariants_x) <- c("position","rs_id_all","alleleA","alleleB","all_maf",
+					"pvalue","se_males","beta_males","se_females","beta_females","model","add_pvalue","info_all","refpanel")
+}
+
+if (nrow(tophits_ranges)==0){
+	tophits_ranges <- NULL
+	tophits_ranges  <- data.frame(matrix(ncol = 7, nrow = 0))
+	names(tophits_ranges) <- c("start","end","width","chr","inheritance_models","num_variants","range")
+}
 	
 tophits_topvariants <- rbind.fill(tophits_topvariants_auto,tophits_topvariants_x)
 tophits_final <- cbind(tophits_ranges,tophits_topvariants)
 
-
-if (nrow(tophits_ranges)==0){
-tophits_final <- data.frame(matrix(ncol = 24, nrow = 0))
-tophits_final_names <- c("start","end","width","chr","inheritance_models",
-                               "num_variants","Range","position","rs_id_all","alleleA","alleleB",
-                               "all_maf","pvalue","se","beta_1","beta_2","se_males","beta_males","se_females","beta_females","model","add_pvalue","info_all","refpanel")
-colnames(tophits_final) <- tophits_final_names
-
-} else {
+if (nrow(tophits_ranges)!=0){
 	tophits_final <- tophits_final[,-c(which(names(tophits_final)=="TOPHIT"),which(names(tophits_final)=="range"))]
 }
+
+#if (nrow(tophits_ranges)==0){
+#	tophits_final <- data.frame(matrix(ncol = 24, nrow = 0))
+#			tophits_final_names <- c("start","end","width","chr","inheritance_models",
+#            	        	           "num_variants","Range","position","rs_id_all","alleleA","alleleB",
+#                		               "all_maf","pvalue","se","beta_1","beta_2","se_males","beta_males","se_females","beta_females","model","add_pvalue","info_all","refpanel")
+#			colnames(tophits_final) <- tophits_final_names
+#		} else {
+#    		tophits_final <- tophits_final[,-c(which(names(tophits_final)=="TOPHIT"),which(names(tophits_final)=="range"))]
+#		}
+#
+#} else {
+#	tophits_topvariants_auto <- data.frame(matrix(ncol = 10, nrow = 0))
+#	tophits_topvariants_auto <- c("chr","position","rs_id_all","alleleA","alleleB","all_maf","pvalue","se","beta_1","beta_2")
+#	tophits_topvariants <- rbind.fill(tophits_topvariants_auto,tophits_topvariants_x)
+#	tophits_final <- cbind(tophits_ranges,tophits_topvariants)
+#        if (nrow(tophits_ranges)==0){
+#            tophits_final <- data.frame(matrix(ncol = 24, nrow = 0))
+#            tophits_final_names <- c("start","end","width","chr","inheritance_models",
+#                                       "num_variants","Range","position","rs_id_all","alleleA","alleleB",
+#                                       "all_maf","pvalue","se","beta_1","beta_2","se_males","beta_males","se_females","beta_females","model","add_pvalue","info_all","refpanel")
+#            colnames(tophits_final) <- tophits_final_names
+#        } else {
+#            tophits_final <- tophits_final[,-c(which(names(tophits_final)=="TOPHIT"),which(names(tophits_final)=="range"))]
+#        }
+#}
 
 write.table(tophits_final,output_ranges,col.names=T,row.names=F,quote=F,sep="\t")

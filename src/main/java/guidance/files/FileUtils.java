@@ -379,7 +379,7 @@ public class FileUtils {
 		System.out.println("Looking into the folder of " + filePath);
 		File file = new File(filePath);
 		file = new File(file.getParent());
-		System.out.println("The folder is " + file.getParent());
+		System.out.println("The folder is " + file.toString());
 		File[] filesList = file.listFiles();
 		for (File f : filesList) {
 			if (f.isFile()) {

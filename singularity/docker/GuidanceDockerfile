@@ -19,6 +19,11 @@ RUN echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selectio
 #    apt-get autoremove openjdk-11-jre openjdk-11-jdk
 
 RUN apt-get update && \
+    apt-get -y --no-install-recommends install gawk && \
+    update-alternatives --install /usr/bin/awk awk /usr/bin/gawk 9999 && \
+    rm -rf /var/lib/apt/lists/*
+
+RUN apt-get update && \
     apt-get purge openjdk-\* icedtea-\* icedtea6-\* && \
     apt-get remove openjdk-11-jre openjdk-11-jdk openjdk-11-jre-headless openjdk-11-jdk-headless && \
     apt-get purge openjdk-* && \
