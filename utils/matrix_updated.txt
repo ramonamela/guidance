@@ -37,7 +37,6 @@ whole_workflow                  | 1 1 1  1 0 0 1  0 1 1 1  1 1 1 1  1 1 1 1  1 1
 from_phasing			        | 0 0 0  0 0 0 1  0 1 1 1  1 1 1 1  1 1 1 1  1 1 0 0  0 0 0 0 | 0x017FFC0
 from_phasing_to_summary		    | 0 0 0  0 0 0 1  0 1 1 1  1 1 1 1  1 1 1 1  1 0 0 0  0 0 0 0 | 0x017FF80
 from_phasing_to_filterByAll     | 0 0 0  0 0 0 1  0 1 1 1  1 1 1 0  0 0 0 0  0 0 0 0  0 0 0 0 | 0x017E000
-from_phasing_to_qctools         | 0 0 0  0 0 0 1  0 1 1 0  0 0 0 0  0 0 0 0  0 0 0 0  0 0 0 0 | 0x0160000
 from_phasing_to_association	    | 0 0 0  0 0 0 1  0 1 1 1  0 0 0 0  0 0 0 0  0 0 0 0  0 0 0 0 | 0x0170000
 from_phasing_to_qctools         | 0 0 0  0 0 0 1  0 1 1 0  0 0 0 0  0 0 0 0  0 0 0 0  0 0 0 0 | 0x0160000
 from_phasing_to_imputation	    | 0 0 0  0 0 0 1  0 0 0 0  0 0 0 0  0 0 0 0  0 0 0 0  0 0 0 0 | 0x0100000
