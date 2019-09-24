@@ -1,18 +1,3 @@
-library(data.table)
-
-args <- commandArgs(TRUE)
-
-tophits <- args[1]
-all_pheno <- args[2]
-output <- args[3]
-pheno <- args[4]
-
-
-tophits <- read.delim(tophits,header=T,sep="") 
-data <- read.delim(all_pheno,header=T,sep="")
-
-data_merge <- merge(tophits,data,by.x=c("chr","position","rs_id_all","alleleA","alleleB","all_maf","refpanel"),
-                                 by.y=c("chr","position","rs_id_all","alleleA","alleleB","all_maf","refpanel"))
-
-colnames(data_merge)[10:length(colnames(data_merge))] <- paste(colnames(data_merge)[10:length(colnames(data_merge))],pheno,sep="_")
-write.table(data_merge,output,col.names=T,row.names=F,quote=F,sep="\t")
+version https://git-lfs.github.com/spec/v1
+oid sha256:2e5d5a61cf5384b2c008f4d5012da0484d87b3c59bc41b9fa3a5661173c5481a
+size 649
