@@ -1,0 +1,45 @@
+#!/bin/bash -e
+
+  MNuser=bsc19533
+  MNendpoint=mn1.bsc.es
+
+  REMOTE_INSTALL_BASE_DIR=/home/bsc05/bsc05997/TOOLS/MN3/guidance_0.9.8_master_Cristian
+
+  SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+  GUIDANCE_BASE_DIR=${SCRIPT_DIR}/../
+
+  # Build current sources
+  echo "- Building current sources"
+  cd ${GUIDANCE_BASE_DIR}
+  mvn clean package
+  cd -
+
+  # Clean remote install directory
+  echo "- Cleaning remote installation directory: ${REMOTE_INSTALL_BASE_DIR}"
+  ssh ${MNuser}@${MNendpoint} "rm -rf ${REMOTE_INSTALL_BASE_DIR}/*"
+
+  # Deploy Guidance JAR
+  echo "- Deploying Guidance JAR file..."
+  scp ${GUIDANCE_BASE_DIR}/guidance.jar ${MNuser}@${MNendpoint}:${REMOTE_INSTALL_BASE_DIR}
+
+  # Deploy Guidance R files
+  echo "- Deploying Guidance R files..."
+  ssh ${MNuser}@${MNendpoint} "mkdir -p ${REMOTE_INSTALL_BASE_DIR}/R_scripts" 
+  scp -r ${GUIDANCE_BASE_DIR}/src/main/R/* ${MNuser}@${MNendpoint}:${REMOTE_INSTALL_BASE_DIR}/R_scripts
+
+  # Deploying Guidance meta files
+  echo "- Deploying Guidance meta files..."
+  META_FILES="changelog doc LICENSE NOTICE README RELEASE_NOTES utils/conf_examples utils/guidance_env utils/matrix_updated.txt"
+  for file in ${META_FILES}; do
+    # Copy file to remote
+    scp -r ${GUIDANCE_BASE_DIR}/${file} ${MNuser}@${MNendpoint}:${REMOTE_INSTALL_BASE_DIR}
+  done
+
+  # Add permissions
+  echo "- Adding file permissions..."
+  ssh ${MNuser}@${MNendpoint} "chmod -R 777 ${REMOTE_INSTALL_BASE_DIR}/*"
+
+  # End
+  echo "DONE!"
+  exit 0
+
