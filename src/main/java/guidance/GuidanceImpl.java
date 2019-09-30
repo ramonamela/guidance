@@ -2480,7 +2480,7 @@ public class GuidanceImpl {
 		}
 
 		try {
-			ProcessUtils.executeBashCommandWithoutOutput(command);
+			ProcessUtils.executeWithoutOutputs(command);
 		} catch (IOException ioe) {
 			throw new GuidanceTaskException(ioe);
 		}

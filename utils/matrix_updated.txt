@@ -34,20 +34,20 @@ until_association               | 1 1 1  1 0 0 1  0 1 1 1  0 0 0 0  0 0 0 0  0 0
 until_filterByAll               | 1 1 1  1 0 0 1  0 1 1 1  1 1 1 0  0 0 0 0  0 0 0 0  0 0 0 0 | 0x797E000 
 until_summary                   | 1 1 1  1 0 0 1  0 1 1 1  1 1 1 1  1 1 1 1  1 0 0 0  0 0 0 0 | 0x797FF80
 whole_workflow                  | 1 1 1  1 0 0 1  0 1 1 1  1 1 1 1  1 1 1 1  1 1 0 0  0 0 0 0 | 0x797FFC0 
-from_phasing			        | 0 0 0  0 0 0 1  0 1 1 1  1 1 1 1  1 1 1 1  1 1 0 0  0 0 0 0 | 0x017FFC0
-from_phasing_to_summary		    | 0 0 0  0 0 0 1  0 1 1 1  1 1 1 1  1 1 1 1  1 0 0 0  0 0 0 0 | 0x017FF80
+from_phasing                    | 0 0 0  0 0 0 1  0 1 1 1  1 1 1 1  1 1 1 1  1 1 0 0  0 0 0 0 | 0x017FFC0
+from_phasing_to_summary         | 0 0 0  0 0 0 1  0 1 1 1  1 1 1 1  1 1 1 1  1 0 0 0  0 0 0 0 | 0x017FF80
 from_phasing_to_filterByAll     | 0 0 0  0 0 0 1  0 1 1 1  1 1 1 0  0 0 0 0  0 0 0 0  0 0 0 0 | 0x017E000
 from_phasing_to_association	    | 0 0 0  0 0 0 1  0 1 1 1  0 0 0 0  0 0 0 0  0 0 0 0  0 0 0 0 | 0x0170000
 from_phasing_to_qctools         | 0 0 0  0 0 0 1  0 1 1 0  0 0 0 0  0 0 0 0  0 0 0 0  0 0 0 0 | 0x0160000
 from_phasing_to_imputation	    | 0 0 0  0 0 0 1  0 0 0 0  0 0 0 0  0 0 0 0  0 0 0 0  0 0 0 0 | 0x0100000
-from_imputation			        | 0 0 0  0 0 0 0  0 1 1 1  1 1 1 1  1 1 1 1  1 1 0 0  0 0 0 0 | 0x007FFC0
+from_imputation                 | 0 0 0  0 0 0 0  0 1 1 1  1 1 1 1  1 1 1 1  1 1 0 0  0 0 0 0 | 0x007FFC0
 from_imputation_to_summary	    | 0 0 0  0 0 0 0  0 1 1 1  1 1 1 1  1 1 1 1  0 0 0 0  0 0 0 0 | 0x007FF00
 from_imputation_to_filterByAll  | 0 0 0  0 0 0 0  0 1 1 1  1 1 1 0  0 0 0 0  0 0 0 0  0 0 0 0 | 0x007E000
 from_imputation_to_association	| 0 0 0  0 0 0 0  0 1 1 1  0 0 0 0  0 0 0 0  0 0 0 0  0 0 0 0 | 0x0070000
 from_imputation_to_filterByInfo | 0 0 0  0 0 0 0  0 1 0 0  0 0 0 0  0 0 0 0  0 0 0 0  0 0 0 0 | 0x0040000
 from_filterByInfo_to_qctoolS    | 0 0 0  0 0 0 0  0 0 1 0  0 0 0 0  0 0 0 0  0 0 0 0  0 0 0 0 | 0x0020000
 from_qctoolS_to_association     | 0 0 0  0 0 0 0  0 0 0 1  0 0 0 0  0 0 0 0  0 0 0 0  0 0 0 0 | 0x0010000
-from_association		        | 0 0 0  0 0 0 0  0 0 0 0  1 1 1 1  1 1 1 1  1 1 0 0  0 0 0 0 | 0x000FFC0
+from_association                | 0 0 0  0 0 0 0  0 0 0 0  1 1 1 1  1 1 1 1  1 1 0 0  0 0 0 0 | 0x000FFC0
 from_association_to_filterByAll | 0 0 0  0 0 0 0  0 0 0 0  1 1 1 0  0 0 0 0  0 0 0 0  0 0 0 0 | 0x000E000
 from_association_to_summary	    | 0 0 0  0 0 0 0  0 0 0 0  1 1 1 1  1 1 1 1  1 0 0 0  0 0 0 0 | 0x000FF80
 from_filterByAll                | 0 0 0  0 0 0 0  0 0 0 0  0 0 0 1  1 1 1 1  1 1 0 0  0 0 0 0 | 0x0001FC0
@@ -58,7 +58,7 @@ from_combine_to_manhattan       | 0 0 0  0 0 0 0  0 0 0 0  0 0 0 0  0 0 0 1  0 0
 from_combine_to_summary         | 0 0 0  0 0 0 0  0 0 0 0  0 0 0 0  0 0 0 1  1 0 0 0  0 0 0 0 | 0x0000180
 from_combine                    | 0 0 0  0 0 0 0  0 0 0 0  0 0 0 0  0 0 0 1  1 1 0 0  0 0 0 0 | 0x00001C0
 from_combineGenManTop_to_summary| 0 0 0  0 0 0 0  0 0 0 0  0 0 0 0  0 0 0 0  1 0 0 0  0 0 0 0 | 0x0000080
-from_summary			        | 0 0 0  0 0 0 0  0 0 0 0  0 0 0 0  0 0 0 0  0 1 0 0  0 0 0 0 | 0x0000040
+from_summary                    | 0 0 0  0 0 0 0  0 0 0 0  0 0 0 0  0 0 0 0  0 1 0 0  0 0 0 0 | 0x0000040
 -----------------------------------------------------------------------------------------------
 
 
