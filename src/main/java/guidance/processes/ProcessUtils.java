@@ -92,6 +92,8 @@ public class ProcessUtils {
 
         // Start the process
         Process p = pb.start();
+        
+        readOutputAndError(p.getInputStream(), p.getErrorStream());
 
         // Retrieve the exit value
         int exitValue = -1;
@@ -125,6 +127,8 @@ public class ProcessUtils {
 
         // Start the process
         Process p = pb.start();
+        
+        readOutputAndError(p.getInputStream(), p.getErrorStream());
 
         // Retrieve the exit value
         int exitValue = -1;
@@ -191,6 +195,8 @@ public class ProcessUtils {
         System.out.println("[DEBUG] Executed command: " + command);
 
         Process p = r.exec(commands);
+        
+        readOutputAndError(p.getInputStream(), p.getErrorStream());
 
         int exitValue = -1;
         try {
@@ -235,6 +241,26 @@ public class ProcessUtils {
                 	bosErr.flush();
                 	readErr = -1;
                 }
+            }
+        }
+    }
+    
+    /**
+     * Processes the input streams and discards the content
+     * 
+     * @param in
+     * @param error
+     * @throws IOException
+     */
+    private static void readOutputAndError(InputStream in, InputStream error) throws IOException {
+        
+        try (BufferedInputStream bisInp = new BufferedInputStream(in);
+                BufferedInputStream bisErr = new BufferedInputStream(error)
+                ) {
+
+            byte[] bOut = new byte[1024];
+            byte[] bErr = new byte[1024];
+            while ((bisInp.read(bOut)) >= 0 || (bisErr.read(bErr)) >= 0) {
             }
         }
     }
