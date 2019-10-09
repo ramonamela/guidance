@@ -1,3 +1,5 @@
+init_time <- Sys.time()
+
 library(data.table)
 library(plyr)
 library(dplyr)
@@ -11,12 +13,19 @@ output_summary <- args[2]
 pval <- as.numeric(args[3])
 models <- unlist(strsplit(args[4], ","))
 
+init_t0 <- Sys.time()
+
 import.list <- llply(tophits, read.delim, sep = "")
+
+end_t0 <- Sys.time()
+print(paste("Read input files:" , end_t0 - init_t0))
+
 #for (i in 1:length(import.list)){
 #	disease <- strsplit(names(import.list[[i]])[8],"frequentist_add_se_")[[1]][2]
 #	names(import.list[[i]])[11:22] <- paste(names(import.list[[i]])[11:22],"_",disease,sep="")
 #}
 
+init_t1 <- Sys.time()
 cross_pheno_all <- Reduce(function(dtf1, dtf2)
   merge(
     dtf1,
@@ -46,7 +55,7 @@ chr <- as.vector(unique(cross_pheno_all$chr))
 
 ranges <- NULL
 for (i in chr) {
-  dat <- cross_pheno_all[cross_pheno_all$chr == i, ]
+  dat <- cross_pheno_all[cross_pheno_all$chr == i,]
   dat <- IRanges(start = dat$start, width = 500000)
   dat <- reduce(dat)
   dat <- as.data.frame(dat)
@@ -63,7 +72,7 @@ if (nrow(cross_pheno_all) != 0) {
   colnames(ranges) <- x
 }
 
-#ranges
+# new comment #ranges
 
 # new comment #cat("#############################################################################\n")
 # new comment #cat("#####                     CROSS-PHENOTYPE SUMMARY                       #####\n")
@@ -78,10 +87,16 @@ for (m in models) {
   i = i + 1
 }
 
+#head(cross_all,n=10)
+
+end_t1 <- Sys.time()
+print(paste("First zone of code:" , end_t1 - init_t1))
+
 crosspheno_all <- NULL
 for (l in 1:length(cross_all)) {
   cross_pheno_all <- cross_all[[l]]
   if (nrow(cross_pheno_all) != 0) {
+    init_t2 <- Sys.time()
     for (i in 1:nrow(cross_pheno_all)) {
       r <-
         which(
@@ -98,11 +113,17 @@ for (l in 1:length(cross_all)) {
               ranges$end[r],
               sep = "")
     }
+    end_t2 <- Sys.time()
+    print(paste("Add cross pheno column:" , end_t2 - init_t2))
+    init_t3 <- Sys.time()
     diseases <-
       names(cross_pheno_all)[which(grepl("pvalue", names(cross_pheno_all)))]
     #    pval_threshold <- 0.05/length(unique(cross_pheno_all$RANGE))/length(diseases)
     pval_threshold <- 0.05
+    end_t3 <- Sys.time()
+    print(paste("Grep pvalue:", end_t3 - init_t3))
     
+    init_t4 <- Sys.time()
     crosspheno_variants <- NULL
     line <- 1
     for (i in 1:nrow(cross_pheno_all)) {
@@ -166,11 +187,13 @@ for (l in 1:length(cross_all)) {
         }
       }
     }
+    end_t4 <- Sys.time()
+    print(paste("Crosspheno variants:", end_t4 - init_t4))
     
     if (length(crosspheno_variants) != 0) {
       crosspheno <- as.data.frame(crosspheno_variants)
-      crosspheno_2 <- crosspheno[!is.na(crosspheno$disease_B), ]
-      crosspheno <- crosspheno_2[order(crosspheno_2$range), ]
+      crosspheno_2 <- crosspheno[!is.na(crosspheno$disease_B),]
+      crosspheno <- crosspheno_2[order(crosspheno_2$range),]
       
       crosspheno$disease_A_vs_disease_B <- NA
       crosspheno$disease_A_vs_disease_B <-
@@ -186,14 +209,15 @@ for (l in 1:length(cross_all)) {
         for (n in 1:length(associations)) {
           all <-
             crosspheno[crosspheno$range == range[i] &
-                         crosspheno$disease_A_vs_disease_B == associations[n], ]
+                         crosspheno$disease_A_vs_disease_B == associations[n],]
           crosspheno_min_pval <-
-            rbind(crosspheno_min_pval, all[which.min(all$pvalue_A), ])
+            rbind(crosspheno_min_pval, all[which.min(all$pvalue_A),])
         }
       }
       model <- strsplit(diseases[1], "_")[[1]][2]
       crosspheno_min_pval$model <- model
-      crosspheno_all <- rbind.fill(crosspheno_all, crosspheno_min_pval)
+      crosspheno_all <-
+        rbind.fill(crosspheno_all, crosspheno_min_pval)
       
     } else {
       crosspheno_all <- data.frame(matrix(ncol = 2, nrow = 0))
@@ -240,3 +264,5 @@ for (l in 1:length(cross_all)) {
 # new comment #cat("#############################################################################\n")
 # new comment #cat("#####                  CROSS-PHENOTYPE SUMMARY DONE                     #####\n")
 # new comment #cat("#############################################################################\n")
+
+print(paste("Total amount of time:", Sys.time() - init_time))
