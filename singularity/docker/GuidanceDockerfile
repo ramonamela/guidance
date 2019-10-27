@@ -126,6 +126,7 @@ COPY ./TOOLS/shapeit.v2.r727.linux.x64 /TOOLS/shapeit.v2.r727.linux.x64
 COPY ./TOOLS/R_scripts /TOOLS/R_scripts
 COPY ./TOOLS/deps.R /TOOLS/deps.R
 RUN chmod 775 /TOOLS/R_scripts/*
+RUN chmod 775 /TOOLS/shapeit.v2.r727.linux.x64
 
 WORKDIR /TOOLS
 
