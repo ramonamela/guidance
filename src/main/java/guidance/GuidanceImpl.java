@@ -2451,7 +2451,7 @@ public class GuidanceImpl {
 
 	public static void generateCondensedAndTopHitsFile(String filteredFile, String filteredMalesFile,
 			String filteredFemalesFile, String filteredAllXFile, String condensedFile, String topHitsFile,
-			String crossRangesFile, String pvaThresholdStr, String models, String cmdToStore)
+			String crossRangesFile, String pvaThresholdStr, String models, String outFile, String errFile, String cmdToStore)
 			throws GuidanceTaskException, InterruptedException {
 
 		String command = null;
@@ -2465,8 +2465,8 @@ public class GuidanceImpl {
 
 		String rScriptPath = rScriptDir + "/condensed_tophits_crossmodel_new_3.R ";
 		//rScriptPath = "/gpfs/scratch/pr1ejj00/pr1ejj08/GUIDANCE/GERA/condensed_tophits_crossmodel_new_3.R ";
-
-		command = rScriptBinDir + "Rscript --verbose " + rScriptPath + filteredFile + " " + filteredMalesFile + " "
+		
+		command = rScriptBinDir + "/Rscript --verbose " + rScriptPath + filteredFile + " " + filteredMalesFile + " "
 				+ filteredFemalesFile + " " + filteredAllXFile + " " + condensedPlain + " " + topHitsPlain + " "
 				+ crossRangesPlain + " " + pvaThresholdStr + " " + models;
 		
@@ -2478,16 +2478,31 @@ public class GuidanceImpl {
 		if (DEBUG) {
 			System.out.println("\n[DEBUG] Launched command:                 : " + command);
 		}
+		
+		System.out.println("Previous files");
+		
+		FileUtils.recursiveSearch(filteredFile);
 
 		try {
-			ProcessUtils.executeWithoutOutputs(command);
+			//ProcessUtils.executeWithoutOutputs(command);
+			//System.out.println("OUT FILE:");
+			//String[] outFileVector = topHitsPlain.split("/");
+			//String outFileName = outFileVector[outFileVector.length - 1];
+			//System.out.println("/home/computational.genomics.bsc/" + outFileName + ".out");
+			ProcessUtils.executeWithOutputs(command, outFile, errFile);
 		} catch (IOException ioe) {
 			throw new GuidanceTaskException(ioe);
 		}
+		
+		System.out.println("Post execution");
+		
+		FileUtils.recursiveSearch(condensedPlain);
 
 		FileUtils.gzipFile(condensedPlain, condensedFile);
 		FileUtils.gzipFile(topHitsPlain, topHitsFile);
 		FileUtils.gzipFile(crossRangesPlain, crossRangesFile);
+		
+		FileUtils.recursiveSearch(condensedFile);
 
 		long stopTime = System.currentTimeMillis();
 		long elapsedTime = (stopTime - startTime) / 1_000;

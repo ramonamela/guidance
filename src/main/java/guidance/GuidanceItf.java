@@ -438,6 +438,8 @@ public interface GuidanceItf {
 			@Parameter(type = Type.FILE, direction = Direction.OUT) String crossRangesFile,
 			@Parameter(type = Type.STRING, direction = Direction.IN) String pvaThresholdStr,
 			@Parameter(type = Type.STRING, direction = Direction.IN) String models,
+			@Parameter(type = Type.FILE, direction = Direction.OUT) String outFile,
+			@Parameter(type = Type.FILE, direction = Direction.OUT) String errFile,
 			@Parameter(type = Type.STRING, direction = Direction.IN) String cmdToStore);
 
 	@Method(declaringClass = "guidance.GuidanceImpl")

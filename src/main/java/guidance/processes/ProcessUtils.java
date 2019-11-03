@@ -142,6 +142,35 @@ public class ProcessUtils {
         // Return the exit value
         return exitValue;
     }
+    
+    public static int executeWithOutputs(String cmd, String outputFile, String errorFile) throws IOException {
+
+        String[] commandArray = { "bash", "-c", cmd };
+
+        // Create the process
+        ProcessBuilder pb = new ProcessBuilder(commandArray);
+        //ProcessBuilder pb = new ProcessBuilder(cmd.split(" "));
+
+        // Remove unnecessary environment
+        pb.environment().remove("LD_PRELOAD");
+
+        // Start the process
+        Process p = pb.start();
+        
+        readOutputAndError(p.getInputStream(), outputFile, p.getErrorStream(), errorFile);
+
+        // Retrieve the exit value
+        int exitValue = -1;
+        try {
+            exitValue = p.waitFor();
+        } catch (InterruptedException ie) {
+            Thread.currentThread().interrupt();
+            throw new IOException();
+        }
+
+        // Return the exit value
+        return exitValue;
+    }
 
     /**
      * Execute a bash command. We can handle complex bash commands including multiple executions (; | && ||), quotes,

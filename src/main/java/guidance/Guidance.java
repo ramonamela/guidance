@@ -2529,7 +2529,7 @@ public class Guidance {
 
         try {
             GuidanceImpl.generateCondensedAndTopHitsFile(filteredFile, filteredMalesFile, filteredFemalesFile,
-                    filteredAllXFile, condensedFile, topHitsFile, crossRanges, pvaThreshold, models, cmdToStore);
+                    filteredAllXFile, condensedFile, topHitsFile, crossRanges, pvaThreshold, models, condensedFile + ".out", condensedFile + ".err", cmdToStore);
         } catch (GuidanceTaskException gte) {
             LOGGER.error("[Guidance] Exception trying the execution of generateCondensedFile task", gte);
         }
