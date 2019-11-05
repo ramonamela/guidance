@@ -132,19 +132,31 @@ if (filtered == filtered_males &
   changeName <- function(condensed) {
     for (m in inheritance_models) {
       colnames(condensed)[which(apply(data.frame(colnames(condensed)), 1, function(x)
-        grepl(m, x) & grepl("_se_", x) & grepl("sex.1", x)) == TRUE)] <- paste("frequentist_",m,"_se_sex.1", sep="")
+        grepl(m, x) &
+          grepl("_se_", x) &
+          grepl("sex.1", x)) == TRUE)] <-
+        paste("frequentist_", m, "_se_sex.1", sep = "")
     }
     for (m in inheritance_models) {
       colnames(condensed)[which(apply(data.frame(colnames(condensed)), 1, function(x)
-        grepl(m, x) & grepl("_se_", x) & grepl("sex.2", x)) == TRUE)] <- paste("frequentist_", m, "_se_sex.2", sep="")
+        grepl(m, x) &
+          grepl("_se_", x) &
+          grepl("sex.2", x)) == TRUE)] <-
+        paste("frequentist_", m, "_se_sex.2", sep = "")
     }
     for (m in inheritance_models) {
       colnames(condensed)[which(apply(data.frame(colnames(condensed)), 1, function(x)
-        grepl(m, x) & grepl("_beta_", x) & grepl("sex.1", x)) == TRUE)] <- paste("frequentist_", m, "_beta_sex.1", sep="")
+        grepl(m, x) &
+          grepl("_beta_", x) &
+          grepl("sex.1", x)) == TRUE)] <-
+        paste("frequentist_", m, "_beta_sex.1", sep = "")
     }
     for (m in inheritance_models) {
       colnames(condensed)[which(apply(data.frame(colnames(condensed)), 1, function(x)
-        grepl(m, x) & grepl("_beta_", x) & grepl("sex.2", x)) == TRUE)] <- paste("frequentist_", m, "_beta_sex.2", sep="")
+        grepl(m, x) &
+          grepl("_beta_", x) &
+          grepl("sex.2", x)) == TRUE)] <-
+        paste("frequentist_", m, "_beta_sex.2", sep = "")
     }
     return(colnames(condensed))
   }
@@ -203,12 +215,13 @@ if (filtered == filtered_males &
   if (nrow(filtered_x_all) != 0) {
     filtered_x_all$chr <- as.character("23")
   }
-  condensed <- rbind.fill(filtered_x_males[, intersect(selected_columns, colnames(filtered_x_males))],
-                          filtered_x_females[, intersect(selected_columns, colnames(filtered_x_females))],
-                          filtered_x_all[, intersect(selected_columns, colnames(filtered_x_all))])
+  condensed <-
+    rbind.fill(filtered_x_males[, intersect(selected_columns, colnames(filtered_x_males))],
+               filtered_x_females[, intersect(selected_columns, colnames(filtered_x_females))],
+               filtered_x_all[, intersect(selected_columns, colnames(filtered_x_all))])
   
   condensed$info_all <- as.numeric(condensed$info_all)
-  condensed <- condensed[order(condensed$chr), ]
+  condensed <- condensed[order(condensed$chr),]
   
 }
 
@@ -241,19 +254,31 @@ if (filtered != filtered_males &
   changeName <- function(condensed) {
     for (m in inheritance_models) {
       colnames(condensed)[which(apply(data.frame(colnames(condensed)), 1, function(x)
-        grepl(m, x) & grepl("_se_", x) & grepl("sex.1", x)) == TRUE)] <- paste("frequentist_",m,"_se_sex.1", sep="")
+        grepl(m, x) &
+          grepl("_se_", x) &
+          grepl("sex.1", x)) == TRUE)] <-
+        paste("frequentist_", m, "_se_sex.1", sep = "")
     }
     for (m in inheritance_models) {
       colnames(condensed)[which(apply(data.frame(colnames(condensed)), 1, function(x)
-        grepl(m, x) & grepl("_se_", x) & grepl("sex.2", x)) == TRUE)] <- paste("frequentist_", m, "_se_sex.2", sep="")
+        grepl(m, x) &
+          grepl("_se_", x) &
+          grepl("sex.2", x)) == TRUE)] <-
+        paste("frequentist_", m, "_se_sex.2", sep = "")
     }
     for (m in inheritance_models) {
       colnames(condensed)[which(apply(data.frame(colnames(condensed)), 1, function(x)
-        grepl(m, x) & grepl("_beta_", x) & grepl("sex.1", x)) == TRUE)] <- paste("frequentist_", m, "_beta_sex.1", sep="")
+        grepl(m, x) &
+          grepl("_beta_", x) &
+          grepl("sex.1", x)) == TRUE)] <-
+        paste("frequentist_", m, "_beta_sex.1", sep = "")
     }
     for (m in inheritance_models) {
       colnames(condensed)[which(apply(data.frame(colnames(condensed)), 1, function(x)
-        grepl(m, x) & grepl("_beta_", x) & grepl("sex.2", x)) == TRUE)] <- paste("frequentist_", m, "_beta_sex.2", sep="")
+        grepl(m, x) &
+          grepl("_beta_", x) &
+          grepl("sex.2", x)) == TRUE)] <-
+        paste("frequentist_", m, "_beta_sex.2", sep = "")
     }
     return(colnames(condensed))
   }
@@ -322,13 +347,14 @@ if (filtered != filtered_males &
   if (nrow(filtered_x_all) != 0) {
     filtered_x_all$chr <- as.character("23")
   }
-  condensed <- rbind.fill(filtered_auto[, intersect(selected_columns, colnames(filtered_auto))],
-                     filtered_x_males[, intersect(selected_columns, colnames(filtered_x_males))],
-                     filtered_x_females[, intersect(selected_columns, colnames(filtered_x_females))],
-                     filtered_x_all[, intersect(selected_columns, colnames(filtered_x_all))])
-
+  condensed <-
+    rbind.fill(filtered_auto[, intersect(selected_columns, colnames(filtered_auto))],
+               filtered_x_males[, intersect(selected_columns, colnames(filtered_x_males))],
+               filtered_x_females[, intersect(selected_columns, colnames(filtered_x_females))],
+               filtered_x_all[, intersect(selected_columns, colnames(filtered_x_all))])
+  
   condensed$info_all <- as.numeric(condensed$info_all)
-  condensed <- condensed[order(condensed$chr), ]
+  condensed <- condensed[order(condensed$chr),]
 }
 
 #filtering info because the old GERA analysis was made for a info_score=0.5
@@ -362,18 +388,26 @@ for (m in inheritance_models) {
   tophits_models <-
     condensed[which(as.numeric(condensed[, c(paste("frequentist_", m, "_pvalue", sep =
                                                      ""))]) <= pval &
-                      !is.na(condensed[, c(paste("frequentist_", m, "_pvalue", sep = ""))])), ]
+                      !is.na(condensed[, c(paste("frequentist_", m, "_pvalue", sep = ""))])),]
   tophits <- rbind.fill(tophits, tophits_models)
 }
 
 #head(tophits)
-pvalues_index <- grep("pvalue", names(tophits))
-pvalues_names <- names(tophits)[pvalues_index]
-pvalues_as_columns <- tophits[,pvalues_index]
-index_min_value <- unlist(lapply(transpose(pvalues_as_columns), function(x) which.min(x)))
-amountOfAvailableCores = detectCores()
-best_model_column <- unlist(mclapply(index_min_value, function(x) strsplit(pvalues_names[x], "_")[[1]][2], mc.cores=amountOfAvailableCores))
-tophits$best_model <- best_model_column
+if (!(dim(tophits)[1] == 0)) {
+  pvalues_index <- grep("pvalue", names(tophits))
+  pvalues_names <- names(tophits)[pvalues_index]
+  pvalues_as_columns <- tophits[, pvalues_index]
+  index_min_value <-
+    unlist(lapply(transpose(pvalues_as_columns), function(x)
+      which.min(x)))
+  amountOfAvailableCores = detectCores()
+  best_model_column <-
+    unlist(
+      mclapply(index_min_value, function(x)
+        strsplit(pvalues_names[x], "_")[[1]][2], mc.cores = amountOfAvailableCores)
+    )
+  tophits$best_model <- best_model_column
+}
 
 #if (nrow(tophits) != 0) {
 #  for (n in 1:nrow(tophits)) {
@@ -383,7 +417,7 @@ tophits$best_model <- best_model_column
 #}
 
 
-tophits <- tophits[!duplicated(tophits), ]
+tophits <- tophits[!duplicated(tophits),]
 #table(tophits$chr)
 
 write.table(
@@ -406,7 +440,7 @@ chr <- as.vector(unique(tophits$chr))
 
 ranges <- NULL
 for (i in chr) {
-  dat <- tophits[tophits$chr == i, ]
+  dat <- tophits[tophits$chr == i,]
   dat <- IRanges(start = dat$start, width = 500000)
   dat <- reduce(dat)
   dat <- as.data.frame(dat)
@@ -416,7 +450,7 @@ for (i in chr) {
     dat$num_variants[n] <-
       dim(tophits[(tophits$position >= dat$start[n] &
                      tophits$position <= dat$end[n] &
-                     tophits$chr == i), ])[1]
+                     tophits$chr == i),])[1]
     if (i != "23" & i != "23_males" & i != "23_females") {
       for (inh in inheritance_models) {
         if (any(
@@ -470,7 +504,7 @@ if (nrow(tophits_ranges) != 0) {
           tophits_all$chr == tophits_ranges$chr[i] &
             tophits_all$position >= tophits_ranges$start[i] &
             tophits_all$position <= tophits_ranges$end[i]
-        ), ]
+        ),]
       #print(head(tophits_set))
       #print(table(duplicated(tophits_set$rs_id_all)))
       for (m in unlist(strsplit(as.character(
@@ -550,7 +584,7 @@ if (nrow(tophits_ranges) != 0) {
         
       }
       tophits_topvariants_auto <-
-        topvariants[topvariants$TOPHIT == "YES", ]
+        topvariants[topvariants$TOPHIT == "YES",]
     }
   }
 }
@@ -570,7 +604,7 @@ if (nrow(tophits_ranges) != 0) {
           as.character(tophits_all$chr) == tophits_ranges$chr[i] &
             tophits_all$position >= tophits_ranges$start[i] &
             tophits_all$position <= tophits_ranges$end[i]
-        ), ]
+        ),]
       for (m in unlist(strsplit(as.character(
         tophits_ranges$inheritance_models[i]
       ), ","))) {
@@ -618,7 +652,7 @@ if (nrow(tophits_ranges) != 0) {
         
       }
       tophits_topvariants_x <-
-        topvariants[topvariants$TOPHIT == "YES", ]
+        topvariants[topvariants$TOPHIT == "YES",]
     }
   }
 }
@@ -684,8 +718,8 @@ tophits_final <- cbind(tophits_ranges, tophits_topvariants)
 
 if (nrow(tophits_ranges) != 0) {
   tophits_final <-
-    tophits_final[, -c(which(names(tophits_final) == "TOPHIT"), which(names(tophits_final) ==
-                                                                        "range"))]
+    tophits_final[,-c(which(names(tophits_final) == "TOPHIT"), which(names(tophits_final) ==
+                                                                       "range"))]
 }
 
 #if (nrow(tophits_ranges)==0){
