@@ -1,4 +1,6 @@
 #!/bin/bash
 
-R CMD INSTALL *tar.gz --library=/gpfs/projects/bsc05/ramon/R_libs
+install_dir=${1}
+
+R CMD INSTALL *tar.gz --library=${install_dir}
 

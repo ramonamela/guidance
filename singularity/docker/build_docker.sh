@@ -1,8 +1,11 @@
 #!/bin/bash
 
+guidance_image_name=${1}
+
+rm -rf ./TOOLS/R_scripts/
 cp ../../src/main/R/* ./TOOLS/R_scripts/
 
-sudo docker build -f GuidanceDockerfile -t docker_guidance .
+sudo docker build -f GuidanceDockerfile -t ${guidance_image_name} .
 
 echo "[INFO] Docker build successfully executed."
 #sudo docker run docker_guidance&

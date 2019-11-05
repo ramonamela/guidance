@@ -15,8 +15,8 @@ facilitate the development and execution of applications for distributed infrast
 In that sense, COMPSs provides (i) a simple programming model and (ii) a runtime system that controls the parallelization of 
 the application without user intervention.
 
-Release number: 0.9.8
-Release date:   20-Jul-2016
+Release number: 0.1.1
+Release date:   05-Nov-2019
 --------------------------
 This is the first public release of the Guidance software.
 
@@ -24,12 +24,12 @@ Implemented features:
 	* Workflow style execution of the following stages:
 		- Pre-phasing
 		- Imputation
-		- Post-inputation filtering
+		- Post-imputation filtering
 		- Merging results from several panels
 		- Strand homogenization
 		- Association test
 		- Top-hit results
-                - Phenome-wide association
+    - Phenome-wide association
 		- Graphical results: Manhattan and QQ plots
 	* Workflow implementation on the COMPSs programming model.
 

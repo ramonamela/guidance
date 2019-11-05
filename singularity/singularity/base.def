@@ -1,5 +1,5 @@
 Bootstrap: docker
-From: docker://localhost:5000/docker_guidance_rc:latest
+From: docker://localhost:5000/${docker_image_name}:latest
 
 %environment
     export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
