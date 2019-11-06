@@ -2,8 +2,8 @@
 
 rm -f guidance_singularity.img
 
-guidance_previous_registry_name=registry
-guidance_registry_name=guidance_registry
+guidance_previous_registry_name=guidance_registry
+guidance_registry_name=${guidance_previous_registry_name}
 guidance_previous_image_name=docker_guidance
 guidance_image_name=${guidance_previous_image_name}
 registry_port=5000

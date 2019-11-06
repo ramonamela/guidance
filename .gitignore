@@ -37,3 +37,4 @@ singularity/ca-certificates
 singularity/curl
 singularity/gnupg-agent
 singularity/software-properties-common
+singularity/singularity/guidance.def

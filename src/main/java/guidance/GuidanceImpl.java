@@ -2420,7 +2420,7 @@ public class GuidanceImpl {
 			mergedTopHitsString += ("," + phenoMergedTopHits.get(i));
 		}
 
-		String rScriptPath = rScriptDir + "/crossphenotype_crossmodel_new_3.R ";
+		String rScriptPath = rScriptDir + "/crossphenotype_crossmodel.R ";
 		
 		localPhenoMergedTopHitsString = phenoMergedTopHitsString;
 		
@@ -2463,8 +2463,8 @@ public class GuidanceImpl {
 		String rScriptBinDir = loadFromEnvironment(RSCRIPTBINDIR, HEADER_GENERATE_QQ_MANHATTAN_PLOTS);
 		String rScriptDir = loadFromEnvironment(RSCRIPTDIR, HEADER_GENERATE_QQ_MANHATTAN_PLOTS);
 
-		String rScriptPath = rScriptDir + "/condensed_tophits_crossmodel_new_3.R ";
-		//rScriptPath = "/gpfs/scratch/pr1ejj00/pr1ejj08/GUIDANCE/GERA/condensed_tophits_crossmodel_new_3.R ";
+		String rScriptPath = rScriptDir + "/condensed_tophits_crossmodel.R ";
+		//rScriptPath = "/gpfs/scratch/pr1ejj00/pr1ejj08/GUIDANCE/GERA/condensed_tophits_crossmodel.R ";
 		
 		command = rScriptBinDir + "/Rscript --verbose " + rScriptPath + filteredFile + " " + filteredMalesFile + " "
 				+ filteredFemalesFile + " " + filteredAllXFile + " " + condensedPlain + " " + topHitsPlain + " "

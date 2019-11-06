@@ -3,7 +3,8 @@
 guidance_image_name=${1}
 
 rm -rf ./TOOLS/R_scripts/
-cp ../../src/main/R/* ./TOOLS/R_scripts/
+mkdir -p ./TOOLS/R_scripts/
+cp -r ../../src/main/R/* ./TOOLS/R_scripts/
 
 sudo docker build -f GuidanceDockerfile -t ${guidance_image_name} .
 

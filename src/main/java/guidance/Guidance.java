@@ -2518,7 +2518,7 @@ public class Guidance {
         String pvaThreshold = Double.toString(parsingArgs.getPvaThreshold());
         String models = String.join(",", parsingArgs.getManhattanOptions());
 
-        String rScriptPath = R_SCRIPT_DIR + "/condensed_tophits_crossmodel_new_3.R ";
+        String rScriptPath = R_SCRIPT_DIR + "/condensed_tophits_crossmodel.R ";
         // rScriptPath = "/gpfs/scratch/pr1ejj00/pr1ejj08/GUIDANCE/GERA/condensed_tophits_crossmodel_new_2.R ";
 
         String cmdToStore = R_SCRIPT_BIN_DIR + "/Rscript " + rScriptPath + filteredFile + " " + filteredMalesFile + " "
@@ -2661,7 +2661,7 @@ public class Guidance {
         String crossPhenoRanges = phenomeAnalysisFilesInfo.getCrossPhenoRanges();
         String crossPhenoTopVariants = phenomeAnalysisFilesInfo.getCrossPhenoAssocTop();
 
-        String rScriptPath = R_SCRIPT_DIR + "/crossphenotype_crossmodel_new_3.R ";
+        String rScriptPath = R_SCRIPT_DIR + "/crossphenotype_crossmodel.R ";
         // rScriptPath = "/gpfs/projects/bsc05/martagm/GWImp_COMPSs/R_SCRIPTS/crossphenotype_crossmodel_new_2.R ";
 
         cmdToStore = R_SCRIPT_BIN_DIR + "Rscript " + rScriptPath + mergedTopHitsString + " " + crossPhenoAll + " "
