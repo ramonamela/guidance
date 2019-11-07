@@ -1,0 +1,45 @@
+#!/bin/bash -e
+
+module purge
+module load intel/2018.1
+module load singularity/2.4.2
+
+guidance_version=${1:-/base_path/guidance/guidance.jar}
+singularity_image=${2:-/base_path/guidance/guidance_singularity.img}
+
+case="eagle_impute"
+
+log_dir="/base_path/guidance/test/${case}/"
+work_dir="/base_path/guidance/test/${case}/logs/"
+worker_work_dir="/base_path/guidance/test/.tmpForCOMPSs/"
+config_file="/base_path/guidance/test/configs/config_GERA_300_${case}.file"
+source "/base_path/guidance/test/set_environment.sh"
+
+mkdir -p ${work_dir}
+mkdir -p ${worker_work_dir}
+mkdir -p ${log_dir}
+cat ${config_file} | grep outputdir | awk '{ print $3 }' | xargs -i rm -rf {}
+cat ${config_file} | grep outputdir | awk '{ print $3 }' | xargs -i mkdir -p {}
+
+exec_time=120
+num_nodes=16
+cpus_per_node=48
+worker_in_master_cpus=0
+worker_in_master_memory=80000
+qos=debug
+
+/path_to_COMPSs_installation/Runtime/scripts/user/enqueue_compss \
+  --job_dependency=5804880 \
+  --qos=${qos} \
+  --exec_time=${exec_time} \
+  --num_nodes=${num_nodes} \
+  --base_log_dir=${log_dir} \
+  --worker_in_master_cpus=${worker_in_master_cpus} \
+  --worker_in_master_memory=${worker_in_master_memory} \
+  --cpus_per_node=${cpus_per_node} \
+  --master_working_dir=${work_dir} \
+  --worker_working_dir=${worker_work_dir} \
+  --scheduler="es.bsc.compss.scheduler.fifodatanew.FIFODataScheduler" \
+  --classpath=${guidance_version} \
+  --container_image=${singularity_image} \
+  guidance.Guidance -config_file ${config_file}

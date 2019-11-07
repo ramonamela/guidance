@@ -1,0 +1,67 @@
+################################################################
+# Configuration file example for imputation+GWAS using COMPSSs #
+################################################################
+################################################################
+# General parameters
+wfDeep                        = whole_workflow
+init_chromosome               = 21
+end_chromosome                = 23
+maf_threshold                 = 0.05
+impute_threshold              = 0.7 
+minimac_threshold             = 0.5
+pva_threshold                 = 5e-4
+hwe_cohort_threshold          = -1
+hwe_cases_threshold           = -1
+hwe_controls_threshold        = 1e-6
+exclude_cgat_snps             = YES 
+phasing_tool                  = shapeit
+imputation_tool               = minimac
+manhattans                    = add,rec
+test_types                    = ALLERGIC_RHINITIS,ASTHMA
+ALLERGIC_RHINITIS             = ALLERGIC_RHINITIS:PC1,PC2,PC3,PC4,PC5,PC6,PC7,sex,BIRTHYEARCAT
+ASTHMA                        = ASTHMA:PC1,PC2,PC3,PC4,PC5,PC6,PC7,sex,BIRTHYEARCAT
+chunk_size_analysis           = 1000000
+file_name_for_list_of_stages  = list_stages_assoc_shapeit_minimac_21_23.txt
+remove_temporal_files         = YES
+compress_files                = YES
+input_format                  = BED
+################################################################
+#mixed bed files information
+mixed_cohort                  = GERA_300
+mixed_bed_file_dir            = /base_path/guidance/inputs/300
+mixed_bed_file                = GERA_300.bed
+mixed_bim_file                = GERA_300.bim
+mixed_fam_file                = GERA_300.fam
+mixed_sample_file_dir         = /base_path/guidance/inputs/300
+mixed_sample_file             = GERA_300.sample
+################################################################
+# Genetic map files information
+genmap_file_dir               = /base_path/guidance/genmaps/shapeit
+genmap_file_chr_21            = genetic_map_chr_21_combined_b37.txt.gz
+genmap_file_chr_22            = genetic_map_chr_22_combined_b37.txt.gz
+genmap_file_chr_23            = genetic_map_chrX_nonPAR_combined_b37.txt.gz
+################################################################
+# Reference Panels Dir
+refpanel_number               = 2 
+# Should we combine panels? YES/NO. If there is only 1 panels, this variable is NO.
+refpanel_combine              = YES
+# Information for the reference panel
+refpanel_type                 = uk10k
+refpanel_memory               = LOW
+refpanel_file_dir             = /base_path/guidance/panels/uk10k/vcf_format/
+refpanel_vcf_file_chr_21      = _EGAZ00001017893_UK10K_COHORT.REL-2012-06-02.chr21.beagle.anno.csq.shapeit.20160215.m3vcf.gz
+refpanel_vcf_file_chr_22      = _EGAZ00001017893_UK10K_COHORT.REL-2012-06-02.chr22.beagle.anno.csq.shapeit.20160215.m3vcf.gz
+refpanel_hap_file_chr_23      = /base_path/guidance/panels/uk10k/haps_format/_EGAZ00001017893_UK10K_COHORT.REL-2012-06-02.chrX.NONPAR.beagle.anno.csq.shapeit.20160215.haps.gz
+refpanel_leg_file_chr_23      = /base_path/guidance/panels/uk10k/haps_format/_EGAZ00001017893_UK10K_COHORT.REL-2012-06-02.chrX.NONPAR.beagle.anno.csq.shapeit.20160215.legend.gz
+# Information for the 4th reference panel: gonl
+refpanel_type                 = gonl
+refpanel_memory               = LOW
+refpanel_file_dir             = /base_path/guidance/panels/gonl/vcf_format/
+refpanel_vcf_file_chr_21      = gonl.chr21.snps_indels.r5.3.m3vcf.gz
+refpanel_vcf_file_chr_22      = gonl.chr22.snps_indels.r5.3.m3vcf.gz
+refpanel_hap_file_chr_23      = /base_path/guidance/panels/gonl/haps_format/gonl_chrx_nonpar.impute.hap.gz
+refpanel_leg_file_chr_23      = /base_path/guidance/panels/gonl/haps_format/gonl_chrx_nonpar.impute.legend.gz
+################################################################
+# Output dir
+outputdir                     = /base_path/guidance/test/shapeit_minimac/outputs/
+################################################################
