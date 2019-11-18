@@ -185,7 +185,7 @@ The user needs to also provide an adequate sample file. Please, check SNPTESTv2 
 #### Genetic Map File
 All of IMPUTE2 reference panel download packages come with appropriate recombination map files. Check IMPUTE2 webpage for more information. Hence, this genetic map files can be used for phasing with SHAPEIT. A file per chromosome must be given.
 
-On the other hand, when phasing with EAGLE, a single file must be given. Several compatible options are abailable on the [Broad Website](https://data.broadinstitute.org/alkesgroup/Eagle/downloads/tables/).
+On the other hand, when phasing with EAGLE, a single file must be given. Several compatible options are available on the [Broad Website](https://data.broadinstitute.org/alkesgroup/Eagle/downloads/tables/).
 
 #### Reference panels
 
@@ -230,10 +230,9 @@ Explain how to run GUIDANCE
 
 ## License <a name="license"></a>
 
-This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
+This project is licensed under the BSC Dual License - see the [LICENSE.md](LICENSE.md) file for details
 
 ## Acknowledgments <a name="acknowledgments"></a>
 
-* Hat tip to anyone whose code was used
-* Inspiration
-* etc
+* First acknowledgment
+* Segond acknowledgment
