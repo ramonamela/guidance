@@ -397,7 +397,7 @@ public class GuidanceImpl {
 
 		// Check process exit value
 		// Check process exit value
-		if (exitValue == 12) {
+		if (exitValue == 11) {
 			System.out
 					.println("Look at the log file. Error: All people removed due to gender filter (--filter-males).");
 			try {
