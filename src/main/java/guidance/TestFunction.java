@@ -162,18 +162,25 @@ public class TestFunction {
 		switch (option) {
 		case 0:
 			collectSummaryWrapper(args);
+			break;
 		case 1:
 			filterByAllWrapper(args);
+			break;
 		case 2:
 			mergeOfChunksWrapper(args);
+			break;
 		case 4:
 			printPaths(args);
+			break;
 		case 5:
 			newSample(args);
+			break;
 		case 6:
 			imputeWithImpute(args);
+			break;
 		case 7:
 			filterByInfo(args);
+			break;
 		}
 	}
 }
