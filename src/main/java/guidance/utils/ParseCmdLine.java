@@ -477,6 +477,15 @@ public class ParseCmdLine {
 		if ((myArgument.length > 0) && (myArgument.length < 3)) {
 			if (myArgument[0].equals("manhattans")) {
 				manhattans = myArgument[1].split(",");
+				// If there is only chr23, the program will crash when trying to generate the manhattan and qqplot for the other models
+				if (start == 23 && end == 23) {
+					if (Arrays.asList(manhattans).contains("add")) {
+						manhattans = new String[] {"add"};
+					} else {
+						LOGGER.fatal("## Guidance only supports additive models when computing only the ChrX ##");
+						System.exit(1);
+					}
+				}
 			} else {
 				LOGGER.fatal(CLASS_HEADER + ERROR_PARAM_ORDER + myArgument[0]);
 				System.exit(1);
