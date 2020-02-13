@@ -108,7 +108,8 @@ RUN rm -rf ./framework && \
     export MPI_HOME="/usr/lib/openmpi" && \
     export LD_LIBRARY_PATH="/usr/lib/x86_64-linux-gnu/openmpi/include/:${LD_LIBRARY_PATH}" && \
     #export LD_LIBRARY_PATH="/usr/lib/openmpi/lib" && \
-    git clone --branch "guidance" https://github.com/bsc-wdc/compss.git framework && \
+    #git clone --branch "guidance" https://github.com/bsc-wdc/compss.git framework && \
+    git clone --branch "guidance" https://github.com/ramonamela/compss.git framework && \
     #git clone --branch "fifo_lifo_schedulers" http://ramela@compss.bsc.es/gitlab/compss/framework.git framework && \
     cd ./framework && \
     ./submodules_get.sh && \
