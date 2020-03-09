@@ -9,8 +9,9 @@ The GUIDANCE strength is based on the possibility of increasing the potential of
     * [Installing on a Singularity image](#singularity)
     * [Installing on bare metal](#bare)
 2. [Configuration file description](#config)
-* [Input description](#input)
-* [Configuration file examples](#examples_conf)
+    * [Input description](#input)
+    * [Configuration file examples](#examples_conf)
+    * [Environment file example](#environ_exam)
 3. [GUIDANCE execution](#execution)
     * [Running on a Singularity image](#singularityexec)
     * [Running on bare metal](#bareexec)
@@ -31,7 +32,7 @@ These instructions will get you a copy of the project up and running on your mac
 
 #### Prerequisites
 
-In order to run GUIDANCE in this mode, you only need to install the guidance [COMPSs’](https://github.com/bsc-wdc/compss/tree/guidance) branch and generate the Singularity image containing all the depedencies. In addition, if you want to use the framework with [SHAPEIT](https://mathgen.stats.ox.ac.uk/genetics_software/shapeit/shapeit.html#download), you need to obtain the binary v2r727 and copy it in the path “$PROJECT_PATH/singularity/docker/TOOLS/shapeit.v2.r727.linux.x64”.
+In order to run GUIDANCE in this mode, you only need to install the guidance [COMPSs’](https://github.com/bsc-wdc/compss/tree/guidance) branch and generate the Singularity image containing all the depedencies. If you want to generate execution traces, you should install this [COMPSs’](https://github.com/ramonamela/compss/tree/guidance) branch.
 
 #### Installation
 
@@ -65,7 +66,7 @@ This will generate a binary guidance.jar.
 
 #### Prerequisites
 
-First of all, you need to install the guidance [COMPSs’](https://github.com/bsc-wdc/compss/tree/guidance) branch in your system.
+First of all, you need to install the guidance [COMPSs’](https://github.com/ramonamela/compss/tree/guidance) branch in your system.
 Afterwards, all the dependencies should be installed in the machine in which GUIDANCE will run. More precisely, the following binaries should be installed and accessible from all the worker nodes:
 
 * Minimac4
@@ -197,6 +198,72 @@ In addition, we have encountered some problems when imputing the ChrX with Minim
 
 We give some templates of configuration files for a study from Chr21 to ChrX, using HRC, 1kphase3, uk10k and gonl as reference panels and [Eagle-IMPUTE2](https://github.com/ramonamela/guidance/tree/master/utils/conf_examples/config_eagle_impute.file), [SHAPEIT-IMPUTE2](https://github.com/ramonamela/guidance/tree/master/utils/conf_examples/config_eagle_minimac.file), [Eagle-Minimac4](https://github.com/ramonamela/guidance/tree/master/utils/conf_examples/config_shapeit_impute.file) and [SHAPEIT-Minimac4](https://github.com/ramonamela/guidance/tree/master/utils/conf_examples/config_shapeit_minimac.file) as phasing and imputation tools.
 
+### Environment file example <a name="environ_exam"></a>
+
+<details><summary>Show instructions</summary>
+
+<p>
+   
+```
+#!/bin/bash
+
+### PHASE 1 ###
+
+export phasingMem="50.0"
+export phasingCU="48"
+export phasingBedMem="50.0"
+export phasingBedCU="48"
+
+
+### PHASE 2 ###
+
+export qctoolMem="16.0"
+export qctoolSMem="1.0"
+export gtoolsMem="6.0"
+export samtoolsBgzipMem="6.0"
+export imputeWithImputeLowMem="8.0"
+export imputeWithImputeMediumMem="12.0"
+export imputeWithImputeHighMem="20.0"
+export imputeWithMinimacLowMem="4.0"
+export imputeWithMinimacMediumMem="8.0"
+export imputeWithMinimacHighMem="32.0"
+export filterByInfoImputeMem="12.0"
+export filterByInfoMinimacMem="24.0"
+
+### PHASE 3 ###
+
+export createListOfExcludedSnpsMem="1.0"
+export filterHaplotypesMem="1.0"
+export filterByAllMem="1.0"
+export jointFilteredByAllFilesMem="15.0"
+export jointCondensedFilesMem="1.0"
+export generateTopHitsAllMem="2.0"
+export generateTopHitsMem="2.0"
+export filterByMafMem="2.0"
+export snptestMem="2.0"
+export mergeTwoChunksMem="1.0"
+export mergeTwoChunksInTheFirstMem="1.0"
+export combinePanelsMem="1.0"
+export combineCondensedFilesMem="1.0"
+export combinePanelsComplex1Mem="1.0"
+
+### PHASE 4 ###
+
+export generateCondensedTopHitsCU="48"
+export generateCondensedTopHitsMem="90.0"
+export generateQQManhattanPlotsCU="24"
+export generateQQManhattanPlotsMem="45.0"
+export phenoMergeMem="80.0"
+```
+This constraints correspond to all the phases executed during an execution. The most part of them, should be leaved like here. Nevertheless, some of them should be tuned dependeing on the execution:
+* `phasingMem`: when setting this parameter, it should be taken into account that only one task per chromosome will be created. Hence, it should be set in such a way that all chromosomes can start being phased from the beggining but, at the same time, holding as many resources as possible. 
+* `imputeWithImputeX`: this is the amount of memory used by IMPUTE when imputing the different chunks. This parameter will depend on the size of the used panel as well as the size of the input. Indeed, the greater the cohor, the greater the amount of memory needed.
+* `imputeWithMinimacX`: this is the amount of memory used by Minimac when imputing the different chunks. This parameter will depend on the size of the used panel as well as the size of the input. Indeed, the greater the cohor, the greater the amount of memory needed.
+* `generateX`: this corresponds to the end-files generation. As in the first step, should be set as high as possible as long as all the possible executions can run at once.
+   
+</p>
+</details>
+
 ## GUIDANCE execution <a name="execution"></a>
 
 Explain how to run GUIDANCE
@@ -205,6 +272,71 @@ Explain how to run GUIDANCE
 <details><summary>Show instructions</summary>
 
 <p>
+   
+An example of a quite complete launch script with singularity is shown next:
+   
+```
+#!/bin/bash -e
+
+export COMPSS_PYTHON_VERSION="2"
+
+module purge
+module load intel/2018.1
+module load singularity/2.4.2
+
+base_dir=$(pwd)
+work_dir=${base_dir}/logs/
+worker_work_dir=${base_dir}/tmpForCOMPSs/
+worker_work_dir=scratch
+
+source $base_dir/set_environment.sh
+
+exec_time=2880
+num_nodes=50
+tracing=true
+graph=true
+debug=off
+cpus_per_node=48
+worker_in_master_cpus=0
+worker_in_master_memory=80000
+qos=bsc_cs
+
+mkdir -p ${base_dir}/outputs_directory
+
+/path/to/COMPSs/Runtime/scripts/user/enqueue_compss \
+  --qos=${qos} \
+  --job_dependency=5804941 \
+  --graph=${graph} \
+  --tracing=${tracing} \
+  --log_level=${debug} \
+  --exec_time=${exec_time} \
+  --num_nodes=${num_nodes} \
+  --base_log_dir=${base_dir} \
+  --worker_in_master_cpus=${worker_in_master_cpus} \
+  --worker_in_master_memory=${worker_in_master_memory} \
+  --cpus_per_node=${cpus_per_node} \
+  --master_working_dir=${work_dir} \
+  --worker_working_dir=${worker_work_dir} \
+  --scheduler="es.bsc.compss.scheduler.fifodatanew.FIFODataScheduler" \
+  --classpath=/path/to/guidance.jar \
+  --jvm_workers_opts="-Dcompss.worker.removeWD=true" \
+  --container_image=/path/to/guidance_singularity.img \
+  guidance.Guidance -config_file ${base_dir}/config_GERA_5000_shapeit_impute_1_23_cloud.file
+```
+In the next list, the most important features are explained in the same order as they appear in the script:
+* Modules needed to run the execution.
+* `work_dir`: the folder where the log files are stored.
+* `worker_work_dir`: the folder where all the temporary files will be stored. If `tmp`, each worker node will use its `/tmp`. Otherwise, a shared directory between all the nodes should be specified (in general, this means pointing to an `nfs`, `gpfs` or `lustre` directory.
+* File with all the environment variables pointing out the memory constraints necessary to run the execution.
+* General constraints for the queue system (COMPSs will correctly traduce them to whichever installation present in the cluster).
+* Creating the folder where the output files will be placed. Should be equal to the one stated in the configuration file.
+
+Afterwards, in the launch command, there are 3 important files:
+* `guidance_25_09_03_20_0_1_1.jar`: GUIDANCE binary.
+* `guidance_singularity.img`: generated singularity image.
+* `config_GERA_5000_shapeit_impute_1_23_cloud.file`: configuration file.
+
+It is important to keep in mind that the output directory created should be equal to the one specified in the configuration file.
 
 </p>
 </details> 
@@ -213,6 +345,89 @@ Explain how to run GUIDANCE
 <details><summary>Show instructions</summary>
 
 <p>
+   
+```
+#!/bin/bash -e
+
+module load COMPSs
+module load mkl
+module load intel/2017.4
+module load samtools/1.5
+module load R/3.5.1
+module load bcftools/1.8
+module load gcc/5.4.0
+
+base_dir=$(pwd)
+work_dir=${base_dir}/logs/
+worker_work_dir=${base_dir}/tmpForCOMPSs/
+
+export BCFTOOLSBINARY=/path/to/BCFTOOLS/1.8/INTEL/bin/bcftools
+export RSCRIPTBINDIR=/path/to/R/3.5.1/INTEL/bin/
+export SAMTOOLSBINARY=/path/to/SAMTOOLS/1.5-DNANEXUS/INTEL/IMPI/bin
+
+export PLINKBINARY=/path/to/TOOLS/apps_gwimp_compss/plink_1.9/plink
+export EAGLEBINARY=/path/to/TOOLS/Eagle_v2.4.1/eagle
+export RSCRIPTDIR=/path/to/R_SCRIPTS/
+export QCTOOLBINARY=/path/to/TOOLS/qctool_v1.4-linux-x86_64/qctool
+export SHAPEITBINARY=/path/to/TOOLS/shapeit.v2.r727.linux.x64
+export IMPUTE2BINARY=/path/to/TOOLS/impute_v2.3.2_x86_64_static/impute2
+export SNPTESTBINARY=/path/to/TOOLS/snptest_v2.5
+export MINIMAC3BINARY=/path/to/TOOLS/Minimac3/bin/Minimac3
+export MINIMAC4BINARY=/path/toTOOLS//Minimac4/release-build/minimac4
+export TABIXBINARY=/path/to/SAMTOOLS/1.5-DNANEXUS/INTEL/IMPI/bin/tabix
+export BGZIPBINARY=/path/to/SAMTOOLS/1.5-DNANEXUS/INTEL/IMPI/bin/bgzip
+
+export R_LIBS_USER=/path/to/TOOLS/R_libs/
+
+export LC_ALL="C"
+
+source $base_dir/set_environment.sh
+
+exec_time=700
+num_nodes=25
+tracing=true
+graph=true
+log_level=off
+cpus_per_node=48
+worker_in_master_cpus=0
+worker_in_master_memory=80000
+qos=bsc_cs
+
+mkdir -p ${base_dir}/outputs_shapeit_impute_1909_erase_all
+
+enqueue_compss \
+  --qos=${qos} \
+  --job_dependency=7403259 \
+  --graph=${graph} \
+  --tracing=${tracing} \
+  --log_level=${log_level} \
+  --exec_time=${exec_time} \
+  --num_nodes=${num_nodes} \
+  --base_log_dir=${base_dir} \
+  --worker_in_master_cpus=${worker_in_master_cpus} \
+  --worker_in_master_memory=${worker_in_master_memory} \
+  --cpus_per_node=${cpus_per_node} \
+  --master_working_dir=${work_dir} \
+  --worker_working_dir=${worker_work_dir} \
+  --scheduler="es.bsc.compss.scheduler.fifodatanew.FIFODataScheduler" \
+  --classpath=${base_dir}/guidance_25_1909_erase.jar \
+  --jvm_workers_opts="-Dcompss.worker.removeWD=true" \
+  guidance.Guidance -config_file ${base_dir}/config_GERA_300_shapeit_impute_1909_erase_all.file
+```
+In the next list, the most important features are explained in the same order as they appear in the script:
+* Modules needed to run COMPSs.
+* `work_dir`: the folder where the log files are stored.
+* `worker_work_dir`: the folder where all the temporary files will be stored. If `tmp`, each worker node will use its `/tmp`. Otherwise, a shared directory between all the nodes should be specified (in general, this means pointing to an `nfs`, `gpfs` or `lustre` directory.
+* Environment variables pointing to where all the needed binaries are placed.
+* File with all the environment variables pointing out the memory constraints necessary to run the execution.
+* General constraints for the queue system (COMPSs will correctly traduce them to whichever installation present in the cluster).
+* Creating the folder where the output files will be placed. Should be equal to the one stated in the configuration file.
+
+Afterwards, in the launch command, there are 3 important files:
+* `guidance_25_09_03_20_0_1_1.jar`: GUIDANCE binary.
+* `config_GERA_5000_shapeit_impute_1_23_cloud.file`: configuration file.
+
+It is important to keep in mind that the output directory created should be equal to the one specified in the configuration file.
 
 </p>
 </details> 
