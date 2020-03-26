@@ -1,8 +1,8 @@
 # Guidance
 
-GUIDANCE is an integrated framework that is able to perform haplotype phasing, genome-wide imputation, association testing and PheWAS analysis of large GWAS datasets. Moreover, this application allows performing all these steps in a single execution, as well as in a modular way with optional user intervention.
+GUIDANCE is an integrated framework that is able to perform haplotype phasing, genotype imputation, association testing assuming different models of inheritance and phenome-wide association analysis (PheWAS) of large GWAS datasets. Moreover, this application allows performing all these steps in a single execution, as well as in a modular way with optional user intervention.
 
-The GUIDANCE strength is based on the possibility of increasing the potential of GWAS by means of the analysis of the X chromosome, as well as the autosomes analysis, using one or multiple reference panels, do the assosiation testing using several models (additive, dominant, recessive, heterodominant and genotypic inheritance models) and realizing the cross-phenotype association analysis when more than one disease is available in the cohort under study.
+The GUIDANCE strength is based on the possibility of increasing the potential of GWAS by means of the analysis of the X chromosome, as well as the autosomes analysis, using one or multiple reference panels, do the assosiation testing using several models (additive, dominant, recessive, heterodominant and genotypic inheritance models) and performing a cross-phenotype association analysis when more than one disease is available in the cohort under study.
 
 # Table of Contents
 1. [Getting started](#getstarted)
@@ -21,7 +21,7 @@ The GUIDANCE strength is based on the possibility of increasing the potential of
 
 ## Getting Started <a name="getstarted"></a>
 
-GUIDANCE was developed to mainly run on HPC infrastructures. The instructions given here consider this execution environment. In order to run it in the cloud, specific instructions are given in this [project](https://github.com/ramonamela/guidance_cloud).
+GUIDANCE was developed to run on HPC infrastructures and cloud environments. The instructions given here consider this execution in HPC environment. In order to run it in the cloud, specific instructions are given in this [project](https://github.com/ramonamela/guidance_cloud).
 
 These instructions will get you a copy of the project up and running on your machine. There are two main options to run GUIDANCE: directly on top of your OS and inside a [Singularity image](https://github.com/sylabs/singularity). We strongly recommend to use Singularity as it makes all the process much more easier.
 
@@ -135,7 +135,7 @@ This will generate a binary guidance.jar.
 
 In order to run GUIDANCE the user has to edit a configuration file, where the basic input and output characteristics have to be specified. This file also allows the tuning of multiple parameters related to, among others, covariates, chunk size for genotype imputation, info scores, minor allele frequency and Hardy-Weinberg thresholds. The user can also decide to run several phenotypes and several combinations of phenotypes/covariates in a single run. 
 
-A detail description of each of the configurable parameters (configuration_file_parameters.pdf) is provided in this [file](https://github.com/ramonamela/guidance/tree/master/webpage/configurationfileparameters.pdf) or in the collapsable list placed at the end of this paragraph.
+A detailed description of each of the configurable parameters (configuration_file_parameters.pdf) is provided in this [file](https://github.com/ramonamela/guidance/tree/master/webpage/configurationfileparameters.pdf) or in the collapsable list placed at the end of this paragraph.
 
 <details><summary>Show the configuration file parameters</summary>
 
@@ -265,8 +265,6 @@ This constraints correspond to all the phases executed during an execution. The 
 </details>
 
 ## GUIDANCE execution <a name="execution"></a>
-
-Explain how to run GUIDANCE
 
 ### Running on a Singularity image <a name="singularityexec"></a>
 <details><summary>Show instructions</summary>
