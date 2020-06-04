@@ -72,8 +72,8 @@ RUN apt-get update && \
     pip2 install scipy==1.0.0 scikit-learn==0.19.1 pandas==0.23.1 && \
     pip3 install scipy==1.0.0 scikit-learn==0.19.1 pandas==0.23.1 && \
 # AutoParallel dependencies
-    apt-get install -y --no-install-recommends libgmp3-dev flex bison libbison-dev texinfo libffi-dev && \
-    pip2 install astor sympy enum34 islpy && \
+#    apt-get install -y --no-install-recommends libgmp3-dev flex bison libbison-dev texinfo libffi-dev && \
+#    pip2 install astor sympy enum34 islpy && \
 # Streaming dependencies
     apt-get install -y --no-install-recommends unzip && \
     wget https://services.gradle.org/distributions/gradle-5.4.1-bin.zip && \
@@ -84,8 +84,8 @@ RUN apt-get update && \
 # Testing dependencies
     pip3 install enum34 tabulate && \
 # Numba dependencies
-    pip2 install llvmlite numba && \
-    pip3 install llvmlite numba && \
+#    pip2 install llvmlite numba && \
+#    pip3 install llvmlite numba && \
 # Jupyter dependencies
     pip2 install jupyter ipykernel && \
     python2 -m ipykernel install && \
@@ -115,7 +115,7 @@ RUN rm -rf ./framework && \
     ./submodules_get.sh && \
     ./submodules_patch.sh && \
     echo "${JAVA_HOME}" && \
-    sudo /framework/builders/buildlocal -P -M /opt/COMPSs && \
+    sudo /framework/builders/buildlocal -A -M /opt/COMPSs && \
     rm -rf /root/.cache && \
     cd .. && \
     rm -r ./framework
