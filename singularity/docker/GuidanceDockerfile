@@ -123,11 +123,11 @@ RUN rm -rf ./framework && \
 
 #Copy binaries into the container
 RUN mkdir /TOOLS
-COPY ./TOOLS/shapeit.v2.r727.linux.x64 /TOOLS/shapeit.v2.r727.linux.x64
+#COPY ./TOOLS/shapeit.v2.r727.linux.x64 /TOOLS/shapeit.v2.r727.linux.x64
 COPY ./TOOLS/R_scripts /TOOLS/R_scripts
 COPY ./TOOLS/deps.R /TOOLS/deps.R
 RUN chmod 775 /TOOLS/R_scripts/*
-RUN chmod 775 /TOOLS/shapeit.v2.r727.linux.x64
+#RUN chmod 775 /TOOLS/shapeit.v2.r727.linux.x64
 
 WORKDIR /TOOLS
 
@@ -240,6 +240,13 @@ RUN wget http://www.well.ox.ac.uk/~gav/resources/archive/snptest_v2.5_linux_x86_
     chmod -R 755 /TOOLS/snptest_v2.5_linux_x86_64_static/ && \
     ln -s /TOOLS/snptest_v2.5_linux_x86_64_static/snptest_v2.5 /usr/bin/snptest_v2.5
 
+RUN wget https://mathgen.stats.ox.ac.uk/genetics_software/shapeit/shapeit.v2.r904.glibcv2.12.linux.tar.gz && \
+    tar -zxvf shapeit.v2.r904.glibcv2.12.linux.tar.gz && \
+    rm shapeit.v2.r904.glibcv2.12.linux.tar.gz  && \
+    rm -r shapeit.v2.904.2.6.32-696.18.7.el6.x86_64/example/ && \
+    chmod -R 775 /TOOLS/shapeit.v2.904.2.6.32-696.18.7.el6.x86_64/ && \
+    ln -s /TOOLS/shapeit.v2.904.2.6.32-696.18.7.el6.x86_64/bin/shapeit /usr/bin/shapeit
+
 #RUN wget http://www.well.ox.ac.uk/~gav/resources/snptest_v2.5.2_linux_x86_64_static.tgz && \
 #    tar -zxvf snptest_v2.5.2_linux_x86_64_static.tgz && \
 #    rm snptest_v2.5.2_linux_x86_64_static.tgz && \
@@ -295,9 +302,10 @@ ENV LC_ALL "C"
 #ENV SNPTESTBINARY "/TOOLS/snptest_v2.5_linux_x86_64_static/snptest_v2.5"
 #ENV MINIMACBINARY "/TOOLS/Minimac3/bin/Minimac3"
 ENV RSCRIPTDIR "/TOOLS/R_scripts/"
-ENV SHAPEITBINARY "/TOOLS/shapeit.v2.r727.linux.x64"
+#ENV SHAPEITBINARY "/TOOLS/shapeit.v2.r727.linux.x64"
 #ENV MINIMACBINARY "/TOOLS/Minimac3/bin/Minimac3"
 
+ENV SHAPEITBINARY "/usr/bin/shapeit"
 ENV PLINKBINARY "/usr/bin/plink"
 ENV QCTOOLBINARY "/usr/bin/qctool1.4"
 ENV EAGLEBINARY "/usr/bin/eagle"
