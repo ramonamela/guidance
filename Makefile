@@ -22,6 +22,7 @@ SCRATCH_DIR := $(ROOT_DIR)/scratch/
 
 # Commands
 DOCKER_COMPOSE_CMD := MY_UID=$(MY_UID) MY_GID=$(MY_GID) $(DOCKER_COMPOSE_EXE) -f $(ROOT_DIR)/docker-compose.yml
+DC_UP_CMD := $(DOCKER_COMPOSE_CMD) up -d --build
 
 #############################################################
 #  Cleaning targets
@@ -33,11 +34,15 @@ DOCKER_COMPOSE_CMD := MY_UID=$(MY_UID) MY_GID=$(MY_GID) $(DOCKER_COMPOSE_EXE) -f
 #############################################################
 
 install-dependencies-ubuntu:
-	@sudo apt-get install docker.io curl
+	@sudo apt-get -y install docker.io curl
+
+install-docker-compose:
 	@sudo curl -L "https://github.com/docker/compose/releases/download/1.25.4/docker-compose-$$(uname -s)-$$(uname -m)" -o /usr/local/bin/docker-compose
 	@sudo chmod +x /usr/local/bin/docker-compose
-	@sudo groupadd docker
+	@sudo groupadd docker || true
 	@sudo gpasswd -a $$USER docker
+
+install-all-ubuntu: install-dependencies-ubuntu install-docker-compose
 
 #############################################################
 #  Docker targets
@@ -45,4 +50,3 @@ install-dependencies-ubuntu:
 
 run-execution:
 	@$(DC_UP_CMD) guidance
-
