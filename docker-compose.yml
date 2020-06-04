@@ -1,0 +1,9 @@
+version: '3.7'
+services:
+  guidance:
+    build:
+      context: ./singularity/docker
+      dockerfile: GuidanceDockerfile
+    container_name: guidance
+    command: ["/bin/bash"]
+    
