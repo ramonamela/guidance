@@ -434,18 +434,25 @@ It is important to keep in mind that the output directory created should be equa
 ## Run guidance test example <a name="test"></a>
 We have set up a test with a really little dataset to both verify that an installation is correct and to get more familiar with all the configuration files and the execution process in a local machine. At this point, this only works in a Debian based system. 
 
+This dataset was prepared based on de-identified data from 1000 Genomes downloaded from [ftp://ftp.1000genomes.ebi.ac.uk/vol1/ftp/release/20130502](ftp://ftp.1000genomes.ebi.ac.uk/vol1/ftp/release/20130502). The phenotypes "case" and "control" were randomly generated among the samples and do not correspond to any real phenotype. The purpose of this dataset is only to demonstrate that GUIDANCE runs properly, and therefore this dataset is not valid for any other purpose.
+
 In order to get this repository and run the example, only `git` and `make` are needed. It is possible to install them with the following instruction:
 `sudo apt-get install -y make git`
 
 Afterwards, you can clone this repository with the following command:
-`git clone -b add_docker_compose https://github.com/ramonamela/guidance.git`
+`git clone https://github.com/ramonamela/guidance.git`
 
 Finally, get into the root of the repository and perform this three steps:
 1. Run `make setup-test-ubuntu`
+
 This will install all the dependencies
+
 2. Get out and login again if you are accessing the machine by `ssh` or open a new terminal
+
 This step is necessary to refresh the available ubuntu group in order to correctly run docker
-3. RUn `make run-execution`
+
+3. Run `make run-execution`
+
 This will run the execution with the sample input dataset. All the generated files will be in the `outputs`folder.
 
 ## Authors <a name="authors"></a>
