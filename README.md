@@ -444,10 +444,15 @@ Afterwards, you can clone this repository with the following command:
 
 Finally, get into the root of the repository and perform this three steps:
 1. Run `make setup-test-ubuntu`
+
 This will install all the dependencies
+
 2. Get out and login again if you are accessing the machine by `ssh` or open a new terminal
+
 This step is necessary to refresh the available ubuntu group in order to correctly run docker
-3. RUn `make run-execution`
+
+3. Run `make run-execution`
+
 This will run the execution with the sample input dataset. All the generated files will be in the `outputs`folder.
 
 ## Authors <a name="authors"></a>
