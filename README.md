@@ -15,9 +15,10 @@ The GUIDANCE strength is based on the possibility of increasing the potential of
 3. [GUIDANCE execution](#execution)
     * [Running on a Singularity image](#singularityexec)
     * [Running on bare metal](#bareexec)
-4. [Authors](#authors)
-5. [License](#license)
-6. [Acknowledgments](#acknowledgments)
+4. [Run guidance test example](#test)
+5. [Authors](#authors)
+6. [License](#license)
+7. [Acknowledgments](#acknowledgments)
 
 ## Getting Started <a name="getstarted"></a>
 
@@ -429,6 +430,23 @@ It is important to keep in mind that the output directory created should be equa
 
 </p>
 </details> 
+
+## Run guidance test example <a name="test"></a>
+We have set up a test with a really little dataset to both verify that an installation is correct and to get more familiar with all the configuration files and the execution process in a local machine. At this point, this only works in a Debian based system. 
+
+In order to get this repository and run the example, only `git` and `make` are needed. It is possible to install them with the following instruction:
+`sudo apt-get install -y make git`
+
+Afterwards, you can clone this repository with the following command:
+`git clone -b add_docker_compose https://github.com/ramonamela/guidance.git`
+
+Finally, get into the root of the repository and perform this three steps:
+1. Run `make setup-test-ubuntu`
+This will install all the dependencies
+2. Get out and login again if you are accessing the machine by `ssh` or open a new terminal
+This step is necessary to refresh the available ubuntu group in order to correctly run docker
+3. RUn `make run-execution`
+This will run the execution with the sample input dataset. All the generated files will be in the `outputs`folder.
 
 ## Authors <a name="authors"></a>
 

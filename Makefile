@@ -65,8 +65,7 @@ setup-test-ubuntu: install-dependencies-ubuntu install-docker-compose init-test-
 #  Docker targets
 #############################################################
 
-run-execution-ubuntu: setup-test-ubuntu
-	@$(DC_UP_CMD) guidance
+setup-test-ubuntu: install-dependencies-ubuntu install-docker-compose init-test-dirs
 
 run-execution:
 	@$(DC_UP_CMD) guidance
