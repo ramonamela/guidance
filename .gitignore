@@ -37,3 +37,9 @@ singularity/curl
 singularity/gnupg-agent
 singularity/software-properties-common
 singularity/singularity/guidance.def
+
+#Test execution
+inputs
+outputs
+tmp
+list_of_stages_for_test_chr2122.txt

@@ -136,3 +136,19 @@ ENV BGZIPBINARY "/usr/bin/bgzip"
 
 ENV BCFTOOLSBINARY "/usr/bin/bcftools"
 ENV SAMTOOLSBINARY "/usr/bin/samtools"
+
+RUN echo "SHAPEITBINARY=\"/usr/bin/shapeit\"" >> /etc/environment
+RUN echo "PLINKBINARY=\"/usr/bin/plink\"" >> /etc/environment
+RUN echo "QCTOOLBINARY=\"/usr/bin/qctool1.4\"" >> /etc/environment
+RUN echo "EAGLEBINARY=\"/usr/bin/eagle\"" >> /etc/environment
+RUN echo "IMPUTE2BINARY=\"/usr/bin/impute2\"" >> /etc/environment
+RUN echo "QCTOOLBINARY=\"/usr/bin/qctool1.4\"" >> /etc/environment
+RUN echo "SNPTESTBINARY=\"/usr/bin/snptest_v2.5\"" >> /etc/environment
+RUN echo "MINIMAC3BINARY=\"/usr/bin/minimac3\"" >> /etc/environment
+RUN echo "MINIMAC4BINARY=\"/usr/bin/minimac4\"" >> /etc/environment
+RUN echo "TABIXBINARY=\"/usr/bin/tabix\"" >> /etc/environment
+RUN echo "BGZIPBINARY=\"/usr/bin/bgzip\"" >> /etc/environment
+RUN echo "BCFTOOLSBINARY=\"/usr/bin/bcftools\"" >> /etc/environment
+RUN echo "SAMTOOLSBINARY=\"/usr/bin/samtools\"" >> /etc/environment
+
+WORKDIR /guidance

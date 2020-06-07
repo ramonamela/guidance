@@ -25,16 +25,33 @@ DOCKER_COMPOSE_CMD := MY_UID=$(MY_UID) MY_GID=$(MY_GID) $(DOCKER_COMPOSE_EXE) -f
 DC_UP_CMD := $(DOCKER_COMPOSE_CMD) up -d --build
 
 #############################################################
+#  Internal targets
+#############################################################
+
+_input-download:
+	@mkdir -p inputs/
+	@wget -N -P ./inputs/ http://cg.bsc.es/guidance/download/downloads/dataset.tar.gz
+	@tar -xvxf inputs/dataset.tar.gz -C inputs
+
+#############################################################
 #  Cleaning targets
 #############################################################
 
+clean-input:
+	@rm -rf inputs/
+
+clean:
+	@rm -rf inputs/ outputs/ tmp/
 
 #############################################################
 #  Building targets
 #############################################################
 
+init-test-dirs: _input-download
+	@mkdir -p logs outputs
+
 install-dependencies-ubuntu:
-	@sudo apt-get -y install docker.io curl
+	@sudo apt-get -y install containerd docker.io curl
 
 install-docker-compose:
 	@sudo curl -L "https://github.com/docker/compose/releases/download/1.25.4/docker-compose-$$(uname -s)-$$(uname -m)" -o /usr/local/bin/docker-compose
@@ -42,11 +59,14 @@ install-docker-compose:
 	@sudo groupadd docker || true
 	@sudo gpasswd -a $$USER docker
 
-install-all-ubuntu: install-dependencies-ubuntu install-docker-compose
+setup-test-ubuntu: install-dependencies-ubuntu install-docker-compose init-test-dirs
 
 #############################################################
 #  Docker targets
 #############################################################
+
+run-execution-ubuntu: setup-test-ubuntu
+	@$(DC_UP_CMD) guidance
 
 run-execution:
 	@$(DC_UP_CMD) guidance

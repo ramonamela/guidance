@@ -5,5 +5,11 @@ services:
       context: ./singularity/docker
       dockerfile: GuidanceDockerfile
     container_name: guidance
-    command: ["/bin/bash"]
+    expose:
+      - "22"
+    volumes:
+      - ".:/guidance"
+      - "./tmp:/tmp"
+    command: ["/bin/bash", "/guidance/utils/launch_examples/docker_example.sh"]
+    
     

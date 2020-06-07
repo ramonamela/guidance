@@ -97,7 +97,7 @@ RUN rm -rf ./framework && \
     ./submodules_get.sh && \
     ./submodules_patch.sh && \
     echo "${JAVA_HOME}" && \
-    sudo /framework/builders/buildlocal -A -M /opt/COMPSs && \
+    sudo /framework/builders/buildlocal -A -M -K /opt/COMPSs && \
     rm -rf /root/.cache && \
     cd .. && \
     rm -r ./framework
@@ -129,7 +129,10 @@ RUN ln -s /usr/lib/jvm/java-8-openjdk-amd64 /usr/lib/jvm/default-java
 
 ENV LC_ALL "C"
 ENV RSCRIPTDIR "/TOOLS/R_scripts/"
-
 ENV RSCRIPTBINDIR "/usr/bin/"
+
+RUN echo "LC_ALL=\"C\"" >> /etc/environment
+RUN echo "RSCRIPTDIR=\"/TOOLS/R_scripts/\"" >> /etc/environment
+RUN echo "RSCRIPTBINDIR=\"/usr/bin/\"" >> /etc/environment
 
 WORKDIR /TOOLS

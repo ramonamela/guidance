@@ -1,0 +1,65 @@
+################################################################
+# Configuration file example for imputation+GWAS using COMPSSs #
+################################################################
+################################################################
+# General parameters
+wfDeep                        = whole_workflow
+init_chromosome               = 21
+end_chromosome                = 22
+maf_threshold                 = 0.001
+impute_threshold              = 0.7 
+minimac_threshold             = 0.5
+pva_threshold                 = 5e-8
+hwe_cohort_threshold          = -1
+hwe_cases_threshold           = -1
+hwe_controls_threshold        = 1e-6
+exclude_cgat_snps             = YES 
+phasing_tool                  = shapeit
+imputation_tool               = impute
+manhattans                    = add,rec,dom
+test_types                    = phenotype
+phenotype                     = phenotype:sex
+chunk_size_analysis           = 1000000
+file_name_for_list_of_stages  = list_of_stages_for_test_chr2122.txt
+remove_temporal_files         = YES
+compress_files                = YES
+input_format                  = BED
+################################################################
+#mixed bed files information
+mixed_cohort                  = cohort_name
+mixed_bed_file_dir            = /guidance/inputs/dataset/PLINK_files/
+mixed_bed_file                = test_merge.bed
+mixed_bim_file                = test_merge.bim
+mixed_fam_file                = test_merge.fam
+mixed_sample_file_dir         = /guidance/inputs/dataset/
+mixed_sample_file             = new.sample
+################################################################
+# Genetic map files information
+genmap_file_dir               = /guidance/inputs/dataset/map/
+genmap_file_chr_21            = genetic_map_chr_21_combined_b37.txt
+genmap_file_chr_22            = genetic_map_chr_22_combined_b37.txt
+################################################################
+# Reference Panels Dir
+refpanel_number               = 2
+# Should we combine panels? YES/NO. If there is only 1 panels, this variable is NO.
+refpanel_combine              = YES
+# Information for the 2nd reference panel: phase3
+refpanel_type                 = 1kgphase3
+refpanel_memory               = MEDIUM
+refpanel_file_dir             = /guidance/inputs/dataset/panels
+refpanel_hap_file_chr_21      = 1kg_chr21.haps.gz
+refpanel_hap_file_chr_22      = 1kg_chr22.haps.gz
+refpanel_leg_file_chr_21      = 1kg_chr21.legend.gz
+refpanel_leg_file_chr_22      = 1kg_chr22.legend.gz
+## Information for the 3rd reference panel: uk10k
+refpanel_type                 = hapmap
+refpanel_memory               = LOW
+refpanel_file_dir             = /guidance/inputs/dataset/panels
+refpanel_hap_file_chr_21      = hapmap_chr21.haps.gz
+refpanel_hap_file_chr_22      = hapmap_chr22.haps.gz
+refpanel_leg_file_chr_21      = hapmap_chr21.legend.gz
+refpanel_leg_file_chr_22      = hapmap_chr22.legend.gz
+################################################################
+# Output dir
+outputdir                     = /guidance/outputs
+################################################################
