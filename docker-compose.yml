@@ -10,6 +10,7 @@ services:
     volumes:
       - ".:/guidance"
       - "./tmp:/tmp"
-    command: ["/bin/bash", "/guidance/utils/launch_examples/docker_example.sh"]
+      - "./logs:/logs"
+    command: ["/bin/bash", "-c", "/guidance/utils/launch_examples/docker_example.sh > /logs/test.out 2> /logs/test.err"]
     
     
