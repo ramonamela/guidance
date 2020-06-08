@@ -9,7 +9,7 @@ cat /etc/profile.d/compss.sh
 
 amount_cpus=$(cat /proc/cpuinfo | grep processor | wc | awk '{ print $1 }')
 
-sed -i "s@<ComputingUnits>4</ComputingUnits>@<ComputingUnits>${amount_cpus}</ComputingUnits>@g" /guidance/utils/xml_files/resources.xml
+sed -i "s@<ComputingUnits>8</ComputingUnits>@<ComputingUnits>${amount_cpus}</ComputingUnits>@g" /guidance/utils/xml_files/resources.xml
 
 
 source /guidance/utils/set_environment.sh
