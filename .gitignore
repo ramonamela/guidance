@@ -42,4 +42,7 @@ singularity/singularity/guidance.def
 inputs
 outputs
 tmp
+logs
 list_of_stages_for_test_chr2122.txt
+
+README.html

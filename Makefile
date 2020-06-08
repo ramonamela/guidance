@@ -22,7 +22,7 @@ SCRATCH_DIR := $(ROOT_DIR)/scratch/
 
 # Commands
 DOCKER_COMPOSE_CMD := MY_UID=$(MY_UID) MY_GID=$(MY_GID) $(DOCKER_COMPOSE_EXE) -f $(ROOT_DIR)/docker-compose.yml
-DC_UP_CMD := $(DOCKER_COMPOSE_CMD) up -d --build
+DC_UP_CMD := $(DOCKER_COMPOSE_CMD) up --build -d
 
 #############################################################
 #  Internal targets
@@ -41,7 +41,7 @@ clean-input:
 	@rm -rf inputs/
 
 clean:
-	@rm -rf inputs/ outputs/ tmp/
+	@sudo rm -rf inputs/ outputs/ tmp/ logs/
 
 #############################################################
 #  Building targets

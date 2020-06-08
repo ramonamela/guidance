@@ -432,28 +432,41 @@ It is important to keep in mind that the output directory created should be equa
 </details> 
 
 ## Run guidance test example <a name="test"></a>
-We have set up a test with a really little dataset to both verify that an installation is correct and to get more familiar with all the configuration files and the execution process in a local machine. At this point, this only works in a Debian based system. 
+We have set up a test with a really little dataset to both verify that a given installation is correct and to get more familiar with all the configuration files and the execution process in a local machine. At this point, this only works in a Debian based system. 
+
+It is important to realize that GUIDANCE is a framework thought to run in massively parallel environments. Hence, even a such small dataset takes a long time to run in a local machine. Indeed, the main goal is to use the input to rapidly test a production installation or to use the docker-compose to start playing in local. Nevertheless, we don't recommend waiting until the end of the execution but to play around with the configuration file. This can help to get familiar with all the setup and configuration files.
 
 This dataset was prepared based on de-identified data from 1000 Genomes downloaded from [ftp://ftp.1000genomes.ebi.ac.uk/vol1/ftp/release/20130502](ftp://ftp.1000genomes.ebi.ac.uk/vol1/ftp/release/20130502). The phenotypes "case" and "control" were randomly generated among the samples and do not correspond to any real phenotype. The purpose of this dataset is only to demonstrate that GUIDANCE runs properly, and therefore this dataset is not valid for any other purpose.
 
-In order to get this repository and run the example, only `git` and `make` are needed. It is possible to install them with the following instruction:
+To get this repository and run the example, only `git` and `make` are needed. It is possible to install them with the following instruction:
 `sudo apt-get install -y make git`
 
-Afterwards, you can clone this repository with the following command:
+Afterward, you can clone this repository with the following command:
 `git clone https://github.com/ramonamela/guidance.git`
 
-Finally, get into the root of the repository and perform this three steps:
+Finally, get into the root of the repository and perform these three steps:
+
 1. Run `make setup-test-ubuntu`
 
 This will install all the dependencies
 
-2. Get out and login again if you are accessing the machine by `ssh` or open a new terminal
+2. Get out and log in again if you are accessing the machine by `ssh` or restart your session when running in local
 
-This step is necessary to refresh the available ubuntu group in order to correctly run docker
+This step is necessary to refresh the available ubuntu group to correctly run docker
 
 3. Run `make run-execution`
 
-This will run the execution with the sample input dataset. All the generated files will be in the `outputs`folder.
+This command runs the execution with the sample input dataset. The execution is launched in detached mode. This makes possible to close the terminal from which it has been launched or to logout if it has been run through `ssh`. All the generated files will be in the `outputs` folder. The temporary files in the `tmp` folder and the `STDOUT` and `STDERR` into the `log` folder. To check that the execution is running, it is possible to either check the generated files or run `docker ps` where the execution is running.
+
+To stop a running execution, run the following commands:
+
+1. `docker ps`
+
+This command will show all running docker containers. Each one will have a `CONTAINER_ID`.
+
+2. `docker stop CONTAINER_ID`
+
+This command will stop the selected container.
 
 ## Authors <a name="authors"></a>
 
