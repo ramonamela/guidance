@@ -468,6 +468,8 @@ This command will show all running docker containers. Each one will have a `CONT
 
 This command will stop the selected container.
 
+The Manhattan an QQplots that result from a test execution can be found in the path `/guidance/utils/expected_test_results` of this respository.
+
 ## Authors <a name="authors"></a>
 
 * **Marta Guindo Martinez** - *R scripts, Java code and Scientific Methodology* - [ORCID](https://orcid.org/0000-0002-8099-9170)
