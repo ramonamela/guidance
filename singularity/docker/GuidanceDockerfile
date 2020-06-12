@@ -88,6 +88,13 @@ RUN wget https://mathgen.stats.ox.ac.uk/genetics_software/shapeit/shapeit.v2.r90
     chmod -R 775 /TOOLS/shapeit.v2.904.2.6.32-696.18.7.el6.x86_64/ && \
     ln -s /TOOLS/shapeit.v2.904.2.6.32-696.18.7.el6.x86_64/bin/shapeit /usr/bin/shapeit
 
+RUN git clone https://github.com/odelaneau/shapeit4.git && \
+    cd shapeit4 && \
+    sed -it 's@$(HOME)/Tools@/TOOLS@g' makefile && \
+    make && \
+    chmod -R 755 /TOOLS/shapeit4/bin && \
+    ln -s /TOOLS/shapeit4/bin/shapeit4 /usr/bin/shapeit4
+
 #RUN wget http://www.well.ox.ac.uk/~gav/resources/snptest_v2.5.2_linux_x86_64_static.tgz && \
 #    tar -zxvf snptest_v2.5.2_linux_x86_64_static.tgz && \
 #    rm snptest_v2.5.2_linux_x86_64_static.tgz && \
@@ -122,6 +129,7 @@ RUN git clone https://github.com/Santy-8128/Minimac4.git && \
 
 
 ENV SHAPEITBINARY "/usr/bin/shapeit"
+ENV SHAPEIT4BINARY "/usr/bin/shapeit4"
 ENV PLINKBINARY "/usr/bin/plink"
 ENV QCTOOLBINARY "/usr/bin/qctool1.4"
 ENV EAGLEBINARY "/usr/bin/eagle"
@@ -138,6 +146,7 @@ ENV BCFTOOLSBINARY "/usr/bin/bcftools"
 ENV SAMTOOLSBINARY "/usr/bin/samtools"
 
 RUN echo "SHAPEITBINARY=\"/usr/bin/shapeit\"" >> /etc/environment
+RUN echo "SHAPEIT4BINARY=\"/usr/bin/shapeit4\"" >> /etc/environment
 RUN echo "PLINKBINARY=\"/usr/bin/plink\"" >> /etc/environment
 RUN echo "QCTOOLBINARY=\"/usr/bin/qctool1.4\"" >> /etc/environment
 RUN echo "EAGLEBINARY=\"/usr/bin/eagle\"" >> /etc/environment

@@ -38,4 +38,4 @@ sudo docker push localhost:${registry_port}/${guidance_image_name}
 # https://github.com/singularityware/singularity/issues/429 
 
 sed "s/\${docker_image_name}/${guidance_image_name}/g" singularity/base.def | tee singularity/guidance.def
-sudo SINGULARITY_NOHTTPS=yes singularity build guidance_singularity.img singularity/guidance.def
+sudo singularity build --nohttps guidance_singularity.img singularity/guidance.def

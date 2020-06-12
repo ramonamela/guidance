@@ -325,7 +325,7 @@ public class Guidance {
             String gmapFile = "";
             // String imputationTool = parsingArgs.getImputationTool();
 
-            if (phasingTool.equals("shapeit")) {
+            if (phasingTool.equals("shapeit") || phasingTool.equals("shapeit4")) {
                 gmapFile = parsingArgs.getGmapDir() + "/" + parsingArgs.getGmapFileName(chr);
 
             } else if (phasingTool.equals("eagle")) {
@@ -562,7 +562,7 @@ public class Guidance {
 
                 String gmapFile = null;
 
-                if (phasingTool.equals("shapeit")) {
+                if (phasingTool.equals("shapeit") || phasingTool.equals("shapeit4")) {
                     gmapFile = parsingArgs.getGmapDir() + "/" + parsingArgs.getGmapFileName(chr);
                 } else if (phasingTool.equals("eagle")) {
                     gmapFile = parsingArgs.getGmapDir() + "/" + parsingArgs.getGmapFileNameEagle();
@@ -917,7 +917,7 @@ public class Guidance {
                             mixedFilteredFemalesFile, mixedFilteredLogFemalesFile, chrS);
                 }
 
-            } else if (phasingTool.equals("shapeit")) {
+            } else if (phasingTool.equals("shapeit") || phasingTool.equals("shapeit4")) {
                 // if (!chrS.equals("23")) {
 
                 if (parsingArgs.getStageStatus("imputeWithImpute") == 1
@@ -2897,7 +2897,17 @@ public class Guidance {
                         System.err.println(e.getMessage());
                     }
                 }
-            } else {
+            } else if (phasingTool.equals("shapeit4")) {
+                listOfCommands.add("ShapeIt4 phasing");
+                
+                try {
+                    GuidanceImpl.phasingBed(theChromo, bedFile, bimFile, famFile, gmapFile, phasingHapsFile,
+                            phasingSampleFile, phasingLogFile, sex, phasingTool, "ShapeIt4 phasing");
+                } catch (Exception e) {
+                    System.err.println("[Guidance] Exception trying the execution of phasing task");
+                    System.err.println(e.getMessage());
+                }
+        	} else {
                 System.err.println("[Guidance] Only Eagle and Shapeit are available for phasing haplotypes");
 
             }

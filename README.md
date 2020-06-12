@@ -50,6 +50,8 @@ Regarding the Singularity image generation, it is enough to run [this script](ht
     mkdir -p /scratch
 ```
 
+This works for Singularity >= 3.0. Previous versions are not supported.
+
 In addition, a GUIDANCE binary should be generated from this repository. In order to do so, you should run the following command in the root of the repository:
 
 ```

@@ -76,6 +76,7 @@ public class GuidanceImpl {
 	private static final String GTOOLBINARY = "GTOOLBINARY";
 	private static final String QCTOOLBINARY = "QCTOOLBINARY";
 	private static final String SHAPEITBINARY = "SHAPEITBINARY";
+	private static final String SHAPEIT4BINARY = "SHAPEIT4BINARY";
 	private static final String EAGLEBINARY = "EAGLEBINARY";
 	private static final String SAMTOOLSBINARY = "SAMTOOLSBINARY";
 	private static final String IMPUTE2BINARY = "IMPUTE2BINARY";
@@ -1106,7 +1107,161 @@ public class GuidanceImpl {
 			System.out.println("\n[DEBUG] Finished execution of createListOfExcludedSnps.");
 		}
 	}
-
+	
+	private static void phasingBedShapeit4(String chromo, String bedFile, String bimFile, String famFile, String gmapFile,
+			String phasingHapsFile, String phasingSampleFile, String phasingLogFile, String sex, String cmdToStore) throws GuidanceTaskException, IOException {
+		
+		String outPrefix = phasingSampleFile.substring(0, phasingSampleFile.length() - 7);
+		String inputPrefix = bimFile.substring(0, bimFile.length() - 4);
+		String workingDir = new File(phasingSampleFile).getParentFile().getCanonicalPath();
+		String refFile = workingDir + "/ref_file.txt";
+		String sampleNames = workingDir + "/sample_names.txt";
+		String renames = workingDir + "/renames.txt";
+		String orderedVCF = workingDir + "/intermediate.vcf";
+		String orderedVCFcompressed = orderedVCF + ".gz";
+		String phasedVCF = workingDir + "/phased.vcf";
+		String phasedVCFcompressed = phasedVCF + ".gz";
+		if (chromo.equals("23")) chromo = "X";
+		
+		String plink_binary = loadFromEnvironment(PLINKBINARY, HEADER_PHASING);
+		String bcftools_binary = loadFromEnvironment(BCFTOOLSBINARY, HEADER_PHASING);
+		String tabix_binary = loadFromEnvironment(TABIXBINARY, HEADER_PHASING);
+		String shapeit4_binary = loadFromEnvironment(SHAPEIT4BINARY, HEADER_PHASING);
+		String bgzip_binary = loadFromEnvironment(BGZIPBINARY, HEADER_PHASING);
+		
+		String generate_ref_file = "awk '{ print $5 \"\\t\" $2 }' " + bimFile + " > " + refFile;
+		try {
+			ProcessUtils.executeWithoutOutputs(generate_ref_file);
+		} catch (IOException ioe) {
+			throw new GuidanceTaskException(ioe);
+		}
+		System.out.println(generate_ref_file);
+		
+		String generate_vcf = plink_binary + " --bfile " + inputPrefix + " --a2-allele " + refFile + " 1 2 --recode vcf --out " + workingDir + "/tmp";
+		try {
+			ProcessUtils.executeWithoutOutputs(generate_vcf);
+		} catch (IOException ioe) {
+			throw new GuidanceTaskException(ioe);
+		}
+		System.out.println(generate_vcf);
+		
+		String get_sample_names = bcftools_binary + " query -l " + workingDir + "/tmp.vcf > " + sampleNames; 
+		try {
+			ProcessUtils.executeWithoutOutputs(get_sample_names);
+		} catch (IOException ioe) {
+			throw new GuidanceTaskException(ioe);
+		}
+		System.out.println(get_sample_names);
+		
+		String get_renames = "cat " + sampleNames + " | sed 's@_@\\t@g' | awk '{ print $1 \"_\" $2 \" \"  $2 }' > " + renames;
+		try {
+			ProcessUtils.executeWithoutOutputs(get_renames);
+		} catch (IOException ioe) {
+			throw new GuidanceTaskException(ioe);
+		}
+		System.out.println(get_renames);
+		
+		String reheader = bcftools_binary + " reheader --samples " + renames + " -o " + orderedVCF + " " + workingDir + "/tmp.vcf";
+		try {
+			ProcessUtils.executeWithoutOutputs(reheader);
+		} catch (IOException ioe) {
+			throw new GuidanceTaskException(ioe);
+		}
+		System.out.println(reheader);
+		
+		String renameX = "sed -i 's/^23/X/g' " + orderedVCF;
+		try {
+			ProcessUtils.executeWithoutOutputs(renameX);
+		} catch (IOException ioe) {
+			throw new GuidanceTaskException(ioe);
+		}
+		System.out.println(renameX);
+		
+		String compressVCF = bgzip_binary + " -@ 48 --f " + orderedVCF;
+		try {
+			ProcessUtils.executeWithoutOutputs(compressVCF);
+		} catch (IOException ioe) {
+			throw new GuidanceTaskException(ioe);
+		}
+		System.out.println(compressVCF);
+		
+		String indexVCF = tabix_binary + " " + orderedVCFcompressed;
+		try {
+			ProcessUtils.executeWithoutOutputs(indexVCF);
+		} catch (IOException ioe) {
+			throw new GuidanceTaskException(ioe);
+		}
+		System.out.println(indexVCF);
+		
+		String phase = shapeit4_binary + " --input " + orderedVCFcompressed + " --map " + gmapFile + 
+				" --pbwt-depth 8 --seed 123456 --mcmc-iterations 10b,1p,1b,1p,1b,1p,1b,1p,10m --output " + 
+				phasedVCF + " --region " + chromo + " -T 48 --log " + phasingLogFile;
+		try {
+			ProcessUtils.executeWithoutOutputs(phase);
+		} catch (IOException ioe) {
+			throw new GuidanceTaskException(ioe);
+		}
+		System.out.println(phase);
+		/*
+		String compressPhasedVCF = bgzip_binary + " -@ 48 --f " + phasedVCF;
+		try {
+			ProcessUtils.executeWithoutOutputs(compressPhasedVCF);
+		} catch (IOException ioe) {
+			throw new GuidanceTaskException(ioe);
+		}
+		System.out.println(compressPhasedVCF);
+		
+		String indexPhasedVCF = tabix_binary + " " + phasedVCFcompressed;
+		try {
+			ProcessUtils.executeWithoutOutputs(indexPhasedVCF);
+		} catch (IOException ioe) {
+			throw new GuidanceTaskException(ioe);
+		}
+		System.out.println(indexPhasedVCF);
+		*/
+		String generateHaps = bcftools_binary + " convert --hapsample " + outPrefix + " " + phasedVCF;
+		try {
+			ProcessUtils.executeWithoutOutputs(generateHaps);
+		} catch (IOException ioe) {
+			throw new GuidanceTaskException(ioe);
+		}
+		System.out.println(generateHaps);
+		
+		if (outPrefix + ".hap.gz" != phasingHapsFile) {
+			FileUtils.move(outPrefix + ".hap.gz", phasingHapsFile);
+		}
+		
+		if (chromo.equals("X")) {
+			if (sex.equals(SEX1) || sex.equals(SEX2)) {
+				
+				FileUtils.move(phasingSampleFile, phasingSampleFile + ".tmp");
+				//asdf
+				BufferedReader br = new BufferedReader(new FileReader(phasingSampleFile + ".tmp"));
+				FileWriter fw = new FileWriter(phasingSampleFile);
+				BufferedWriter writerInfo = new BufferedWriter(fw);
+				String outputFile = "";
+				
+				String header = br.readLine();
+				outputFile = "ID_1 ID_2 missing father mother sex plink_pheno\n";
+				String types = br.readLine();
+				outputFile += "0 0 0 D D D B\n";
+				String line;
+				if(sex.equals(SEX1)) {
+					while ((line = br.readLine()) != null) {
+						outputFile += line.replace("\n", "") + " 0 0 1 -9\n";		
+					}
+				} else {
+					while ((line = br.readLine()) != null) {
+						outputFile += line.replace("\n", "") + " 0 0 2 -9\n";		
+					}
+				}
+				writerInfo.write(outputFile);
+				writerInfo.close();
+				br.close();
+			} 
+		}
+	}
+	
 	/**
 	 * Method to execute phasing task where input files are in BED format
 	 * 
@@ -1133,6 +1288,8 @@ public class GuidanceImpl {
 			phasingBinary = loadFromEnvironment(SHAPEITBINARY, HEADER_PHASING);
 		} else if (phasingTool.equals("eagle")) {
 			phasingBinary = loadFromEnvironment(EAGLEBINARY, HEADER_PHASING);
+		} else if (phasingTool.equals("shapeit4")) {
+			phasingBinary = loadFromEnvironment(SHAPEIT4BINARY, HEADER_PHASING);
 		} else {
 			System.out.println("\n[DEBUG] Only Shapeit and Eagle are available for phasing");
 		}
@@ -1170,103 +1327,49 @@ public class GuidanceImpl {
 						+ gmapFile + " --output-max " + phasingHapsFile + " " + phasingSampleFile
 						+ " --thread 47 --effective-size 20000 --output-log " + phasingLogFile;
 			}
-		} else if (phasingTool.equals("eagle")) {
+			if (execute) {
+				int exitValue = -1;
+				try {
+					exitValue = ProcessUtils.execute(cmd, myPrefix + STDOUT_EXTENSION, myPrefix + STDERR_EXTENSION);
+				} catch (IOException ioe) {
+					throw new GuidanceTaskException(ioe);
+				}
 
+				// Check process exit value
+				if (exitValue != 0) {
+					System.err.println(HEADER_PHASING + "Warning executing phasingProc job, exit value is: " + exitValue);
+					System.err.println(HEADER_PHASING + "                         (This warning is not fatal).");
+				}
+			}
+		} else if (phasingTool.equals("eagle")) {
 			if (chromo.equals("23")) {
-				/*
-				 * if (sex.equals(SEX1)) {
-				 * 
-				 * String plinkBinary = loadFromEnvironment(PLINKBINARY, HEADER_PHASING); String
-				 * baseDirOrigin = bedFile.substring(0, bedFile.length() - 4); String
-				 * baseDirDest = phasingSampleFile.substring(0, phasingSampleFile.length() - 7);
-				 * cmd = plinkBinary + " --bfile " + baseDirOrigin + " --recode vcf --out " +
-				 * baseDirDest;
-				 * 
-				 * int exitValue = -1; try { exitValue = ProcessUtils.execute(cmd, baseDirOrigin
-				 * + STDOUT_EXTENSION, baseDirOrigin + STDERR_EXTENSION); } catch (IOException
-				 * ioe) { throw new GuidanceTaskException(ioe); }
-				 * 
-				 * // Check process exit value if (exitValue != 0) { System.err.println(
-				 * HEADER_PHASING + "Warning executing phasingProc job, exit value is: " +
-				 * exitValue); System.err.println(HEADER_PHASING +
-				 * "                         (This warning is not fatal)."); }
-				 * 
-				 * if (DEBUG) { System.out.println(HEADER_PHASING + MSG_CMD + cmd); }
-				 * 
-				 * // https://www.cog-genomics.org/plink/1.9/data String bcfBinary =
-				 * loadFromEnvironment(BCFTOOLSBINARY, HEADER_PHASING); cmd = bcfBinary +
-				 * " convert " + baseDirDest + ".vcf" + " --hapsample " + baseDirDest +
-				 * " --vcf-ids"; System.out.println("bcf call for males: " + cmd);
-				 * 
-				 * exitValue = -1; try { exitValue = ProcessUtils.execute(cmd, baseDirOrigin +
-				 * STDOUT_EXTENSION, baseDirOrigin + STDERR_EXTENSION); } catch (IOException
-				 * ioe) { throw new GuidanceTaskException(ioe); }
-				 * 
-				 * // Check process exit value if (exitValue != 0) { System.err.println(
-				 * HEADER_PHASING + "Warning executing phasingProc job, exit value is: " +
-				 * exitValue); System.err.println(HEADER_PHASING +
-				 * "                         (This warning is not fatal)."); }
-				 * 
-				 * if (DEBUG) { System.out.println(HEADER_PHASING + MSG_CMD + cmd); }
-				 * 
-				 * String generatedSample = phasingSampleFile + "s";
-				 * 
-				 * FileUtils.move(phasingSampleFile, generatedSample);
-				 * 
-				 * cmd = "echo \"ID_1 ID_2 missing\" > " + phasingSampleFile +
-				 * "; echo \"0 0 0\" >> " + phasingSampleFile + "; tail -n +3 " +
-				 * generatedSample +
-				 * " | tr \"_\" \" \" | awk '{ print $1\"_\"$2\" \"$3\" 0\" }' >> " +
-				 * phasingSampleFile;
-				 * 
-				 * exitValue = -1;
-				 * 
-				 * try { exitValue = ProcessUtils.executeWithoutOutputs(cmd); } catch
-				 * (IOException ioe) { throw new GuidanceTaskException(ioe); }
-				 * 
-				 * // Check process exit value if (exitValue != 0) { System.err.println(
-				 * HEADER_PHASING + "Warning executing phasingProc job, exit value is: " +
-				 * exitValue); System.err.println(HEADER_PHASING +
-				 * "                         (This warning is not fatal)."); }
-				 * 
-				 * if (DEBUG) { System.out.println(HEADER_PHASING + MSG_CMD + cmd); }
-				 * 
-				 * execute = false;
-				 * 
-				 * } // else if (sex.equals(SEX2)) {
-				 */
 				cmd = phasingBinary + " --bed " + bedFile + " --bim " + bimFile + " --fam " + famFile + " --chrom "
 						+ chromo + " --geneticMapFile " + gmapFile + " --numThreads 47 --outPrefix " + myPrefix;
-				// }
-
 			} else {
 				cmd = phasingBinary + " --bed " + bedFile + " --bim " + bimFile + " --fam " + famFile + " --chrom "
 						+ chromo + " --geneticMapFile " + gmapFile + " --numThreads 47 --outPrefix " + myPrefix;
 			}
+			if (execute) {
+				int exitValue = -1;
+				try {
+					exitValue = ProcessUtils.execute(cmd, myPrefix + STDOUT_EXTENSION, myPrefix + STDERR_EXTENSION);
+				} catch (IOException ioe) {
+					throw new GuidanceTaskException(ioe);
+				}
+
+				// Check process exit value
+				if (exitValue != 0) {
+					System.err.println(HEADER_PHASING + "Warning executing phasingProc job, exit value is: " + exitValue);
+					System.err.println(HEADER_PHASING + "                         (This warning is not fatal).");
+				}
+			}
+		} else if (phasingTool.contentEquals("shapeit4")) {
+			phasingBedShapeit4(chromo, bedFile, bimFile, famFile, gmapFile, phasingHapsFile, phasingSampleFile, 
+					phasingLogFile, sex, cmdToStore);
 		}
 
 		if (DEBUG) {
 			System.out.println(HEADER_PHASING + MSG_CMD + cmd);
-		}
-
-		// Execute the command retrieving its exitValue, output and error
-		// Ugly issue: If we run shapeit_v1, all the stdXXX is done stderr, and there is
-		// not stdout
-		// Ugly issue: If we run shapeit_v2, all the stdXXX is done stdout, and there is
-		// not stderr
-		if (execute) {
-			int exitValue = -1;
-			try {
-				exitValue = ProcessUtils.execute(cmd, myPrefix + STDOUT_EXTENSION, myPrefix + STDERR_EXTENSION);
-			} catch (IOException ioe) {
-				throw new GuidanceTaskException(ioe);
-			}
-
-			// Check process exit value
-			if (exitValue != 0) {
-				System.err.println(HEADER_PHASING + "Warning executing phasingProc job, exit value is: " + exitValue);
-				System.err.println(HEADER_PHASING + "                         (This warning is not fatal).");
-			}
 		}
 
 		// Now we rename shapeitHapsFileGz to shapeitHapsFile
@@ -1298,7 +1401,7 @@ public class GuidanceImpl {
 			} else {
 				FileUtils.createEmptyFile(phasingLogFile, HEADER_PHASING);
 			}
-		} else if (phasingTool.equals("shapeit")) {
+		} else if (phasingTool.equals("shapeit") || phasingTool.equals("shapeit4")) {
 			// Ugly, because shapeit_v2 automatically puts the .log to the file.
 			// If there is not output in the impute process. Then we have to create some
 			// empty outputs.
@@ -1309,10 +1412,7 @@ public class GuidanceImpl {
 					throw new GuidanceTaskException(
 							HEADER_PHASING + ERROR_ON_FILE + tmpFile + ERROR_SUFFIX_RENAMED_FILE);
 				}
-			} else {
-				FileUtils.createEmptyFile(phasingLogFile, HEADER_PHASING);
-			}
-			if (!new File(phasingLogFile).exists()) {
+			} else if (!new File(phasingLogFile).exists()){
 				FileUtils.createEmptyFile(phasingLogFile, HEADER_PHASING);
 			}
 		}

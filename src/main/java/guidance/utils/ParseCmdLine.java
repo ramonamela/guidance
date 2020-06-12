@@ -737,7 +737,7 @@ public class ParseCmdLine {
 			System.exit(1);
 		}
 
-		if (phasingTool.equals("shapeit")) {
+		if (phasingTool.equals("shapeit") || phasingTool.equals("shapeit4")) {
 			for (int kk = start; kk <= end; kk++) {
 				tmpArg = argumentsArray.get(i++);
 				myArgument = tmpArg.split("=");
