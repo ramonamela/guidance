@@ -16,6 +16,82 @@ import guidance.utils.ParseCmdLine;
 
 public class TestFunction {
 
+	private static final String SEX1 = GuidanceImpl.getSex1();
+	private static final String SEX2 = GuidanceImpl.getSex2();
+	private static final String NO_SEX = GuidanceImpl.getNoSex();
+
+	private static void createSplitedFilesWraper(String[] args) {
+		String chr = args[0];
+		String gmapFile = args[1];
+		String gmapFileChr = args[2];
+
+		try {
+			GuidanceImpl.createSplitedFiles(gmapFile, gmapFileChr, chr, "");
+		} catch (Exception e) {
+			System.err.println("[Guidance] Exception trying the execution of createSplitedFiles task");
+			e.printStackTrace();
+		}
+	}
+
+	private static void convertFromBedToBedWrapper(String[] args) {
+		String chr = args[0];
+		String bedFile = args[1];
+		String bimFile = args[2];
+		String famFile = args[3];
+		String mixedBedFile = args[4];
+		String mixedBimFile = args[5];
+		String mixedFamFile = args[6];
+		String mixedBedToBedLogFile = args[7];
+
+		try {
+			GuidanceImpl.convertFromBedToBed(bedFile, bimFile, famFile, mixedBedFile, mixedBimFile, mixedFamFile,
+					mixedBedToBedLogFile, chr, "");
+		} catch (GuidanceTaskException e) {
+			System.err.println("[Guidance] Exception trying the execution of convertFromBedToBed task");
+			e.printStackTrace();
+		}
+	}
+
+	private static void splitChr23Wrapper(String[] args) {
+		String chr = args[1];
+		String inputPrefix = args[2];
+		String outputPrefix = args[3];
+		String logFile = args[4];
+		String sex = args[5];
+
+		String bedFile = inputPrefix + ".bed";
+		String bimFile = inputPrefix + ".bim";
+		String famFile = inputPrefix + ".fam";
+		String bedChr23File = outputPrefix + ".bed";
+		String bimChr23File = outputPrefix + ".bim";
+		String famChr23File = outputPrefix + ".fam";
+
+		try {
+			GuidanceImpl.splitChr23(bedFile, bimFile, famFile, bedChr23File, bimChr23File, famChr23File, logFile, sex,
+					chr, "");
+		} catch (Exception e) {
+			System.err.println("[Guidance] Exception trying the execution of splitChr23 task");
+			System.err.println(e.getMessage());
+		}
+
+	}
+
+	private static void createRsIdListWrapper(String[] args) {
+
+		String mixedBimFile = args[0];
+		String exclCgatFlag = args[1];
+		String mixedPairsFile = args[2];
+		String inputFormat = args[3];
+
+		try {
+			GuidanceImpl.createRsIdList(mixedBimFile, exclCgatFlag, mixedPairsFile, inputFormat, "");
+		} catch (GuidanceTaskException gte) {
+			System.err.println("[Guidance] Exception trying the execution of createRsIdList task");
+			gte.printStackTrace();
+		}
+
+	}
+
 	private static void collectSummaryWrapper(String[] args) {
 		String chr = args[0];
 		String imputeTool = args[1];
@@ -32,6 +108,7 @@ public class TestFunction {
 			GuidanceImpl.collectSummary(chr, imputeTool, firstImputeFileInfo, snptestOutFile, reduceFile, mafThresholdS,
 					hweCohortThresholdS, hweCasesThresholdS, hweControlsThresholdS, sex, "");
 		} catch (GuidanceTaskException e) { // TODO Auto-generated catch block
+			System.err.println("[Guidance] Exception trying the execution of collectSummary task");
 			e.printStackTrace();
 		}
 
@@ -51,6 +128,7 @@ public class TestFunction {
 			GuidanceImpl.filterByAll(inputFile, outputFile, panelName, mafThresholdS, infoThresholdS,
 					hweCohortThresholdS, hweCasesThresholdS, hweControlsThresholdS, "", "", cmdToStore);
 		} catch (GuidanceTaskException e) {
+			System.err.println("[Guidance] Exception trying the execution of filterByAll task");
 			e.printStackTrace();
 		}
 	}
@@ -63,6 +141,7 @@ public class TestFunction {
 		try {
 			GuidanceImpl.mergeTwoChunks(reduceA, reduceB, reduceC, cmdToStore);
 		} catch (GuidanceTaskException e) {
+			System.err.println("[Guidance] Exception trying the execution of mergeTwoChunks task");
 			e.printStackTrace();
 		}
 	}
@@ -113,7 +192,6 @@ public class TestFunction {
 		String covariables = args[4];
 
 		GuidanceImpl.newSample(sampleFile, phasingSampleFile, phasingNewSampleFile, responseVar, covariables, "");
-
 	}
 
 	private static void imputeWithImpute(String[] args) {
@@ -132,6 +210,7 @@ public class TestFunction {
 		String theChromo = args[12];
 		String sex = args[13];
 		try {
+			System.err.println("[Guidance] Exception trying the execution of imputeWithImpute task");
 			GuidanceImpl.imputeWithImpute(gmapFile, knownHapFile, legendFile, phasingHapsFile, phasingSampleFile, lim1S,
 					lim2S, pairsFile, imputeFile, imputeFileInfo, imputeFileSummary, imputeFileWarnings, theChromo, sex,
 					"");
@@ -152,6 +231,7 @@ public class TestFunction {
 					"");
 		} catch (GuidanceTaskException e) {
 			// TODO Auto-generated catch block
+			System.err.println("[Guidance] Exception trying the execution of filterByInfo task");
 			e.printStackTrace();
 		}
 	}
@@ -161,26 +241,36 @@ public class TestFunction {
 		int option = 5;
 		switch (option) {
 		case 0:
-			collectSummaryWrapper(args);
+			createSplitedFilesWraper(args);
 			break;
 		case 1:
+			convertFromBedToBedWrapper(args);
+		case 2:
+			splitChr23Wrapper(args);
+		case 3:
+			createRsIdListWrapper(args);
+		case 8:
+			collectSummaryWrapper(args);
+			break;
+		case 9:
 			filterByAllWrapper(args);
 			break;
-		case 2:
+		case 10:
 			mergeOfChunksWrapper(args);
 			break;
-		case 4:
+		case 11:
 			printPaths(args);
 			break;
-		case 5:
+		case 12:
 			newSample(args);
 			break;
-		case 6:
+		case 13:
 			imputeWithImpute(args);
 			break;
-		case 7:
+		case 14:
 			filterByInfo(args);
 			break;
 		}
 	}
+
 }
