@@ -2025,23 +2025,11 @@ public class GuidanceImpl {
 		String cmd = null;
 		if (theChromo.equals(CHR_23)) {
 
-			// if (sex.equals(SEX1)) {
 			cmd = impute2Binary + " -use_prephased_g -m " + gmapFile + " -h " + knownHapFile + " -l " + legendFile
 					+ " -known_haps_g " + phasingHapsFileGz + " -sample_g " + phasingSampleFile + " -int " + lim1S + " "
 					+ lim2S + "  -chrX -exclude_snps_g " + pairsFile + " -impute_excluded -Ne 20000 -o " + imputeFile
 					+ " -i " + imputeFileInfo + " -r " + imputeFileSummary + " -w " + imputeFileWarnings
 					+ " -no_sample_qc_info -o_gz";
-			// } else if (sex.equals(SEX2)) {
-			// } else {
-			// cmd = impute2Binary + " -use_prephased_g -m " + gmapFile + " -h " +
-			// knownHapFile + " -l " + legendFile
-			// + " -known_haps_g " + phasingHapsFileGz + " -sample_g " + phasingSampleFile +
-			// " -int " + lim1S
-			// + " " + lim2S + " -chrX -exclude_snps_g " + pairsFile + " -impute_excluded
-			// -Ne 20000 -o "
-			// + imputeFile + " -i " + imputeFileInfo + " -r " + imputeFileSummary + " -w "
-			// + imputeFileWarnings + " -no_sample_qc_info -o_gz";
-			// }
 
 			theChromo = "X";
 
