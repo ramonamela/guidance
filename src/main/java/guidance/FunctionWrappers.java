@@ -360,7 +360,8 @@ public class FunctionWrappers {
 
 	public static void main(String[] args) throws Exception {
 		System.out.println(Arrays.toString(args));
-		int option = 5;
+		int option = Integer.parseInt(args[0]);
+		args = Arrays.copyOfRange(args, 1, args.length);
 		switch (option) {
 		case 0:
 			createSplitedFilesWraper(args);
