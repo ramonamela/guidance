@@ -44,6 +44,7 @@ import java.io.FileReader;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.net.InetAddress;
+import java.nio.file.Files;
 import java.io.IOException;
 
 import java.util.ArrayList;
@@ -111,7 +112,7 @@ public class GuidanceImpl {
 
 	private static final String SEX1 = "males";
 	private static final String SEX2 = "females";
-	private static final String NO_SEX = "";
+	private static final String NO_SEX = "no_sex";
 
 	// Commonly used characters
 	private static final String NEW_LINE = "\n";
@@ -702,6 +703,7 @@ public class GuidanceImpl {
 		// Create output file
 		File outPairsFile = new File(pairsFile);
 		try {
+			Files.deleteIfExists(outPairsFile.toPath());
 			if (!outPairsFile.createNewFile()) {
 				throw new IOException(HEADER_CREATE_RSID_LIST + ERROR_FILE_CREATION + outPairsFile + FILE_SUFFIX);
 			}
@@ -1082,6 +1084,7 @@ public class GuidanceImpl {
 		// exist!!)
 		File outputFile = new File(excludedSnpsFile);
 		try {
+			Files.deleteIfExists(outputFile.toPath());
 			if (!outputFile.createNewFile()) {
 				throw new IOException(ERROR_FILE_CREATION + outputFile + FILE_SUFFIX);
 			}
@@ -3424,6 +3427,7 @@ public class GuidanceImpl {
 		String plainResultsPanelC = resultsPanelC.substring(0, resultsPanelC.length() - 3);
 		File resultFile = new File(plainResultsPanelC);
 		try {
+			Files.deleteIfExists(resultFile.toPath());
 			resultFile.createNewFile();
 		} catch (IOException ioe) {
 			throw new GuidanceTaskException(ioe);

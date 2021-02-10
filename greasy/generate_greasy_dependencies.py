@@ -8,7 +8,7 @@ def sing_command():
 
 
 def java_jar():
-    return "java -cp /gpfs/projects/bsc05/guidance/guidance_versions/guidance_25_17_01_20.jar " \
+    return "java -cp /gpfs/projects/bsc05/guidance/guidance_versions/guidance_25_01_02_21.jar " \
            "guidance.FunctionWrappers "
 
 
@@ -42,6 +42,7 @@ class Command:
 
     def line_for_string(self, string_list):
         for command in self.commands:
+            """All the words passed in the list are present in the line"""
             if reduce(lambda x, y: x and y, map(lambda x: x in command.line, string_list)):
                 return str(command.counter)
         return ""

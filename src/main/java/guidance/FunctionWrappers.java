@@ -368,16 +368,22 @@ public class FunctionWrappers {
 			break;
 		case 1:
 			convertFromBedToBedWrapper(args);
+			break;
 		case 2:
 			splitChr23Wrapper(args);
+			break;
 		case 3:
 			createRsIdListWrapper(args);
+			break;
 		case 4:
 			phasingBedWrapper(args);
+			break;
 		case 5:
 			createListOfExcludedSnpsWrapper(args);
+			break;
 		case 6:
 			filterHaplotypesWrapper(args);
+			break;
 		case 7:
 			newSampleWrapper(args);
 			break;
