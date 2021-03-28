@@ -213,7 +213,7 @@ public class GuidanceImpl {
 		for (int elem = 1; elem < headerSplited.length - 1; elem++)
 			headerLine += headerSplited[elem] + "\t";
 		headerLine += headerSplited[headerSplited.length - 1] + "\n";
-		//System.out.println("[DEBUG] \t- Header: " + headerLine);
+		// System.out.println("[DEBUG] \t- Header: " + headerLine);
 
 		writerInfo.write(headerLine);
 
@@ -298,7 +298,7 @@ public class GuidanceImpl {
 		} catch (IOException ioe) {
 			throw new GuidanceTaskException(ioe);
 		}
-		//System.out.println("The exit value is " + exitValue);
+		// System.out.println("The exit value is " + exitValue);
 
 		// Check process exit value
 		if (exitValue != 0) {
@@ -633,8 +633,9 @@ public class GuidanceImpl {
 					myNewLine = line.substring(0, length - 2) + " 1";
 					// System.out.println("[DEBUG]: 1 New line : " + myNewLine);
 				} else {
-					//System.out.println(HEADER_CONVERT_FROM_PED_TO_GEN
-					//		+ "Error changing the sample file. Invalid affection coding in line " + myNewLine);
+					// System.out.println(HEADER_CONVERT_FROM_PED_TO_GEN
+					// + "Error changing the sample file. Invalid affection coding in line " +
+					// myNewLine);
 					// throw new Exception("Error changing the sample file. Invalid affection coding
 					// in line " +
 					// counter);
@@ -715,7 +716,8 @@ public class GuidanceImpl {
 		boolean thisIsGz = genOrBimFile.endsWith(".gz");
 		// Process the file depending on its format
 		if (thisIsGz) {
-			//System.out.println(HEADER_CREATE_RSID_LIST + "It seems the file " + genOrBimFile + " is a gzip file");
+			// System.out.println(HEADER_CREATE_RSID_LIST + "It seems the file " +
+			// genOrBimFile + " is a gzip file");
 
 			try (GZIPInputStream inputGz = new GZIPInputStream(new FileInputStream(genOrBimFile));
 					InputStreamReader decoder = new InputStreamReader(inputGz);
@@ -933,10 +935,10 @@ public class GuidanceImpl {
 
 			File file = new File(imputeFileGz);
 			if (file.length() <= 28) {
-				//System.out.println("\n[DEBUG] Execution: FALSE");
+				// System.out.println("\n[DEBUG] Execution: FALSE");
 				execution = false;
 			} else {
-				//System.out.println("\n[DEBUG] Execution: TRUE");
+				// System.out.println("\n[DEBUG] Execution: TRUE");
 				execution = true;
 			}
 
@@ -1110,10 +1112,11 @@ public class GuidanceImpl {
 			System.out.println("\n[DEBUG] Finished execution of createListOfExcludedSnps.");
 		}
 	}
-	
-	private static void phasingBedShapeit4(String chromo, String bedFile, String bimFile, String famFile, String gmapFile,
-			String phasingHapsFile, String phasingSampleFile, String phasingLogFile, String sex, String cmdToStore) throws GuidanceTaskException, IOException {
-		
+
+	private static void phasingBedShapeit4(String chromo, String bedFile, String bimFile, String famFile,
+			String gmapFile, String phasingHapsFile, String phasingSampleFile, String phasingLogFile, String sex,
+			String cmdToStore) throws GuidanceTaskException, IOException {
+
 		String outPrefix = phasingSampleFile.substring(0, phasingSampleFile.length() - 7);
 		String inputPrefix = bimFile.substring(0, bimFile.length() - 4);
 		String workingDir = new File(phasingSampleFile).getParentFile().getCanonicalPath();
@@ -1124,14 +1127,15 @@ public class GuidanceImpl {
 		String orderedVCFcompressed = orderedVCF + ".gz";
 		String phasedVCF = workingDir + "/phased.vcf";
 		String phasedVCFcompressed = phasedVCF + ".gz";
-		if (chromo.equals("23")) chromo = "X";
-		
+		if (chromo.equals("23"))
+			chromo = "X";
+
 		String plink_binary = loadFromEnvironment(PLINKBINARY, HEADER_PHASING);
 		String bcftools_binary = loadFromEnvironment(BCFTOOLSBINARY, HEADER_PHASING);
 		String tabix_binary = loadFromEnvironment(TABIXBINARY, HEADER_PHASING);
 		String shapeit4_binary = loadFromEnvironment(SHAPEIT4BINARY, HEADER_PHASING);
 		String bgzip_binary = loadFromEnvironment(BGZIPBINARY, HEADER_PHASING);
-		
+
 		String generate_ref_file = "awk '{ print $5 \"\\t\" $2 }' " + bimFile + " > " + refFile;
 		try {
 			ProcessUtils.executeWithoutOutputs(generate_ref_file);
@@ -1139,39 +1143,42 @@ public class GuidanceImpl {
 			throw new GuidanceTaskException(ioe);
 		}
 		System.out.println(generate_ref_file);
-		
-		String generate_vcf = plink_binary + " --bfile " + inputPrefix + " --a2-allele " + refFile + " 1 2 --recode vcf --out " + workingDir + "/tmp";
+
+		String generate_vcf = plink_binary + " --bfile " + inputPrefix + " --a2-allele " + refFile
+				+ " 1 2 --recode vcf --out " + workingDir + "/tmp";
 		try {
 			ProcessUtils.executeWithoutOutputs(generate_vcf);
 		} catch (IOException ioe) {
 			throw new GuidanceTaskException(ioe);
 		}
 		System.out.println(generate_vcf);
-		
-		String get_sample_names = bcftools_binary + " query -l " + workingDir + "/tmp.vcf > " + sampleNames; 
+
+		String get_sample_names = bcftools_binary + " query -l " + workingDir + "/tmp.vcf > " + sampleNames;
 		try {
 			ProcessUtils.executeWithoutOutputs(get_sample_names);
 		} catch (IOException ioe) {
 			throw new GuidanceTaskException(ioe);
 		}
 		System.out.println(get_sample_names);
-		
-		String get_renames = "cat " + sampleNames + " | sed 's@_@\\t@g' | awk '{ print $1 \"_\" $2 \" \"  $2 }' > " + renames;
+
+		String get_renames = "cat " + sampleNames + " | sed 's@_@\\t@g' | awk '{ print $1 \"_\" $2 \" \"  $2 }' > "
+				+ renames;
 		try {
 			ProcessUtils.executeWithoutOutputs(get_renames);
 		} catch (IOException ioe) {
 			throw new GuidanceTaskException(ioe);
 		}
 		System.out.println(get_renames);
-		
-		String reheader = bcftools_binary + " reheader --samples " + renames + " -o " + orderedVCF + " " + workingDir + "/tmp.vcf";
+
+		String reheader = bcftools_binary + " reheader --samples " + renames + " -o " + orderedVCF + " " + workingDir
+				+ "/tmp.vcf";
 		try {
 			ProcessUtils.executeWithoutOutputs(reheader);
 		} catch (IOException ioe) {
 			throw new GuidanceTaskException(ioe);
 		}
 		System.out.println(reheader);
-		
+
 		String renameX = "sed -i 's/^23/X/g' " + orderedVCF;
 		try {
 			ProcessUtils.executeWithoutOutputs(renameX);
@@ -1179,7 +1186,7 @@ public class GuidanceImpl {
 			throw new GuidanceTaskException(ioe);
 		}
 		System.out.println(renameX);
-		
+
 		String compressVCF = bgzip_binary + " -@ 48 --f " + orderedVCF;
 		try {
 			ProcessUtils.executeWithoutOutputs(compressVCF);
@@ -1187,7 +1194,7 @@ public class GuidanceImpl {
 			throw new GuidanceTaskException(ioe);
 		}
 		System.out.println(compressVCF);
-		
+
 		String indexVCF = tabix_binary + " " + orderedVCFcompressed;
 		try {
 			ProcessUtils.executeWithoutOutputs(indexVCF);
@@ -1195,10 +1202,10 @@ public class GuidanceImpl {
 			throw new GuidanceTaskException(ioe);
 		}
 		System.out.println(indexVCF);
-		
-		String phase = shapeit4_binary + " --input " + orderedVCFcompressed + " --map " + gmapFile + 
-				" --pbwt-depth 8 --seed 123456 --mcmc-iterations 10b,1p,1b,1p,1b,1p,1b,1p,10m --output " + 
-				phasedVCF + " --region " + chromo + " -T 48 --log " + phasingLogFile;
+
+		String phase = shapeit4_binary + " --input " + orderedVCFcompressed + " --map " + gmapFile
+				+ " --pbwt-depth 8 --seed 123456 --mcmc-iterations 10b,1p,1b,1p,1b,1p,1b,1p,10m --output " + phasedVCF
+				+ " --region " + chromo + " -T 48 --log " + phasingLogFile;
 		try {
 			ProcessUtils.executeWithoutOutputs(phase);
 		} catch (IOException ioe) {
@@ -1206,22 +1213,15 @@ public class GuidanceImpl {
 		}
 		System.out.println(phase);
 		/*
-		String compressPhasedVCF = bgzip_binary + " -@ 48 --f " + phasedVCF;
-		try {
-			ProcessUtils.executeWithoutOutputs(compressPhasedVCF);
-		} catch (IOException ioe) {
-			throw new GuidanceTaskException(ioe);
-		}
-		System.out.println(compressPhasedVCF);
-		
-		String indexPhasedVCF = tabix_binary + " " + phasedVCFcompressed;
-		try {
-			ProcessUtils.executeWithoutOutputs(indexPhasedVCF);
-		} catch (IOException ioe) {
-			throw new GuidanceTaskException(ioe);
-		}
-		System.out.println(indexPhasedVCF);
-		*/
+		 * String compressPhasedVCF = bgzip_binary + " -@ 48 --f " + phasedVCF; try {
+		 * ProcessUtils.executeWithoutOutputs(compressPhasedVCF); } catch (IOException
+		 * ioe) { throw new GuidanceTaskException(ioe); }
+		 * System.out.println(compressPhasedVCF);
+		 * 
+		 * String indexPhasedVCF = tabix_binary + " " + phasedVCFcompressed; try {
+		 * ProcessUtils.executeWithoutOutputs(indexPhasedVCF); } catch (IOException ioe)
+		 * { throw new GuidanceTaskException(ioe); } System.out.println(indexPhasedVCF);
+		 */
 		String generateHaps = bcftools_binary + " convert --hapsample " + outPrefix + " " + phasedVCF;
 		try {
 			ProcessUtils.executeWithoutOutputs(generateHaps);
@@ -1229,42 +1229,42 @@ public class GuidanceImpl {
 			throw new GuidanceTaskException(ioe);
 		}
 		System.out.println(generateHaps);
-		
+
 		if (outPrefix + ".hap.gz" != phasingHapsFile) {
 			FileUtils.move(outPrefix + ".hap.gz", phasingHapsFile);
 		}
-		
+
 		if (chromo.equals("X")) {
 			if (sex.equals(SEX1) || sex.equals(SEX2)) {
-				
+
 				FileUtils.move(phasingSampleFile, phasingSampleFile + ".tmp");
-				//asdf
+				// asdf
 				BufferedReader br = new BufferedReader(new FileReader(phasingSampleFile + ".tmp"));
 				FileWriter fw = new FileWriter(phasingSampleFile);
 				BufferedWriter writerInfo = new BufferedWriter(fw);
 				String outputFile = "";
-				
+
 				String header = br.readLine();
 				outputFile = "ID_1 ID_2 missing father mother sex plink_pheno\n";
 				String types = br.readLine();
 				outputFile += "0 0 0 D D D B\n";
 				String line;
-				if(sex.equals(SEX1)) {
+				if (sex.equals(SEX1)) {
 					while ((line = br.readLine()) != null) {
-						outputFile += line.replace("\n", "") + " 0 0 1 -9\n";		
+						outputFile += line.replace("\n", "") + " 0 0 1 -9\n";
 					}
 				} else {
 					while ((line = br.readLine()) != null) {
-						outputFile += line.replace("\n", "") + " 0 0 2 -9\n";		
+						outputFile += line.replace("\n", "") + " 0 0 2 -9\n";
 					}
 				}
 				writerInfo.write(outputFile);
 				writerInfo.close();
 				br.close();
-			} 
+			}
 		}
 	}
-	
+
 	/**
 	 * Method to execute phasing task where input files are in BED format
 	 * 
@@ -1340,7 +1340,8 @@ public class GuidanceImpl {
 
 				// Check process exit value
 				if (exitValue != 0) {
-					System.err.println(HEADER_PHASING + "Warning executing phasingProc job, exit value is: " + exitValue);
+					System.err
+							.println(HEADER_PHASING + "Warning executing phasingProc job, exit value is: " + exitValue);
 					System.err.println(HEADER_PHASING + "                         (This warning is not fatal).");
 				}
 			}
@@ -1362,12 +1363,13 @@ public class GuidanceImpl {
 
 				// Check process exit value
 				if (exitValue != 0) {
-					System.err.println(HEADER_PHASING + "Warning executing phasingProc job, exit value is: " + exitValue);
+					System.err
+							.println(HEADER_PHASING + "Warning executing phasingProc job, exit value is: " + exitValue);
 					System.err.println(HEADER_PHASING + "                         (This warning is not fatal).");
 				}
 			}
 		} else if (phasingTool.contentEquals("shapeit4")) {
-			phasingBedShapeit4(chromo, bedFile, bimFile, famFile, gmapFile, phasingHapsFile, phasingSampleFile, 
+			phasingBedShapeit4(chromo, bedFile, bimFile, famFile, gmapFile, phasingHapsFile, phasingSampleFile,
 					phasingLogFile, sex, cmdToStore);
 		}
 
@@ -1415,7 +1417,7 @@ public class GuidanceImpl {
 					throw new GuidanceTaskException(
 							HEADER_PHASING + ERROR_ON_FILE + tmpFile + ERROR_SUFFIX_RENAMED_FILE);
 				}
-			} else if (!new File(phasingLogFile).exists()){
+			} else if (!new File(phasingLogFile).exists()) {
 				FileUtils.createEmptyFile(phasingLogFile, HEADER_PHASING);
 			}
 		}
@@ -1532,55 +1534,56 @@ public class GuidanceImpl {
 		String line = br.readLine(); // reading the header
 
 		String[] splitHeaderSF = line.split(SPACE);
-		//String[] namesHeaderCovar = covariables.split(","); // Get the pheno columns
-		//String[] namesHeaderResponse = responseVar.split(","); // Get the pheno columns
+		// String[] namesHeaderCovar = covariables.split(","); // Get the pheno columns
+		// String[] namesHeaderResponse = responseVar.split(","); // Get the pheno
+		// columns
 
-		//for (int i = 0; i < splitHeaderSF.length; i++) {
+		// for (int i = 0; i < splitHeaderSF.length; i++) {
 
-			//for (int j = 0; j < namesHeaderCovar.length; j++) {
-				//if (splitHeaderSF[i].equals(namesHeaderCovar[j])) {
-					// System.out.println("Adding column " + i + " corresponding to " +
-					// splitHeaderSF[i] + " to covars");
-					//columnsHeaderCovar.add(i);
-				//}
-			//}
+		// for (int j = 0; j < namesHeaderCovar.length; j++) {
+		// if (splitHeaderSF[i].equals(namesHeaderCovar[j])) {
+		// System.out.println("Adding column " + i + " corresponding to " +
+		// splitHeaderSF[i] + " to covars");
+		// columnsHeaderCovar.add(i);
+		// }
+		// }
 
-			//for (int j = 0; j < namesHeaderResponse.length; j++) {
-				//if (splitHeaderSF[i].equals(namesHeaderResponse[j])) {
-					// System.out.println("Adding column " + i + " corresponding to " +
-					// splitHeaderSF[i] + " to reponse");
-					//columnsHeaderResponse.add(i);
-				//}
-			//}
+		// for (int j = 0; j < namesHeaderResponse.length; j++) {
+		// if (splitHeaderSF[i].equals(namesHeaderResponse[j])) {
+		// System.out.println("Adding column " + i + " corresponding to " +
+		// splitHeaderSF[i] + " to reponse");
+		// columnsHeaderResponse.add(i);
+		// }
+		// }
 
-		//}
+		// }
 
 		while ((line = br.readLine()) != null) {
 
 			String[] lineSplited = line.split(SPACE);
 			String key = lineSplited[1];
 
-			//String valueCovar = lineSplited[columnsHeaderCovar.get(0)];
+			// String valueCovar = lineSplited[columnsHeaderCovar.get(0)];
 
-			//for (int i = 1; i < columnsHeaderCovar.size(); i++) {
-				//valueCovar += SPACE_WRITE + lineSplited[columnsHeaderCovar.get(i)];
-			//}
+			// for (int i = 1; i < columnsHeaderCovar.size(); i++) {
+			// valueCovar += SPACE_WRITE + lineSplited[columnsHeaderCovar.get(i)];
+			// }
 
-			//String valueResponse = lineSplited[columnsHeaderResponse.get(0)];
+			// String valueResponse = lineSplited[columnsHeaderResponse.get(0)];
 
-			//for (int i = 1; i < columnsHeaderResponse.size(); i++) {
-				//valueResponse += SPACE_WRITE + lineSplited[columnsHeaderResponse.get(i)];
-			//}
-			
+			// for (int i = 1; i < columnsHeaderResponse.size(); i++) {
+			// valueResponse += SPACE_WRITE + lineSplited[columnsHeaderResponse.get(i)];
+			// }
+
 			String valueCovar = lineSplited[3];
-			
+
 			for (int i = 4; i < lineSplited.length; ++i) {
 				valueCovar += SPACE_WRITE + lineSplited[i];
 			}
 
 			valuesJoined = new ArrayList<String>();
 			valuesJoined.add(valueCovar); // Pos 1
-			//valuesJoined.add(valueResponse); // Pos 2
+			// valuesJoined.add(valueResponse); // Pos 2
 
 			loadSampleFile.put(key, valuesJoined);
 		}
@@ -1592,17 +1595,16 @@ public class GuidanceImpl {
 			outputFile += splitHeaderSF[i] + SPACE_WRITE;
 		}
 
-		//outputFile += splitHeaderSF[columnsHeaderCovar.get(0)];
+		// outputFile += splitHeaderSF[columnsHeaderCovar.get(0)];
 		outputFile += splitHeaderSF[3];
 		for (int i = 4; i < splitHeaderSF.length; i++) {
 			outputFile += SPACE_WRITE + splitHeaderSF[i];
 		}
 		/*
-		outputFile += SPACE_WRITE + splitHeaderSF[columnsHeaderResponse.get(0)];
-		for (int i = 1; i < columnsHeaderResponse.size(); i++) {
-			outputFile += SPACE_WRITE + splitHeaderSF[columnsHeaderResponse.get(i)];
-		}
-		*/
+		 * outputFile += SPACE_WRITE + splitHeaderSF[columnsHeaderResponse.get(0)]; for
+		 * (int i = 1; i < columnsHeaderResponse.size(); i++) { outputFile +=
+		 * SPACE_WRITE + splitHeaderSF[columnsHeaderResponse.get(i)]; }
+		 */
 
 		outputFile += "\n";
 
@@ -1919,7 +1921,8 @@ public class GuidanceImpl {
 	public static void imputeWithImputeAndFilterByInfoHigh(String gmapFile, String knownHapFile, String legendFile,
 			String phasingHapsFile, String phasingSampleFile, String lim1S, String lim2S, String pairsFile,
 			String infoThresholdS, String mafThresholdS, String theChromo, String sex, String imputeFile,
-			String imputeFileInfo, String imputeFileSummary, String imputeFileWarnings, String filteredRsIdFile, String filteredFile, String filteredLogFile) throws GuidanceTaskException {
+			String imputeFileInfo, String imputeFileSummary, String imputeFileWarnings, String filteredRsIdFile,
+			String filteredFile, String filteredLogFile) throws GuidanceTaskException {
 
 		imputeWithImpute(gmapFile, knownHapFile, legendFile, phasingHapsFile, phasingSampleFile, lim1S, lim2S,
 				pairsFile, imputeFile, imputeFileInfo, imputeFileSummary, imputeFileWarnings, theChromo, sex, "");
@@ -1933,7 +1936,8 @@ public class GuidanceImpl {
 	public static void imputeWithImputeAndFilterByInfoMedium(String gmapFile, String knownHapFile, String legendFile,
 			String phasingHapsFile, String phasingSampleFile, String lim1S, String lim2S, String pairsFile,
 			String infoThresholdS, String mafThresholdS, String theChromo, String sex, String imputeFile,
-			String imputeFileInfo, String imputeFileSummary, String imputeFileWarnings, String filteredRsIdFile, String filteredFile, String filteredLogFile) throws GuidanceTaskException {
+			String imputeFileInfo, String imputeFileSummary, String imputeFileWarnings, String filteredRsIdFile,
+			String filteredFile, String filteredLogFile) throws GuidanceTaskException {
 
 		imputeWithImpute(gmapFile, knownHapFile, legendFile, phasingHapsFile, phasingSampleFile, lim1S, lim2S,
 				pairsFile, imputeFile, imputeFileInfo, imputeFileSummary, imputeFileWarnings, theChromo, sex, "");
@@ -1947,7 +1951,8 @@ public class GuidanceImpl {
 	public static void imputeWithImputeAndFilterByInfoLow(String gmapFile, String knownHapFile, String legendFile,
 			String phasingHapsFile, String phasingSampleFile, String lim1S, String lim2S, String pairsFile,
 			String infoThresholdS, String mafThresholdS, String theChromo, String sex, String imputeFile,
-			String imputeFileInfo, String imputeFileSummary, String imputeFileWarnings, String filteredRsIdFile, String filteredFile, String filteredLogFile) throws GuidanceTaskException {
+			String imputeFileInfo, String imputeFileSummary, String imputeFileWarnings, String filteredRsIdFile,
+			String filteredFile, String filteredLogFile) throws GuidanceTaskException {
 
 		imputeWithImpute(gmapFile, knownHapFile, legendFile, phasingHapsFile, phasingSampleFile, lim1S, lim2S,
 				pairsFile, imputeFile, imputeFileInfo, imputeFileSummary, imputeFileWarnings, theChromo, sex, "");
@@ -2079,7 +2084,9 @@ public class GuidanceImpl {
 			String imputeFileColumnTransformation = "zcat " + imputeGZFile + " | awk -v chr=" + theChromo
 					+ " '{out=$1 \" \" chr \":\" $3 \"_\" $4 \"_\" $5 ; for(i=3;i<=NF;i++){out=out\" \"$i}; print out}' | gzip > "
 					+ imputeGZFile + "_tmp; mv " + imputeGZFile + "_tmp " + imputeGZFile;
-			//imputeFileColumnTransformation = "/gpfs/projects/pr1ejj00/binaries/convertSecondColumn.sh " + imputeGZFile + " " + theChromo;
+			// imputeFileColumnTransformation =
+			// "/gpfs/projects/pr1ejj00/binaries/convertSecondColumn.sh " + imputeGZFile + "
+			// " + theChromo;
 			try {
 				ProcessUtils.executeWithoutOutputs(imputeFileColumnTransformation);
 			} catch (IOException ioe) {
@@ -2112,7 +2119,7 @@ public class GuidanceImpl {
 				+ "_tmp;tail -n +2 " + imputeFileInfo + " | awk -v chr=" + theChromo
 				+ " '{out=$1 \" \" chr \":\" $3 \"_\" $4 \"_\" $5 ; for(i=3;i<=NF;i++){out=out\" \"$i}; print out}' >> "
 				+ imputeFileInfo + "_tmp; mv " + imputeFileInfo + "_tmp " + imputeFileInfo;
-		
+
 		try {
 			ProcessUtils.executeWithoutOutputs(imputeInfoFileColumnTransformation);
 		} catch (IOException ioe) {
@@ -2382,31 +2389,35 @@ public class GuidanceImpl {
 	// This is not a task!! Calling it will imply a sincronization!!!
 	// If someday this can be a task, combinedTopHits -> FILE_IN_ARRAY
 	// topHitsAllPheno -> FILE_OUT
-	public static void generateTopHitsAllPhenos(LinkedList<String> controlInteger, String combinedTopHitsString, String topHitsAllPheno, String hostname, String ip)
-			throws GuidanceTaskException, IOException {
-		
+	public static void generateTopHitsAllPhenos(LinkedList<String> controlInteger, String combinedTopHitsString,
+			String topHitsAllPheno, String hostname, String ip) throws GuidanceTaskException, IOException {
+
 		LinkedList<String> combinedTopHits = new LinkedList<String>(Arrays.asList(combinedTopHitsString.split(",")));
-		
+
 		String rScriptBinDir = loadFromEnvironment(RSCRIPTBINDIR, HEADER_PHENO);
 		String rScriptDir = loadFromEnvironment(RSCRIPTDIR, HEADER_PHENO);
-		
-		String sandboxPath = "/" + String.join("/",Arrays.copyOf(topHitsAllPheno.split("/"), topHitsAllPheno.split("/").length - 1)) + "/";
 
-		String fileInSandboxPath = sandboxPath + combinedTopHits.get(0).split("/")[combinedTopHits.get(0).split("/").length - 1];
+		String sandboxPath = "/"
+				+ String.join("/", Arrays.copyOf(topHitsAllPheno.split("/"), topHitsAllPheno.split("/").length - 1))
+				+ "/";
+
+		String fileInSandboxPath = sandboxPath
+				+ combinedTopHits.get(0).split("/")[combinedTopHits.get(0).split("/").length - 1];
 		System.out.println(fileInSandboxPath);
-		
+
 		GuidanceImpl.copyFileLocalToRuntime(combinedTopHits.get(0), fileInSandboxPath, hostname, ip);
-		
-		//FileUtils.copy(combinedTopHits.get(0), fileInSandboxPath);
-		//String combinedTopHitsString = combinedTopHits.get(0);
-		//String combinedTopHitsString = fileInSandboxPath;
+
+		// FileUtils.copy(combinedTopHits.get(0), fileInSandboxPath);
+		// String combinedTopHitsString = combinedTopHits.get(0);
+		// String combinedTopHitsString = fileInSandboxPath;
 		for (int i = 1; i < combinedTopHits.size(); ++i) {
-			fileInSandboxPath = sandboxPath + combinedTopHits.get(i).split("/")[combinedTopHits.get(i).split("/").length - 1];
+			fileInSandboxPath = sandboxPath
+					+ combinedTopHits.get(i).split("/")[combinedTopHits.get(i).split("/").length - 1];
 			System.out.println(fileInSandboxPath);
 			GuidanceImpl.copyFileLocalToRuntime(combinedTopHits.get(i), fileInSandboxPath, hostname, ip);
-			//FileUtils.copy(combinedTopHits.get(i), fileInSandboxPath);
-			//combinedTopHitsString += ("," + fileInSandboxPath);
-			//combinedTopHitsString += ("," + combinedTopHits.get(i));
+			// FileUtils.copy(combinedTopHits.get(i), fileInSandboxPath);
+			// combinedTopHitsString += ("," + fileInSandboxPath);
+			// combinedTopHitsString += ("," + combinedTopHits.get(i));
 		}
 
 		String command = rScriptBinDir + "Rscript --verbose " + rScriptDir + "/tophits_all_phenotypes.R "
@@ -2424,7 +2435,6 @@ public class GuidanceImpl {
 			throw new GuidanceTaskException(ioe);
 		}
 
-		
 		// FileUtils.getFile(topHitsAllPheno);
 		FileUtils.recursiveSearch(topHitsAllPheno);
 
@@ -2445,10 +2455,12 @@ public class GuidanceImpl {
 		String rScriptDir = loadFromEnvironment(RSCRIPTDIR, HEADER_PHENO);
 
 		String rScriptPath = rScriptDir + "/merging_tophits_all_pheno.R ";
-		//rScriptPath = "/gpfs/projects/bsc05/martagm/GWImp_COMPSs/R_SCRIPTS/merging_tophits_all_pheno.R ";
-		
-		String command = rScriptBinDir + "Rscript --verbose " + rScriptPath
-				+ topHitsAllPheno + " " + condensedFile + " " + mergedPhenoFile + " " + pheno;
+		// rScriptPath =
+		// "/gpfs/projects/bsc05/martagm/GWImp_COMPSs/R_SCRIPTS/merging_tophits_all_pheno.R
+		// ";
+
+		String command = rScriptBinDir + "Rscript --verbose " + rScriptPath + topHitsAllPheno + " " + condensedFile
+				+ " " + mergedPhenoFile + " " + pheno;
 
 		long startTime = 0;
 		if (DEBUG) {
@@ -2479,44 +2491,52 @@ public class GuidanceImpl {
 	// crossPhenoRanges -> FILE_OUT
 	// crossPhenoTopVariants -> FILE_OUT
 	// pvaThreshold -> STRING_IN
-	public static void computeCrossPheno(LinkedList<String> controlString, String phenoMergedTopHitsString, String crossPhenoAll, String pvaThreshold, String models, String hostname, String ip) throws GuidanceTaskException, IOException {
+	public static void computeCrossPheno(LinkedList<String> controlString, String phenoMergedTopHitsString,
+			String crossPhenoAll, String pvaThreshold, String models, String hostname, String ip)
+			throws GuidanceTaskException, IOException {
 
 		String rScriptBinDir = loadFromEnvironment(RSCRIPTBINDIR, HEADER_PHENO);
 		String rScriptDir = loadFromEnvironment(RSCRIPTDIR, HEADER_PHENO);
-		
-		LinkedList<String> phenoMergedTopHits = new LinkedList<String>(Arrays.asList(phenoMergedTopHitsString.split(",")));
-		
-		String sandboxPath = String.join("/",Arrays.copyOf(crossPhenoAll.split("/"), crossPhenoAll.split("/").length - 1)) + "/";
 
-		String fileInSandboxPath = sandboxPath + phenoMergedTopHits.get(0).split("/")[phenoMergedTopHits.get(0).split("/").length - 1];
-		
-		//GuidanceImpl.copyFileLocalToRuntime(phenoMergedTopHits.get(0), fileInSandboxPath, hostname, ip);
-		
-		//System.out.println(sandboxPath);
-		//System.out.println(phenoMergedTopHits.get(0) + " " + fileInSandboxPath);
+		LinkedList<String> phenoMergedTopHits = new LinkedList<String>(
+				Arrays.asList(phenoMergedTopHitsString.split(",")));
+
+		String sandboxPath = String.join("/",
+				Arrays.copyOf(crossPhenoAll.split("/"), crossPhenoAll.split("/").length - 1)) + "/";
+
+		String fileInSandboxPath = sandboxPath
+				+ phenoMergedTopHits.get(0).split("/")[phenoMergedTopHits.get(0).split("/").length - 1];
+
+		// GuidanceImpl.copyFileLocalToRuntime(phenoMergedTopHits.get(0),
+		// fileInSandboxPath, hostname, ip);
+
+		// System.out.println(sandboxPath);
+		// System.out.println(phenoMergedTopHits.get(0) + " " + fileInSandboxPath);
 		String localPhenoMergedTopHitsString = fileInSandboxPath;
 		/*
-		for (int i = 1; i < phenoMergedTopHits.size(); ++i) {
-			fileInSandboxPath = sandboxPath + phenoMergedTopHits.get(i).split("/")[phenoMergedTopHits.get(i).split("/").length - 1];
-			GuidanceImpl.copyFileLocalToRuntime(phenoMergedTopHits.get(i), fileInSandboxPath, hostname, ip);
-			System.out.println(phenoMergedTopHits.get(i) + " " + fileInSandboxPath);
-			localPhenoMergedTopHitsString += ("," + fileInSandboxPath);
-			//FileUtils.copy(combinedTopHits.get(i), fileInSandboxPath);
-			//combinedTopHitsString += ("," + fileInSandboxPath);
-			//combinedTopHitsString += ("," + combinedTopHits.get(i));
-		}*/
-		
+		 * for (int i = 1; i < phenoMergedTopHits.size(); ++i) { fileInSandboxPath =
+		 * sandboxPath +
+		 * phenoMergedTopHits.get(i).split("/")[phenoMergedTopHits.get(i).split("/").
+		 * length - 1]; GuidanceImpl.copyFileLocalToRuntime(phenoMergedTopHits.get(i),
+		 * fileInSandboxPath, hostname, ip);
+		 * System.out.println(phenoMergedTopHits.get(i) + " " + fileInSandboxPath);
+		 * localPhenoMergedTopHitsString += ("," + fileInSandboxPath);
+		 * //FileUtils.copy(combinedTopHits.get(i), fileInSandboxPath);
+		 * //combinedTopHitsString += ("," + fileInSandboxPath); //combinedTopHitsString
+		 * += ("," + combinedTopHits.get(i)); }
+		 */
+
 		String mergedTopHitsString = phenoMergedTopHits.get(0);
 		for (int i = 1; i < phenoMergedTopHits.size(); ++i) {
 			mergedTopHitsString += ("," + phenoMergedTopHits.get(i));
 		}
 
 		String rScriptPath = rScriptDir + "/crossphenotype_crossmodel.R ";
-		
+
 		localPhenoMergedTopHitsString = phenoMergedTopHitsString;
-		
-		String command = rScriptBinDir + "Rscript --verbose " + rScriptPath + localPhenoMergedTopHitsString
-				+ " " + crossPhenoAll + " " + pvaThreshold + " " + models;
+
+		String command = rScriptBinDir + "Rscript --verbose " + rScriptPath + localPhenoMergedTopHitsString + " "
+				+ crossPhenoAll + " " + pvaThreshold + " " + models;
 
 		long startTime = 0;
 		if (DEBUG) {
@@ -2542,8 +2562,8 @@ public class GuidanceImpl {
 
 	public static void generateCondensedAndTopHitsFile(String filteredFile, String filteredMalesFile,
 			String filteredFemalesFile, String filteredAllXFile, String condensedFile, String topHitsFile,
-			String crossRangesFile, String pvaThresholdStr, String models, String outFile, String errFile, String cmdToStore)
-			throws GuidanceTaskException, InterruptedException {
+			String crossRangesFile, String pvaThresholdStr, String models, String outFile, String errFile,
+			String cmdToStore) throws GuidanceTaskException, InterruptedException {
 
 		String command = null;
 		long startTime = System.currentTimeMillis();
@@ -2555,44 +2575,51 @@ public class GuidanceImpl {
 		String rScriptDir = loadFromEnvironment(RSCRIPTDIR, HEADER_GENERATE_QQ_MANHATTAN_PLOTS);
 
 		String rScriptPath = rScriptDir + "/condensed_tophits_crossmodel.R ";
-		//rScriptPath = "/gpfs/scratch/pr1ejj00/pr1ejj08/GUIDANCE/GERA/condensed_tophits_crossmodel.R ";
-		
+		// rScriptPath =
+		// "/gpfs/scratch/pr1ejj00/pr1ejj08/GUIDANCE/GERA/condensed_tophits_crossmodel.R
+		// ";
+
 		command = rScriptBinDir + "/Rscript --verbose " + rScriptPath + filteredFile + " " + filteredMalesFile + " "
 				+ filteredFemalesFile + " " + filteredAllXFile + " " + condensedPlain + " " + topHitsPlain + " "
 				+ crossRangesPlain + " " + pvaThresholdStr + " " + models;
-		
-		//String[] splittedFilename = condensedFile.split("/");
-		//String fileName = splittedFilename[splittedFilename.length - 1];
-		//String outFile = "/gpfs/scratch/pr1ejj00/pr1ejj08/GUIDANCE/GERA_ALL/log_files/" + fileName + ".out";
-		//String errFile = "/gpfs/scratch/pr1ejj00/pr1ejj08/GUIDANCE/GERA_ALL/log_files/" + fileName + ".err";
+
+		// String[] splittedFilename = condensedFile.split("/");
+		// String fileName = splittedFilename[splittedFilename.length - 1];
+		// String outFile =
+		// "/gpfs/scratch/pr1ejj00/pr1ejj08/GUIDANCE/GERA_ALL/log_files/" + fileName +
+		// ".out";
+		// String errFile =
+		// "/gpfs/scratch/pr1ejj00/pr1ejj08/GUIDANCE/GERA_ALL/log_files/" + fileName +
+		// ".err";
 
 		if (DEBUG) {
 			System.out.println("\n[DEBUG] Launched command:                 : " + command);
 		}
-		
+
 		System.out.println("Previous files");
-		
+
 		FileUtils.recursiveSearch(filteredFile);
 
 		try {
-			//ProcessUtils.executeWithoutOutputs(command);
-			//System.out.println("OUT FILE:");
-			//String[] outFileVector = topHitsPlain.split("/");
-			//String outFileName = outFileVector[outFileVector.length - 1];
-			//System.out.println("/home/computational.genomics.bsc/" + outFileName + ".out");
+			// ProcessUtils.executeWithoutOutputs(command);
+			// System.out.println("OUT FILE:");
+			// String[] outFileVector = topHitsPlain.split("/");
+			// String outFileName = outFileVector[outFileVector.length - 1];
+			// System.out.println("/home/computational.genomics.bsc/" + outFileName +
+			// ".out");
 			ProcessUtils.executeWithOutputs(command, outFile, errFile);
 		} catch (IOException ioe) {
 			throw new GuidanceTaskException(ioe);
 		}
-		
+
 		System.out.println("Post execution");
-		
+
 		FileUtils.recursiveSearch(condensedPlain);
 
 		FileUtils.gzipFile(condensedPlain, condensedFile);
 		FileUtils.gzipFile(topHitsPlain, topHitsFile);
 		FileUtils.gzipFile(crossRangesPlain, crossRangesFile);
-		
+
 		FileUtils.recursiveSearch(condensedFile);
 
 		long stopTime = System.currentTimeMillis();
@@ -2731,8 +2758,8 @@ public class GuidanceImpl {
 	public static void snptestAndFilterByAll(String mergedGenFile, String mergedSampleFile, String responseVar,
 			String covariables, String models, String theChromo, String imputationTool, String imputeFileInfo,
 			String mafThresholdS, String hweCohortThresholdS, String hweCasesThresholdS, String hweControlsThresholdS,
-			String infoThresholdS, String sex, String rpanelName, String snptestOutFile, String snptestLogFile, String summaryFile,
-			String assocFilterByAll) throws GuidanceTaskException {
+			String infoThresholdS, String sex, String rpanelName, String snptestOutFile, String snptestLogFile,
+			String summaryFile, String assocFilterByAll) throws GuidanceTaskException {
 
 		snptest(mergedGenFile, mergedSampleFile, snptestOutFile, snptestLogFile, responseVar, covariables, models,
 				theChromo, "");
@@ -3837,7 +3864,8 @@ public class GuidanceImpl {
 
 		String cmd = null;
 		String rScriptPath = rScriptDir + "/qqplot_manhattan_all_models.R ";
-		//rScriptPath = "/gpfs/projects/pr1ejj00/launch_scripts/qqplot_manhattan_all_models.R ";
+		// rScriptPath =
+		// "/gpfs/projects/pr1ejj00/launch_scripts/qqplot_manhattan_all_models.R ";
 		cmd = rScriptBinDir + "/Rscript " + rScriptPath + lastCondensedFile + " " + qqPlotFile + " " + manhattanPlotFile
 				+ " " + qqPlotTiffFile + " " + manhattanPlotTiffFile + " " + manhattanOption + " " + thresh;
 
@@ -4534,28 +4562,31 @@ public class GuidanceImpl {
 			System.err.println("[DEBUG] Error when bringing back " + realFilename);
 		}
 	}
-	
-	public static LinkedList<String> copyFileRuntimeToLocalSSH(String runtimeFilename, String realFilename, String hostname, String ip) throws IOException {
+
+	public static LinkedList<String> copyFileRuntimeToLocalSSH(String runtimeFilename, String realFilename,
+			String hostname, String ip) throws IOException {
 		String scpCommand = "scp " + runtimeFilename + " " + hostname + "@" + ip + ":" + realFilename;
 		System.out.println(scpCommand);
 		LinkedList<String> listToReturn = new LinkedList<String>();
 		listToReturn.add(Integer.toString(ProcessUtils.executeWithoutOutputs(scpCommand)));
 		return listToReturn;
 	}
-	
-	public static String copyFileLocalToRuntime(String localFilename, String runtimeFilename, String hostname, String ip) throws IOException {
+
+	public static String copyFileLocalToRuntime(String localFilename, String runtimeFilename, String hostname,
+			String ip) throws IOException {
 		String scpCommand = "scp " + hostname + "@" + ip + ":" + localFilename + " " + runtimeFilename;
 		System.out.println(scpCommand);
 		return Integer.toString(ProcessUtils.executeWithoutOutputs(scpCommand));
 	}
-	
+
 	public static LinkedList<String> reduceTwo(LinkedList<String> a, LinkedList<String> b) {
 		LinkedList<String> listToReturn = new LinkedList<String>();
 		listToReturn.add(a.get(0) + b.get(0));
 		return listToReturn;
 	}
-	
-	public static LinkedList<String> reduceFour(LinkedList<String> a, LinkedList<String> b, LinkedList<String> c, LinkedList<String> d) {
+
+	public static LinkedList<String> reduceFour(LinkedList<String> a, LinkedList<String> b, LinkedList<String> c,
+			LinkedList<String> d) {
 		LinkedList<String> listToReturn = new LinkedList<String>();
 		listToReturn.add(a.get(0) + b.get(0) + c.get(0) + d.get(0));
 		return listToReturn;

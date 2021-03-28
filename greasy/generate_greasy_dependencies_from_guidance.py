@@ -2,6 +2,7 @@
 
 import sys
 
+
 def sing_command():
     return "singularity exec /gpfs/projects/bsc05/guidance/singularity_images/guidance_singularity_compss25_06_11_19" \
            ".img "
@@ -25,6 +26,7 @@ def transform_command_to_singularity(command):
                               sing_command() + java_jar() + "8")
     return command
 """
+
 
 class Command:
     def __init__(self, line, counter):
@@ -98,6 +100,35 @@ class Imputation(Command):
             [self.line.split()[6], "newSample.jar"]) + " #]"
 
 
+class Association(Command):
+    def command(self):
+        return self.line.replace("env -i /usr/bin/snptest_v2.5", sing_command() + "env -i /usr/bin/snptest_v2.5")
+
+    def dependency(self):
+        string_to_search = self.line.split()[4]
+        return "[# " + self.line_for_string([string_to_search]) + " #]"
+
+
+class Summary(Command):
+    def command(self):
+        return self.line.replace("/usr/lib/jvm/java-8-openjdk-amd64/java collectSummary.jar",
+                                 sing_command() + java_jar() + "12")
+
+    def dependency(self):
+        string_to_search = self.line.split()[5]
+        return "[# " + self.line_for_string([string_to_search]) + " #]"
+
+
+class FilteredSummary(Command):
+    def command(self):
+        return self.line.replace("/usr/lib/jvm/java-8-openjdk-amd64/java filterByAll.jar",
+                                 sing_command() + java_jar() + "13")
+
+    def dependency(self):
+        string_to_search = self.line.split()[3]
+        return "[# " + self.line_for_string([string_to_search]) + " #]"
+
+
 def get_instance_from_line(line, counter):
     if "/usr/bin/plink" in line and "make-bed" in line:
         return FromBedToBed(line, counter)
@@ -109,6 +140,12 @@ def get_instance_from_line(line, counter):
         return NewSample(line, counter)
     if "imputeWithImputeAndFilterByInfo.jar" in line:
         return Imputation(line, counter)
+    if "env -i /usr/bin/snptest_v2.5" in line:
+        return Association(line, counter)
+    if "/usr/lib/jvm/java-8-openjdk-amd64/java collectSummary.jar" in line:
+        return Summary(line, counter)
+    if "/usr/lib/jvm/java-8-openjdk-amd64/java filterByAll.jar" in line:
+        return FilteredSummary(line, counter)
     raise ("ERROR")
 
 
@@ -121,7 +158,10 @@ def translations():
          sing_command() + "/TOOLS/shapeit.v2.r727.linux.x64"),
         ("/usr/lib/jvm/java-8-openjdk-amd64 newSample.jar", sing_command() + java_jar() + "7"),
         ("/usr/lib/jvm/java-8-openjdk-amd64/java imputeWithImputeAndFilterByInfo.jar",
-         sing_command() + java_jar() + "8")
+         sing_command() + java_jar() + "8"),
+        ("env -i /usr/bin/snptest_v2.5", sing_command() + "env -i /usr/bin/snptest_v2.5"),
+        ("/usr/lib/jvm/java-8-openjdk-amd64/java collectSummary.jar", sing_command() + java_jar() + "12"),
+        ("/usr/lib/jvm/java-8-openjdk-amd64/java filterByAll.jar", sing_command() + java_jar() + "13")
     ]
 
 

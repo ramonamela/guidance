@@ -140,6 +140,7 @@ public class Guidance {
 	private static final String SEX1 = GuidanceImpl.getSex1();
 	private static final String SEX2 = GuidanceImpl.getSex2();
 	private static final String NO_SEX = GuidanceImpl.getNoSex();
+	private static final String CHR_23 = "23";
 
 	private static File listOfStages;
 	private static ArrayList<String> listOfCommands = new ArrayList<>();
@@ -3287,7 +3288,50 @@ public class Guidance {
 			String mafThresholdS, String hweCohortThresholdS, String hweCasesThresholdS, String hweControlsThresholdS,
 			String infoThresholdS, String sex, String rpanelName, String snptestOutFile, String snptestOutLogFile,
 			String summaryFile, String assocFilteredByAll) {
-		// Submitting the snptest task per this chunk
+		String newCoviariablesStr = covariables.replace(',', ' ');
+		String mergedGenFileGz = null;
+		String extension = mergedGenFile.substring(Math.max(0, mergedGenFile.length() - 3));
+		if (extension.equals(".gz")) {
+			mergedGenFileGz = mergedGenFile;
+		} else {
+			mergedGenFileGz = mergedGenFile + ".gz";
+		}
+		String snptestOutBinaryFile = snptestOutFile.substring(0, snptestOutFile.length() - 3);
+		String cmd = null;
+		if (covariables.equals("none")) {
+			cmd = "env -i " + SNPTEST_BINARY + " -data " + mergedGenFileGz + " " + mergedSampleFile + " -o "
+					+ snptestOutFile + " -pheno " + responseVar +
+					// " -hwe";
+					" -hwe -log " + snptestOutBinaryFile + ".log";
+			covariables = "";
+		} else {
+			cmd = "env -i " + SNPTEST_BINARY + " -data " + mergedGenFileGz + " " + mergedSampleFile + " -o "
+					+ snptestOutFile + " -pheno " + responseVar + " -cov_names " + newCoviariablesStr
+					// + " -hwe";
+					+ " -hwe -log " + snptestOutBinaryFile + ".log";
+		}
+
+		// Different parameters for chromo 23 (X) and the rest.
+		if (theChromo.equals(CHR_23)) {
+			cmd = cmd + " -method newml -assume_chromosome X -stratify_on sex -frequentist 1";
+		} else {
+			cmd = cmd + " -method em -frequentist" + modelString;
+		}
+
+		listOfCommands.add(cmd);
+
+		cmd = JAVA_HOME + "/java collectSummary.jar " + theChromo + " " + imputationTool + " " + imputeFileInfo + " "
+				+ snptestOutFile + " " + summaryFile + " " + mafThresholdS + " " + hweCohortThresholdS + " "
+				+ hweCasesThresholdS + " " + hweControlsThresholdS;
+
+		listOfCommands.add(cmd);
+
+		String cmdToStore = JAVA_HOME + "/java filterByAll.jar " + imputationTool + " " + summaryFile + " "
+				+ assocFilteredByAll + " " + mafThresholdS + " " + infoThresholdS + " " + hweCohortThresholdS + " "
+				+ hweCasesThresholdS + " " + hweControlsThresholdS + " " + sex + " " + rpanelName;
+
+		listOfCommands.add(cmdToStore);
+
 		try {
 			GuidanceImpl.snptestAndFilterByAll(mergedGenFile, mergedSampleFile, responseVar, covariables, modelString,
 					theChromo, imputationTool, imputeFileInfo, mafThresholdS, hweCohortThresholdS, hweCasesThresholdS,
@@ -3627,8 +3671,8 @@ public class Guidance {
 	 * @param outputFile
 	 * @param outputCondensedFile
 	 */
-	private static void doFilterByAll(ParseCmdLine parsingArgs, String inputFile, String outputFile, String sex,
-			String rpanelName) {
+	private static void doFilterByAll(ParseCmdLine parsingArgs, String summaryFile, String assocFilteredByAll,
+			String sex, String rpanelName) {
 
 		// Task
 		if (parsingArgs.getStageStatus("filterByAll") == 1) {
@@ -3657,9 +3701,9 @@ public class Guidance {
 				infoThreshold = parsingArgs.getMinimacThreshold();
 			}
 
-			String cmdToStore = JAVA_HOME + "/java filterByAll " + imputationTool + " " + inputFile + " " + outputFile
-					+ " " + mafThresholdS + " " + infoThresholdS + " " + hweCohortThresholdS + " " + hweCasesThresholdS
-					+ " " + hweControlsThresholdS + " " + sex + " " + rpanelName;
+			String cmdToStore = JAVA_HOME + "/java filterByAll " + imputationTool + " " + summaryFile + " "
+					+ assocFilteredByAll + " " + mafThresholdS + " " + infoThresholdS + " " + hweCohortThresholdS + " "
+					+ hweCasesThresholdS + " " + hweControlsThresholdS + " " + sex + " " + rpanelName;
 
 			listOfCommands.add(cmdToStore);
 			try {
@@ -3669,7 +3713,7 @@ public class Guidance {
 			}
 
 			try {
-				GuidanceImpl.filterByAll(imputationTool, inputFile, outputFile, mafThresholdS, infoThresholdS,
+				GuidanceImpl.filterByAll(imputationTool, summaryFile, assocFilteredByAll, mafThresholdS, infoThresholdS,
 						hweCohortThresholdS, hweCasesThresholdS, hweControlsThresholdS, sex, rpanelName, cmdToStore);
 			} catch (Exception e) {
 				System.err.println("[Guidance] Exception trying the execution of filterByAll task");
